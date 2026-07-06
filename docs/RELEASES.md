@@ -112,7 +112,7 @@ Close with a CDN snippet so consumers can copy-paste the new version:
 ~~~markdown
 ## CDN
 ```html
-<link rel="stylesheet" href="https://assets.undrr.org/static/mangrove/1.3.0/css/style.css">
+<link rel="stylesheet" href="https://assets.undrr.org/static/mangrove/1.8.1/css/style.css">
 ```
 ~~~
 
@@ -193,9 +193,9 @@ https://assets.undrr.org/testing/static/mangrove/latest/css/style.css
 https://assets.undrr.org/testing/static/mangrove/latest/components/MegaMenu.js
 
 # Versioned (from tagged releases)
-https://assets.undrr.org/static/mangrove/1.8.0/css/style.css
-https://assets.undrr.org/static/mangrove/1.8.0/components/MegaMenu.js
-https://assets.undrr.org/static/mangrove/1.8.0/js/tabs.js
+https://assets.undrr.org/static/mangrove/1.8.1/css/style.css
+https://assets.undrr.org/static/mangrove/1.8.1/components/MegaMenu.js
+https://assets.undrr.org/static/mangrove/1.8.1/js/tabs.js
 ```
 
 ## CI/CD configuration
