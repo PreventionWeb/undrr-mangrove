@@ -10890,9 +10890,9 @@ __metadata:
   linkType: hard
 
 "lucide-static@npm:^1.21.0":
-  version: 1.21.0
-  resolution: "lucide-static@npm:1.21.0"
-  checksum: 10/ea0b8784990c9f2bcd3aa101256a46c8130af7c0cf706f346660621d112b82a4ba8564733084b100df2600876068561695ab24e10a195a17882ba7ca9b9856e8
+  version: 1.23.0
+  resolution: "lucide-static@npm:1.23.0"
+  checksum: 10/d638a43c20c080835f8720ceeffb8cc263de0ba1738a2271ab966e251fb2c1b82d86f150853fe9a2d32889052647060c1998aad0e5b190b6dcf6d1bc2b1e7c2d
   languageName: node
   linkType: hard
 
