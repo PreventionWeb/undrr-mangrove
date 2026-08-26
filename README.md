@@ -226,6 +226,30 @@ Compiled assets are available via npm (`@undrr/undrr-mangrove`) and the [UNDRR C
 - `dist/css/`: compiled theme stylesheets
 - `dist/js/`: vanilla JS utilities
 
+## Non-React site integration (Drupal, Astro, etc.)
+
+Mangrove components can hydrate into server-rendered HTML on non-React consumers. The common wrapper pattern is `createHydrator` plus a framework/site hook that re-scans when new DOM is injected.
+
+### Drupal behavior pattern
+
+```js
+// Uses @mangrove/* import map aliases provided by the undrr_common theme
+import createHydrator from "@mangrove/hydrate";
+import Component, { fromElement } from "@mangrove/ComponentName";
+
+const hydrator = createHydrator({
+  selector: "[data-mg-component-name]",
+  component: Component,
+  fromElement,
+});
+
+Drupal.behaviors.mangroveComponentName = {
+  attach(context) { hydrator.update(context); },
+};
+```
+
+For other consumers (Astro/Vite/vanilla wrappers), use the same hydrator setup and call `hydrator.update(...)` from that platform's lifecycle hook when injecting new DOM. On error, `createHydrator` automatically restores the original server HTML — no blank regions on failure. See [`docs/HYDRATION.md`](./docs/HYDRATION.md) for full examples and platform variants.
+
 ## AI and agent integration
 
 The build generates static JSON files with component metadata so AI coding agents can look up Mangrove components without parsing the Storybook SPA. After deploy, these are available at:
@@ -269,9 +293,9 @@ Production sites should pin to a specific version:
 ```
 https://assets.undrr.org/static/sitemap.html#mangrove-1-2-10
 https://assets.undrr.org/static/mangrove/README.md
-https://assets.undrr.org/static/mangrove/1.8.0/css/style.css
-https://assets.undrr.org/static/mangrove/1.8.0/components/MegaMenu.js
-https://assets.undrr.org/static/mangrove/1.8.0/js/tabs.js
+https://assets.undrr.org/static/mangrove/1.8.1/css/style.css
+https://assets.undrr.org/static/mangrove/1.8.1/components/MegaMenu.js
+https://assets.undrr.org/static/mangrove/1.8.1/js/tabs.js
 ```
 
 #### Bleeding edge test rep
@@ -279,7 +303,7 @@ https://assets.undrr.org/static/mangrove/1.8.0/js/tabs.js
 ```
 https://assets.undrr.org/testing/static/sitemap.html#mangrove-1-2-4
 https://assets.undrr.org/testing/static/mangrove/latest/css/style.css
-https://assets.undrr.org/static/mangrove/1.8.0/css/style.css
+https://assets.undrr.org/static/mangrove/1.8.1/css/style.css
 ... etc
 ```
 
