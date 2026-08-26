@@ -8,7 +8,11 @@
     "node": ">=22.0.0"
   },
   "exports": {
-    ".": "./src/index.js"
+    ".": "./src/index.js",
+    "./aria": "./aria/react-aria.css",
+    "./aria.css": "./aria/react-aria.css",
+    "./tokens/mangrove.css": "./aria/tokens/mangrove.css",
+    "./tokens/delta.css": "./aria/tokens/delta.css"
   },
   "scripts": {
     "build:icons": "node scripts/icon-build.cjs",
@@ -144,6 +148,7 @@
     "file-loader": "6.2.0",
     "postcss": "~8.5.22",
     "qrcode": "^1.5.4",
+    "react-aria-components": "^1.20.0",
     "vanilla-cookieconsent": "^3.1.0"
   },
   "peerDependencies": {

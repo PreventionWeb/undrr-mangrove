@@ -1,0 +1,29 @@
+:root {
+  --mg-aria-color-accent: rgb(var(--mg-color-interactive));
+  --mg-aria-color-accent-active: rgb(var(--mg-color-interactive-active));
+  --mg-aria-color-on-accent: rgb(var(--mg-color-white));
+  --mg-aria-color-text: rgb(var(--mg-color-text));
+  --mg-aria-color-muted-text: rgb(var(--mg-color-neutral-600));
+  --mg-aria-color-surface: rgb(var(--mg-color-white));
+  --mg-aria-color-subtle-surface: rgb(var(--mg-color-neutral-25));
+  --mg-aria-color-border: rgb(var(--mg-color-neutral-400));
+  --mg-aria-color-invalid: rgb(var(--mg-color-red-900));
+  --mg-aria-font-family: 'Roboto', sans-serif;
+  --mg-aria-font-size: 1rem;
+  --mg-aria-font-size-small: 0.875rem;
+  --mg-aria-line-height: 1.5;
+  --mg-aria-space-1: var(--mg-spacing-50);
+  --mg-aria-space-2: var(--mg-spacing-100);
+  --mg-aria-space-3: var(--mg-spacing-150);
+  --mg-aria-space-4: var(--mg-spacing-200);
+  --mg-aria-radius: var(--mg-spacing-50);
+  --mg-aria-border-width: 1px;
+  --mg-aria-focus-width: 2px;
+  --mg-aria-shadow: 0 0 0 var(--mg-aria-focus-width)
+    rgb(var(--mg-color-interactive) / 0.25);
+  --mg-aria-overlay-shadow: 0 var(--mg-aria-space-1) var(--mg-aria-space-3)
+    rgb(var(--mg-color-neutral-900) / 0.2);
+  --mg-aria-overlay-z-index: 5000;
+  --mg-aria-color-overlay-backdrop: rgb(24 24 35 / 0.2);
+  --mg-aria-width-full: 100%;
+}

@@ -1,0 +1,40 @@
+@font-face {
+  font-family: 'Dubai';
+  src:
+    url('https://assets.undrr.org/testing/static/fonts/dubai/v1.0.0/Regular/Dubai-Regular.woff2')
+      format('woff2'),
+    url('https://assets.undrr.org/testing/static/fonts/dubai/v1.0.0/Regular/Dubai-Regular.woff')
+      format('woff');
+  font-display: swap;
+  font-style: normal;
+  font-weight: 400;
+}
+
+:root {
+  --mg-aria-color-accent: rgb(19 46 72);
+  --mg-aria-color-accent-active: rgb(12 30 48);
+  --mg-aria-color-on-accent: rgb(255 255 255);
+  --mg-aria-color-text: rgb(24 24 35);
+  --mg-aria-color-muted-text: rgb(77 77 77);
+  --mg-aria-color-surface: rgb(255 255 255);
+  --mg-aria-color-subtle-surface: rgb(250 250 250);
+  --mg-aria-color-border: rgb(179 179 179);
+  --mg-aria-color-invalid: rgb(193 9 32);
+  --mg-aria-font-family: 'Dubai', sans-serif;
+  --mg-aria-font-size: 1rem;
+  --mg-aria-font-size-small: 0.875rem;
+  --mg-aria-line-height: 1.5;
+  --mg-aria-space-1: 0.3125rem;
+  --mg-aria-space-2: 0.625rem;
+  --mg-aria-space-3: 0.9375rem;
+  --mg-aria-space-4: 1.25rem;
+  --mg-aria-radius: 0.3125rem;
+  --mg-aria-border-width: 1px;
+  --mg-aria-focus-width: 2px;
+  --mg-aria-shadow: 0 0 0 var(--mg-aria-focus-width) rgb(19 46 72 / 0.25);
+  --mg-aria-overlay-shadow: 0 var(--mg-aria-space-1) var(--mg-aria-space-3)
+    rgb(24 24 35 / 0.2);
+    --mg-aria-overlay-z-index: 5000;
+    --mg-aria-color-overlay-backdrop: rgb(24 24 35 / 0.2);
+    --mg-aria-width-full: 100%;
+  }
