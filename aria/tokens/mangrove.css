@@ -1,3 +1,8 @@
+/*
+ * Mangrove's standalone token adapter for the React Aria stylesheet.
+ * It maps Mangrove runtime custom properties to the small, stable --mg-aria-*
+ * contract without importing Mangrove component CSS.
+ */
 :root {
   --mg-aria-color-accent: rgb(var(--mg-color-interactive));
   --mg-aria-color-accent-active: rgb(var(--mg-color-interactive-active));

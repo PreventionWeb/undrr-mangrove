@@ -1,3 +1,8 @@
+/*
+ * React Aria CRUD proof using in-memory hazardous-event fixtures.
+ * It exercises the table-heavy interactions DELTA needs without becoming a
+ * reusable Mangrove component API or adding any production data integration.
+ */
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   Button,
@@ -933,7 +938,18 @@ function CrudDemo() {
   );
 }
 
-export default { title: 'Spike/React Aria CRUD', component: CrudDemo };
+export default {
+  title: 'Spike/React Aria CRUD',
+  component: CrudDemo,
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'A complete in-memory CRUD interaction proof: search, filters, column visibility and resizing, selection, menus, responsive list view, and create/edit/delete overlays.',
+      },
+    },
+  },
+};
 export const CrudExample = {
   name: 'CRUD example',
   render: () => <CrudDemo />,

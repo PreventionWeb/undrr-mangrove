@@ -1,3 +1,8 @@
+/*
+ * DELTA's standalone token adapter for the React Aria stylesheet.
+ * It provides DELTA values through the same --mg-aria-* contract, proving the
+ * shared Aria CSS can be themed by swapping this file alone.
+ */
 @font-face {
   font-family: 'Dubai';
   src:

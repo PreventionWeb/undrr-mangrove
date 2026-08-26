@@ -1,3 +1,8 @@
+/*
+ * Shared React Aria Components styling surface for the spike.
+ * This intentionally targets React Aria's stock classes and consumes only
+ * --mg-aria-* tokens, so consumers can import it without Mangrove components.
+ */
 .react-aria-Button,
 .react-aria-Input,
 .react-aria-ListBox,
@@ -246,6 +251,9 @@
   font-family: var(--mg-aria-font-family);
   gap: var(--mg-aria-space-4);
   max-width: var(--mg-aria-width-full);
+}
+.aria-integration-demo > .react-aria-Button {
+  justify-self: start;
 }
 .aria-crud-actions {
   align-items: end;

@@ -1,5 +1,9 @@
 # React Aria and Mangrove integration spike
 
+> This file is the decision record for the throwaway integration spike: what
+> the separate token/style surface proves, its constraints, and the follow-up
+> work required before production adoption.
+
 ## Result
 
 This spike establishes a separate CSS distribution surface for React Aria Components:
