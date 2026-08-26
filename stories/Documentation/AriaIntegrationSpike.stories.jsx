@@ -110,7 +110,7 @@ export function AriaSpikeExample() {
       <ResizableTableContainer className="aria-spike-table-scroll">
       <Table aria-label="Hazardous events" sortDescriptor={sortDescriptor} onSortChange={descriptor => { setSortDescriptor(descriptor); setPage(1); }}>
         <TableHeader>
-          <Column id="selection" width={48} aria-label="Select rows"><Checkbox aria-label="Select all visible events" isSelected={pageEvents.every(event => selectedEvents.has(event.id))} onChange={isSelected => pageEvents.forEach(event => toggleSelected(event.id, isSelected))} /></Column>
+          <Column id="selection" width={48} aria-label="Select rows"><Checkbox slot="selection" aria-label="Select all visible events" isSelected={pageEvents.every(event => selectedEvents.has(event.id))} onChange={isSelected => pageEvents.forEach(event => toggleSelected(event.id, isSelected))} /></Column>
           <Column id="hazard" isRowHeader allowsSorting defaultWidth={224}>{({sortDirection}) => <div className="aria-spike-column-header"><span>Hazard type {sortDirection ? (sortDirection === 'ascending' ? '↑' : '↓') : ''}</span><ColumnResizer /></div>}</Column>
           <Column id="status" allowsSorting defaultWidth={192}>{({sortDirection}) => <div className="aria-spike-column-header"><span>Status {sortDirection ? (sortDirection === 'ascending' ? '↑' : '↓') : ''}</span><ColumnResizer /></div>}</Column>
           <Column id="updated" allowsSorting defaultWidth={160}>{({sortDirection}) => <div className="aria-spike-column-header"><span>Updated {sortDirection ? (sortDirection === 'ascending' ? '↑' : '↓') : ''}</span><ColumnResizer /></div>}</Column>
@@ -119,7 +119,7 @@ export function AriaSpikeExample() {
         <TableBody items={pageEvents}>
           {item => (
             <Row className={selectedEvents.has(item.id) ? 'aria-spike-row-selected' : undefined}>
-              <Cell><Checkbox aria-label={`Select ${item.hazard}`} isSelected={selectedEvents.has(item.id)} onChange={isSelected => toggleSelected(item.id, isSelected)} /></Cell>
+              <Cell><Checkbox slot="selection" aria-label={`Select ${item.hazard}`} isSelected={selectedEvents.has(item.id)} onChange={isSelected => toggleSelected(item.id, isSelected)} /></Cell>
               <Cell>{item.hazard}</Cell><Cell>{item.status}</Cell><Cell>{item.updated}</Cell>
               <Cell><MenuTrigger><Button aria-label={`Actions for ${item.hazard}`}>•••</Button><Popover><Menu aria-label={`Actions for ${item.hazard}`} onAction={key => { if (key === 'delete') setAllEvents(current => current.filter(event => event.id !== item.id)); }}><MenuItem id="view">View</MenuItem><MenuItem id="edit">Edit…</MenuItem><MenuItem id="delete">Delete…</MenuItem></Menu></Popover></MenuTrigger></Cell>
             </Row>
