@@ -690,7 +690,12 @@ export function CrudExample() {
             <Column id="selection" width={48}>
               <Checkbox slot="selection" aria-label="Select all" />
             </Column>
-            <Column id="favorite" width={48} aria-label="Favorite">
+            <Column
+              id="favorite"
+              width={48}
+              aria-label="Favorite"
+              className="aria-crud-favorite-column"
+            >
               ★
             </Column>
             {columns.map(column => (
@@ -739,7 +744,7 @@ export function CrudExample() {
                 </Cell>
                 <Cell>
                   <ToggleButton
-                    className="mg-button mg-button-primary mg-button-outline"
+                    className="mg-button mg-button-primary mg-button-outline aria-crud-favorite-button"
                     aria-label={`Favorite ${item.hazard}`}
                     isSelected={item.favorite}
                     onChange={() => toggleFavorite(item.id)}
@@ -827,7 +832,7 @@ export function CrudExample() {
             <div className="mg-grid mg-grid__col-2">
               <div>
                 <ToggleButton
-                  className="mg-button mg-button-primary mg-button-outline"
+                  className="mg-button mg-button-primary mg-button-outline aria-crud-favorite-button"
                   aria-label={`Favorite ${item.hazard}`}
                   isSelected={item.favorite}
                   onChange={() => toggleFavorite(item.id)}

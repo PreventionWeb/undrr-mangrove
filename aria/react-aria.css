@@ -87,6 +87,7 @@
   font-family: var(--mg-aria-font-family);
   font-size: var(--mg-aria-font-size);
   min-width: var(--mg-aria-width-full);
+  table-layout: fixed;
   width: var(--mg-aria-width-full);
 }
 .aria-spike-table-scroll {
@@ -119,9 +120,22 @@
   justify-content: space-between;
   width: var(--mg-aria-width-full);
 }
+.aria-spike-column-header > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.aria-crud-favorite-column {
+  padding-inline: 0;
+  text-align: center;
+}
 .react-aria-Cell {
   border-bottom: var(--mg-aria-border-width) solid var(--mg-aria-color-border);
+  overflow: hidden;
   padding: var(--mg-aria-space-2);
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .react-aria-Row[data-hovered] .react-aria-Cell {
   background: var(--mg-aria-color-subtle-surface);
@@ -263,10 +277,25 @@
 }
 .aria-crud-event-identity > span {
   display: grid;
+  min-width: 0;
+}
+.aria-crud-event-identity strong,
+.aria-crud-event-identity small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .aria-crud-event-identity small {
   color: var(--mg-aria-color-muted-text);
   font-size: var(--mg-aria-font-size-small);
+}
+.aria-crud-favorite-button {
+  align-items: center;
+  display: inline-flex;
+  justify-content: center;
+  min-block-size: calc(var(--mg-aria-space-4) * 2);
+  min-inline-size: calc(var(--mg-aria-space-4) * 2);
+  padding: 0;
 }
 .react-aria-Label {
   color: var(--mg-aria-color-text);
