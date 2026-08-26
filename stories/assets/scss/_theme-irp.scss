@@ -12,7 +12,7 @@ $_irp-color-green--raw: 140 198 63;
   --mg-color-button-background:    #{$_irp-color-primary--raw};
   --mg-color-button-background--hover: var(--sendai-orange-900);
   --mg-color-button-outline-primary: #{$_irp-color-primary--raw};
-  --mg-color-button-outline-primary--hover: var(--sendai-orange-900);
+  --mg-color-button-outline-primary--hover: var(--mg-color-interactive-active);
   --mg-color-button-outline-secondary: var(--mg-color-button-secondary-background);
   --mg-color-button-outline-secondary--hover: var(--mg-color-button-secondary-background--hover);
   --mg-radius-button:              var(--mg-spacing-50);
