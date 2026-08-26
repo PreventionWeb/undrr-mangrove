@@ -18,6 +18,7 @@ import {
   Dialog,
   DialogTrigger,
   DropZone,
+  FieldError,
   Group,
   GridList,
   GridListItem,
@@ -45,6 +46,7 @@ import {
   TextField,
   ResizableTableContainer,
   ToggleButton,
+  isFileDropItem,
 } from 'react-aria-components';
 import Pager from '../Components/Pager/Pager';
 
@@ -119,6 +121,8 @@ function EventEditor({ item, onClose, onSave }) {
       watering: 'Average',
     }
   );
+  const [showValidation, setShowValidation] = useState(false);
+  const [droppedImage, setDroppedImage] = useState(item?.image);
   const set = (key, value) =>
     setDraft(current => ({ ...current, [key]: value }));
   return (
@@ -133,15 +137,40 @@ function EventEditor({ item, onClose, onSave }) {
               <div className="mg-grid mg-grid__col-2">
                 <DropZone
                   aria-label="Attach event evidence"
-                  onDrop={() => set('attachment', 'Evidence attached')}
+                  getDropOperation={types =>
+                    types.has('image/jpeg') || types.has('image/png')
+                      ? 'copy'
+                      : 'cancel'
+                  }
+                  onDrop={async event => {
+                    const image = event.items
+                      .filter(isFileDropItem)
+                      .find(
+                        dropItem =>
+                          dropItem.type === 'image/jpeg' ||
+                          dropItem.type === 'image/png'
+                      );
+                    if (image) {
+                      setDroppedImage(
+                        URL.createObjectURL(await image.getFile())
+                      );
+                    }
+                  }}
                 >
-                  <span aria-hidden="true">⇧</span>
-                  <span>{draft.attachment || 'Drop evidence here'}</span>
+                  {droppedImage ? (
+                    <img alt="" src={droppedImage} />
+                  ) : (
+                    <>
+                      <span aria-hidden="true">⇧</span>
+                      <span>Drop or paste an image here</span>
+                    </>
+                  )}
                 </DropZone>
                 <ComboBox
                   allowsCustomValue
                   inputValue={draft.hazard}
                   onInputChange={value => set('hazard', value)}
+                  isInvalid={showValidation && !draft.hazard.trim()}
                 >
                   <Label className="mg-form-label">Hazard type</Label>
                   <Input
@@ -163,6 +192,7 @@ function EventEditor({ item, onClose, onSave }) {
                       )}
                     </ListBox>
                   </Popover>
+                  <FieldError>A hazard type is required.</FieldError>
                 </ComboBox>
               </div>
               <TextField
@@ -308,13 +338,17 @@ function EventEditor({ item, onClose, onSave }) {
                 <Button
                   className="mg-button mg-button-primary"
                   onPress={() => {
-                    if (draft.hazard.trim())
+                    if (!draft.hazard.trim()) {
+                      setShowValidation(true);
+                    } else {
                       onSave({
                         ...draft,
+                        image: droppedImage,
                         id: item?.id || crypto.randomUUID(),
                         favorite: item?.favorite || false,
                         updated: draft.updated || '26-08-2026',
                       });
+                    }
                   }}
                 >
                   {' '}
@@ -645,7 +679,10 @@ export function CrudExample() {
               •••
             </Column>
           </TableHeader>
-          <TableBody items={pageItems}>
+          <TableBody
+            items={pageItems}
+            renderEmptyState={() => 'No results. Try changing the filters.'}
+          >
             {item => (
               <Row
                 className={

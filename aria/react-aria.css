@@ -180,6 +180,10 @@
   border-color: var(--mg-aria-color-accent);
   color: var(--mg-aria-color-accent);
 }
+.react-aria-DropZone img {
+  border-radius: var(--mg-aria-radius);
+  max-inline-size: var(--mg-aria-width-full);
+}
 .react-aria-Calendar {
   color: var(--mg-aria-color-text);
   font-family: var(--mg-aria-font-family);
