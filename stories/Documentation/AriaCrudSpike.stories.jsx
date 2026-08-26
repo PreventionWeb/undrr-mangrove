@@ -687,12 +687,20 @@ export function CrudExample() {
           }}
         >
           <TableHeader>
-            <Column id="selection" width={48}>
+            <Column
+              id="selection"
+              width={40}
+              minWidth={40}
+              maxWidth={40}
+              className="aria-crud-selection-column"
+            >
               <Checkbox slot="selection" aria-label="Select all" />
             </Column>
             <Column
               id="favorite"
-              width={48}
+              width={40}
+              minWidth={40}
+              maxWidth={40}
               aria-label="Favorite"
               className="aria-crud-favorite-column"
             >
@@ -736,13 +744,13 @@ export function CrudExample() {
                   selected.has(item.id) ? 'aria-spike-row-selected' : undefined
                 }
               >
-                <Cell>
+                <Cell className="aria-crud-selection-cell">
                   <Checkbox
                     slot="selection"
                     aria-label={`Select ${item.hazard}`}
                   />
                 </Cell>
-                <Cell>
+                <Cell className="aria-crud-favorite-cell">
                   <ToggleButton
                     className="mg-button mg-button-primary mg-button-outline aria-crud-favorite-button"
                     aria-label={`Favorite ${item.hazard}`}

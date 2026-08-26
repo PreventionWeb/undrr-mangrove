@@ -126,9 +126,19 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.aria-crud-selection-column,
+.aria-crud-favorite-column,
+.aria-crud-selection-cell,
+.aria-crud-favorite-cell {
+  text-align: center;
+}
+.aria-crud-selection-column,
 .aria-crud-favorite-column {
   padding-inline: 0;
-  text-align: center;
+}
+.aria-crud-selection-cell,
+.aria-crud-favorite-cell {
+  padding: 0;
 }
 .react-aria-Cell {
   border-bottom: var(--mg-aria-border-width) solid var(--mg-aria-color-border);
