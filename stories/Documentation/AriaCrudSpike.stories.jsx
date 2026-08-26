@@ -443,7 +443,7 @@ function FilterTags({ label, items, selectedKeys, onSelectionChange }) {
   );
 }
 
-export function CrudExample() {
+function CrudDemo() {
   const [items, setItems] = useState(initialEvents);
   const [search, setSearch] = useState('');
   const [favoritesOnly, setFavoritesOnly] = useState(false);
@@ -933,5 +933,8 @@ export function CrudExample() {
   );
 }
 
-export default { title: 'Spike/React Aria CRUD', component: CrudExample };
-export const MangroveCrud = {};
+export default { title: 'Spike/React Aria CRUD', component: CrudDemo };
+export const CrudExample = {
+  name: 'CRUD example',
+  render: () => <CrudDemo />,
+};
