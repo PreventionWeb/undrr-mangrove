@@ -17,6 +17,38 @@ unlayered legacy CSS, which outranks ordinary declarations inside a named
 layer. The Aria stylesheet therefore uses normal author CSS and follows
 DELTA's existing reset/global imports.
 
+## Architecture proved by the spike
+
+```mermaid
+flowchart LR
+  subgraph Mangrove
+    Sass["Aria Sass sources<br/>stories/assets/scss/aria"]
+    Themes["Mangrove theme rollups<br/>Storybook + runtime theme tokens"]
+    Build["yarn build:aria"]
+    Sass --> Themes
+    Sass --> Build
+  end
+
+  Build --> AriaCSS["aria/react-aria.css<br/>shared React Aria class/data-state styles"]
+  Build --> MangroveTokens["aria/tokens/mangrove.css"]
+  Build --> DeltaTokens["aria/tokens/delta.css"]
+  Themes --> MangroveDemo["Mangrove Storybook demos"]
+
+  Pack["npm pack<br/>local tarball"] --> DeltaInstall["DELTA local dependency"]
+  AriaCSS --> Pack
+  MangroveTokens --> Pack
+  DeltaTokens --> Pack
+
+  DeltaInstall --> DeltaCSS["DELTA global stylesheet<br/>Tailwind/reset, then Aria CSS"]
+  DeltaCSS --> DeltaDemo["DELTA CRUD scratch route"]
+  NoComponents["Mangrove cards, heroes, grid, navigation CSS<br/>not imported"] -. excluded .-> DeltaCSS
+```
+
+The Sass sources are authoritative. The CSS under `aria/` is generated and is
+the intentionally small, browser-ready public surface a consuming application
+imports. Storybook demonstrates Mangrove's normal theme rollup; it is not the
+mechanism used by DELTA.
+
 ## Questions
 
 1. **Token emission: yes.** Mangrove already emits palette, semantic colour,
