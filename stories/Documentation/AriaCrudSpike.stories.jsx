@@ -727,9 +727,7 @@ export function CrudExample() {
                 )}
               </Column>
             ))}
-            <Column id="actions" width={64} aria-label="Actions">
-              •••
-            </Column>
+            <Column id="actions" width={64} aria-label="Actions" />
           </TableHeader>
           <TableBody
             items={pageItems}
