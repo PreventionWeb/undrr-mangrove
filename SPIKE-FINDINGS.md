@@ -15,7 +15,7 @@ This spike establishes a separate CSS distribution surface for React Aria Compon
 ## Draft PRs
 
 - [Mangrove provider spike #1080](https://github.com/unisdr/undrr-mangrove/pull/1080)
-- [DELTA consumer spike #661](https://github.com/unisdr/DELTA/pull/661)
+- [DELTA consumer spike #686](https://github.com/PreventionWeb/delta/pull/686)
 
 The spike deliberately avoids custom CSS layers. DELTA has significant
 unlayered legacy CSS, which outranks ordinary declarations inside a named
