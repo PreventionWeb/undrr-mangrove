@@ -81,8 +81,8 @@
 @import "../../Utilities/FullWidth/full-width";
 @import "../../Utilities/ShowMore/show-more";
 
-// React Aria is an opt-in stylesheet in the published package, but Storybook
-// assembles it with each theme so the toolbar's runtime theme switching applies
-// to the same custom-property aliases as the rest of Mangrove.
+// React Aria's Sass sources join each Mangrove theme rollup, so Storybook's
+// runtime theme switching uses the normal token cascade. Their compiled CSS is
+// also retained as the opt-in, component-free package surface for consumers.
 @import "../../../aria/tokens/mangrove";
 @import "../../../aria/react-aria";

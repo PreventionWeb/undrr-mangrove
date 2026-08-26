@@ -25,7 +25,6 @@
 :where(.react-aria-Button[data-pressed]) {
   background: var(--mg-aria-color-accent-active);
 }
-
 .react-aria-Button[data-focus-visible],
 .react-aria-Input[data-focus-visible] {
   box-shadow: var(--mg-aria-shadow);
@@ -40,13 +39,11 @@
   display: grid;
   gap: var(--mg-aria-space-1);
 }
-
 .react-aria-Group {
   align-items: center;
   display: flex;
   gap: var(--mg-aria-space-1);
 }
-
 .react-aria-Group > .react-aria-DateInput {
   flex: 1;
   min-width: 0;
@@ -59,11 +56,9 @@
   color: var(--mg-aria-color-text);
   padding: var(--mg-aria-space-2);
 }
-
 .react-aria-DateSegment[data-placeholder] {
   color: var(--mg-aria-color-muted-text);
 }
-
 .react-aria-DateSegment[data-focused] {
   background: var(--mg-aria-color-subtle-surface);
   box-shadow: var(--mg-aria-shadow);
@@ -77,17 +72,15 @@
   font-size: var(--mg-aria-font-size);
   gap: var(--mg-aria-space-2);
 }
-
 .react-aria-Checkbox::before {
   background: var(--mg-aria-color-surface);
   border: var(--mg-aria-border-width) solid var(--mg-aria-color-border);
   border-radius: var(--mg-aria-radius);
   color: var(--mg-aria-color-on-accent);
-  content: "";
+  content: '';
   height: var(--mg-aria-space-3);
   width: var(--mg-aria-space-3);
 }
-
 .react-aria-Checkbox[data-selected]::before {
   background: var(--mg-aria-color-accent);
   border-color: var(--mg-aria-color-accent);
@@ -102,20 +95,17 @@
   table-layout: fixed;
   width: var(--mg-aria-width-full);
 }
-
 .aria-spike-table-scroll {
   border: var(--mg-aria-border-width) solid var(--mg-aria-color-border);
   border-radius: var(--mg-aria-radius);
   overflow: auto;
 }
-
 .react-aria-Column {
   background: var(--mg-aria-color-subtle-surface);
   color: var(--mg-aria-color-text);
   padding: var(--mg-aria-space-2);
   text-align: start;
 }
-
 .react-aria-ColumnResizer {
   background: var(--mg-aria-color-border);
   background-clip: content-box;
@@ -126,42 +116,35 @@
   padding: 0 var(--mg-aria-space-2);
   width: var(--mg-aria-border-width);
 }
-
 .react-aria-ColumnResizer[data-resizing] {
   background: var(--mg-aria-color-accent);
 }
-
 .aria-spike-column-header {
   align-items: center;
   display: flex;
   justify-content: space-between;
   width: var(--mg-aria-width-full);
 }
-
 .aria-spike-column-header > span {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-
 .aria-crud-selection-column,
 .aria-crud-favorite-column,
 .aria-crud-selection-cell,
 .aria-crud-favorite-cell {
   text-align: center;
 }
-
 .aria-crud-selection-column,
 .aria-crud-favorite-column {
   padding-inline: 0;
 }
-
 .aria-crud-selection-cell,
 .aria-crud-favorite-cell {
   padding: 0;
 }
-
 .react-aria-Cell {
   border-bottom: var(--mg-aria-border-width) solid var(--mg-aria-color-border);
   overflow: hidden;
@@ -169,16 +152,13 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-
 .react-aria-Row[data-hovered] .react-aria-Cell {
   background: var(--mg-aria-color-subtle-surface);
 }
-
 .react-aria-Row[data-selected] .react-aria-Cell,
 .aria-spike-row-selected .react-aria-Cell {
   background: var(--mg-aria-color-selected-surface);
 }
-
 .react-aria-Menu {
   background: var(--mg-aria-color-surface);
   color: var(--mg-aria-color-text);
@@ -186,16 +166,13 @@
   margin: 0;
   padding: var(--mg-aria-space-1);
 }
-
 .react-aria-MenuItem {
   border-radius: var(--mg-aria-radius);
   padding: var(--mg-aria-space-2) var(--mg-aria-space-3);
 }
-
 .react-aria-MenuItem[data-focused] {
   background: var(--mg-aria-color-subtle-surface);
 }
-
 .react-aria-ModalOverlay {
   align-items: center;
   background: var(--mg-aria-color-overlay-backdrop);
@@ -205,7 +182,6 @@
   position: fixed;
   z-index: var(--mg-aria-overlay-z-index);
 }
-
 .react-aria-Modal {
   background: var(--mg-aria-color-surface);
   border-radius: var(--mg-aria-radius);
@@ -218,13 +194,11 @@
   padding: var(--mg-aria-space-4);
   width: var(--mg-aria-dialog-width);
 }
-
 .react-aria-Dialog {
   display: grid;
   gap: var(--mg-aria-space-3);
   font-family: var(--mg-aria-font-family);
 }
-
 .react-aria-DropZone {
   align-items: center;
   background: var(--mg-aria-color-subtle-surface);
@@ -238,124 +212,102 @@
   padding: var(--mg-aria-space-3);
   text-align: center;
 }
-
 .react-aria-DropZone[data-drop-target] {
   background: var(--mg-aria-color-subtle-surface);
   border-color: var(--mg-aria-color-accent);
   color: var(--mg-aria-color-accent);
 }
-
 .react-aria-DropZone img {
   border-radius: var(--mg-aria-radius);
   max-inline-size: var(--mg-aria-width-full);
 }
-
 .react-aria-Calendar {
   color: var(--mg-aria-color-text);
   font-family: var(--mg-aria-font-family);
 }
-
 .aria-calendar-header {
   align-items: center;
   display: flex;
   justify-content: space-between;
   margin-block-end: var(--mg-aria-space-2);
 }
-
 .react-aria-CalendarGrid {
   border-collapse: collapse;
 }
-
 .react-aria-CalendarHeaderCell,
 .react-aria-CalendarCell {
   padding: var(--mg-aria-space-1);
   text-align: center;
 }
-
 .react-aria-CalendarCell[data-selected] {
   background: var(--mg-aria-color-accent);
   color: var(--mg-aria-color-on-accent);
 }
-
 .react-aria-CalendarCell[data-focused] {
   box-shadow: var(--mg-aria-shadow);
 }
-
 .aria-crud-demo {
   display: grid;
   font-family: var(--mg-aria-font-family);
   gap: var(--mg-aria-space-4);
   max-width: var(--mg-aria-width-full);
 }
-
 .aria-integration-demo > .react-aria-Button {
   justify-self: start;
 }
-
 .aria-crud-actions {
   align-items: end;
   display: flex;
   flex-wrap: wrap;
   gap: var(--mg-aria-space-2);
 }
-
 .aria-crud-editor__identity,
 .aria-crud-editor__fields {
   width: var(--mg-aria-width-full);
 }
-
-.aria-crud-editor > [slot=title],
+.aria-crud-editor > [slot='title'],
 .aria-crud-editor__identity,
 .aria-crud-editor__fields,
 .aria-crud-editor > .aria-crud-actions {
-  grid-column: 1/-1;
+  grid-column: 1 / -1;
 }
-
 .aria-crud-editor {
   display: grid;
   gap: var(--mg-aria-space-3);
   grid-template-columns: minmax(0, 1fr);
 }
-
 .aria-crud-editor__fields {
   display: grid;
   gap: var(--mg-aria-space-3);
 }
-
 .aria-crud-editor > .aria-crud-actions {
   justify-content: flex-end;
 }
-
 .aria-crud-event-identity {
   align-items: center;
   display: flex;
   gap: var(--mg-aria-space-2);
 }
-
 .aria-crud-event-identity img {
   background: var(--mg-aria-color-subtle-surface);
   block-size: calc(var(--mg-aria-space-4) * 2);
   inline-size: calc(var(--mg-aria-space-4) * 2);
   object-fit: contain;
 }
-
 .aria-crud-event-identity > span {
   display: grid;
   min-width: 0;
 }
-
 .aria-crud-event-identity strong,
 .aria-crud-event-identity small {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-
 .aria-crud-event-identity small {
   color: var(--mg-aria-color-muted-text);
   font-size: var(--mg-aria-font-size-small);
 }
-
 .aria-crud-favorite-button {
   align-items: center;
   display: inline-flex;
@@ -365,11 +317,9 @@
   min-inline-size: calc(var(--mg-aria-space-4) * 2);
   padding: 0;
 }
-
 .react-aria-Label {
   color: var(--mg-aria-color-text);
 }
-
 :where(.react-aria-Input) {
   background: var(--mg-aria-color-surface);
   border: var(--mg-aria-border-width) solid var(--mg-aria-color-border);
@@ -377,17 +327,14 @@
   color: var(--mg-aria-color-text);
   padding: var(--mg-aria-space-2);
 }
-
 :where(.react-aria-Input[data-invalid]),
 :where(.react-aria-TextField[data-invalid] .react-aria-Input) {
   border-color: var(--mg-aria-color-invalid);
 }
-
-.react-aria-Text[data-slot=description] {
+.react-aria-Text[data-slot='description'] {
   color: var(--mg-aria-color-muted-text);
   font-size: var(--mg-aria-font-size-small);
 }
-
 .react-aria-Tooltip {
   background: var(--mg-aria-color-text);
   border-radius: var(--mg-aria-radius);
@@ -396,8 +343,7 @@
   font-size: var(--mg-aria-font-size-small);
   padding: var(--mg-aria-space-1) var(--mg-aria-space-2);
 }
-
-.react-aria-Text[data-slot=errorMessage],
+.react-aria-Text[data-slot='errorMessage'],
 .react-aria-FieldError {
   color: var(--mg-aria-color-invalid);
   font-size: var(--mg-aria-font-size-small);
@@ -411,34 +357,29 @@
   padding: var(--mg-aria-space-1);
   z-index: var(--mg-aria-overlay-z-index);
 }
-
 .react-aria-ListBox {
   background: var(--mg-aria-color-surface);
   color: var(--mg-aria-color-text);
 }
-
 .react-aria-ListBoxItem {
   border-radius: var(--mg-aria-radius);
   padding: var(--mg-aria-space-2);
 }
-
 .react-aria-ListBoxItem[data-focused],
 .react-aria-ListBoxItem[data-selected] {
   background: var(--mg-aria-color-subtle-surface);
 }
-
 .react-aria-GridList {
   border: var(--mg-aria-border-width) solid var(--mg-aria-color-border);
   border-radius: var(--mg-aria-radius);
   color: var(--mg-aria-color-text);
   font-family: var(--mg-aria-font-family);
 }
-
 .react-aria-GridListItem {
-  border-block-end: var(--mg-aria-border-width) solid var(--mg-aria-color-border);
+  border-block-end: var(--mg-aria-border-width) solid
+    var(--mg-aria-color-border);
   padding: var(--mg-aria-space-2);
 }
-
 .react-aria-GridListItem[data-focused] {
   box-shadow: var(--mg-aria-shadow);
 }
