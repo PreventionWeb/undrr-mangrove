@@ -1,5 +1,7 @@
 /*
  * Sass source for Mangrove's React Aria token adapter.
+ * The public aria/tokens/mangrove.css artifact is generated from this file by
+ * `yarn build:aria`; do not edit that generated CSS directly.
  * It maps Mangrove runtime custom properties to the small, stable --mg-aria-*
  * contract without importing Mangrove component CSS.
  */
