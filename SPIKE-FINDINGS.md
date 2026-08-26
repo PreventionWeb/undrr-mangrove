@@ -9,8 +9,9 @@ This spike establishes a separate CSS distribution surface for React Aria Compon
 - `@undrr/undrr-mangrove/aria.css`
 
 The spike deliberately avoids custom CSS layers. DELTA has significant
-unlayered legacy CSS, which would outrank ordinary declarations inside a named
-layer. Token and Aria imports are first in DELTA's global stylesheet.
+unlayered legacy CSS, which outranks ordinary declarations inside a named
+layer. The Aria stylesheet therefore uses normal author CSS and follows
+DELTA's existing reset/global imports.
 
 ## Questions
 
@@ -42,6 +43,28 @@ layer. Token and Aria imports are first in DELTA's global stylesheet.
    the trigger changed to DELTA navy (`rgb(19, 46, 72)`) while the portal
    remained correctly themed.
 
+## Expanded component evidence
+
+The initial three-component scope was deliberately extended to probe the
+table-heavy DELTA use case. The demos now also exercise:
+
+- `Checkbox` for row selection and filter controls;
+- `DateField`, `DateInput`, and `DateSegment` for segmented date entry;
+- `Table`, sortable `Column`s, `ColumnResizer`, `TableBody`, `Row`, and
+  `Cell`, including locally managed pagination;
+- portalled `Menu`/`MenuItem` action menus, and the `Dialog`/`Modal` primitives
+  for the in-progress add-event flow.
+
+Two implementation details were useful findings rather than styling failures:
+
+- Resizable columns require an explicit `ColumnResizer` in each column header.
+  It must be positioned as a full-width header child, otherwise the handle
+  appears beside the label rather than at the column boundary.
+- A `Checkbox` rendered in a React Aria table's selection context must use
+  `slot="selection"`; without it, React Aria rejects the render with a clear
+  runtime error. This is a named-part composition requirement, not a Mangrove
+  CSS limitation.
+
 ## Evidence
 
 - `yarn build` succeeds in DELTA with the tarball installed and creates an
@@ -50,8 +73,9 @@ layer. Token and Aria imports are first in DELTA's global stylesheet.
   Aria selectors; the imports do not traverse Mangrove's root entry, which is
   the only entry that imports Mangrove's full component stylesheet.
 - `npm pack` contains `aria/react-aria.css` and both token files.
-- `aria-mangrove-overlay.png` and `aria-delta-overlay.png` capture the open
-  Select overlay before and after the token-only theme swap.
+- Browser checks confirmed the Select overlay, sortable columns, pagination,
+  and token-styled controls in the DELTA and Storybook demos. Screenshots were
+  intentionally removed from the package/PR rather than shipped as artifacts.
 
 ## Limitations and follow-up
 
@@ -64,15 +88,17 @@ Storybook variant completed; DELTA's own scratch route was built successfully,
 but its full data-backed application server did not remain available in this
 environment for a second browser pass.
 
-The implementation is intentionally only Button, TextField, and Select. It is
-not a public wrapper API and does not claim a full component-system contract.
+The expanded table is still a static, in-memory spike. It does not yet claim a
+complete CRUD implementation: edit, delete confirmation, column chooser,
+filter popover, and persistence remain implementation work. It is not a public
+wrapper API and does not claim a full component-system contract.
 
 ## Effort estimate
 
-- Production-ready foundation: 5–8 engineer days (token contract, package
-  allow-list/build output, visual regression coverage, browser/a11y checks,
-  and integration documentation).
-- Full React Aria component set: 8–14 engineer weeks, depending on the number
+- Production-ready foundation: 8–12 engineer days (token contract, package
+  allow-list/prebuilt output, cascade contract, visual regression coverage,
+  browser/a11y checks, and integration documentation).
+- Full React Aria component set: 10–16 engineer weeks, depending on the number
   of component variants and required responsive/RTL states.
 
 ## Recommendation
