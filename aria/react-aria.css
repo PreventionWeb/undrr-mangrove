@@ -303,6 +303,7 @@
 .aria-crud-favorite-button {
   align-items: center;
   display: inline-flex;
+  font-size: var(--mg-aria-space-4);
   justify-content: center;
   min-block-size: calc(var(--mg-aria-space-4) * 2);
   min-inline-size: calc(var(--mg-aria-space-4) * 2);
