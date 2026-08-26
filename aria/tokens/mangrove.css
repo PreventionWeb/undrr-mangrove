@@ -26,4 +26,7 @@
   --mg-aria-overlay-z-index: 5000;
   --mg-aria-color-overlay-backdrop: rgb(24 24 35 / 0.2);
   --mg-aria-width-full: 100%;
+  --mg-aria-dialog-width: 42rem;
+  --mg-aria-dialog-available-width: calc(100% - var(--mg-aria-space-4) * 2);
+  --mg-aria-dialog-available-height: calc(100% - var(--mg-aria-space-4) * 2);
 }

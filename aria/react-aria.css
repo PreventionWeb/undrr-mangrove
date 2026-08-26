@@ -9,7 +9,7 @@
   line-height: var(--mg-aria-line-height);
 }
 
-.react-aria-Button {
+:where(.react-aria-Button) {
   background: var(--mg-aria-color-accent);
   border: var(--mg-aria-border-width) solid var(--mg-aria-color-accent);
   border-radius: var(--mg-aria-radius);
@@ -17,7 +17,7 @@
   padding: var(--mg-aria-space-2) var(--mg-aria-space-3);
 }
 
-.react-aria-Button[data-pressed] {
+:where(.react-aria-Button[data-pressed]) {
   background: var(--mg-aria-color-accent-active);
 }
 .react-aria-Button[data-focus-visible],
@@ -27,8 +27,15 @@
 
 .react-aria-TextField,
 .react-aria-Select,
-.react-aria-DateField {
+.react-aria-DateField,
+.react-aria-DatePicker,
+.react-aria-ComboBox {
   display: grid;
+  gap: var(--mg-aria-space-1);
+}
+.react-aria-Group {
+  align-items: center;
+  display: flex;
   gap: var(--mg-aria-space-1);
 }
 
@@ -74,6 +81,8 @@
   color: var(--mg-aria-color-text);
   font-family: var(--mg-aria-font-family);
   font-size: var(--mg-aria-font-size);
+  min-width: var(--mg-aria-width-full);
+  width: var(--mg-aria-width-full);
 }
 .aria-spike-table-scroll {
   border: var(--mg-aria-border-width) solid var(--mg-aria-color-border);
@@ -143,25 +152,83 @@
   border-radius: var(--mg-aria-radius);
   box-shadow: var(--mg-aria-overlay-shadow);
   color: var(--mg-aria-color-text);
+  max-height: var(--mg-aria-dialog-available-height);
+  max-width: var(--mg-aria-dialog-available-width);
+  overflow: auto;
   padding: var(--mg-aria-space-4);
+  width: var(--mg-aria-dialog-width);
 }
 .react-aria-Dialog {
   display: grid;
   gap: var(--mg-aria-space-3);
   font-family: var(--mg-aria-font-family);
 }
+.react-aria-DropZone {
+  align-items: center;
+  background: var(--mg-aria-color-subtle-surface);
+  border: var(--mg-aria-border-width) solid var(--mg-aria-color-border);
+  border-radius: var(--mg-aria-radius);
+  color: var(--mg-aria-color-muted-text);
+  display: grid;
+  gap: var(--mg-aria-space-1);
+  justify-items: center;
+  padding: var(--mg-aria-space-3);
+  text-align: center;
+}
+.react-aria-DropZone[data-drop-target] {
+  background: var(--mg-aria-color-subtle-surface);
+  border-color: var(--mg-aria-color-accent);
+  color: var(--mg-aria-color-accent);
+}
+.react-aria-Calendar {
+  color: var(--mg-aria-color-text);
+  font-family: var(--mg-aria-font-family);
+}
+.aria-calendar-header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-block-end: var(--mg-aria-space-2);
+}
+.react-aria-CalendarGrid {
+  border-collapse: collapse;
+}
+.react-aria-CalendarHeaderCell,
+.react-aria-CalendarCell {
+  padding: var(--mg-aria-space-1);
+  text-align: center;
+}
+.react-aria-CalendarCell[data-selected] {
+  background: var(--mg-aria-color-accent);
+  color: var(--mg-aria-color-on-accent);
+}
+.react-aria-CalendarCell[data-focused] {
+  box-shadow: var(--mg-aria-shadow);
+}
+.aria-crud-demo {
+  display: grid;
+  font-family: var(--mg-aria-font-family);
+  gap: var(--mg-aria-space-4);
+  max-width: var(--mg-aria-width-full);
+}
+.aria-crud-actions {
+  align-items: end;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mg-aria-space-2);
+}
 .react-aria-Label {
   color: var(--mg-aria-color-text);
 }
-.react-aria-Input {
+:where(.react-aria-Input) {
   background: var(--mg-aria-color-surface);
   border: var(--mg-aria-border-width) solid var(--mg-aria-color-border);
   border-radius: var(--mg-aria-radius);
   color: var(--mg-aria-color-text);
   padding: var(--mg-aria-space-2);
 }
-.react-aria-Input[data-invalid],
-.react-aria-TextField[data-invalid] .react-aria-Input {
+:where(.react-aria-Input[data-invalid]),
+:where(.react-aria-TextField[data-invalid] .react-aria-Input) {
   border-color: var(--mg-aria-color-invalid);
 }
 .react-aria-Text[data-slot='description'] {
@@ -193,4 +260,18 @@
 .react-aria-ListBoxItem[data-focused],
 .react-aria-ListBoxItem[data-selected] {
   background: var(--mg-aria-color-subtle-surface);
+}
+.react-aria-GridList {
+  border: var(--mg-aria-border-width) solid var(--mg-aria-color-border);
+  border-radius: var(--mg-aria-radius);
+  color: var(--mg-aria-color-text);
+  font-family: var(--mg-aria-font-family);
+}
+.react-aria-GridListItem {
+  border-block-end: var(--mg-aria-border-width) solid
+    var(--mg-aria-color-border);
+  padding: var(--mg-aria-space-2);
+}
+.react-aria-GridListItem[data-focused] {
+  box-shadow: var(--mg-aria-shadow);
 }
