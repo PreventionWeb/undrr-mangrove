@@ -692,7 +692,7 @@ export function CrudExample() {
               width={40}
               minWidth={40}
               maxWidth={40}
-              className="aria-crud-selection-column"
+              className="react-aria-Column aria-crud-selection-column"
             >
               <Checkbox slot="selection" aria-label="Select all" />
             </Column>
@@ -702,10 +702,8 @@ export function CrudExample() {
               minWidth={40}
               maxWidth={40}
               aria-label="Favorite"
-              className="aria-crud-favorite-column"
-            >
-              ★
-            </Column>
+              className="react-aria-Column aria-crud-favorite-column"
+            />
             {columns.map(column => (
               <Column
                 key={column.id}
@@ -744,13 +742,13 @@ export function CrudExample() {
                   selected.has(item.id) ? 'aria-spike-row-selected' : undefined
                 }
               >
-                <Cell className="aria-crud-selection-cell">
+                <Cell className="react-aria-Cell aria-crud-selection-cell">
                   <Checkbox
                     slot="selection"
                     aria-label={`Select ${item.hazard}`}
                   />
                 </Cell>
-                <Cell className="aria-crud-favorite-cell">
+                <Cell className="react-aria-Cell aria-crud-favorite-cell">
                   <ToggleButton
                     className="mg-button mg-button-primary mg-button-outline aria-crud-favorite-button"
                     aria-label={`Favorite ${item.hazard}`}
