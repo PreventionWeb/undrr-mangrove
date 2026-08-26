@@ -248,6 +248,24 @@
 .aria-crud-editor > .aria-crud-actions {
   justify-content: flex-end;
 }
+.aria-crud-event-identity {
+  align-items: center;
+  display: flex;
+  gap: var(--mg-aria-space-2);
+}
+.aria-crud-event-identity img {
+  background: var(--mg-aria-color-subtle-surface);
+  block-size: calc(var(--mg-aria-space-4) * 2);
+  inline-size: calc(var(--mg-aria-space-4) * 2);
+  object-fit: contain;
+}
+.aria-crud-event-identity > span {
+  display: grid;
+}
+.aria-crud-event-identity small {
+  color: var(--mg-aria-color-muted-text);
+  font-size: var(--mg-aria-font-size-small);
+}
 .react-aria-Label {
   color: var(--mg-aria-color-text);
 }

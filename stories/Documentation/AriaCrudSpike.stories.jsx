@@ -62,6 +62,8 @@ const initialEvents = [
     sunlight: 'High',
     watering: 'Average',
     favorite: false,
+    image: 'icons/ocha/cyclone.svg',
+    note: 'HIPS-001',
     updated: '02-05-2026',
   },
   {
@@ -72,6 +74,8 @@ const initialEvents = [
     sunlight: 'Low',
     watering: 'Minimum',
     favorite: false,
+    image: 'icons/ocha/epidemic.svg',
+    note: 'HIPS-002',
     updated: '02-05-2026',
   },
   {
@@ -82,6 +86,8 @@ const initialEvents = [
     sunlight: 'High',
     watering: 'Minimum',
     favorite: false,
+    image: 'icons/ocha/drought.svg',
+    note: 'HIPS-003',
     updated: '02-05-2026',
   },
   {
@@ -92,6 +98,8 @@ const initialEvents = [
     sunlight: 'High',
     watering: 'Average',
     favorite: false,
+    image: 'icons/ocha/heatwave.svg',
+    note: 'HIPS-004',
     updated: '02-05-2026',
   },
   {
@@ -102,6 +110,8 @@ const initialEvents = [
     sunlight: 'Medium',
     watering: 'Frequent',
     favorite: false,
+    image: 'icons/ocha/flood.svg',
+    note: 'HIPS-005',
     updated: '01-05-2026',
   },
 ];
@@ -176,16 +186,18 @@ function EventEditor({ item, onClose, onSave }) {
                   isInvalid={showValidation && !draft.hazard.trim()}
                 >
                   <Label className="mg-form-label">Hazard type</Label>
-                  <Input
-                    className="mg-form-input"
-                    placeholder="Enter hazard type"
-                  />
-                  <Button
-                    className="mg-button mg-button-primary mg-button-outline"
-                    aria-label="Show suggested hazards"
-                  >
-                    ▾
-                  </Button>
+                  <Group>
+                    <Input
+                      className="mg-form-input"
+                      placeholder="Enter hazard type"
+                    />
+                    <Button
+                      className="mg-button mg-button-primary mg-button-outline"
+                      aria-label="Show suggested hazards"
+                    >
+                      ▾
+                    </Button>
+                  </Group>
                   <Popover>
                     <ListBox items={initialEvents}>
                       {event => (
@@ -731,7 +743,19 @@ export function CrudExample() {
                   </ToggleButton>
                 </Cell>
                 {columns.map(column => (
-                  <Cell key={column.id}>{item[column.id]}</Cell>
+                  <Cell key={column.id}>
+                    {column.id === 'hazard' ? (
+                      <div className="aria-crud-event-identity">
+                        {item.image && <img alt="" src={item.image} />}
+                        <span>
+                          <strong>{item.hazard}</strong>
+                          {item.note && <small>{item.note}</small>}
+                        </span>
+                      </div>
+                    ) : (
+                      item[column.id]
+                    )}
+                  </Cell>
                 ))}
                 <Cell>
                   <MenuTrigger>
@@ -805,8 +829,14 @@ export function CrudExample() {
                 >
                   {item.favorite ? '★' : '☆'}
                 </ToggleButton>
-                <strong>{item.hazard}</strong>
-                <div>{item.status}</div>
+                <div className="aria-crud-event-identity">
+                  {item.image && <img alt="" src={item.image} />}
+                  <span>
+                    <strong>{item.hazard}</strong>
+                    {item.note && <small>{item.note}</small>}
+                    <small>{item.status}</small>
+                  </span>
+                </div>
               </div>
               <div>
                 <span className="mg-tag mg-tag--outline">{item.cycle}</span>
