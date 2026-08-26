@@ -239,6 +239,8 @@
   grid-column: 1 / -1;
 }
 .aria-crud-editor {
+  display: grid;
+  gap: var(--mg-aria-space-3);
   grid-template-columns: minmax(0, 1fr);
 }
 .aria-crud-editor__fields {

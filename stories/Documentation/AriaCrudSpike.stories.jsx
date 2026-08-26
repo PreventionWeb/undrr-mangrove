@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Button,
   Calendar,
@@ -19,6 +19,7 @@ import {
   DialogTrigger,
   DropZone,
   FieldError,
+  Form,
   Group,
   GridList,
   GridListItem,
@@ -138,12 +139,26 @@ function EventEditor({ item, onClose, onSave }) {
   const [droppedImage, setDroppedImage] = useState(item?.image);
   const set = (key, value) =>
     setDraft(current => ({ ...current, [key]: value }));
+  const submit = event => {
+    event.preventDefault();
+    if (!draft.hazard.trim() || !draft.note?.trim()) {
+      setShowValidation(true);
+      return;
+    }
+    onSave({
+      ...draft,
+      image: droppedImage,
+      id: item?.id || crypto.randomUUID(),
+      favorite: item?.favorite || false,
+      updated: draft.updated || '26-08-2026',
+    });
+  };
   return (
     <ModalOverlay isOpen onOpenChange={open => !open && onClose()}>
       <Modal>
         <Dialog className="aria-crud-editor">
           {() => (
-            <>
+            <Form noValidate onSubmit={submit} className="aria-crud-editor">
               <Heading slot="title" className="aria-crud-editor__title">
                 {item ? 'Edit hazardous event' : 'Add hazardous event'}
               </Heading>
@@ -181,6 +196,7 @@ function EventEditor({ item, onClose, onSave }) {
                 </DropZone>
                 <ComboBox
                   allowsCustomValue
+                  isRequired
                   inputValue={draft.hazard}
                   onInputChange={value => set('hazard', value)}
                   onSelectionChange={key => set('hazard', String(key))}
@@ -352,30 +368,16 @@ function EventEditor({ item, onClose, onSave }) {
                 <Button
                   className="mg-button mg-button-primary mg-button-outline"
                   onPress={onClose}
+                  type="button"
                 >
                   Cancel
                 </Button>
-                <Button
-                  className="mg-button mg-button-primary"
-                  onPress={() => {
-                    if (!draft.hazard.trim() || !draft.note?.trim()) {
-                      setShowValidation(true);
-                    } else {
-                      onSave({
-                        ...draft,
-                        image: droppedImage,
-                        id: item?.id || crypto.randomUUID(),
-                        favorite: item?.favorite || false,
-                        updated: draft.updated || '26-08-2026',
-                      });
-                    }
-                  }}
-                >
+                <Button className="mg-button mg-button-primary" type="submit">
                   {' '}
                   {item ? 'Save' : 'Add'}{' '}
                 </Button>
               </div>
-            </>
+            </Form>
           )}
         </Dialog>
       </Modal>
@@ -491,6 +493,11 @@ export function CrudExample() {
   );
   const pageSize = 3,
     pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));
+  useEffect(() => {
+    if (page > pageCount) {
+      setPage(pageCount);
+    }
+  }, [page, pageCount]);
   const pageItems = filtered.slice((page - 1) * pageSize, page * pageSize);
   const save = item => {
     setItems(current => {
@@ -503,6 +510,11 @@ export function CrudExample() {
   };
   const deleteItem = id => {
     setItems(current => current.filter(item => item.id !== id));
+    setSelected(current => {
+      const next = new Set(current);
+      next.delete(id);
+      return next;
+    });
     setDeleting(null);
   };
   const toggleFavorite = id =>
@@ -710,6 +722,7 @@ export function CrudExample() {
           </TableHeader>
           <TableBody
             items={pageItems}
+            dependencies={[visibleColumns]}
             renderEmptyState={() => 'No results. Try changing the filters.'}
           >
             {item => (

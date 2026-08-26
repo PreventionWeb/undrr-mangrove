@@ -76,6 +76,11 @@ Two implementation details were useful findings rather than styling failures:
   `slot="selection"`; without it, React Aria rejects the render with a clear
   runtime error. This is a named-part composition requirement, not a Mangrove
   CSS limitation.
+- A dynamic table body whose cells follow a user-controlled column set must
+  receive that set as a stable `TableBody` `dependencies` value. Without it,
+  React Aria can retain the old row-cell collection after a column is hidden,
+  producing a cell-count error. Passing the `Set` itself keeps the dependency
+  array's length stable while correctly invalidating the row cache.
 
 ## Evidence
 
