@@ -12,6 +12,11 @@ This spike establishes a separate CSS distribution surface for React Aria Compon
 - `@undrr/undrr-mangrove/tokens/delta.css`
 - `@undrr/undrr-mangrove/aria.css`
 
+## Draft PRs
+
+- [Mangrove provider spike #1080](https://github.com/unisdr/undrr-mangrove/pull/1080)
+- [DELTA consumer spike #661](https://github.com/unisdr/DELTA/pull/661)
+
 The spike deliberately avoids custom CSS layers. DELTA has significant
 unlayered legacy CSS, which outranks ordinary declarations inside a named
 layer. The Aria stylesheet therefore uses normal author CSS and follows
