@@ -13,6 +13,9 @@ import {
   Label,
   ListBox,
   ListBoxItem,
+  Menu,
+  MenuItem,
+  MenuTrigger,
   Popover,
   Row,
   ResizableTableContainer,
@@ -37,16 +40,28 @@ const events = [
 ];
 
 export function AriaSpikeExample() {
+  const [allEvents, setAllEvents] = useState(events);
+  const [search, setSearch] = useState('');
   const [title, setTitle] = useState('');
   const [page, setPage] = useState(1);
+  const [selectedEvents, setSelectedEvents] = useState(new Set());
   const [sortDescriptor, setSortDescriptor] = useState({column: 'hazard', direction: 'ascending'});
   const isTitleInvalid = title.trim().length === 0;
-  const sortedEvents = [...events].sort((a, b) => {
+  const sortedEvents = allEvents
+    .filter(event => event.hazard.toLowerCase().includes(search.toLowerCase()))
+    .sort((a, b) => {
     const direction = sortDescriptor.direction === 'ascending' ? 1 : -1;
     return a[sortDescriptor.column].localeCompare(b[sortDescriptor.column]) * direction;
-  });
+    });
   const pageEvents = sortedEvents.slice((page - 1) * 3, page * 3);
   const pageCount = Math.ceil(sortedEvents.length / 3);
+  const toggleSelected = (id, isSelected) => {
+    setSelectedEvents(current => {
+      const next = new Set(current);
+      isSelected ? next.add(id) : next.delete(id);
+      return next;
+    });
+  };
 
   return (
     <div
@@ -80,9 +95,9 @@ export function AriaSpikeExample() {
           </ListBox>
         </Popover>
       </Select>
-      <TextField>
-        <Label>Specific hazard</Label>
-        <Input placeholder="Enter hazard name or HIPS ID …" />
+      <TextField value={search} onChange={setSearch}>
+        <Label>Search hazardous events</Label>
+        <Input placeholder="Search by hazard name" />
       </TextField>
       <DateField>
         <Label>From</Label>
@@ -95,14 +110,18 @@ export function AriaSpikeExample() {
       <ResizableTableContainer className="aria-spike-table-scroll">
       <Table aria-label="Hazardous events" sortDescriptor={sortDescriptor} onSortChange={descriptor => { setSortDescriptor(descriptor); setPage(1); }}>
         <TableHeader>
+          <Column id="selection" width={48} aria-label="Select rows"><Checkbox aria-label="Select all visible events" isSelected={pageEvents.every(event => selectedEvents.has(event.id))} onChange={isSelected => pageEvents.forEach(event => toggleSelected(event.id, isSelected))} /></Column>
           <Column id="hazard" isRowHeader allowsSorting defaultWidth={224}>{({sortDirection}) => <div className="aria-spike-column-header"><span>Hazard type {sortDirection ? (sortDirection === 'ascending' ? '↑' : '↓') : ''}</span><ColumnResizer /></div>}</Column>
           <Column id="status" allowsSorting defaultWidth={192}>{({sortDirection}) => <div className="aria-spike-column-header"><span>Status {sortDirection ? (sortDirection === 'ascending' ? '↑' : '↓') : ''}</span><ColumnResizer /></div>}</Column>
           <Column id="updated" allowsSorting defaultWidth={160}>{({sortDirection}) => <div className="aria-spike-column-header"><span>Updated {sortDirection ? (sortDirection === 'ascending' ? '↑' : '↓') : ''}</span><ColumnResizer /></div>}</Column>
+          <Column id="actions" width={64}>Actions</Column>
         </TableHeader>
         <TableBody items={pageEvents}>
           {item => (
-            <Row>
+            <Row className={selectedEvents.has(item.id) ? 'aria-spike-row-selected' : undefined}>
+              <Cell><Checkbox aria-label={`Select ${item.hazard}`} isSelected={selectedEvents.has(item.id)} onChange={isSelected => toggleSelected(item.id, isSelected)} /></Cell>
               <Cell>{item.hazard}</Cell><Cell>{item.status}</Cell><Cell>{item.updated}</Cell>
+              <Cell><MenuTrigger><Button aria-label={`Actions for ${item.hazard}`}>•••</Button><Popover><Menu aria-label={`Actions for ${item.hazard}`} onAction={key => { if (key === 'delete') setAllEvents(current => current.filter(event => event.id !== item.id)); }}><MenuItem id="view">View</MenuItem><MenuItem id="edit">Edit…</MenuItem><MenuItem id="delete">Delete…</MenuItem></Menu></Popover></MenuTrigger></Cell>
             </Row>
           )}
         </TableBody>
