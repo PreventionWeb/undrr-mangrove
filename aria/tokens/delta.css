@@ -34,6 +34,7 @@
   --mg-aria-color-muted-text: rgb(var(--mg-color-neutral-600));
   --mg-aria-color-surface: rgb(var(--mg-color-white));
   --mg-aria-color-subtle-surface: var(--mg-card-background);
+  --mg-aria-color-selected-surface: rgb(var(--mg-color-interactive) / 0.12);
   --mg-aria-color-border: rgb(var(--mg-color-neutral-200));
   --mg-aria-color-invalid: rgb(var(--mg-color-red-900));
   --mg-aria-font-family: 'Dubai', sans-serif;

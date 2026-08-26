@@ -150,8 +150,9 @@
 .react-aria-Row[data-hovered] .react-aria-Cell {
   background: var(--mg-aria-color-subtle-surface);
 }
+.react-aria-Row[data-selected] .react-aria-Cell,
 .aria-spike-row-selected .react-aria-Cell {
-  background: var(--mg-aria-color-subtle-surface);
+  background: var(--mg-aria-color-selected-surface);
 }
 .react-aria-Menu {
   background: var(--mg-aria-color-surface);
