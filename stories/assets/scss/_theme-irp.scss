@@ -2,7 +2,6 @@
 // Applied when .mg-theme-irp is present on <body> or a wrapping element.
 $_irp-color-primary--raw: 15 120 191;
 $_irp-color-green--raw: 140 198 63;
-$_sendai-orange-900--raw: 235 117 42;
 
 .mg-theme-irp {
   --mg-color-interactive:          #{$_irp-color-primary--raw};
@@ -11,9 +10,9 @@ $_sendai-orange-900--raw: 235 117 42;
   --mg-color-tag--hover:           var(--mg-color-interactive-active);
   --mg-radius-tag:                 var(--mg-spacing-50);
   --mg-color-button-background:    #{$_irp-color-primary--raw};
-  --mg-color-button-background--hover: #{$_sendai-orange-900--raw};
+  --mg-color-button-background--hover: var(--mg-color-orange-900);
   --mg-color-button-outline-primary: #{$_irp-color-primary--raw};
-  --mg-color-button-outline-primary--hover: #{$_sendai-orange-900--raw};
+  --mg-color-button-outline-primary--hover: var(--mg-color-orange-900);
   --mg-color-button-outline-secondary: var(--mg-color-button-secondary-background);
   --mg-color-button-outline-secondary--hover: var(--mg-color-button-secondary-background--hover);
   --mg-radius-button:              var(--mg-spacing-50);

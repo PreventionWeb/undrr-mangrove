@@ -1,7 +1,6 @@
 // PreventionWeb theme — runtime CSS custom property overrides.
 // Applied when .mg-theme-preventionweb is present on <body> or a wrapping element.
 $_pw-color-primary--raw: 10 105 105;
-$_sendai-orange-900--raw: 235 117 42;
 
 .mg-theme-preventionweb {
   --mg-color-interactive:          #{$_pw-color-primary--raw};
@@ -9,9 +8,9 @@ $_sendai-orange-900--raw: 235 117 42;
   --mg-color-tag:                  var(--mg-color-interactive);
   --mg-color-tag--hover:           var(--mg-color-interactive-active);
   --mg-color-button-background:    #{$_pw-color-primary--raw};
-  --mg-color-button-background--hover: #{$_sendai-orange-900--raw};
+  --mg-color-button-background--hover: var(--mg-color-orange-900);
   --mg-color-button-outline-primary: #{$_pw-color-primary--raw};
-  --mg-color-button-outline-primary--hover: #{$_sendai-orange-900--raw};
+  --mg-color-button-outline-primary--hover: var(--mg-color-orange-900);
   --mg-color-button-outline-secondary: var(--mg-color-button-secondary-background);
   --mg-color-button-outline-secondary--hover: var(--mg-color-button-secondary-background--hover);
   --mg-radius-button:              var(--mg-spacing-50);
