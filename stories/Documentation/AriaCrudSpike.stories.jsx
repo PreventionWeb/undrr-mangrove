@@ -183,6 +183,7 @@ function EventEditor({ item, onClose, onSave }) {
                   allowsCustomValue
                   inputValue={draft.hazard}
                   onInputChange={value => set('hazard', value)}
+                  onSelectionChange={key => set('hazard', String(key))}
                   isInvalid={showValidation && !draft.hazard.trim()}
                 >
                   <Label className="mg-form-label">Hazard type</Label>
@@ -216,12 +217,14 @@ function EventEditor({ item, onClose, onSave }) {
                   isRequired
                   value={draft.note || ''}
                   onChange={value => set('note', value)}
+                  isInvalid={showValidation && !draft.note?.trim()}
                 >
                   <Label className="mg-form-label">Event reference</Label>
                   <Input
                     className="mg-form-input"
                     placeholder="Enter reference"
                   />
+                  <FieldError>An event reference is required.</FieldError>
                 </TextField>
                 <Select
                   className="mg-form-field"
@@ -355,7 +358,7 @@ function EventEditor({ item, onClose, onSave }) {
                 <Button
                   className="mg-button mg-button-primary"
                   onPress={() => {
-                    if (!draft.hazard.trim()) {
+                    if (!draft.hazard.trim() || !draft.note?.trim()) {
                       setShowValidation(true);
                     } else {
                       onSave({
@@ -489,12 +492,6 @@ export function CrudExample() {
   const pageSize = 3,
     pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));
   const pageItems = filtered.slice((page - 1) * pageSize, page * pageSize);
-  const toggleSelection = (id, isSelected) =>
-    setSelected(current => {
-      const next = new Set(current);
-      isSelected ? next.add(id) : next.delete(id);
-      return next;
-    });
   const save = item => {
     setItems(current => {
       const index = current.findIndex(entry => entry.id === item.id);
@@ -664,6 +661,13 @@ export function CrudExample() {
       <ResizableTableContainer className="aria-spike-table-scroll mg-u-responsive--show-large">
         <Table
           aria-label="Hazardous events"
+          selectionMode="multiple"
+          selectedKeys={selected}
+          onSelectionChange={keys =>
+            setSelected(
+              keys === 'all' ? new Set(pageItems.map(item => item.id)) : keys
+            )
+          }
           sortDescriptor={sort}
           onSortChange={descriptor => {
             setSort(descriptor);
@@ -672,17 +676,7 @@ export function CrudExample() {
         >
           <TableHeader>
             <Column id="selection" width={48}>
-              <Checkbox
-                slot="selection"
-                aria-label="Select all"
-                isSelected={
-                  pageItems.length > 0 &&
-                  pageItems.every(item => selected.has(item.id))
-                }
-                onChange={value =>
-                  pageItems.forEach(item => toggleSelection(item.id, value))
-                }
-              />
+              <Checkbox slot="selection" aria-label="Select all" />
             </Column>
             <Column id="favorite" width={48} aria-label="Favorite">
               ★
@@ -728,8 +722,6 @@ export function CrudExample() {
                   <Checkbox
                     slot="selection"
                     aria-label={`Select ${item.hazard}`}
-                    isSelected={selected.has(item.id)}
-                    onChange={value => toggleSelection(item.id, value)}
                   />
                 </Cell>
                 <Cell>
@@ -850,12 +842,39 @@ export function CrudExample() {
                   </Button>
                   <Popover>
                     <Menu aria-label={`Actions for ${item.hazard}`}>
+                      <MenuItem
+                        id="favorite"
+                        onAction={() => toggleFavorite(item.id)}
+                      >
+                        {item.favorite ? 'Unfavorite' : 'Favorite'}
+                      </MenuItem>
                       <MenuItem id="edit" onAction={() => setEditing(item)}>
                         Edit…
                       </MenuItem>
                       <MenuItem id="delete" onAction={() => setDeleting(item)}>
                         Delete…
                       </MenuItem>
+                      <SubmenuTrigger>
+                        <MenuItem id="share">Share</MenuItem>
+                        <Popover>
+                          <Menu aria-label={`Share ${item.hazard}`}>
+                            <MenuItem
+                              id="copy-link"
+                              onAction={() =>
+                                navigator.clipboard?.writeText(item.hazard)
+                              }
+                            >
+                              Copy reference
+                            </MenuItem>
+                            <MenuItem
+                              id="email"
+                              href={`mailto:?subject=${encodeURIComponent(item.hazard)}`}
+                            >
+                              Email
+                            </MenuItem>
+                          </Menu>
+                        </Popover>
+                      </SubmenuTrigger>
                     </Menu>
                   </Popover>
                 </MenuTrigger>
