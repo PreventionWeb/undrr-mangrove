@@ -26,6 +26,7 @@
 }
 
 .react-aria-TextField,
+.react-aria-SearchField,
 .react-aria-Select,
 .react-aria-DateField,
 .react-aria-DatePicker,
@@ -241,7 +242,8 @@
   grid-template-columns: minmax(0, 1fr);
 }
 .aria-crud-editor__fields {
-  grid-auto-flow: row;
+  display: grid;
+  gap: var(--mg-aria-space-3);
 }
 .aria-crud-editor > .aria-crud-actions {
   justify-content: flex-end;
@@ -263,6 +265,14 @@
 .react-aria-Text[data-slot='description'] {
   color: var(--mg-aria-color-muted-text);
   font-size: var(--mg-aria-font-size-small);
+}
+.react-aria-Tooltip {
+  background: var(--mg-aria-color-text);
+  border-radius: var(--mg-aria-radius);
+  color: var(--mg-aria-color-on-accent);
+  font-family: var(--mg-aria-font-family);
+  font-size: var(--mg-aria-font-size-small);
+  padding: var(--mg-aria-space-1) var(--mg-aria-space-2);
 }
 .react-aria-Text[data-slot='errorMessage'],
 .react-aria-FieldError {

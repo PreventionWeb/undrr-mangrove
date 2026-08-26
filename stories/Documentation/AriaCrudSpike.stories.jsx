@@ -34,6 +34,7 @@ import {
   ModalOverlay,
   Popover,
   Row,
+  SearchField,
   Select,
   SelectValue,
   SubmenuTrigger,
@@ -46,6 +47,8 @@ import {
   TextField,
   ResizableTableContainer,
   ToggleButton,
+  Tooltip,
+  TooltipTrigger,
   isFileDropItem,
 } from 'react-aria-components';
 import Pager from '../Components/Pager/Pager';
@@ -195,7 +198,7 @@ function EventEditor({ item, onClose, onSave }) {
                   <FieldError>A hazard type is required.</FieldError>
                 </ComboBox>
               </div>
-              <div className="mg-grid mg-grid__col-2 aria-crud-editor__fields">
+              <div className="aria-crud-editor__fields">
                 <TextField
                   className="mg-form-field"
                   isRequired
@@ -516,24 +519,36 @@ export function CrudExample() {
   return (
     <div className="aria-crud-demo">
       <div className="mg-search__form">
-        <TextField
+        <SearchField
           className="mg-search__input-wrapper"
+          aria-label="Search events"
           value={search}
           onChange={value => {
             setSearch(value);
             setPage(1);
           }}
         >
-          <Label className="mg-u-sr-only">Search events</Label>
           <Input
             className="mg-search__input"
             placeholder="Search hazardous events"
           />
-        </TextField>
+          {search && (
+            <Button
+              slot="clear"
+              className="mg-button mg-button-primary mg-button-outline"
+              aria-label="Clear search"
+            >
+              ×
+            </Button>
+          )}
+        </SearchField>
         <DialogTrigger>
-          <Button className="mg-button mg-button-primary mg-button-outline">
-            Filters{filterCount ? ` (${filterCount})` : ''}
-          </Button>
+          <TooltipTrigger>
+            <Button className="mg-button mg-button-primary mg-button-outline">
+              Filters{filterCount ? ` (${filterCount})` : ''}
+            </Button>
+            <Tooltip>Filters</Tooltip>
+          </TooltipTrigger>
           <Popover>
             <Dialog>
               <Heading slot="title">Filters</Heading>
@@ -599,12 +614,15 @@ export function CrudExample() {
           </Popover>
         </DialogTrigger>
         <MenuTrigger>
-          <Button
-            className="mg-button mg-button-primary mg-button-outline"
-            aria-label="Columns"
-          >
-            Columns
-          </Button>
+          <TooltipTrigger>
+            <Button
+              className="mg-button mg-button-primary mg-button-outline"
+              aria-label="Columns"
+            >
+              Columns
+            </Button>
+            <Tooltip>Choose visible columns</Tooltip>
+          </TooltipTrigger>
           <Popover>
             <Menu
               aria-label="Visible columns"
@@ -620,13 +638,16 @@ export function CrudExample() {
             </Menu>
           </Popover>
         </MenuTrigger>
-        <Button
-          className="mg-button mg-button-primary"
-          aria-label="Add event"
-          onPress={() => setEditing({})}
-        >
-          +
-        </Button>
+        <TooltipTrigger>
+          <Button
+            className="mg-button mg-button-primary"
+            aria-label="Add event"
+            onPress={() => setEditing({})}
+          >
+            +
+          </Button>
+          <Tooltip>Add event</Tooltip>
+        </TooltipTrigger>
       </div>
       <ResizableTableContainer className="aria-spike-table-scroll mg-u-responsive--show-large">
         <Table
