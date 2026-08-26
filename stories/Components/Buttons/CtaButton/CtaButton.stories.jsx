@@ -26,6 +26,10 @@ export default {
       control: { type: 'inline-radio' },
     },
 
+    Outline: {
+      control: { type: 'boolean' },
+    },
+
     State: {
       options: ['Default', 'Disabled'],
       control: { type: 'inline-radio' },
@@ -73,6 +77,18 @@ export const AllVariants = {
               {caption.detail}
             </a>
             <a
+              href="#"
+              className="mg-button mg-button-primary mg-button-outline"
+            >
+              {caption.detail}
+            </a>
+            <a
+              href="#"
+              className="mg-button mg-button-secondary mg-button-outline"
+            >
+              {caption.detail}
+            </a>
+            <a
               className="mg-button mg-button-primary disabled"
               aria-disabled="true"
             >
@@ -90,6 +106,8 @@ export const AllVariants = {
           >
             <span style={{ minWidth: '100px' }}>Primary</span>
             <span style={{ minWidth: '100px' }}>Secondary</span>
+            <span style={{ minWidth: '100px' }}>Primary outline</span>
+            <span style={{ minWidth: '100px' }}>Secondary outline</span>
             <span>Disabled</span>
           </div>
         </div>

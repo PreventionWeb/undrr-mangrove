@@ -128,13 +128,13 @@ function EventEditor({ item, onClose, onSave }) {
   return (
     <ModalOverlay isOpen onOpenChange={open => !open && onClose()}>
       <Modal>
-        <Dialog>
+        <Dialog className="aria-crud-editor">
           {() => (
             <>
-              <Heading slot="title">
+              <Heading slot="title" className="aria-crud-editor__title">
                 {item ? 'Edit hazardous event' : 'Add hazardous event'}
               </Heading>
-              <div className="mg-grid mg-grid__col-2">
+              <div className="mg-grid mg-grid__col-2 aria-crud-editor__identity">
                 <DropZone
                   aria-label="Attach event evidence"
                   getDropOperation={types =>
@@ -178,7 +178,7 @@ function EventEditor({ item, onClose, onSave }) {
                     placeholder="Enter hazard type"
                   />
                   <Button
-                    className="mg-button mg-button-secondary"
+                    className="mg-button mg-button-primary mg-button-outline"
                     aria-label="Show suggested hazards"
                   >
                     ▾
@@ -195,142 +195,144 @@ function EventEditor({ item, onClose, onSave }) {
                   <FieldError>A hazard type is required.</FieldError>
                 </ComboBox>
               </div>
-              <TextField
-                className="mg-form-field"
-                isRequired
-                value={draft.note || ''}
-                onChange={value => set('note', value)}
-              >
-                <Label className="mg-form-label">Event reference</Label>
-                <Input
-                  className="mg-form-input"
-                  placeholder="Enter reference"
-                />
-              </TextField>
-              <Select
-                className="mg-form-field"
-                selectedKey={draft.status}
-                onSelectionChange={key => set('status', String(key))}
-              >
-                <Label className="mg-form-label">Record status</Label>
-                <Button className="mg-form-select">
-                  <SelectValue />
-                  <span aria-hidden="true">▾</span>
-                </Button>
-                <Popover>
-                  <ListBox
-                    items={[
-                      'Draft',
-                      'Waiting for validation',
-                      'Validated',
-                      'Published',
-                    ]}
-                  >
-                    {value => <ListBoxItem id={value}>{value}</ListBoxItem>}
-                  </ListBox>
-                </Popover>
-              </Select>
-              <DatePicker
-                className="mg-form-field"
-                onChange={value =>
-                  set('updated', value?.toString() || draft.updated)
-                }
-              >
-                <Label className="mg-form-label">Date recorded</Label>
-                <Group>
-                  <DateInput className="mg-form-input">
-                    {segment => <DateSegment segment={segment} />}
-                  </DateInput>
-                  <Button
-                    className="mg-button mg-button-secondary"
-                    aria-label="Choose date"
-                  >
-                    ▾
+              <div className="mg-grid mg-grid__col-2 aria-crud-editor__fields">
+                <TextField
+                  className="mg-form-field"
+                  isRequired
+                  value={draft.note || ''}
+                  onChange={value => set('note', value)}
+                >
+                  <Label className="mg-form-label">Event reference</Label>
+                  <Input
+                    className="mg-form-input"
+                    placeholder="Enter reference"
+                  />
+                </TextField>
+                <Select
+                  className="mg-form-field"
+                  selectedKey={draft.status}
+                  onSelectionChange={key => set('status', String(key))}
+                >
+                  <Label className="mg-form-label">Record status</Label>
+                  <Button className="mg-form-select">
+                    <SelectValue />
+                    <span aria-hidden="true">▾</span>
                   </Button>
-                </Group>
-                <Popover>
-                  <Dialog>
-                    <Calendar aria-label="Date recorded">
-                      <header className="aria-calendar-header">
-                        <Button
-                          slot="previous"
-                          className="mg-button mg-button-secondary"
-                        >
-                          ‹
-                        </Button>
-                        <Heading />
-                        <Button
-                          slot="next"
-                          className="mg-button mg-button-secondary"
-                        >
-                          ›
-                        </Button>
-                      </header>
-                      <CalendarGrid>
-                        <CalendarGridHeader>
-                          {day => (
-                            <CalendarHeaderCell>{day}</CalendarHeaderCell>
-                          )}
-                        </CalendarGridHeader>
-                        <CalendarGridBody>
-                          {date => <CalendarCell date={date} />}
-                        </CalendarGridBody>
-                      </CalendarGrid>
-                    </Calendar>
-                  </Dialog>
-                </Popover>
-              </DatePicker>
-              <Select
-                className="mg-form-field"
-                selectedKey={draft.cycle}
-                onSelectionChange={key => set('cycle', String(key))}
-              >
-                <Label className="mg-form-label">Onset</Label>
-                <Button className="mg-form-select">
-                  <SelectValue />
-                  <span aria-hidden="true">▾</span>
-                </Button>
-                <Popover>
-                  <ListBox items={['Rapid onset', 'Slow onset']}>
-                    {value => <ListBoxItem id={value}>{value}</ListBoxItem>}
-                  </ListBox>
-                </Popover>
-              </Select>
-              <Select
-                className="mg-form-field"
-                selectedKey={draft.sunlight}
-                onSelectionChange={key => set('sunlight', String(key))}
-              >
-                <Label className="mg-form-label">Exposure</Label>
-                <Button className="mg-form-select">
-                  <SelectValue />
-                  <span aria-hidden="true">▾</span>
-                </Button>
-                <Popover>
-                  <ListBox items={['Low', 'Medium', 'High']}>
-                    {value => <ListBoxItem id={value}>{value}</ListBoxItem>}
-                  </ListBox>
-                </Popover>
-              </Select>
-              <Select
-                className="mg-form-field"
-                selectedKey={draft.watering}
-                onSelectionChange={key => set('watering', String(key))}
-              >
-                <Label className="mg-form-label">Severity</Label>
-                <Button className="mg-form-select">
-                  <SelectValue />
-                  <span aria-hidden="true">▾</span>
-                </Button>
-                <Popover>
-                  <ListBox items={['Minimum', 'Average', 'Frequent']}>
-                    {value => <ListBoxItem id={value}>{value}</ListBoxItem>}
-                  </ListBox>
-                </Popover>
-              </Select>
+                  <Popover>
+                    <ListBox
+                      items={[
+                        'Draft',
+                        'Waiting for validation',
+                        'Validated',
+                        'Published',
+                      ]}
+                    >
+                      {value => <ListBoxItem id={value}>{value}</ListBoxItem>}
+                    </ListBox>
+                  </Popover>
+                </Select>
+                <DatePicker
+                  className="mg-form-field"
+                  onChange={value =>
+                    set('updated', value?.toString() || draft.updated)
+                  }
+                >
+                  <Label className="mg-form-label">Date recorded</Label>
+                  <Group>
+                    <DateInput className="mg-form-input">
+                      {segment => <DateSegment segment={segment} />}
+                    </DateInput>
+                    <Button
+                      className="mg-button mg-button-primary mg-button-outline"
+                      aria-label="Choose date"
+                    >
+                      ▾
+                    </Button>
+                  </Group>
+                  <Popover>
+                    <Dialog>
+                      <Calendar aria-label="Date recorded">
+                        <header className="aria-calendar-header">
+                          <Button
+                            slot="previous"
+                            className="mg-button mg-button-primary mg-button-outline"
+                          >
+                            ‹
+                          </Button>
+                          <Heading />
+                          <Button
+                            slot="next"
+                            className="mg-button mg-button-primary mg-button-outline"
+                          >
+                            ›
+                          </Button>
+                        </header>
+                        <CalendarGrid>
+                          <CalendarGridHeader>
+                            {day => (
+                              <CalendarHeaderCell>{day}</CalendarHeaderCell>
+                            )}
+                          </CalendarGridHeader>
+                          <CalendarGridBody>
+                            {date => <CalendarCell date={date} />}
+                          </CalendarGridBody>
+                        </CalendarGrid>
+                      </Calendar>
+                    </Dialog>
+                  </Popover>
+                </DatePicker>
+                <Select
+                  className="mg-form-field"
+                  selectedKey={draft.cycle}
+                  onSelectionChange={key => set('cycle', String(key))}
+                >
+                  <Label className="mg-form-label">Onset</Label>
+                  <Button className="mg-form-select">
+                    <SelectValue />
+                    <span aria-hidden="true">▾</span>
+                  </Button>
+                  <Popover>
+                    <ListBox items={['Rapid onset', 'Slow onset']}>
+                      {value => <ListBoxItem id={value}>{value}</ListBoxItem>}
+                    </ListBox>
+                  </Popover>
+                </Select>
+                <Select
+                  className="mg-form-field"
+                  selectedKey={draft.sunlight}
+                  onSelectionChange={key => set('sunlight', String(key))}
+                >
+                  <Label className="mg-form-label">Exposure</Label>
+                  <Button className="mg-form-select">
+                    <SelectValue />
+                    <span aria-hidden="true">▾</span>
+                  </Button>
+                  <Popover>
+                    <ListBox items={['Low', 'Medium', 'High']}>
+                      {value => <ListBoxItem id={value}>{value}</ListBoxItem>}
+                    </ListBox>
+                  </Popover>
+                </Select>
+                <Select
+                  className="mg-form-field"
+                  selectedKey={draft.watering}
+                  onSelectionChange={key => set('watering', String(key))}
+                >
+                  <Label className="mg-form-label">Severity</Label>
+                  <Button className="mg-form-select">
+                    <SelectValue />
+                    <span aria-hidden="true">▾</span>
+                  </Button>
+                  <Popover>
+                    <ListBox items={['Minimum', 'Average', 'Frequent']}>
+                      {value => <ListBoxItem id={value}>{value}</ListBoxItem>}
+                    </ListBox>
+                  </Popover>
+                </Select>
+              </div>
               <div className="aria-crud-actions">
                 <Button
-                  className="mg-button mg-button-secondary"
+                  className="mg-button mg-button-primary mg-button-outline"
                   onPress={onClose}
                 >
                   Cancel
@@ -377,7 +379,7 @@ function DeleteDialog({ item, onClose, onDelete }) {
               </p>
               <div className="aria-crud-actions">
                 <Button
-                  className="mg-button mg-button-secondary"
+                  className="mg-button mg-button-primary mg-button-outline"
                   onPress={onClose}
                 >
                   Cancel
@@ -529,7 +531,7 @@ export function CrudExample() {
           />
         </TextField>
         <DialogTrigger>
-          <Button className="mg-button mg-button-secondary">
+          <Button className="mg-button mg-button-primary mg-button-outline">
             Filters{filterCount ? ` (${filterCount})` : ''}
           </Button>
           <Popover>
@@ -537,7 +539,7 @@ export function CrudExample() {
               <Heading slot="title">Filters</Heading>
               {filterCount > 0 && (
                 <Button
-                  className="mg-button mg-button-secondary"
+                  className="mg-button mg-button-primary mg-button-outline"
                   onPress={clearFilters}
                 >
                   Clear filters
@@ -598,7 +600,7 @@ export function CrudExample() {
         </DialogTrigger>
         <MenuTrigger>
           <Button
-            className="mg-button mg-button-secondary"
+            className="mg-button mg-button-primary mg-button-outline"
             aria-label="Columns"
           >
             Columns
@@ -699,6 +701,7 @@ export function CrudExample() {
                 </Cell>
                 <Cell>
                   <ToggleButton
+                    className="mg-button mg-button-primary mg-button-outline"
                     aria-label={`Favorite ${item.hazard}`}
                     isSelected={item.favorite}
                     onChange={() => toggleFavorite(item.id)}
@@ -712,7 +715,7 @@ export function CrudExample() {
                 <Cell>
                   <MenuTrigger>
                     <Button
-                      className="mg-button mg-button-secondary"
+                      className="mg-button mg-button-primary mg-button-outline"
                       aria-label={`Actions for ${item.hazard}`}
                     >
                       •••
@@ -774,6 +777,7 @@ export function CrudExample() {
             <div className="mg-grid mg-grid__col-2">
               <div>
                 <ToggleButton
+                  className="mg-button mg-button-primary mg-button-outline"
                   aria-label={`Favorite ${item.hazard}`}
                   isSelected={item.favorite}
                   onChange={() => toggleFavorite(item.id)}
@@ -788,7 +792,7 @@ export function CrudExample() {
                 <span className="mg-tag mg-tag--outline">{item.sunlight}</span>
                 <MenuTrigger>
                   <Button
-                    className="mg-button mg-button-secondary"
+                    className="mg-button mg-button-primary mg-button-outline"
                     aria-label={`Actions for ${item.hazard}`}
                   >
                     •••

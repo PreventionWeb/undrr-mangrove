@@ -7,26 +7,31 @@ import PropTypes from 'prop-types';
  *
  * @param {Object} props
  * @param {string} props.label                 Button text
- * @param {'Primary'|'Secondary'} [props.Type] Visual style variant
+ * @param {'Primary'|'Secondary'} [props.Type] Visual emphasis variant
+ * @param {boolean} [props.Outline] Whether to use the transparent treatment
  * @param {'Default'|'Disabled'} [props.State] Enabled or disabled state
  */
 export function CtaButton({
   label,
   Type = 'Primary',
+  Outline = false,
   State = 'Default',
   ...props
 }) {
   const type = Type === 'Secondary' ? 'secondary' : 'primary';
   const isDisabled = State === 'Disabled';
-  const className = ['mg-button', `mg-button-${type}`, isDisabled && 'disabled']
+  const className = [
+    'mg-button',
+    `mg-button-${type}`,
+    Outline && 'mg-button-outline',
+    isDisabled && 'disabled',
+  ]
     .filter(Boolean)
     .join(' ');
   return (
     <a
       className={className}
-      {...(isDisabled
-        ? { 'aria-disabled': 'true' }
-        : { href: '#' })}
+      {...(isDisabled ? { 'aria-disabled': 'true' } : { href: '#' })}
       {...props}
     >
       {label}
@@ -37,8 +42,10 @@ export function CtaButton({
 CtaButton.propTypes = {
   /** Button text */
   label: PropTypes.string.isRequired,
-  /** Visual style variant */
+  /** Visual emphasis variant */
   Type: PropTypes.oneOf(['Primary', 'Secondary']),
+  /** Use a transparent outlined treatment */
+  Outline: PropTypes.bool,
   /** Enabled or disabled state */
   State: PropTypes.oneOf(['Default', 'Disabled']),
 };

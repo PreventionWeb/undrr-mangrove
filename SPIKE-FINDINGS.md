@@ -51,9 +51,21 @@ table-heavy DELTA use case. The demos now also exercise:
 - `Checkbox` for row selection and filter controls;
 - `DateField`, `DateInput`, and `DateSegment` for segmented date entry;
 - `Table`, sortable `Column`s, `ColumnResizer`, `TableBody`, `Row`, and
-  `Cell`, including locally managed pagination;
-- portalled `Menu`/`MenuItem` action menus, and the `Dialog`/`Modal` primitives
-  for the in-progress add-event flow.
+  `Cell`, including locally managed pagination and an empty state;
+- `TagGroup` filters, a multi-select column chooser, and text search;
+- `ToggleButton` favourites, row-selection checkboxes, and a responsive
+  `GridList` alternative to the table;
+- portalled `Menu`/`MenuItem` action menus, including a nested share submenu;
+- `Dialog`/`Modal`, `DropZone`, `ComboBox`, `Select`, `DatePicker`, and
+  `Calendar` in a functioning create/edit flow; and
+- a confirmation dialog for deletion.
+
+The CRUD story now mirrors the interaction model of the React Aria example
+using hazardous-event fixture data: search, filters, column visibility,
+sorting, resizing, pagination, favourite toggles, row selection, action menu,
+create, edit, delete, image drop/preview, date selection, and responsive list
+view all update the story’s in-memory state. It deliberately has no network or
+data-store implementation; that is outside this styling/distribution spike.
 
 Two implementation details were useful findings rather than styling failures:
 
@@ -69,6 +81,8 @@ Two implementation details were useful findings rather than styling failures:
 
 - `yarn build` succeeds in DELTA with the tarball installed and creates an
   `aria-spike` client chunk.
+- `yarn build` succeeds in Mangrove after the expanded CRUD editor and its
+  theme-rollup imports were added.
 - The emitted DELTA stylesheet is the only CSS that contains the new React
   Aria selectors; the imports do not traverse Mangrove's root entry, which is
   the only entry that imports Mangrove's full component stylesheet.
@@ -88,10 +102,13 @@ Storybook variant completed; DELTA's own scratch route was built successfully,
 but its full data-backed application server did not remain available in this
 environment for a second browser pass.
 
-The expanded table is still a static, in-memory spike. It does not yet claim a
-complete CRUD implementation: edit, delete confirmation, column chooser,
-filter popover, and persistence remain implementation work. It is not a public
-wrapper API and does not claim a full component-system contract.
+The expanded table is a functioning in-memory spike, rather than a production
+data form. Its create, edit, delete, filtering, sorting, and pagination state
+is intentionally discarded on reload. It is not a public wrapper API and does
+not claim a full component-system contract. A production implementation still
+needs real data integration, validation rules from DELTA, i18n/RTL QA, keyboard
+and screen-reader testing, visual regression coverage, and error/loading
+states.
 
 ## Effort estimate
 

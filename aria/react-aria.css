@@ -38,6 +38,10 @@
   display: flex;
   gap: var(--mg-aria-space-1);
 }
+.react-aria-Group > .react-aria-DateInput {
+  flex: 1;
+  min-width: 0;
+}
 
 .react-aria-DateInput {
   background: var(--mg-aria-color-surface);
@@ -150,6 +154,7 @@
 .react-aria-Modal {
   background: var(--mg-aria-color-surface);
   border-radius: var(--mg-aria-radius);
+  box-sizing: border-box;
   box-shadow: var(--mg-aria-overlay-shadow);
   color: var(--mg-aria-color-text);
   max-height: var(--mg-aria-dialog-available-height);
@@ -172,6 +177,7 @@
   display: grid;
   gap: var(--mg-aria-space-1);
   justify-items: center;
+  min-height: calc(var(--mg-aria-space-4) * 5);
   padding: var(--mg-aria-space-3);
   text-align: center;
 }
@@ -220,6 +226,25 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--mg-aria-space-2);
+}
+.aria-crud-editor__identity,
+.aria-crud-editor__fields {
+  width: var(--mg-aria-width-full);
+}
+.aria-crud-editor > [slot='title'],
+.aria-crud-editor__identity,
+.aria-crud-editor__fields,
+.aria-crud-editor > .aria-crud-actions {
+  grid-column: 1 / -1;
+}
+.aria-crud-editor {
+  grid-template-columns: minmax(0, 1fr);
+}
+.aria-crud-editor__fields {
+  grid-auto-flow: row;
+}
+.aria-crud-editor > .aria-crud-actions {
+  justify-content: flex-end;
 }
 .react-aria-Label {
   color: var(--mg-aria-color-text);
