@@ -135,11 +135,67 @@ Copy built JS from `dist/components/` to `undrr_common/js/mangrove-components/` 
 
 ## Manual npm publish (fallback)
 
-If automated publishing fails, you can trigger it manually:
+If a tag-push publish fails but **Actions is still available**, re-run it manually:
 
 1. Go to [Actions → Publish to NPM Registry](https://github.com/unisdr/undrr-mangrove/actions/workflows/npm-publish.yml)
 2. Click "Run workflow"
 3. Optionally enter a specific git tag (leave empty for latest)
+
+## Break-glass: fully local release (CI/Actions unavailable)
+
+Use this **only** when GitHub Actions cannot run at all — e.g. the `unisdr` org is flagged/suspended and every workflow (`npm-publish`, `dist`, `storybook`, `chromatic`) is dark. This path trades away the guarantees CI normally provides; read the trade-offs before committing to it.
+
+### Prerequisites
+
+- npm account with **publish rights to the `@undrr` scope** and 2FA configured.
+- Local checkout on the exact commit you intend to tag, fully built and passing (`yarn test`, `yarn lint`, `yarn build`, `yarn validate-manifest`).
+
+### 1. Confirm token publishing is even allowed
+
+The package uses [OIDC trusted publishing](#npm-trusted-publishing). If its npm publishing-access setting **requires** trusted publishing, token/`npm login` publishes are rejected and this path is impossible — you must wait for CI. Test before doing anything else:
+
+```bash
+npm login                 # interactive; browser auth + 2FA
+npm whoami                # confirm you are authenticated
+# assemble npm-package/ (step 3), then from inside it:
+npm publish --dry-run --access public
+```
+
+If the dry-run errors with a trusted-publisher/OIDC message, **stop** — a manual release is not possible. If it proceeds, continue.
+
+### 2. Prepare the release
+
+Follow the normal [Release steps](#release-steps) 1–5 (version bump, CDN links, CHANGELOG, commit, tag). You still commit and tag on `main` — the tag just won't trigger a publish.
+
+### 3. Assemble the package exactly as CI does
+
+The `npm-publish.yml` workflow does not publish the repo root — it builds a curated `npm-package/` directory (compiled `components/`, `css/`, `js/`, `scss/` sources, `fonts/`, `error-pages/`, and a slimmed `package.json`). Reproduce that assembly locally by mirroring the "Prepare package files" step of `.github/workflows/npm-publish.yml`, then publish from inside it:
+
+```bash
+cd npm-package
+npm pkg set name="@undrr/undrr-mangrove"
+npm publish --access public        # NOTE: no --provenance (see trade-offs)
+```
+
+### 4. Update the CDN `dist` branch by hand
+
+`dist.yml` normally refreshes the `dist` branch (which the [UNDRR static assets pipeline](https://gitlab.com/undrr/common/shared-web-assets/) consumes) on every push to `main`. With Actions dark, the CDN — both `latest/` and the new `X.Y.Z/` path — stays stale until you push the freshly built assets to `dist` manually.
+
+### 5. Create the GitHub Release and verify
+
+Create the release from the tag as usual (steps 7–8). Then confirm the [npm page](https://www.npmjs.com/package/@undrr/undrr-mangrove) shows the new version and the CDN paths resolve.
+
+### Trade-offs vs a CI release
+
+| Guarantee | CI release | Break-glass |
+|---|---|---|
+| **Provenance attestation** | Yes (`--provenance` via OIDC) | **No** — `--provenance` needs the CI OIDC token; a local publish omits it |
+| **CDN (`dist` branch)** | Auto on `main` push | **Manual** — must be pushed by hand |
+| **Storybook Pages** | Auto-redeployed | **Not updated** |
+| **Chromatic visual regression** | Runs | **Skipped** |
+| **Auditability** | Build tied to a CI run | Only your local shell history |
+
+Prefer restoring CI over repeating this. Every published version through 1.8.1 shipped with provenance via the normal flow; a break-glass release is a deliberate, one-off exception.
 
 ## Component changelogs vs project releases
 
