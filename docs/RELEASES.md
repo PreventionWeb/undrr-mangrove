@@ -150,40 +150,74 @@ Use this **only** when GitHub Actions cannot run at all — e.g. the `unisdr` or
 - npm account with **publish rights to the `@undrr` scope** and 2FA configured.
 - Local checkout on the exact commit you intend to tag, fully built and passing (`yarn test`, `yarn lint`, `yarn build`, `yarn validate-manifest`).
 
-### 1. Confirm token publishing is even allowed
+### The gate: is a token publish even allowed?
 
-The package uses [OIDC trusted publishing](#npm-trusted-publishing). If its npm publishing-access setting **requires** trusted publishing, token/`npm login` publishes are rejected and this path is impossible — you must wait for CI. Test before doing anything else:
+The package uses [OIDC trusted publishing](#npm-trusted-publishing). If its **Publishing access** setting is "Require two-factor authentication or an automation/granular access token" that's fine, but if it is set to **require trusted publishing**, a `npm login` (token) publish is rejected and this path is impossible — you wait for CI.
 
-```bash
-npm login                 # interactive; browser auth + 2FA
-npm whoami                # confirm you are authenticated
-# assemble npm-package/ (step 3), then from inside it:
-npm publish --dry-run --access public
-```
+**`npm publish --dry-run` does NOT test this.** Dry-run packs the tarball and reports what it *would* upload, but never contacts the registry for authorization — so it cannot reveal a trusted-publisher rejection. There are only two ways to know:
 
-If the dry-run errors with a trusted-publisher/OIDC message, **stop** — a manual release is not possible. If it proceeds, continue.
+1. Check **Settings → Publishing access** on [the package page](https://www.npmjs.com/package/@undrr/undrr-mangrove/access) before starting.
+2. Just attempt the real publish (step 4). A rejected publish **does not consume the version number**, so it is safe to try — it either succeeds or 403s with a clear message.
 
-### 2. Prepare the release
+### 1. Prepare the release
 
-Follow the normal [Release steps](#release-steps) 1–5 (version bump, CDN links, CHANGELOG, commit, tag). You still commit and tag on `main` — the tag just won't trigger a publish.
+Follow the normal [Release steps](#release-steps) 1–5 (version bump, CDN links, CHANGELOG, commit, tag) and `npm login`. You still commit and tag on `main` — the tag just won't trigger a publish.
 
-### 3. Assemble the package exactly as CI does
+### 2. Assemble the package exactly as CI does
 
-The `npm-publish.yml` workflow does not publish the repo root — it builds a curated `npm-package/` directory (compiled `components/`, `css/`, `js/`, `scss/` sources, `fonts/`, `error-pages/`, and a slimmed `package.json`). Reproduce that assembly locally by mirroring the "Prepare package files" step of `.github/workflows/npm-publish.yml`, then publish from inside it:
+The `npm-publish.yml` workflow does **not** publish the repo root — it builds a curated `npm-package/` directory from `dist/` (compiled `components/`, `css/`, `js/`, `fonts/`, `error-pages/`, the `scss/` sources, and a slimmed `package.json`). Reproduce its "Prepare package files" step from the repo root after a clean `yarn build`:
 
 ```bash
-cd npm-package
-npm pkg set name="@undrr/undrr-mangrove"
-npm publish --access public        # NOTE: no --provenance (see trade-offs)
+rm -rf npm-package && mkdir -p npm-package/dist && cp -r dist/* npm-package/dist/
+[ -d dist/assets/js ]          && { mkdir -p npm-package/js;          cp -r dist/assets/js/* npm-package/js/; }
+[ -d dist/assets/css ]         && { mkdir -p npm-package/css;         cp -r dist/assets/css/* npm-package/css/; }
+[ -d dist/assets/error-pages ] && { mkdir -p npm-package/error-pages; cp -r dist/assets/error-pages/* npm-package/error-pages/; }
+[ -d dist/fonts ]              && { mkdir -p npm-package/fonts;       cp -r dist/fonts/* npm-package/fonts/; }
+[ -d dist/components ]         && { mkdir -p npm-package/components;   cp -r dist/components/* npm-package/components/; }
+mkdir -p npm-package/scss
+find stories -name '*.scss' -type f | while read f; do
+  mkdir -p "npm-package/scss/$(dirname "$f" | sed 's|^stories/||')"
+  cp "$f" "npm-package/scss/$(echo "$f" | sed 's|^stories/||')"
+done
+cp package.json README.md LICENSE npm-package/
+node -e 'const p=require("./package.json");require("fs").writeFileSync("npm-package/package.json",JSON.stringify({name:p.name,version:p.version,description:p.description,main:"dist/index.js",files:["components/**/*","css/**/*","js/**/*","scss/**/*.scss","error-pages/**/*","fonts/**/*"],repository:p.repository,keywords:p.keywords,author:p.author,license:p.license},null,2))'
 ```
 
-### 4. Update the CDN `dist` branch by hand
+Two quirks worth knowing, both intentional and matching every prior release:
+
+- The slim `files` array **excludes `dist/`**, so `main: "dist/index.js"` is a dangling pointer — the published tarball has no `dist/`. Consumers import from the subpath dirs (`components/`, `css/`, …), so this has never mattered. Don't "fix" it, or you change what's published.
+- `npm-package/` is **not** gitignored. Publish from inside it, and don't `git add -A` on `main` while it exists or you'll commit 8 MB of build output.
+
+### 3. Verify the tarball before publishing
+
+Never `npm pack` at the repo root — the root `package.json` has no `files` field, so it packs the **entire repo** (600+ files including source and config), which is not what gets published. Only pack from `npm-package/`.
+
+Confirm contents against the previous published release — the diff should be *only* files that genuinely changed this release:
+
+```bash
+cd npm-package && npm pack --dry-run --json | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const j=JSON.parse(s)[0];console.log(j.entryCount,"files,",(j.unpackedSize/1048576).toFixed(2)+"MB")})'
+# parity check against the last release actually on npm:
+cd /tmp && npm pack @undrr/undrr-mangrove@<previous-version>   # downloads the real published tarball
+# then compare the two file lists (tar tzf ... | sed 's|^package/||' | sort) with diff/comm.
+```
+
+### 4. Publish
+
+From inside `npm-package/`:
+
+```bash
+npm publish --access public        # NO --provenance — it needs the CI OIDC token and fails locally
+```
+
+This is also the real test of [the gate](#the-gate-is-a-token-publish-even-allowed): success means token publishing was allowed; a 403/trusted-publisher error means it wasn't, and you stop here. A rejected attempt does not burn the version number.
+
+### 5. Update the CDN `dist` branch by hand
 
 `dist.yml` normally refreshes the `dist` branch (which the [UNDRR static assets pipeline](https://gitlab.com/undrr/common/shared-web-assets/) consumes) on every push to `main`. With Actions dark, the CDN — both `latest/` and the new `X.Y.Z/` path — stays stale until you push the freshly built assets to `dist` manually.
 
-### 5. Create the GitHub Release and verify
+### 6. Create the GitHub Release and verify
 
-Create the release from the tag as usual (steps 7–8). Then confirm the [npm page](https://www.npmjs.com/package/@undrr/undrr-mangrove) shows the new version and the CDN paths resolve.
+Create the release from the tag as usual (steps 7–8). Then confirm the [npm page](https://www.npmjs.com/package/@undrr/undrr-mangrove) shows the new version and the CDN paths resolve. Finally, delete the local `npm-package/` once the version is live.
 
 ### Trade-offs vs a CI release
 
