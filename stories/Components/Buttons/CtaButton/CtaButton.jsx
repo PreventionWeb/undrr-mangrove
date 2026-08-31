@@ -22,6 +22,7 @@ export function CtaButton({
   const isDisabled = State === 'Disabled';
   const className = [
     'mg-button',
+    'mg-button-link',
     `mg-button-${type}`,
     Outline && 'mg-button-outline',
     isDisabled && 'disabled',

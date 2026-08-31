@@ -37,6 +37,20 @@
     background-color: rgb(var(--mg-color-neutral-0));
   }
 
+  // Editorial link-style CTA used by CtaButton.
+  a.mg-button.mg-button-link,
+  a.mg-button.mg-button-link:hover,
+  a.mg-button.mg-button-link:visited {
+    background: transparent;
+    border-color: transparent;
+    color: rgb(var(--mg-color-neutral-0));
+
+    &::after {
+      background: rgb(var(--mg-color-neutral-0));
+      color: rgb(var(--mg-color-hero));
+    }
+  }
+
   a.mg-button-secondary,
   a.mg-button-secondary:hover,
   a.mg-button-secondary:visited {
@@ -245,6 +259,19 @@ $variant-colour-props: (
 
   a.mg-button-primary {
     background-color: rgb(var(--mg-color-neutral-0));
+  }
+
+  a.mg-button.mg-button-link,
+  a.mg-button.mg-button-link:hover,
+  a.mg-button.mg-button-link:visited {
+    background: transparent;
+    border-color: transparent;
+    color: rgb(var(--mg-color-neutral-0));
+
+    &::after {
+      background: rgb(var(--mg-color-neutral-0));
+      color: rgb(var(--mg-color-hero));
+    }
   }
 
   a.mg-button-secondary,

@@ -113,6 +113,61 @@ button {
   pointer-events: none;
 }
 
+// Compact editorial CTA: text plus a circular directional badge. This class is
+// added by CtaButton rather than folded into .mg-button so form submits and
+// utility actions retain their conventional button treatment.
+.mg-button.mg-button-link {
+  background: transparent;
+  border-color: transparent;
+  color: rgb(var(--mg-color-text));
+  gap: var(--mg-spacing-50);
+  min-height: mg-rem(44);
+  padding: var(--mg-spacing-50) 0;
+
+  &::after {
+    align-items: center;
+    background: rgb(var(--mg-color-interactive));
+    border-radius: 50%;
+    color: rgb(var(--mg-color-neutral-0));
+    content: "›";
+    display: inline-flex;
+    flex: 0 0 mg-rem(22);
+    font-family: $mg-font-family;
+    font-size: $mg-font-size-300;
+    height: mg-rem(22);
+    justify-content: center;
+    line-height: 1;
+    padding-bottom: 0.08em; // optically centres the asymmetric chevron
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition:
+        background-color var(--mg-motion-duration-fast) var(--mg-motion-easing-standard),
+        translate var(--mg-motion-duration-fast) var(--mg-motion-easing-standard);
+    }
+  }
+
+  &:hover {
+    background: transparent;
+    border-color: transparent;
+    color: rgb(var(--mg-color-interactive-active));
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+
+    &::after {
+      background: rgb(var(--mg-color-interactive-active));
+      translate: 0.12em 0;
+    }
+  }
+
+  &:active::after {
+    scale: 0.96;
+  }
+}
+
+[dir="rtl"] .mg-button.mg-button-link::after {
+  content: "‹";
+}
+
 // [dir='rtl'] {
 //   .button {
 //     &.button-primary {

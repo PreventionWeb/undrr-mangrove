@@ -70,6 +70,7 @@ Primary, secondary, and disabled buttons on light and dark backgrounds for easy 
 
 ## Changelog
 
+- **1.4** — 2026-08-31 ([#1086](https://github.com/unisdr/undrr-mangrove/pull/1086)): Refreshed React `CtaButton` instances as compact editorial links with an optically aligned circular direction badge, tactile press state, RTL direction, and context-aware hero colours. Raw `.mg-button` controls retain their conventional treatment.
 - **1.3.1** — 2026-08-31: Buttons now transition background/border/text colours smoothly on hover (gated by `prefers-reduced-motion`), and the keyboard focus indicator is a clearer token-driven ring (neutral separator + `--mg-color-focus-ring`) instead of a low-contrast same-colour glow.
 - **1.3** — 2026-08-26: Add composable `.mg-button-outline` modifier for primary and secondary emphasis variants.
 - **1.2** — 2026-04-13: `.mg-button` now declares an explicit `font-family: $mg-font-family-headings;` (was inheriting body Roboto). Aligns with the existing `:lang(ar)` override which already used `$mg-font-family-arabic-headings` — Latin and Arabic now match.
