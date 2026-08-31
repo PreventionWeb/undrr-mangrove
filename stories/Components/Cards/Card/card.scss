@@ -20,20 +20,7 @@
       overflow: hidden;
     }
 
-    // Subtle image zoom on hover — a modern "state affordance" that stays
-    // contained by the visual's overflow:hidden and is disabled for users
-    // who prefer reduced motion.
-    .mg-card__image {
-      @media (prefers-reduced-motion: no-preference) {
-        transition: transform 300ms ease;
-      }
-    }
-
-    &:hover .mg-card__image {
-      @media (prefers-reduced-motion: no-preference) {
-        transform: scale(1.04);
-      }
-    }
+    @include mg-card-image-zoom;
   }
 
   // Horizontal CARD
@@ -70,6 +57,16 @@
         grid-template-columns: 330px 1fr;
       }
     }
+  }
+
+  // Horizontal card image zoom on hover (book covers excluded — they sit in a
+  // bordered frame where a zoom reads oddly).
+  &__hc:not(.mg-card-book__hc) {
+    .mg-card__visual {
+      overflow: hidden;
+    }
+
+    @include mg-card-image-zoom;
   }
 
   &__hc.mg-card-book__hc {

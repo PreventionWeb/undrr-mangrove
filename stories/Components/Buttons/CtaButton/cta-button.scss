@@ -28,8 +28,21 @@
   padding: var(--mg-padding-button);
   border: var(--mg-border-width-button) solid var(--mg-border-color-button);
 
+  @media (prefers-reduced-motion: no-preference) {
+    transition:
+      background-color 200ms ease,
+      border-color 200ms ease,
+      color 200ms ease;
+  }
+
+  // Visible, token-driven focus ring. A neutral separator ring plus a
+  // focus-coloured ring reads clearly on any button background (unlike a
+  // same-colour glow), follows the button's border-radius, and is not clipped
+  // by overflow like an outline can be.
   &:focus-visible {
-    box-shadow: 0 0 4px rgb(var(--mg-color-button-background--hover));
+    box-shadow:
+      0 0 0 var(--mg-focus-ring-offset) rgb(var(--mg-color-neutral-0)),
+      0 0 0 calc(var(--mg-focus-ring-offset) + var(--mg-focus-ring-width)) rgb(var(--mg-color-focus-ring));
     outline: 0;
   }
 

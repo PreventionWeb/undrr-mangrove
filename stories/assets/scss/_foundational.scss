@@ -133,6 +133,10 @@ a {
   color: rgb(var(--mg-color-interactive));
   text-decoration: none;
 
+  @media (prefers-reduced-motion: no-preference) {
+    transition: color 150ms ease;
+  }
+
   &:hover {
     color: rgb(var(--mg-color-interactive-active));
     text-decoration: underline;

@@ -76,6 +76,24 @@
   outline-offset: var(--mg-focus-ring-offset);
 }
 
+// Card image hover zoom — a subtle, modern "state affordance". Include inside
+// a card variant whose visual has `overflow: hidden` so the scale stays framed.
+// Motion is gated behind prefers-reduced-motion so it never animates for users
+// who opt out.
+@mixin mg-card-image-zoom {
+  .mg-card__image {
+    @media (prefers-reduced-motion: no-preference) {
+      transition: transform 300ms ease;
+    }
+  }
+
+  &:hover .mg-card__image {
+    @media (prefers-reduced-motion: no-preference) {
+      transform: scale(1.04);
+    }
+  }
+}
+
 /* mixing  end */
 
 /* placeholder start */
