@@ -250,6 +250,10 @@ $mg-tabs-border-bottom: true !default;
   --mg-color-button-background--hover: var(--mg-color-interactive-active);
   --mg-color-button-secondary-background: var(--mg-color-blue-800);
   --mg-color-button-secondary-background--hover: var(--mg-color-blue-700);
+  --mg-color-button-outline-primary: var(--mg-color-interactive);
+  --mg-color-button-outline-primary--hover: var(--mg-color-interactive-active);
+  --mg-color-button-outline-secondary: var(--mg-color-button-secondary-background);
+  --mg-color-button-outline-secondary--hover: var(--mg-color-button-secondary-background--hover);
   --mg-color-text-button:          var(--mg-color-neutral-0);
   --mg-border-color-button:        var(--mg-color-text-button);
 
