@@ -161,7 +161,7 @@
     width: var(--scroll-item-width, 300px);
     min-width: var(--scroll-item-width, 300px);
     flex-shrink: 0;
-    margin-right: var(--mg-spacing-300);
+    margin-inline-end: var(--mg-spacing-300);
     white-space: normal;
     overflow-wrap: break-word;
     scroll-snap-align: start;
@@ -172,7 +172,7 @@
     }
 
     &:last-child {
-      margin-right: 0;
+      margin-inline-end: 0;
     }
   }
 }

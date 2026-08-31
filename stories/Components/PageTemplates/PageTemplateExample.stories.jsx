@@ -33,8 +33,12 @@ import CookieConsentBanner from '../CookieConsentBanner/CookieConsentBanner';
 import { mgTableOfContents } from '../TableOfContents/js/TableOfContentsVanillaJs';
 import { SectionHeader } from '../../Molecules/SectionHeader/SectionHeader';
 import { IconCard } from '../Cards/IconCard/IconCard';
-import { SyndicationSearchWidget } from '../SyndicationSearchWidget/SyndicationSearchWidget';
 import { TextCta } from '../TextCta/TextCta';
+import ScrollContainer from '../ScrollContainer/ScrollContainer';
+import { TableTag } from '../../Atom/Table/Table';
+import { TextInput } from '../Forms/TextInput/TextInput';
+import { Select } from '../Forms/Select/Select';
+import { Checkbox } from '../Forms/Checkbox/Checkbox';
 import deltaLogo from '../../assets/images/delta-logo-placeholder.svg';
 
 const sampleHeroData = [
@@ -94,20 +98,61 @@ const sampleTabDataStacked = [
   },
 ];
 
-const sampleCardContent = [
+const insightCards = [
   {
-    contenttile: 'Content tag',
-    title: 'Title in large size',
-    summaryText: `Climate change is a <a href="#" class="mg-card__text-link">global health emergency</a>, with impacts felt most acutely
-  by vulnerable populations and communities.This paper explores health risks from climate change in a global context, setting out key risks actions`,
-    label1: 'Label 1',
-    label2: 'Label 2',
-    button: 'Primary action',
-    link: 'javascript:void(0)',
-    imgalt: 'A person looks on',
+    contenttile: 'Research brief',
+    title: 'Financing resilience before disasters strike',
+    summaryText:
+      'Explore practical approaches for moving investment from response towards prevention and anticipatory action.',
+    label1: '28 August 2026',
+    button: 'Read the brief',
+    link: '#',
+    imgalt: 'A coastal city viewed from above',
     imgback:
-      'https://www.undrr.org/sites/default/files/2020-01/Home---about-us_0.jpg',
+      'https://images.unsplash.com/photo-1518005020951-eccb494ad742?w=900&q=80',
   },
+  {
+    contenttile: 'Data insight',
+    title: 'Tracking disaster losses across regions',
+    summaryText:
+      'Comparable data helps governments identify risk patterns and direct resources towards the communities most exposed.',
+    label1: '24 August 2026',
+    button: 'Explore the data',
+    link: '#',
+    imgalt: 'Aerial landscape showing a river and settlements',
+    imgback:
+      'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=900&q=80',
+  },
+  {
+    contenttile: 'Guidance',
+    title: 'Building inclusive early warning systems',
+    summaryText:
+      'A people-centred approach makes warnings understandable, actionable and accessible to everyone at risk.',
+    label1: '18 August 2026',
+    button: 'View the guidance',
+    link: '#',
+    imgalt: 'Community members meeting outdoors',
+    imgback:
+      'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=900&q=80',
+  },
+  {
+    contenttile: 'Case study',
+    title: 'Local leadership for heat resilience',
+    summaryText:
+      'Cities are combining climate information, public health planning and community networks to reduce extreme heat impacts.',
+    label1: '12 August 2026',
+    button: 'Read the case study',
+    link: '#',
+    imgalt: 'Dense city buildings seen in warm light',
+    imgback:
+      'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=900&q=80',
+  },
+];
+
+const topicOptions = [
+  { value: 'risk-knowledge', label: 'Risk knowledge' },
+  { value: 'early-warning', label: 'Early warning systems' },
+  { value: 'resilient-investment', label: 'Resilient investment' },
 ];
 
 const sampleMegaMenuSections = [
@@ -192,9 +237,9 @@ const PageTemplateExample = () => {
         />
         <div className="mg-container-full-width mg-container--padded mg-u-background-color--neutral-25">
           <section className="mg-grid mg-grid__col-3">
-            <VerticalCard data={sampleCardContent} />
-            <VerticalCard data={sampleCardContent} />
-            <VerticalCard data={sampleCardContent} />
+            {insightCards.slice(0, 3).map(card => (
+              <VerticalCard key={card.title} data={[card]} />
+            ))}
           </section>
         </div>
         <section className="content-section">
@@ -244,8 +289,109 @@ const PageTemplateExample = () => {
         </section>
         <Tab tabdata={sampleTabData} />
         <Tab tabdata={sampleTabDataStacked} variant={'stacked'} />
-        <h2>Sample header</h2>
-        <p>Sample paragraph</p>
+        <section className="mg-container--spacer">
+          <SectionHeader
+            headerText="Latest insights"
+            descriptionText="Research, data and guidance from across the UNDRR network"
+          />
+          <ScrollContainer showArrows minWidth="1320px">
+            {insightCards.map(card => (
+              <VerticalCard key={card.title} data={[card]} />
+            ))}
+          </ScrollContainer>
+        </section>
+        <section className="mg-container--spacer">
+          <SectionHeader headerText="Explore disaster risk knowledge" />
+          <form
+            className="mg-search__form"
+            role="search"
+            aria-label="Search disaster risk knowledge"
+            onSubmit={event => event.preventDefault()}
+          >
+            <TextInput
+              id="showcase-search"
+              name="query"
+              type="search"
+              label="Search disaster risk knowledge"
+              hideLabel
+              placeholder="Search reports, data and guidance"
+              defaultValue="resilience"
+              className="mg-search__input-wrapper"
+            />
+            <button
+              className="mg-button mg-button-primary mg-search__submit"
+              type="submit"
+            >
+              Search
+            </button>
+          </form>
+          <p className="mg-form-help">
+            The full syndicated search stories demonstrate live results, facets,
+            filters, sorting and pagination against the UNDRR search endpoint.
+          </p>
+        </section>
+        <section className="mg-container--spacer">
+          <SectionHeader headerText="Progress at a glance" />
+          <p>
+            A responsive, striped table demonstrates how structured evidence
+            sits alongside editorial content in a real page composition.
+          </p>
+          <TableTag
+            text="Reporting cycle"
+            tdtext="2025–2026"
+            details="National reporting and validation in progress"
+            variant="striped"
+            responsive="scroll"
+          />
+        </section>
+        <section className="mg-container--spacer mg-grid mg-grid__col-2">
+          <div>
+            <SectionHeader headerText="Stay informed" />
+            <p>
+              Subscribe for selected updates on risk knowledge, policy and
+              practice. Required fields are clearly identified.
+            </p>
+          </div>
+          <form onSubmit={event => event.preventDefault()}>
+            <TextInput
+              id="showcase-email"
+              name="email"
+              type="email"
+              label="Email address"
+              placeholder="name@example.org"
+              helpText="We will only use this address for your selected updates."
+              required
+            />
+            <Select
+              id="showcase-topic"
+              name="topic"
+              label="Topic"
+              options={topicOptions}
+              placeholder="Choose a topic"
+              required
+            />
+            <Checkbox
+              id="showcase-consent"
+              name="consent"
+              label="I agree to receive email updates"
+              value="yes"
+            />
+            <button className="mg-button mg-button-primary" type="submit">
+              Subscribe
+            </button>
+          </form>
+        </section>
+        <TextCta
+          headline="Put risk knowledge into action"
+          text="Use Mangrove components to create accessible, evidence-led services across the UNDRR digital ecosystem."
+          buttons={[
+            {
+              label: 'Read the implementation guide',
+              url: '#',
+              type: 'Primary',
+            },
+          ]}
+        />
         <Footer />
       </div>
     </>

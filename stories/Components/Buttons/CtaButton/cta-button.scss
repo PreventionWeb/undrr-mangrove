@@ -32,7 +32,12 @@
     transition:
       background-color 200ms ease,
       border-color 200ms ease,
-      color 200ms ease;
+      color 200ms ease,
+      scale var(--mg-motion-duration-fast) var(--mg-motion-easing-standard);
+  }
+
+  &:active:not(.disabled) {
+    scale: 0.96;
   }
 
   // Visible, token-driven focus ring. A neutral separator ring plus a
@@ -125,6 +130,12 @@ button {
   min-height: mg-rem(44);
   padding: var(--mg-spacing-50) 0;
   white-space: nowrap;
+
+  // The compact editorial treatment keeps its label steady and gives the
+  // directional badge the tactile response instead of scaling the whole row.
+  &:active:not(.disabled) {
+    scale: 1;
+  }
 
   &::after {
     align-items: center;
