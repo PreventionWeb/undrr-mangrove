@@ -10,6 +10,24 @@
  *                                                        |___/
  */
 @use "sass:math";
+@use "sass:meta";
+
+// --- Mangrove 2.0 upgrade guard (build-time) ---
+// Color and spacing tokens are now CSS custom properties. Assigning the old
+// SCSS variables ($mg-color-* / $mg-spacing-*) before importing Mangrove no
+// longer changes anything — it is a silent no-op. If a consumer still defines
+// one of the commonly-overridden token variables, warn loudly at compile time
+// rather than let their brand colors quietly revert to the defaults.
+// See docs/RELEASE-2.0.md (breaking change #1). This fires only for consumer
+// overrides — Mangrove itself no longer defines these SCSS variables.
+@each $_legacy in "mg-color-interactive", "mg-color-interactive-active",
+                  "mg-color-button-background", "mg-color-button-background--hover",
+                  "mg-color-tag", "mg-color-form-check", "mg-color-form-focus",
+                  "mg-color-hero--secondary", "mg-spacing-150", "mg-spacing-300" {
+  @if meta.variable-exists($_legacy) {
+    @warn "Mangrove 2.0: `$#{$_legacy}` no longer has any effect — color and spacing tokens are CSS custom properties now. Move the override into a `.mg-theme-* { --#{$_legacy}: ...; }` block (or `:root`). See docs/RELEASE-2.0.md.";
+  }
+}
 
 // Root font-size configuration
 // Default is 16 (browser-standard root where 1rem = 16px).
