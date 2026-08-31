@@ -276,6 +276,8 @@ $mg-tabs-border-bottom: true !default;
   --mg-color-form-check--hover:    var(--mg-color-interactive-active);
   --mg-color-form-check--checked:  var(--mg-color-interactive);
   --mg-color-form-focus:           var(--mg-color-interactive);
+
+  // Focus ring
   --mg-color-focus-ring:           var(--mg-color-interactive);
 
   // Brand hierarchy
@@ -352,6 +354,8 @@ $mg-tabs-border-bottom: true !default;
 
   // Form
   --mg-radius-form-input:        var(--mg-spacing-0);
+
+  // Focus ring
   --mg-focus-ring-width:         2px;
   --mg-focus-ring-offset:        2px;
   --mg-focus-ring-radius:        2px;

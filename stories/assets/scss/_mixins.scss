@@ -65,6 +65,17 @@
   background: linear-gradient($direction, $list);
 }
 
+// Focus ring — token-driven, theme-adaptive visible focus for keyboard users.
+// Emits a consistent WCAG 2.2 AA focus indicator wherever an interactive
+// element needs one. The ring colour follows `--mg-color-interactive`, so it
+// adapts per theme automatically. On links, pair with an explicit
+// `text-decoration: underline` so the affordance is not colour-only.
+@mixin mg-focus-ring {
+  border-radius: var(--mg-focus-ring-radius);
+  outline: var(--mg-focus-ring-width) solid rgb(var(--mg-color-focus-ring));
+  outline-offset: var(--mg-focus-ring-offset);
+}
+
 /* mixing  end */
 
 /* placeholder start */

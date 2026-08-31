@@ -15,9 +15,8 @@
     }
 
     &:focus-visible {
-      border-radius: var(--mg-focus-ring-radius);
-      outline: var(--mg-focus-ring-width) solid rgb(var(--mg-color-focus-ring));
-      outline-offset: var(--mg-focus-ring-offset);
+      @include mg-focus-ring;
+
       text-decoration: underline;
     }
 
