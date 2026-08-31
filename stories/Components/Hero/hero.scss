@@ -53,7 +53,9 @@
 
   &__overlay {
     align-items: center;
-    background-color: rgb(var(--mg-color-blue-900) / var(--mg-opacity-hero));
+    background: linear-gradient(135deg, rgb(var(--mg-color-blue-900) / 0.96), rgb(var(--mg-color-blue-900) / var(--mg-opacity-hero)));
+    border-radius: var(--mg-hero-overlay-radius);
+    box-shadow: var(--mg-hero-overlay-shadow);
     display: grid;
     margin: var(--mg-spacing-hero-overlay);
     max-width: var(--mg-hero-overlay-max-width);
@@ -104,6 +106,8 @@
     font-weight: bold;
     font-size: $mg-font-size-600;
     line-height: 1.2;
+    max-width: 18ch;
+    text-wrap: balance;
 
     a,
     a:hover,
@@ -162,6 +166,8 @@
     @include mg-typography("small");
 
     margin-bottom: var(--mg-spacing-25);
+    max-width: 62ch;
+    text-wrap: pretty;
   }
 }
 
@@ -187,7 +193,7 @@ $variant-colour-props: (
 
 @each $name, $prop in $variant-colour-props {
   .mg-hero--#{$name} .mg-hero__overlay {
-    background-color: rgb(var(#{$prop}) / var(--mg-opacity-hero));
+    background: linear-gradient(135deg, rgb(var(#{$prop}) / 0.96), rgb(var(#{$prop}) / var(--mg-opacity-hero)));
 
     a.mg-button,
     a.mg-button:hover,

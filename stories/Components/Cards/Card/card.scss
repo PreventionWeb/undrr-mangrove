@@ -9,6 +9,15 @@
   background: var(--mg-card-background);
   padding: var(--mg-card-padding);
   border-radius: var(--mg-card-border-radius);
+  box-shadow: var(--mg-card-shadow);
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: box-shadow var(--mg-motion-duration-fast) var(--mg-motion-easing-standard);
+  }
+
+  &:hover {
+    box-shadow: var(--mg-card-shadow-hover);
+  }
 
   // Vertical CARD
   &__vc {
@@ -17,7 +26,9 @@
 
     .mg-card__visual {
       aspect-ratio: 16/9;
+      border-radius: calc(var(--mg-card-border-radius) / 2);
       overflow: hidden;
+      outline: 1px solid rgb(var(--mg-color-neutral-900) / 0.1);
     }
 
     @include mg-card-image-zoom;
@@ -63,7 +74,9 @@
   // bordered frame where a zoom reads oddly).
   &__hc:not(.mg-card-book__hc) {
     .mg-card__visual {
+      border-radius: calc(var(--mg-card-border-radius) / 2);
       overflow: hidden;
+      outline: 1px solid rgb(var(--mg-color-neutral-900) / 0.1);
     }
 
     @include mg-card-image-zoom;
@@ -125,6 +138,7 @@
     line-height: $mg-font-line-height-500;
     padding-bottom: var(--mg-spacing-75);
     padding-top: var(--mg-spacing-100);
+    text-wrap: balance;
 
     a {
       color: rgb(var(--mg-color-interactive));
@@ -228,6 +242,7 @@ $card-variant-colours: (
 
 .mg-card__summary {
   padding-bottom: var(--mg-spacing-50);
+  text-wrap: pretty;
 }
 
 .mg-card__summary a,

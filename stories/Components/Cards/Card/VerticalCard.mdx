@@ -112,6 +112,7 @@ This removes the blue color, underline, and chevron. The card remains clickable 
 
 ## Changelog
 
+- **1.5** — 2026-08-31 ([#1086](https://github.com/unisdr/undrr-mangrove/pull/1086)): Added a raised surface, responsive hover elevation, subtle image edge treatment, and balanced title/body wrapping through shared modernisation tokens.
 - **1.4.3** — 2026-08-31: Vertical card image now zooms subtly on hover (`scale(1.04)`, contained by the visual's `overflow: hidden`), a modern hover affordance. Disabled under `prefers-reduced-motion`.
 - **1.4.2** — 2026-08-31: Focus states now use the shared `mg-focus-ring` mixin (token-driven `--mg-focus-ring-*` / `--mg-color-focus-ring`), so keyboard focus outlines are consistent and theme-adaptive across every card variant. `.mg-card__title` links gain a matching 2px focus radius.
 - **1.4.1** — 2026-07-08: Fixed z-index conflict with global navigation (MegaMenu) by creating local stacking context via `isolation: isolate` and lowering card-local z-indices from 100/101 to 1/2.

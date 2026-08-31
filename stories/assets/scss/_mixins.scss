@@ -83,11 +83,15 @@
 @mixin mg-card-image-zoom {
   .mg-card__image {
     @media (prefers-reduced-motion: no-preference) {
-      transition: transform 300ms ease;
+      transition:
+        opacity var(--mg-motion-duration-medium) var(--mg-motion-easing-standard),
+        transform var(--mg-motion-duration-medium) var(--mg-motion-easing-standard);
     }
   }
 
   &:hover .mg-card__image {
+    opacity: 0.78;
+
     @media (prefers-reduced-motion: no-preference) {
       transform: scale(1.04);
     }

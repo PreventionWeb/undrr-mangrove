@@ -360,10 +360,20 @@ $mg-tabs-border-bottom: true !default;
   --mg-focus-ring-offset:        2px;
   --mg-focus-ring-radius:        2px;
 
+  // Modernisation: shared surface, elevation, and motion semantics
+  --mg-surface-raised:           rgb(var(--mg-color-neutral-0));
+  --mg-shadow-raised:            inset 0 0 0 1px rgb(var(--mg-color-neutral-600) / 0.24);
+  --mg-shadow-raised-hover:      inset 0 0 0 2px rgb(var(--mg-color-interactive));
+  --mg-motion-duration-fast:     160ms;
+  --mg-motion-duration-medium:   300ms;
+  --mg-motion-easing-standard:   cubic-bezier(0.2, 0, 0, 1);
+
   // Card
-  --mg-card-background:          none;
-  --mg-card-padding:             0rem;
-  --mg-card-border-radius:       0;
+  --mg-card-background:          var(--mg-surface-raised);
+  --mg-card-padding:             var(--mg-spacing-150);
+  --mg-card-border-radius:       var(--mg-spacing-50);
+  --mg-card-shadow:              var(--mg-shadow-raised);
+  --mg-card-shadow-hover:        var(--mg-shadow-raised-hover);
   --mg-card-icon-badge-radius:   20%;
 
   // CTA
@@ -375,8 +385,10 @@ $mg-tabs-border-bottom: true !default;
   // Hero
   --mg-opacity-hero:             0.85;
   --mg-spacing-hero-overlay:     0;
-  --mg-hero-overlay-max-width:   #{mg-rem(400)};
-  --mg-hero-overlay-padding:     var(--mg-spacing-200);
+  --mg-hero-overlay-max-width:   #{mg-rem(600)};
+  --mg-hero-overlay-padding:     var(--mg-spacing-300);
+  --mg-hero-overlay-radius:      var(--mg-spacing-50);
+  --mg-hero-overlay-shadow:      0 18px 55px rgb(var(--mg-color-neutral-900) / 0.22);
 
   // Widths (build-time resolved)
   --mg-width-150:                #{mg-rem(150)};
