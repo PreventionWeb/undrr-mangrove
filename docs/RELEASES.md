@@ -203,21 +203,48 @@ cd /tmp && npm pack @undrr/undrr-mangrove@<previous-version>   # downloads the r
 
 ### 4. Publish
 
-From inside `npm-package/`:
+Confirm you hold publish rights first (`npm access list collaborators @undrr/undrr-mangrove` should show your user as `read-write`). Then, from inside `npm-package/`:
 
 ```bash
 npm publish --access public        # NO --provenance — it needs the CI OIDC token and fails locally
 ```
 
+Run this in a **real interactive terminal**, not a non-interactive/`!`-style shell: with account 2FA enabled, npm prompts for a one-time password, and a shell that can't accept stdin will hang. (Alternatively pass `--otp=<code>`.)
+
 This is also the real test of [the gate](#the-gate-is-a-token-publish-even-allowed): success means token publishing was allowed; a 403/trusted-publisher error means it wasn't, and you stop here. A rejected attempt does not burn the version number.
 
 ### 5. Update the CDN `dist` branch by hand
 
-`dist.yml` normally refreshes the `dist` branch (which the [UNDRR static assets pipeline](https://gitlab.com/undrr/common/shared-web-assets/) consumes) on every push to `main`. With Actions dark, the CDN — both `latest/` and the new `X.Y.Z/` path — stays stale until you push the freshly built assets to `dist` manually.
+`dist.yml` normally force-pushes the contents of `dist/` (minus `assets/images` and `assets/icons`) to the `dist` branch on every push to `main`. **This feeds only the CDN `latest/` path** — the versioned `static/mangrove/X.Y.Z/` path is produced separately by the GitLab [shared-web-assets](https://gitlab.com/undrr/common/shared-web-assets/) pipeline from the tagged release (see [the caveat in step 6](#6-create-the-github-release-and-verify)).
+
+Replicate the push from an **isolated worktree** so your `main` checkout is untouched (with `dist/` freshly built at the tagged commit):
+
+```bash
+git fetch origin dist
+git worktree add -B dist /tmp/dist-deploy origin/dist
+find /tmp/dist-deploy -maxdepth 1 -mindepth 1 -not -name '.git' -exec rm -rf {} +
+cp -r dist/* /tmp/dist-deploy/
+rm -rf /tmp/dist-deploy/assets/images /tmp/dist-deploy/assets/icons
+git -C /tmp/dist-deploy add -A
+git -C /tmp/dist-deploy commit -m "Deploy dist from <sha> (vX.Y.Z)"
+git -C /tmp/dist-deploy push origin dist
+git worktree remove /tmp/dist-deploy && git branch -D dist   # cleanup
+```
 
 ### 6. Create the GitHub Release and verify
 
-Create the release from the tag as usual (steps 7–8). Then confirm the [npm page](https://www.npmjs.com/package/@undrr/undrr-mangrove) shows the new version and the CDN paths resolve. Finally, delete the local `npm-package/` once the version is live.
+Create the release from the tag as usual (steps 7–8), then verify:
+
+```bash
+npm view @undrr/undrr-mangrove dist-tags                     # latest -> X.Y.Z
+npm pack @undrr/undrr-mangrove@X.Y.Z --dry-run 2>&1 | tail -1  # sanity-check file count/size
+curl -sI https://assets.undrr.org/static/mangrove/latest/css/style.css | head -1   # CDN latest/ reachable
+curl -sI https://assets.undrr.org/static/mangrove/X.Y.Z/css/style.css  | head -1   # versioned path
+```
+
+The versioned `X.Y.Z/` URL will **404 until the GitLab shared-web-assets pipeline publishes it** — that pipeline, not this repo's `dist` push, creates versioned paths, and under the org flag it may need to be checked or triggered manually on the GitLab side. `latest/` should return 200 once GitLab has synced the `dist` push.
+
+Finally, delete the local `npm-package/` once the version is live.
 
 ### Trade-offs vs a CI release
 
