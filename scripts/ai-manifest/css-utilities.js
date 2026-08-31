@@ -130,6 +130,43 @@ export default {
             'Six-column grid. Tablet: 3 columns. Desktop (1164px+): 6 columns.',
         },
         {
+          class: 'mg-grid__col-7',
+          description:
+            'Seven-column grid. Tablet: 4 columns. Desktop (1164px+): 7 columns.',
+        },
+        {
+          class: 'mg-grid__col-8',
+          description:
+            'Eight-column grid. Tablet: 4 columns. Desktop (1164px+): 8 columns.',
+        },
+        {
+          class: 'mg-grid__col-9',
+          description:
+            'Nine-column grid. Tablet: 4 columns. Desktop (1164px+): 9 columns.',
+        },
+        {
+          class: 'mg-grid__col-10',
+          description:
+            'Ten-column grid. Tablet: 4 columns. Desktop (1164px+): 10 columns.',
+        },
+        {
+          class: 'mg-grid__col-11',
+          description:
+            'Eleven-column grid. Tablet: 4 columns. Desktop (1164px+): 11 columns.',
+        },
+        {
+          class: 'mg-grid__col-12',
+          description:
+            'Twelve-column grid. Tablet: 4 columns. Desktop (1164px+): 12 columns.',
+        },
+        {
+          class: 'mg-grid--auto-fit',
+          description:
+            'Single-row fallback: distributes any number of children across one equal-width row (tablet and above) without a per-count column class. Stacks on mobile.',
+          usage:
+            '<div class="mg-grid mg-grid--auto-fit">\n  <div>Item 1</div>\n  <div>Item 2</div>\n  <div>Item 3</div>\n</div>',
+        },
+        {
           class: 'mg-grid__col--span-2',
           description: 'Child element spans 2 columns.',
         },
