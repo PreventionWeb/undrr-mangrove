@@ -15,7 +15,7 @@ _Notable cross-cutting changes between releases land here. Per-component changes
 
 ## 2.0.0 — unreleased
 
-See the [GitHub Release](https://github.com/unisdr/undrr-mangrove/releases/tag/v2.0.0) and [Storybook release notes](https://unisdr.github.io/undrr-mangrove/?path=/docs/getting-started-release-notes-v2-0--docs) for full details.
+Shipping first as `2.0.0-alpha.1` under the npm `next` dist-tag. See [PR #1061](https://github.com/unisdr/undrr-mangrove/pull/1061) and the [Storybook release notes](https://unisdr.github.io/undrr-mangrove/?path=/docs/getting-started-release-notes-v2-0--docs) for full details; the tagged GitHub Release link lands with the stable 2.0.0.
 
 ### Breaking: CSS custom properties replace SCSS variable theming API
 
