@@ -131,4 +131,16 @@ jobs:
         working-directory: npm-package
         run: |
           npm pkg set name="@undrr/undrr-mangrove"
-          npm publish --access public --provenance
+          # A prerelease version (e.g. 2.0.0-alpha.1, anything with a hyphen)
+          # must NOT take npm's default "latest" dist-tag, or a plain
+          # `npm install @undrr/undrr-mangrove` would resolve to the unstable
+          # build for every consumer. Publish prereleases under "next" instead;
+          # only clean semver versions become "latest".
+          version="$(node -p "require('./package.json').version")"
+          if [[ "$version" == *-* ]]; then
+            echo "Prerelease version $version -> publishing with dist-tag 'next'"
+            npm publish --access public --provenance --tag next
+          else
+            echo "Stable version $version -> publishing with dist-tag 'latest'"
+            npm publish --access public --provenance
+          fi

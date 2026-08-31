@@ -206,7 +206,13 @@ cd /tmp && npm pack @undrr/undrr-mangrove@<previous-version>   # downloads the r
 Confirm you hold publish rights first (`npm access list collaborators @undrr/undrr-mangrove` should show your user as `read-write`). Then, from inside `npm-package/`:
 
 ```bash
+# Stable version (clean semver, e.g. 2.0.0):
 npm publish --access public        # NO --provenance — it needs the CI OIDC token and fails locally
+
+# Prerelease version (anything with a hyphen, e.g. 2.0.0-alpha.1):
+npm publish --access public --tag next   # MUST use --tag next, or a plain
+                                         # `npm install @undrr/undrr-mangrove`
+                                         # resolves to the unstable build.
 ```
 
 Run this in a **real interactive terminal**, not a non-interactive/`!`-style shell: with account 2FA enabled, npm prompts for a one-time password, and a shell that can't accept stdin will hang. (Alternatively pass `--otp=<code>`.)
@@ -236,7 +242,7 @@ git worktree remove /tmp/dist-deploy && git branch -D dist   # cleanup
 Create the release from the tag as usual (steps 7–8), then verify:
 
 ```bash
-npm view @undrr/undrr-mangrove dist-tags                     # latest -> X.Y.Z
+npm view @undrr/undrr-mangrove dist-tags                     # stable: latest -> X.Y.Z ; prerelease: next -> X.Y.Z-alpha.N and latest UNCHANGED
 npm pack @undrr/undrr-mangrove@X.Y.Z --dry-run 2>&1 | tail -1  # sanity-check file count/size
 curl -sI https://assets.undrr.org/static/mangrove/latest/css/style.css | head -1   # CDN latest/ reachable
 curl -sI https://assets.undrr.org/static/mangrove/X.Y.Z/css/style.css  | head -1   # versioned path
