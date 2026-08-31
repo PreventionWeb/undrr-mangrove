@@ -48,6 +48,11 @@ const sampleHeroData = [
     link: '/#',
     imgback:
       'https://www.undrr.org/sites/default/files/2020-01/Home---about-us_0.jpg',
+    media: {
+      type: 'image',
+      src: 'https://www.undrr.org/sites/default/files/2020-01/Home---about-us_0.jpg',
+      alt: 'Dry grassland landscape',
+    },
   },
 ];
 
@@ -179,7 +184,12 @@ const PageTemplateExample = () => {
       <CookieConsentBanner />
       <MegaMenu delay={600} sections={sampleMegaMenuSections} />
       <div className="page-template-example | mg-container mg-container--spacer">
-        <Hero data={sampleHeroData} variant="primary" />
+        <Hero
+          data={sampleHeroData}
+          variant="primary"
+          layout="split"
+          split="1/2"
+        />
         <div className="mg-container-full-width mg-container--padded mg-u-background-color--neutral-25">
           <section className="mg-grid mg-grid__col-3">
             <VerticalCard data={sampleCardContent} />
