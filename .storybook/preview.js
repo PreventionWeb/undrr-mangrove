@@ -8,10 +8,6 @@ import themePreventionWeb from '../stories/assets/scss/style-preventionweb.scss'
 import themeIRP from '../stories/assets/scss/style-irp.scss';
 import themeMCR from '../stories/assets/scss/style-mcr.scss';
 import themeDelta from '../stories/assets/scss/style-delta.scss';
-import themeLegacy from '../stories/assets/scss/style-legacy.scss';
-import themePWLegacy from '../stories/assets/scss/style-preventionweb-legacy.scss';
-import themeIRPLegacy from '../stories/assets/scss/style-irp-legacy.scss';
-import themeMCRLegacy from '../stories/assets/scss/style-mcr-legacy.scss';
 
 // RTL languages
 const rtlLanguages = ['arabic'];
@@ -99,21 +95,14 @@ const themeStyles = {
   'IRP Theme': themeIRP,
   'MCR2030 Theme': themeMCR,
   'DELTA Resilience Theme': themeDelta,
-  'Global UNDRR Theme (legacy 10px)': themeLegacy,
-  'PreventionWeb Theme (legacy 10px)': themePWLegacy,
-  'IRP Theme (legacy 10px)': themeIRPLegacy,
-  'MCR2030 Theme (legacy 10px)': themeMCRLegacy,
 };
 
 // Maps toolbar theme names to the CSS class applied to <body> so that
 // .mg-theme-* CSS custom property overrides take effect at runtime.
 const themeClasses = {
   'PreventionWeb Theme': 'mg-theme-preventionweb',
-  'PreventionWeb Theme (legacy 10px)': 'mg-theme-preventionweb',
   'IRP Theme': 'mg-theme-irp',
-  'IRP Theme (legacy 10px)': 'mg-theme-irp',
   'MCR2030 Theme': 'mg-theme-mcr',
-  'MCR2030 Theme (legacy 10px)': 'mg-theme-mcr',
   'DELTA Resilience Theme': 'mg-theme-delta',
 };
 

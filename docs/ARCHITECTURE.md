@@ -257,25 +257,25 @@ Mangrove uses two distinct token mechanisms:
 
 **CSS custom properties** (`--mg-color-*`, `--mg-spacing-*`): color and spacing tokens defined in the compiled output. Themes override these at runtime via a `.mg-theme-{name} { }` selector block in `_theme-{name}.scss`. Applying the class to `<body>` or a wrapping element activates the theme without any CSS rebuild.
 
-**Build-time SCSS `!default` variables**: used for tokens that must be resolved at compile time and cannot be overridden at runtime. This includes breakpoints (`$mg-breakpoint-*`), font sizes (`$mg-font-size-*`), font families (`$mg-font-family-*`), `$mg-html-font-size`, and `$mg-tabs-border-bottom`. When adding new build-time-only variables, include `!default` so consuming projects can override them before importing Mangrove.
+**Build-time SCSS `!default` variables**: used for tokens that must be resolved at compile time and cannot be overridden at runtime. This includes breakpoints (`$mg-breakpoint-*`), font sizes (`$mg-font-size-*`), font families (`$mg-font-family-*`), and `$mg-tabs-border-bottom`. When adding new build-time-only variables, include `!default` so consuming projects can override them before importing Mangrove. (`$mg-html-font-size` is the exception — it is fixed at `16`, see below.)
 
 ### Root font-size and the mg-rem() function
 
-The default root is 16px (browser standard). Legacy sites that relied on the old 10px root can use the `-legacy` theme variants or set `$mg-html-font-size: 10` in their SCSS. See [RELEASE-1.4.md](RELEASE-1.4.md) for the full migration guide.
+The root is fixed at 16px (browser standard). The legacy 10px root — the `!default` override and the `-legacy` theme variants — was removed in 2.0; consumers use a standard 16px document root. See [RELEASE-2.0.md](RELEASE-2.0.md) breaking change #5.
 
-All spacing, font-size, and width tokens go through `mg-rem($px)`, which converts a pixel value to rem for whatever root is configured:
+All spacing, font-size, and width tokens go through `mg-rem($px)`, which converts a pixel value to rem for the fixed 16px root:
 
 ```scss
 // In _variables.scss
-$mg-html-font-size: 16 !default;
+$mg-html-font-size: 16;
 
 @function mg-rem($px) {
   @return math.div($px, $mg-html-font-size) * 1rem;
 }
 
 // Usage — pass the intended pixel value:
-$mg-spacing-100: mg-rem(10);   // → 0.625rem (root=16), 1rem (root=10)
-$mg-font-size-300: mg-rem(16); // → 1rem     (root=16), 1.6rem (root=10)
+$mg-spacing-100: mg-rem(10);   // → 0.625rem
+$mg-font-size-300: mg-rem(16); // → 1rem
 ```
 
 When writing component SCSS, use `mg-rem()` or an existing token. Never hard-code a rem value:
