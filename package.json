@@ -1,6 +1,6 @@
 {
   "name": "@undrr/undrr-mangrove",
-  "version": "1.8.2",
+  "version": "2.0.0-alpha.1",
   "description": "Mangrove design System for UNDRR",
   "main": "src/index.js",
   "type": "module",
@@ -11,6 +11,8 @@
     ".": "./src/index.js"
   },
   "scripts": {
+    "prepare": "node scripts/setup-git-hooks.cjs",
+    "hooks:install": "node scripts/setup-git-hooks.cjs",
     "build:icons": "node scripts/icon-build.cjs",
     "build": "NODE_ENV=production yarn run scss && storybook build -o docs-build-temp --stats-json && webpack --progress && node scripts/ai-manifest/generate-ai-manifest.js",
     "generate-ai-manifest": "node scripts/ai-manifest/generate-ai-manifest.js",
@@ -125,7 +127,6 @@
     "sass-loader": "17.0.0",
     "storybook": "^10.5.10",
     "storybook-addon-rtl": "3.0.2",
-    "storybook-design-token": "^5.0.0",
     "style-loader": "4.0.0",
     "stylelint": "~17.14.1",
     "stylelint-config-recommended-scss": "17.0.1",
@@ -168,10 +169,6 @@
     "minimatch@^10.1.1": "^10.2.3",
     "minimatch@^10.2.2": "^10.2.3",
     "brace-expansion@^2.0.1": "^2.0.3"
-  },
-  "engine": {
-    "node": ">=18.0.0",
-    "yarn": ">=4.0.0"
   },
   "repository": {
     "type": "git",

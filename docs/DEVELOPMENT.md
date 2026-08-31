@@ -121,6 +121,15 @@ We use conventional commits for readable history and PR title validation:
 
 Include `BREAKING CHANGE:` in the commit body for major releases.
 
+A `commit-msg` git hook enforces this format locally. It is installed
+automatically on `yarn install` (the `prepare` script points
+`core.hooksPath` at the checked-in `githooks/` directory); run
+`yarn hooks:install` to (re)install it manually. The hook also rejects
+AI-assistant attribution — robot-emoji "Generated with …" lines,
+`Claude-Session:` trailers, and bot/AI `Co-authored-by:` lines
+(`[bot]`, Copilot, Claude, etc.). Human `Co-authored-by:` trailers are
+allowed. Bypass only in a genuine emergency with `git commit --no-verify`.
+
 ## Available Scripts
 
 ### Development Commands
