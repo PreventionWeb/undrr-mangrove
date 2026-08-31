@@ -11,6 +11,14 @@
     &:hover {
       color: rgb(var(--mg-color-neutral-600));
       cursor: pointer;
+      text-decoration: underline;
+    }
+
+    &:focus-visible {
+      border-radius: var(--mg-focus-ring-radius);
+      outline: var(--mg-focus-ring-width) solid rgb(var(--mg-color-focus-ring));
+      outline-offset: var(--mg-focus-ring-offset);
+      text-decoration: underline;
     }
 
     &.selected {

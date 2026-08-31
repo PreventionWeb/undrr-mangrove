@@ -137,6 +137,24 @@ a {
     color: rgb(var(--mg-color-interactive-active));
     text-decoration: underline;
   }
+
+  &:focus-visible {
+    border-radius: var(--mg-focus-ring-radius);
+    outline: var(--mg-focus-ring-width) solid rgb(var(--mg-color-focus-ring));
+    outline-offset: var(--mg-focus-ring-offset);
+    text-decoration: underline;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 [dir="rtl"] {
