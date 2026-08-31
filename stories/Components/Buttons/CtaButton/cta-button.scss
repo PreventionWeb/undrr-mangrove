@@ -120,9 +120,13 @@ button {
   background: transparent;
   border-color: transparent;
   color: rgb(var(--mg-color-text));
+  flex: 0 0 auto;
   gap: var(--mg-spacing-50);
+  justify-content: flex-start;
   min-height: mg-rem(44);
   padding: var(--mg-spacing-50) 0;
+  white-space: nowrap;
+  width: max-content;
 
   &::after {
     align-items: center;

@@ -186,9 +186,15 @@
 }
 
 .mg-hero__buttons {
-  padding-top: var(--mg-spacing-75);
   display: flex;
+  flex-wrap: wrap;
+  gap: var(--mg-spacing-50) var(--mg-spacing-150);
   padding-bottom: var(--mg-spacing-50);
+  padding-top: var(--mg-spacing-75);
+
+  .mg-button + .mg-button {
+    margin-inline-start: 0;
+  }
 }
 
 // Child variant
