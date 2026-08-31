@@ -30,6 +30,7 @@ Some Mangrove features require relatively modern CSS. The minimum browser versio
 | ------- | ------ | ------- | ------ | ---- |
 | CSS `mask-image` (icons) | 120+ (Dec 2023) | 53+ (Apr 2017) | 15.4+ (Mar 2022) | 120+ (Dec 2023) |
 | CSS custom properties / `var()` | 49+ (Mar 2016) | 31+ (Jul 2014) | 9.1+ (Mar 2016) | 15+ (Apr 2017) |
+| Space-separated `rgb(R G B / a)` with token channels | 65+ (Mar 2018) | 52+ (Mar 2017) | 12.1+ (Mar 2019) | 79+ (Jan 2020) |
 | Container queries / `cqi` units | 105+ (Jun 2022) | 110+ (Feb 2023) | 16.0+ (Sep 2022) | 105+ (Jun 2022) |
 | `:has()` selector | 105+ (Jun 2022) | 121+ (Dec 2023) | 15.4+ (Mar 2022) | 105+ (Jun 2022) |
 

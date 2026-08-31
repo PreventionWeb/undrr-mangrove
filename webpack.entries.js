@@ -17,8 +17,6 @@ export default (type = 'css') => {
     './stories/Atom/**',
     './stories/**/*.mdx',
     './stories/**/*.jsx',
-    './stories/assets/scss/style-*-legacy.scss',
-    './stories/assets/scss/style-legacy.scss',
   ];
 
   if (type == 'js') {

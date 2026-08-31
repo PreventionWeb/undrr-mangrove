@@ -15,7 +15,7 @@ _Notable cross-cutting changes between releases land here. Per-component changes
 
 ## 2.0.0 — unreleased
 
-See the [GitHub Release](https://github.com/unisdr/undrr-mangrove/releases/tag/v2.0.0) and [Storybook release notes](https://unisdr.github.io/undrr-mangrove/?path=/docs/getting-started-release-notes-v2-0--docs) for full details.
+Shipping first as `2.0.0-alpha.1` under the npm `next` dist-tag. See [PR #1061](https://github.com/unisdr/undrr-mangrove/pull/1061) and the [Storybook release notes](https://unisdr.github.io/undrr-mangrove/?path=/docs/getting-started-release-notes-v2-0--docs) for full details; the tagged GitHub Release link lands with the stable 2.0.0.
 
 ### Breaking: CSS custom properties replace SCSS variable theming API
 
@@ -46,6 +46,10 @@ The `$variant-colour-props` map in `hero.scss` now stores CSS custom property na
 ### Removed: `storybook-design-token` plugin
 
 The `storybook-design-token` npm package is removed. The Design decisions/Colors, Spacing, Widths, Breakpoints, and Typography Storybook pages now render token values directly from `getComputedStyle` (for CSS custom properties) or as static tables (for build-time SCSS tokens). (#1061)
+
+### Removed: legacy 10px root
+
+The `style-legacy.scss`, `style-preventionweb-legacy.scss`, `style-irp-legacy.scss`, and `style-mcr-legacy.scss` entry points (and their compiled `*-legacy.css` builds) are removed, and `$mg-html-font-size` is fixed at `16` (the `!default` override is gone). Mangrove 2.0 assumes a browser-standard 16px document root. Consumers on the old 10px root must move to a 16px root and convert their own rem-based CSS from a 10px to a 16px basis. See [`docs/RELEASE-2.0.md`](docs/RELEASE-2.0.md) breaking change #5. (#1061)
 
 ## 1.8.2 — 2026-08-27
 
