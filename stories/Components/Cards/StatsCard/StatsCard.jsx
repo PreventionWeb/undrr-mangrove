@@ -22,8 +22,16 @@ export function StatsCard({
   const baseClass = 'mg-stats-card';
   const statsCount = stats.length;
 
-  // Use mg-grid system for layout
-  const gridClasses = statsCount > 0 ? `mg-grid mg-grid__col-${statsCount}` : 'mg-grid';
+  // Use mg-grid system for layout. The numbered column classes cover 1–12; past
+  // that, fall back to the single-row auto-fit modifier so a large stat set
+  // still fits one row instead of collapsing to a stacked single column.
+  const MAX_GRID_COLUMNS = 12;
+  let gridClasses = 'mg-grid';
+  if (statsCount > 0 && statsCount <= MAX_GRID_COLUMNS) {
+    gridClasses = `mg-grid mg-grid__col-${statsCount}`;
+  } else if (statsCount > MAX_GRID_COLUMNS) {
+    gridClasses = 'mg-grid mg-grid--auto-fit';
+  }
 
   const classes = [
     baseClass,

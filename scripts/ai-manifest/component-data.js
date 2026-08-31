@@ -99,10 +99,13 @@ export default {
   },
 
   'design-decisions-grid-layout': {
-    description: 'Responsive CSS grid system. 1-6 column layouts with column and row spanning. Flexbox fallback for older browsers.',
+    description: 'Responsive CSS grid system. 1-12 column layouts with column and row spanning, plus a single-row auto-fit fallback. Flexbox fallback for older browsers.',
     cssClasses: [
-      'mg-grid', 'mg-grid__col-1', 'mg-grid__col-2', 'mg-grid__col-3',
+      'mg-grid', 'mg-grid--auto-fit',
+      'mg-grid__col-1', 'mg-grid__col-2', 'mg-grid__col-3',
       'mg-grid__col-4', 'mg-grid__col-5', 'mg-grid__col-6',
+      'mg-grid__col-7', 'mg-grid__col-8', 'mg-grid__col-9',
+      'mg-grid__col-10', 'mg-grid__col-11', 'mg-grid__col-12',
       'mg-grid__col--span-2', 'mg-grid__col--span-3', 'mg-grid__col--span-all',
       'mg-grid__row--span-2', 'mg-grid__row--span-all',
     ],
