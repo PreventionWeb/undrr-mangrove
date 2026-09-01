@@ -14,6 +14,35 @@ const { version } = require('../../../../package.json');
 
 const SCSS_DIR = path.resolve(__dirname, '..');
 const BRANDS = ['preventionweb', 'irp', 'mcr', 'delta'];
+const RUNTIME_ARIA_ALIASES = [
+  'color-accent',
+  'color-accent-active',
+  'color-on-accent',
+  'color-text',
+  'color-muted-text',
+  'color-surface',
+  'color-subtle-surface',
+  'color-selected-surface',
+  'color-border',
+  'color-invalid',
+  'space-1',
+  'space-2',
+  'space-3',
+  'space-4',
+  'radius',
+  'radius-button',
+  'radius-control',
+  'radius-surface',
+  'focus-width',
+  'focus-offset',
+  'shadow',
+  'surface-shadow',
+  'surface-shadow-hover',
+  'overlay-shadow',
+  'overlay-z-index',
+  'motion-duration-fast',
+  'motion-easing',
+];
 
 function compile(entry) {
   return sass.compile(path.join(SCSS_DIR, `${entry}.scss`), {
@@ -70,12 +99,9 @@ describe('Mangrove 2.0 token contract (compiled CSS)', () => {
         new RegExp(`\\.mg-theme-${brand}\\s*\\{([^}]*)\\}`)
       )?.[1];
 
-      expect(themeBlock).toMatch(
-        /--mg-aria-color-accent:\s*rgb\(var\(--mg-color-interactive\)\)/
-      );
-      expect(themeBlock).toMatch(
-        /--mg-aria-radius-button:\s*var\(--mg-radius-button\)/
-      );
+      RUNTIME_ARIA_ALIASES.forEach(alias => {
+        expect(themeBlock).toMatch(new RegExp(`--mg-aria-${alias}:`));
+      });
     });
   });
 

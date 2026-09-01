@@ -123,7 +123,7 @@
 .react-aria-Checkbox[data-selected]::before {
   background: var(--mg-aria-color-accent);
   border-color: var(--mg-aria-color-accent);
-  content: "✓";
+  content: "✓"/"";
 }
 
 .react-aria-Checkbox[data-focus-visible]::before {
@@ -596,6 +596,10 @@
   box-shadow: var(--mg-aria-shadow);
 }
 
+.aria-crud-card[data-focus-visible] {
+  outline: none;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   :where(.react-aria-Button) {
     transition: background-color var(--mg-aria-motion-duration-fast) var(--mg-aria-motion-easing), border-color var(--mg-aria-motion-duration-fast) var(--mg-aria-motion-easing), color var(--mg-aria-motion-duration-fast) var(--mg-aria-motion-easing), scale var(--mg-aria-motion-duration-fast) var(--mg-aria-motion-easing);
@@ -611,8 +615,11 @@
   .react-aria-Button[data-focus-visible],
   .react-aria-Input[data-focus-visible],
   .react-aria-DateInput[data-focus-within],
+  .react-aria-DateSegment[data-focused],
   .react-aria-Checkbox[data-focus-visible]::before,
+  .react-aria-CalendarCell[data-focus-visible],
   .react-aria-GridListItem[data-focus-visible],
+  .aria-crud-card[data-focus-visible],
   .react-aria-ListBoxItem[data-focus-visible],
   .react-aria-MenuItem[data-focus-visible] {
     outline: var(--mg-aria-focus-width) solid CanvasText;

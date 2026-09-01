@@ -664,16 +664,12 @@ function CrudDemo() {
             </Menu>
           </Popover>
         </MenuTrigger>
-        <TooltipTrigger>
-          <Button
-            className="mg-button mg-button-primary"
-            aria-label="Add event"
-            onPress={() => setEditing({})}
-          >
-            Add event
-          </Button>
-          <Tooltip>Add event</Tooltip>
-        </TooltipTrigger>
+        <Button
+          className="mg-button mg-button-primary"
+          onPress={() => setEditing({})}
+        >
+          Add event
+        </Button>
       </div>
       <ResizableTableContainer className="aria-spike-table-scroll mg-u-responsive--show-large">
         <Table
