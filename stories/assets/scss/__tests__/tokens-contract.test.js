@@ -27,6 +27,7 @@ const RUNTIME_ARIA_ALIASES = [
   'color-selected-surface',
   'color-border',
   'color-border-focus',
+  'color-track',
   'color-invalid',
   'space-1',
   'space-2',

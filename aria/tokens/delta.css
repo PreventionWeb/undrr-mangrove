@@ -54,6 +54,7 @@
   --mg-aria-color-selected-surface: rgb(var(--mg-color-interactive) / 0.12);
   --mg-aria-color-border: rgb(var(--mg-color-neutral-200));
   --mg-aria-color-border-focus: rgb(var(--mg-color-form-focus));
+  --mg-aria-color-track: rgb(var(--mg-color-neutral-200));
   --mg-aria-color-invalid: rgb(var(--mg-color-red-900));
   --mg-aria-font-family: "Dubai", sans-serif;
   --mg-aria-font-size: 1rem;
@@ -84,6 +85,9 @@
   --mg-aria-motion-duration-fast: var(--mg-motion-duration-fast);
   --mg-aria-motion-easing: var(--mg-motion-easing-standard);
   --mg-aria-width-full: 100%;
+  --mg-aria-radius-pill: 9999px;
+  --mg-aria-track-thickness: 0.5rem;
+  --mg-aria-thumb-size: 1.25rem;
   --mg-aria-dialog-width: 42rem;
   --mg-aria-dialog-available-width: calc(100% - var(--mg-aria-space-4) * 2);
   --mg-aria-dialog-available-height: calc(100% - var(--mg-aria-space-4) * 2);

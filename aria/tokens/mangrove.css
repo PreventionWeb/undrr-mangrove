@@ -25,6 +25,9 @@
   --mg-aria-color-selected-surface: rgb(var(--mg-color-interactive) / 0.12);
   --mg-aria-color-border: rgb(var(--mg-color-neutral-400));
   --mg-aria-color-border-focus: rgb(var(--mg-color-form-focus));
+  /* Unfilled rails: slider track, progress/meter background, switch when off.
+     Needs more presence than a subtle surface but less than a border. */
+  --mg-aria-color-track: rgb(var(--mg-color-neutral-100));
   --mg-aria-color-invalid: rgb(var(--mg-color-red-900));
   --mg-aria-space-1: var(--mg-spacing-50);
   --mg-aria-space-2: var(--mg-spacing-100);
@@ -57,6 +60,11 @@
   --mg-aria-border-width: 1px;
   --mg-aria-color-overlay-backdrop: rgb(24 24 35 / 0.2);
   --mg-aria-width-full: 100%;
+  /* Shape and size constants shared by the range/toggle family. Brand-neutral,
+     so they sit outside the runtime theme aliases. */
+  --mg-aria-radius-pill: 9999px;
+  --mg-aria-track-thickness: 0.5rem;
+  --mg-aria-thumb-size: 1.25rem;
   --mg-aria-dialog-width: 42rem;
   --mg-aria-dialog-available-width: calc(100% - var(--mg-aria-space-4) * 2);
   --mg-aria-dialog-available-height: calc(100% - var(--mg-aria-space-4) * 2);

@@ -18,6 +18,9 @@
   --mg-aria-color-selected-surface: rgb(var(--mg-color-interactive) / 0.12);
   --mg-aria-color-border: rgb(var(--mg-color-neutral-400));
   --mg-aria-color-border-focus: rgb(var(--mg-color-form-focus));
+  /* Unfilled rails: slider track, progress/meter background, switch when off.
+     Needs more presence than a subtle surface but less than a border. */
+  --mg-aria-color-track: rgb(var(--mg-color-neutral-100));
   --mg-aria-color-invalid: rgb(var(--mg-color-red-900));
   --mg-aria-space-1: var(--mg-spacing-50);
   --mg-aria-space-2: var(--mg-spacing-100);
