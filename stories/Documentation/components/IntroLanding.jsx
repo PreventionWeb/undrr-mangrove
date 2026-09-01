@@ -164,7 +164,7 @@ export function IntroLanding() {
           <p className="mg-intro__eyebrow">Explore Mangrove</p>
           <h2 id="mg-intro-resources">What’s inside</h2>
         </div>
-        <div className="mg-intro__grid">
+        <div className="mg-grid mg-grid__col-3">
           {destinations.map(destination => (
             <IconCard
               data={[

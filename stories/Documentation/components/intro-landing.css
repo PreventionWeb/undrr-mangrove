@@ -140,13 +140,7 @@
   margin: 1rem 0 0;
   max-width: 48rem;
 }
-.mg-intro__grid {
-  display: grid;
-  gap: 1rem;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.mg-intro__grid > .mg-card__icon {
+.mg-intro__resources .mg-card__icon {
   height: 100%;
   max-width: none;
   min-height: 19rem;
@@ -221,9 +215,6 @@
   }
   .mg-intro__statement,
   .mg-intro__project-links {
-    grid-template-columns: 1fr;
-  }
-  .mg-intro__grid {
     grid-template-columns: 1fr;
   }
   .mg-intro__project-links .mg-intro__actions {
