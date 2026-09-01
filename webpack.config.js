@@ -113,7 +113,6 @@ export default [
       HorizontalBookCard:
         './stories/Components/Cards/Card/HorizontalBookCard.jsx',
       Breadcrumbs: './stories/Components/Breadcrumbs/Breadcrumbs.jsx',
-      // Deprecated (February 2026) — removal planned by end of 2026. Use Pager instead.
       Tab: './stories/Components/Tab/Tab.jsx',
       Hero: './stories/Components/Hero/Hero.jsx',
       PageHeader: './stories/Components/PageHeader/PageHeader.jsx',
