@@ -12,17 +12,27 @@
     max-width: 800px;
   }
 
-  &__headline {
+  .mg-cta__eyebrow {
+    color: rgb(var(--mg-color-neutral-0));
+    font-size: mg-rem(12);
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    margin: 0 0 var(--mg-spacing-75);
+    text-transform: uppercase;
+  }
+
+  .mg-cta__headline {
     color: rgb(var(--mg-color-white));
     font-weight: 700;
     margin-bottom: var(--mg-spacing-100);
   }
 
-  &__text {
+  .mg-cta__text {
     color: rgb(var(--mg-color-neutral-0) / 0.9);
     margin-bottom: var(--mg-spacing-150);
 
     p {
+      color: inherit;
       margin-bottom: var(--mg-spacing-75);
 
       &:last-child {
@@ -61,6 +71,27 @@
 
     .mg-cta__actions {
       justify-content: center;
+    }
+  }
+
+  // Horizontal text/action composition for wide promotional banners.
+  &--inline {
+    .mg-cta__body {
+      max-width: none;
+    }
+
+    @include devicebreak(medium) {
+      .mg-cta__body {
+        align-items: end;
+        display: grid;
+        gap: var(--mg-spacing-300);
+        grid-template-columns: minmax(0, 1fr) auto;
+      }
+
+      .mg-cta__actions {
+        justify-content: flex-end;
+        margin-top: 0;
+      }
     }
   }
 
@@ -127,6 +158,21 @@
     background-color: var(--mg-color-hero-button-secondary-background);
     color: rgb(var(--mg-color-hero-button-secondary-color));
     border-color: rgb(var(--mg-border-color-hero-button-secondary));
+  }
+
+  a.mg-button.mg-button-outline,
+  a.mg-button.mg-button-outline:hover,
+  a.mg-button.mg-button-outline:visited {
+    background-color: transparent;
+    border-color: rgb(var(--mg-color-neutral-0) / 0.72);
+    border-style: solid;
+    border-width: var(--mg-border-width-button, 1px);
+    color: rgb(var(--mg-color-neutral-0));
+  }
+
+  a.mg-button.mg-button-outline:hover {
+    background-color: rgb(var(--mg-color-neutral-0) / 0.12);
+    border-color: rgb(var(--mg-color-neutral-0));
   }
 
   a.mg-button:focus-visible {

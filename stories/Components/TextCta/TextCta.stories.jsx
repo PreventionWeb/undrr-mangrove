@@ -63,6 +63,28 @@ export const LeftAligned = {
   },
 };
 
+export const Inline = {
+  args: {
+    eyebrow: 'Open source',
+    headline: 'Use it. Inspect it. Improve it.',
+    text: '<p>Install the package or work with the source on GitHub.</p>',
+    buttons: [
+      {
+        label: 'View GitHub',
+        url: 'https://github.com/unisdr/undrr-mangrove',
+      },
+      {
+        label: 'View npm',
+        url: 'https://www.npmjs.com/package/@undrr/undrr-mangrove',
+        type: 'Secondary',
+        outline: true,
+      },
+    ],
+    centered: false,
+    layout: 'inline',
+  },
+};
+
 export const WithImage = {
   args: {
     headline:

@@ -19,9 +19,19 @@ describe('TextCta', () => {
     expect(screen.getByText('Join the platform')).toBeInTheDocument();
   });
 
+  it('renders an optional eyebrow', () => {
+    const { container } = render(
+      <TextCta eyebrow="Open source" headline="Build with Mangrove" />
+    );
+
+    expect(container.querySelector('.mg-cta__eyebrow')).toHaveTextContent(
+      'Open source'
+    );
+  });
+
   it('applies headlineSize class', () => {
     const { container } = render(
-      <TextCta headline="Big heading" headlineSize="800" />,
+      <TextCta headline="Big heading" headlineSize="800" />
     );
 
     const heading = container.querySelector('.mg-cta__headline');
@@ -37,7 +47,7 @@ describe('TextCta', () => {
 
   it('renders headline at a custom heading level', () => {
     const { container } = render(
-      <TextCta headline="Custom level" headlineLevel={3} />,
+      <TextCta headline="Custom level" headlineLevel={3} />
     );
 
     const heading = container.querySelector('.mg-cta__headline');
@@ -50,7 +60,7 @@ describe('TextCta', () => {
 
   it('renders sanitized HTML in text prop', () => {
     const { container } = render(
-      <TextCta text="<p>Hello <strong>world</strong></p>" />,
+      <TextCta text="<p>Hello <strong>world</strong></p>" />
     );
 
     const textEl = container.querySelector('.mg-cta__text');
@@ -59,7 +69,7 @@ describe('TextCta', () => {
 
   it('strips dangerous HTML from text prop', () => {
     const { container } = render(
-      <TextCta text='<p>Safe</p><script>alert("xss")</script>' />,
+      <TextCta text='<p>Safe</p><script>alert("xss")</script>' />
     );
 
     const textEl = container.querySelector('.mg-cta__text');
@@ -89,6 +99,28 @@ describe('TextCta', () => {
     expect(screen.getByText('Click')).toHaveAttribute('href', '#');
   });
 
+  it('composes button variants and external-link attributes', () => {
+    render(
+      <TextCta
+        buttons={[
+          {
+            label: 'View source',
+            url: 'https://example.com',
+            type: 'Secondary',
+            outline: true,
+            target: '_blank',
+            rel: 'noopener noreferrer',
+          },
+        ]}
+      />
+    );
+
+    const link = screen.getByText('View source');
+    expect(link).toHaveClass('mg-button-secondary', 'mg-button-outline');
+    expect(link).toHaveAttribute('target', '_blank');
+    expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+  });
+
   // --------------------------------------------------
   // Variant classes
   // --------------------------------------------------
@@ -111,7 +143,7 @@ describe('TextCta', () => {
 
   it('adds mg-cta--with-image class when image is set', () => {
     const { container } = render(
-      <TextCta image="https://example.com/photo.jpg" imageAlt="A photo" />,
+      <TextCta image="https://example.com/photo.jpg" imageAlt="A photo" />
     );
 
     expect(container.firstChild).toHaveClass('mg-cta--with-image');
@@ -133,9 +165,16 @@ describe('TextCta', () => {
 
   it('does not add mg-cta--centered when image is present', () => {
     const { container } = render(
-      <TextCta centered image="https://example.com/photo.jpg" />,
+      <TextCta centered image="https://example.com/photo.jpg" />
     );
 
+    expect(container.firstChild).not.toHaveClass('mg-cta--centered');
+  });
+
+  it('uses the inline layout without centered treatment', () => {
+    const { container } = render(<TextCta layout="inline" centered />);
+
+    expect(container.firstChild).toHaveClass('mg-cta--inline');
     expect(container.firstChild).not.toHaveClass('mg-cta--centered');
   });
 
@@ -194,7 +233,7 @@ describe('TextCta', () => {
         headline="Take action now"
         text="<p>Register for the conference.</p>"
         buttons={defaultButtons}
-      />,
+      />
     );
     expect(await axe(container)).toHaveNoViolations();
   });
@@ -206,7 +245,7 @@ describe('TextCta', () => {
         buttons={[{ label: 'Learn more', url: '#' }]}
         image="https://example.com/photo.jpg"
         imageAlt="Help desk icon"
-      />,
+      />
     );
     expect(await axe(container)).toHaveNoViolations();
   });

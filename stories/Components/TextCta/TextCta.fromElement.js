@@ -14,6 +14,7 @@ export default function textCtaFromElement(container) {
   const headlineLevel = rawLevel >= 2 && rawLevel <= 6 ? rawLevel : 2;
 
   return {
+    eyebrow: dataset.eyebrow || '',
     headline: dataset.headline || '',
     headlineSize: dataset.headlineSize || '600',
     headlineLevel,
@@ -25,6 +26,7 @@ export default function textCtaFromElement(container) {
     image: dataset.image || undefined,
     imageAlt: dataset.imageAlt || '',
     centered: dataset.centered !== 'false',
+    layout: dataset.layout === 'inline' ? 'inline' : 'stacked',
     className: dataset.className || undefined,
   };
 }

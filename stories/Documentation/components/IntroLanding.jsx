@@ -4,6 +4,7 @@ import { CtaButton } from '../../Components/Buttons/CtaButton/CtaButton';
 import { IconCard } from '../../Components/Cards/IconCard/IconCard';
 import { VerticalCard } from '../../Components/Cards/Card/VerticalCard';
 import ScrollContainer from '../../Components/ScrollContainer/ScrollContainer';
+import { TextCta } from '../../Components/TextCta/TextCta';
 
 import heroImage from '../../assets/images/sample_image-lg.jpg';
 import authorImage from '../../assets/images/author.png';
@@ -200,31 +201,29 @@ export function IntroLanding() {
         </ScrollContainer>
       </section>
 
-      <section className="mg-intro__project-links" aria-label="Project links">
-        <div>
-          <p className="mg-intro__eyebrow">Open source</p>
-          <h2>Use it. Inspect it. Improve it.</h2>
-          <p>Install the package or work with the source on GitHub.</p>
-        </div>
-        <div className="mg-buttons mg-intro__actions">
-          <CtaButton
-            className="mg-intro__project-button"
-            label="View GitHub"
-            href="https://github.com/unisdr/undrr-mangrove"
-            target="_blank"
-            rel="noopener noreferrer"
-          />
-          <CtaButton
-            className="mg-intro__project-button"
-            label="View npm"
-            Type="Secondary"
-            Outline
-            href="https://www.npmjs.com/package/@undrr/undrr-mangrove"
-            target="_blank"
-            rel="noopener noreferrer"
-          />
-        </div>
-      </section>
+      <TextCta
+        eyebrow="Open source"
+        headline="Use it. Inspect it. Improve it."
+        text="<p>Install the package or work with the source on GitHub.</p>"
+        buttons={[
+          {
+            label: 'View GitHub',
+            url: 'https://github.com/unisdr/undrr-mangrove',
+            target: '_blank',
+            rel: 'noopener noreferrer',
+          },
+          {
+            label: 'View npm',
+            url: 'https://www.npmjs.com/package/@undrr/undrr-mangrove',
+            type: 'Secondary',
+            outline: true,
+            target: '_blank',
+            rel: 'noopener noreferrer',
+          },
+        ]}
+        centered={false}
+        layout="inline"
+      />
     </div>
   );
 }

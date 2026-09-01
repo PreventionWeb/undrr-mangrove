@@ -110,8 +110,7 @@
 }
 
 .mg-intro .mg-intro__statement h2,
-.mg-intro .mg-intro__section-heading h2,
-.mg-intro .mg-intro__project-links h2 {
+.mg-intro .mg-intro__section-heading h2 {
   color: inherit;
   font-size: clamp(1.9rem, 4vw, 3.25rem);
   letter-spacing: -0.035em;
@@ -161,44 +160,10 @@
   min-width: 19rem;
 }
 
-.mg-intro__project-links {
-  align-items: end;
-  background: #092b51;
+.mg-intro > .mg-cta {
   border-radius: 0.375rem;
-  color: white;
-  display: grid;
-  gap: 2rem;
-  grid-template-columns: minmax(0, 1fr) auto;
   margin-top: clamp(3rem, 7vw, 5rem);
-  padding: clamp(2rem, 5vw, 4rem);
-}
-.mg-intro__project-links p:not(.mg-intro__eyebrow) {
-  color: rgb(255 255 255 / 0.76);
-  margin-bottom: 0;
-}
-.mg-intro__project-links .mg-intro__actions {
-  justify-content: flex-end;
-  margin-top: 0;
-}
-.mg-intro__project-links .mg-intro__project-button {
-  background: white;
-  border-color: white;
-  color: #123b68;
-}
-.mg-intro__project-links .mg-intro__project-button:hover {
-  background: #edf5fc;
-  border-color: #edf5fc;
-  color: #092b51;
-}
-.mg-intro__project-links .mg-intro__project-button.mg-button-outline {
-  background: transparent;
-  border-color: rgb(255 255 255 / 0.72);
-  color: white;
-}
-.mg-intro__project-links .mg-intro__project-button.mg-button-outline:hover {
-  background: rgb(255 255 255 / 0.12);
-  border-color: white;
-  color: white;
+  overflow: hidden;
 }
 
 @media (max-width: 760px) {
@@ -213,11 +178,7 @@
   .mg-intro__logo {
     margin-bottom: 4rem;
   }
-  .mg-intro__statement,
-  .mg-intro__project-links {
+  .mg-intro__statement {
     grid-template-columns: 1fr;
-  }
-  .mg-intro__project-links .mg-intro__actions {
-    justify-content: flex-start;
   }
 }
