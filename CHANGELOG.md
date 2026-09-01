@@ -15,7 +15,34 @@ _Notable cross-cutting changes between releases land here. Per-component changes
 
 ## 2.0.0 — unreleased
 
-Shipping first as `2.0.0-alpha.1` under the npm `next` dist-tag. See [PR #1061](https://github.com/unisdr/undrr-mangrove/pull/1061) and the [Storybook release notes](https://unisdr.github.io/undrr-mangrove/?path=/docs/getting-started-release-notes-v2-0--docs) for full details; the tagged GitHub Release link lands with the stable 2.0.0.
+Development releases began with `2.0.0-alpha.1` under the npm `next` dist-tag. See [PR #1061](https://github.com/unisdr/undrr-mangrove/pull/1061) and the [Storybook release notes](https://unisdr.github.io/undrr-mangrove/?path=/docs/getting-started-release-notes-v2-0--docs) for the first alpha; the tagged GitHub Release link lands with the stable 2.0.0.
+
+### Planned for `2.0.0-alpha.2`: experience and interaction baseline
+
+[PR #1086](https://github.com/unisdr/undrr-mangrove/pull/1086) establishes the next 2.0 alpha baseline across Mangrove's component surfaces and interactions while preserving Drupal hydration contracts, theme ownership and existing BEM APIs except for the intentionally retired Pagination component.
+
+#### Visual foundations and interaction
+
+- Shared surface, border, shadow, radius, focus and reduced-motion tokens now provide a consistent foundation without forcing every component into the same shape.
+- Buttons, form controls, cards, hero compositions, tabs, disclosures, menus, on-page navigation, tables, Pager, ScrollContainer and Text CTA receive coordinated responsive and interaction refinements.
+- The opt-in editorial CTA adds a compact directional badge with stable hover geometry, logical RTL placement and safe wrapping for long translated labels. Conventional buttons remain the default for forms, consent and utility actions.
+- Chips distinguish navigational links from dismiss actions and add logical RTL spacing, visible removal affordances, keyboard focus, reduced-motion and forced-colour support.
+
+#### Components and compositions
+
+- New `FormAction` composition joins a field and its key action for search, subscription and select-and-continue flows, with React and vanilla HTML examples, accessible help/error wiring, RTL support and optional mobile stacking.
+- Vertical, horizontal, book, icon and stats cards receive theme-aware presentation refinements. Vertical-card media now fills its frame consistently without changing the intentional sizing of book, horizontal or icon variants.
+- The Storybook introduction and Component Laboratory demonstrate production component compositions, responsive collections, deterministic syndicated-search states, forms and data-rich examples. Landing-page showcase cards now link to relevant library guidance and stories.
+
+#### Accessibility, internationalization and verification
+
+- Logical properties, focus states, target sizing, reduced motion, forced colours, narrow layouts, RTL and long translations are covered across representative components and themes.
+- Storybook's global locale toolbar is the canonical translation mechanism. Redundant per-language story groups are removed; dedicated RTL and long-label stories remain only where they exercise a distinct layout or interaction condition.
+- Component guidance and changelogs, the Experience principles, contribution guidance and AI manifest examples are synchronized with the updated markup and public classes.
+
+#### Removed: deprecated Pagination component
+
+The deprecated `Pagination` component, its stories and documentation are removed. Use `Pager`, which is the supported 2.0 pagination pattern.
 
 ### Breaking: CSS custom properties replace SCSS variable theming API
 
@@ -125,11 +152,11 @@ See the [GitHub Release](https://github.com/unisdr/undrr-mangrove/releases/tag/v
 
 - New `react-doctor` component-quality linter codified as a project convention. Health score moved 57 → 68 across the sweep, with 66 of the original 398 findings cleared. (#985, #987, #988, #989, #996.)
 - House conventions for component authors documented in `docs/AI-CODING-AGENTS.md`: no em-dashes or three-period ellipses in JSX text; prefer `use()` over `useContext()` on React 19+; hoist default `[]` / `{}` props to module-level constants; no inline render helpers (extract as named subcomponents); lazy `useState` init; effect cleanup discipline; per-call-site triage for `dangerouslySetInnerHTML` (inline DOMPurify vs documented caller contract). (#992)
-- React Doctor health badge added to `README.md` and the Storybook *Introduction* page. The badge is a manually-refreshed periodic snapshot — see `docs/AI-CODING-AGENTS.md#refreshing-the-score-badge`. (#992, #996.)
+- React Doctor health badge added to `README.md` and the Storybook _Introduction_ page. The badge is a manually-refreshed periodic snapshot — see `docs/AI-CODING-AGENTS.md#refreshing-the-score-badge`. (#992, #996.)
 - **Consumer-visible API note:** `Component.defaultProps` has been removed from `FooterIcons`, `FooterConditions`, `FooterConditions2`, `FooterLists`, `Link`, and `ScrollContainer`. React 19 deprecates `defaultProps` on function components; the defaults are now declared via destructured parameters, so component behaviour is unchanged. Only consumers that read `Component.defaultProps` for introspection (rare) need to adjust. (#985, #988)
 - `useContext(SearchContext)` swapped to React 19's `use(SearchContext)` in `SyndicationSearchWidget` (#988). Internal change; identical behaviour at top-level call sites.
 
 ### Documentation
 
-- `docs/AI-CODING-AGENTS.md` extended with the *Component quality checks with react-doctor* section (above), linked from `CONTRIBUTING.md`, `docs/DEVELOPMENT.md`, and `docs/REVIEW-CHECKLIST.md`. (#992)
+- `docs/AI-CODING-AGENTS.md` extended with the _Component quality checks with react-doctor_ section (above), linked from `CONTRIBUTING.md`, `docs/DEVELOPMENT.md`, and `docs/REVIEW-CHECKLIST.md`. (#992)
 - Tracking issue [#986](https://github.com/unisdr/undrr-mangrove/issues/986) documents the remaining `react-doctor` work, organised into risk buckets for future sweeps.
