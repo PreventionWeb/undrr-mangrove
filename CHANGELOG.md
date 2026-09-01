@@ -29,6 +29,7 @@ See the [GitHub Release](https://github.com/unisdr/undrr-mangrove/releases/tag/v
 - Buttons, form controls, cards, hero compositions, tabs, disclosures, menus, on-page navigation, tables, Pager, ScrollContainer and Text CTA receive coordinated responsive and interaction refinements.
 - The opt-in editorial CTA adds a compact directional badge with stable hover geometry, logical RTL placement and safe wrapping for long translated labels. Conventional buttons remain the default for forms, consent and utility actions.
 - Chips distinguish navigational links from dismiss actions and add logical RTL spacing, visible removal affordances, keyboard focus, reduced-motion and forced-colour support.
+- Inline code now uses a compact theme-aware technical surface with clearer monospace typography and resilient wrapped-line decoration.
 
 #### Components and compositions
 

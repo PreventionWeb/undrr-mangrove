@@ -432,6 +432,7 @@ $header-height-medium: 75px;
 
 /* variables end */
 
+// stylelint-disable comment-whitespace-inside -- Preserve the fixed-width source easter egg.
 /*============================================================================+
 | [z-level: -2] [Biome: Server Rack] [Activity: Constructing Frameworks]      |
 +=============================================================================+
@@ -454,3 +455,4 @@ $header-height-medium: 75px;
 +=============================================================================+
 | KEY: d=web-dwarf  c=coder-dwarf  w=wrangler  [=O=]=data forge  X=stairwell  |
 +============================================================================*/
+// stylelint-enable comment-whitespace-inside

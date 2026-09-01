@@ -1,14 +1,19 @@
 .mg-code,
 code {
-  background: rgb(var(--mg-color-neutral-25));
+  background: rgb(var(--mg-color-interactive) / 0.08);
   padding: var(--mg-spacing-25) var(--mg-spacing-50);
-  border-radius: var(--mg-spacing-25);
-  border: 1px solid rgb(var(--mg-color-neutral-100));
-  color: rgb(var(--mg-color-text));
-  font-family: Monaco, Menlo, 'Ubuntu Mono', monospace;
+  border: 0;
+  border-radius: var(--mg-radius-form-input);
+  box-shadow: inset 0 0 0 1px rgb(var(--mg-color-interactive) / 0.2);
+  color: rgb(var(--mg-color-interactive));
+  font-family: ui-monospace, SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
   font-size: 0.875em;
+  font-variant-ligatures: none;
+  font-weight: 500;
   line-height: 1.4;
-  overflow-wrap: break-word;
+  overflow-wrap: anywhere;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
 }
 
 pre {
