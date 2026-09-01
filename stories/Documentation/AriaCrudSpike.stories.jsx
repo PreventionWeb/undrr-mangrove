@@ -544,9 +544,9 @@ function CrudDemo() {
   };
   return (
     <div className="aria-crud-demo">
-      <div className="mg-search__form">
+      <div className="aria-crud-toolbar">
         <SearchField
-          className="mg-search__input-wrapper"
+          className="mg-search__input-wrapper aria-crud-search"
           aria-label="Search events"
           value={search}
           onChange={value => {
@@ -670,7 +670,7 @@ function CrudDemo() {
             aria-label="Add event"
             onPress={() => setEditing({})}
           >
-            +
+            Add event
           </Button>
           <Tooltip>Add event</Tooltip>
         </TooltipTrigger>
@@ -832,14 +832,22 @@ function CrudDemo() {
         </Table>
       </ResizableTableContainer>
       <GridList
-        className="mg-u-responsive--show-small"
+        className="mg-u-responsive--show-small aria-crud-list"
         aria-label="Hazardous events"
         items={pageItems}
       >
         {item => (
-          <GridListItem textValue={item.hazard}>
-            <div className="mg-grid mg-grid__col-2">
-              <div>
+          <GridListItem className="aria-crud-card" textValue={item.hazard}>
+            <div className="aria-crud-card__header">
+              <div className="aria-crud-event-identity">
+                {item.image && <img alt="" src={item.image} />}
+                <span>
+                  <strong>{item.hazard}</strong>
+                  {item.note && <small>{item.note}</small>}
+                  <small>{item.status}</small>
+                </span>
+              </div>
+              <div className="aria-crud-actions">
                 <ToggleButton
                   className="mg-button mg-button-primary mg-button-outline aria-crud-favorite-button"
                   aria-label={`Favorite ${item.hazard}`}
@@ -848,18 +856,6 @@ function CrudDemo() {
                 >
                   {item.favorite ? '★' : '☆'}
                 </ToggleButton>
-                <div className="aria-crud-event-identity">
-                  {item.image && <img alt="" src={item.image} />}
-                  <span>
-                    <strong>{item.hazard}</strong>
-                    {item.note && <small>{item.note}</small>}
-                    <small>{item.status}</small>
-                  </span>
-                </div>
-              </div>
-              <div>
-                <span className="mg-tag mg-tag--outline">{item.cycle}</span>
-                <span className="mg-tag mg-tag--outline">{item.sunlight}</span>
                 <MenuTrigger>
                   <Button
                     className="mg-button mg-button-primary mg-button-outline"
@@ -906,6 +902,10 @@ function CrudDemo() {
                   </Popover>
                 </MenuTrigger>
               </div>
+            </div>
+            <div className="aria-crud-card__meta">
+              <span className="mg-tag mg-tag--outline">{item.cycle}</span>
+              <span className="mg-tag mg-tag--outline">{item.sunlight}</span>
             </div>
           </GridListItem>
         )}

@@ -27,6 +27,14 @@
   --mg-spacing-150: 0.9375rem;
   --mg-spacing-200: 1.25rem;
   --mg-radius-form-input: 0.3125rem;
+  --mg-radius-button: 0.3125rem;
+  --mg-card-border-radius: 0.3125rem;
+  --mg-focus-ring-width: 2px;
+  --mg-focus-ring-offset: 2px;
+  --mg-shadow-raised: inset 0 0 0 1px rgb(24 24 35 / 0.18);
+  --mg-shadow-raised-hover: inset 0 0 0 2px rgb(var(--mg-color-interactive));
+  --mg-motion-duration-fast: 160ms;
+  --mg-motion-easing-standard: cubic-bezier(0.2, 0, 0, 1);
   --mg-z-index-modal: 5000;
   --mg-aria-color-accent: rgb(var(--mg-color-interactive));
   --mg-aria-color-accent-active: rgb(var(--mg-color-button--hover));
@@ -38,7 +46,7 @@
   --mg-aria-color-selected-surface: rgb(var(--mg-color-interactive) / 0.12);
   --mg-aria-color-border: rgb(var(--mg-color-neutral-200));
   --mg-aria-color-invalid: rgb(var(--mg-color-red-900));
-  --mg-aria-font-family: 'Dubai', sans-serif;
+  --mg-aria-font-family: "Dubai", sans-serif;
   --mg-aria-font-size: 1rem;
   --mg-aria-font-size-small: 0.875rem;
   --mg-aria-line-height: 1.5;
@@ -47,14 +55,24 @@
   --mg-aria-space-3: var(--mg-spacing-150);
   --mg-aria-space-4: var(--mg-spacing-200);
   --mg-aria-radius: var(--mg-radius-form-input);
+  --mg-aria-radius-button: var(--mg-radius-button);
+  --mg-aria-radius-control: var(--mg-radius-form-input);
+  --mg-aria-radius-surface: var(--mg-card-border-radius);
   --mg-aria-border-width: 1px;
-  --mg-aria-focus-width: 2px;
-  --mg-aria-shadow: 0 0 0 var(--mg-aria-focus-width)
-    rgb(var(--mg-color-interactive) / 0.25);
+  --mg-aria-focus-width: var(--mg-focus-ring-width);
+  --mg-aria-focus-offset: var(--mg-focus-ring-offset);
+  --mg-aria-shadow:
+    0 0 0 var(--mg-aria-focus-offset) var(--mg-aria-color-surface),
+    0 0 0 calc(var(--mg-aria-focus-offset) + var(--mg-aria-focus-width))
+      var(--mg-aria-color-accent);
+  --mg-aria-surface-shadow: var(--mg-shadow-raised);
+  --mg-aria-surface-shadow-hover: var(--mg-shadow-raised-hover);
   --mg-aria-overlay-shadow: 0 var(--mg-aria-space-1) var(--mg-aria-space-3)
     rgb(24 24 35 / 0.2);
   --mg-aria-overlay-z-index: var(--mg-z-index-modal);
   --mg-aria-color-overlay-backdrop: rgb(24 24 35 / 0.2);
+  --mg-aria-motion-duration-fast: var(--mg-motion-duration-fast);
+  --mg-aria-motion-easing: var(--mg-motion-easing-standard);
   --mg-aria-width-full: 100%;
   --mg-aria-dialog-width: 42rem;
   --mg-aria-dialog-available-width: calc(100% - var(--mg-aria-space-4) * 2);

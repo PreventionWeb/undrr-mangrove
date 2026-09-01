@@ -78,11 +78,11 @@ mechanism used by DELTA.
    foundation needs an agreed cascade strategy before claiming that Tailwind
    utilities always win.
 7. **Overlay theming: yes.** The `Popover` targets the portalled React Aria
-   overlay and all token definitions are on `:root`, so it does not depend on a
-   wrapper theme class. Browser verification opened the portal, confirmed it
-   had a white token surface, then swapped only to DELTA tokens and confirmed
-   the trigger changed to DELTA navy (`rgb(19, 46, 72)`) while the portal
-   remained correctly themed.
+   overlay. Standalone adapter tokens are available on `:root`; Mangrove's
+   runtime theme aliases are also emitted on the body theme classes so a
+   portalled overlay inherits the active theme. Browser verification opened
+   the portal, confirmed its token surface, and confirmed the DELTA trigger
+   resolves to DELTA navy (`rgb(19, 46, 72)`).
 
 ## Expanded component evidence
 
@@ -111,6 +111,15 @@ DELTA now mirrors the desktop CRUD proof with search, filters and clear state,
 column visibility, sorting/resizing, multi-row selection, favourites, nested
 row actions, pagination, and functioning create/edit/delete overlays including
 validation, ComboBox, date picker, and image-drop handling.
+
+The Mangrove stories also exercise the v2 experience-principle layer without
+turning the spike into a wrapper library. React Aria controls now consume
+theme-owned button, form, and surface geometry; raised surfaces use Mangrove's
+semantic shadow tokens; controls have explicit focus, pressed, reduced-motion,
+and forced-colour treatments; and the compact view composes the same data as a
+responsive card list. The adapter aliases are repeated on runtime theme
+classes so their dependent custom properties resolve in the active theme,
+rather than being frozen to the `:root` defaults.
 
 Two implementation details were useful findings rather than styling failures:
 
@@ -141,6 +150,12 @@ Two implementation details were useful findings rather than styling failures:
 - Browser checks confirmed the Select overlay, sortable columns, pagination,
   and token-styled controls in the DELTA and Storybook demos. Screenshots were
   intentionally removed from the package/PR rather than shipped as artifacts.
+- A focused v2 visual and interaction audit covered Chromium and Firefox at
+  desktop and mobile widths, keyboard-opened Select and dialog flows, modal
+  focus containment, RTL layout, reduced motion, long fixture labels, and the
+  Global UNDRR, MCR2030, and DELTA runtime themes. The compact story has no
+  horizontal overflow, and the theme audit confirms that MCR and DELTA retain
+  their own colour and geometry rather than inheriting a homogenised default.
 
 ## Limitations and follow-up
 
@@ -155,9 +170,10 @@ The expanded table is a functioning in-memory spike, rather than a production
 data form. Its create, edit, delete, filtering, sorting, and pagination state
 is intentionally discarded on reload. It is not a public wrapper API and does
 not claim a full component-system contract. A production implementation still
-needs real data integration, validation rules from DELTA, i18n/RTL QA, keyboard
-and screen-reader testing, visual regression coverage, and error/loading
-states.
+needs real data integration, validation rules from DELTA, translated product
+copy, screen-reader testing, visual regression coverage, and error/loading
+states. The spike-level browser checks reduce risk but are not a substitute for
+product-specific accessibility and internationalisation acceptance testing.
 
 ## Effort estimate
 

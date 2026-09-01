@@ -9,6 +9,8 @@ $_mcr-purple-800--raw: 110 38 119;
 $_mcr-purple-200--raw: 222 208 215;
 
 .mg-theme-mcr {
+  @include mg-aria-runtime-theme-aliases;
+
   // Runtime marker: lets JS/tooling detect that this brand theme is active
   // (guards the sub-brand body-class trap). See docs/RELEASE-2.0.md.
   --mg-theme-loaded: mcr;

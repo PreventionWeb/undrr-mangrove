@@ -3,6 +3,8 @@
 $_pw-color-primary--raw: 10 105 105;
 
 .mg-theme-preventionweb {
+  @include mg-aria-runtime-theme-aliases;
+
   // Runtime marker: lets JS/tooling detect that this brand theme is active
   // (guards the sub-brand body-class trap). See docs/RELEASE-2.0.md.
   --mg-theme-loaded: preventionweb;

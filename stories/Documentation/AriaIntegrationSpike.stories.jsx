@@ -26,52 +26,61 @@ const options = ['Preparedness', 'Response', 'Recovery'];
 function AriaIntegrationDemo() {
   const [search, setSearch] = useState('');
   const [title, setTitle] = useState('');
-  const isTitleInvalid = title.trim().length === 0;
+  const [submitted, setSubmitted] = useState(false);
+  const isTitleInvalid = submitted && title.trim().length === 0;
 
   return (
-    <div
-      className="aria-integration-demo"
-      style={{
-        display: 'grid',
-        gap: 'var(--mg-aria-space-4)',
-        maxWidth: '64rem',
-      }}
-    >
-      <Button>Save assessment</Button>
-      <TextField
-        isRequired
-        isInvalid={isTitleInvalid}
-        onChange={setTitle}
-        value={title}
-      >
-        <Label>Assessment title</Label>
-        <Input />
-        <Text slot="description">Use a short, recognisable title.</Text>
-        <FieldError>A title is required.</FieldError>
-      </TextField>
-      <Select aria-label="Programme" defaultSelectedKey="preparedness">
-        <Label>Programme</Label>
-        <Button>
-          <SelectValue />
-          <span aria-hidden="true">▾</span>
-        </Button>
-        <Popover>
-          <ListBox items={options}>
-            {item => <ListBoxItem id={item.toLowerCase()}>{item}</ListBoxItem>}
-          </ListBox>
-        </Popover>
-      </Select>
-      <TextField value={search} onChange={setSearch}>
-        <Label>Search hazardous events</Label>
-        <Input placeholder="Search by hazard name" />
-      </TextField>
-      <DateField>
-        <Label>From</Label>
-        <DateInput>{segment => <DateSegment segment={segment} />}</DateInput>
-      </DateField>
-      <div style={{ display: 'flex', gap: 'var(--mg-aria-space-4)' }}>
-        <Checkbox>View my records</Checkbox>
-        <Checkbox>Pending my action</Checkbox>
+    <div className="aria-integration-demo">
+      <header className="aria-integration-demo__intro">
+        <h2>Assessment workspace</h2>
+        <p>
+          A focused integration proof using React Aria behaviour with Mangrove
+          v2 theme tokens.
+        </p>
+      </header>
+      <div className="aria-integration-demo__surface">
+        <div className="aria-integration-demo__fields">
+          <TextField
+            isRequired
+            isInvalid={isTitleInvalid}
+            onChange={setTitle}
+            value={title}
+          >
+            <Label>Assessment title</Label>
+            <Input />
+            <Text slot="description">Use a short, recognisable title.</Text>
+            <FieldError>A title is required.</FieldError>
+          </TextField>
+          <Select aria-label="Programme" defaultSelectedKey="preparedness">
+            <Label>Programme</Label>
+            <Button>
+              <SelectValue />
+              <span aria-hidden="true">▾</span>
+            </Button>
+            <Popover>
+              <ListBox items={options}>
+                {item => (
+                  <ListBoxItem id={item.toLowerCase()}>{item}</ListBoxItem>
+                )}
+              </ListBox>
+            </Popover>
+          </Select>
+          <TextField value={search} onChange={setSearch}>
+            <Label>Search hazardous events</Label>
+            <Input placeholder="Search by hazard name" />
+          </TextField>
+          <DateField>
+            <Label>From</Label>
+            <DateInput>
+              {segment => <DateSegment segment={segment} />}
+            </DateInput>
+          </DateField>
+        </div>
+        <div className="aria-integration-demo__checks">
+          <Checkbox>View my records</Checkbox>
+          <Checkbox>Pending my action</Checkbox>
+        </div>
+        <Button onPress={() => setSubmitted(true)}>Save assessment</Button>
       </div>
     </div>
   );

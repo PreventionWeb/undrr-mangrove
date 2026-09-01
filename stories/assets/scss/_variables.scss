@@ -426,6 +426,34 @@ $mg-tabs-border-bottom: true !default;
   --mg-z-index-toast:      5500;
 }
 
+/*
+ * Refresh React Aria aliases that depend on runtime theme properties. Custom
+ * property references resolve where they are declared, so inheriting the
+ * :root alias alone would otherwise freeze these values to the default theme.
+ */
+@mixin mg-aria-runtime-theme-aliases {
+  --mg-aria-color-accent: rgb(var(--mg-color-interactive));
+  --mg-aria-color-accent-active: rgb(var(--mg-color-interactive-active));
+  --mg-aria-color-on-accent: rgb(var(--mg-color-white));
+  --mg-aria-color-text: rgb(var(--mg-color-text));
+  --mg-aria-color-muted-text: rgb(var(--mg-color-neutral-600));
+  --mg-aria-color-surface: rgb(var(--mg-color-white));
+  --mg-aria-color-subtle-surface: rgb(var(--mg-color-neutral-25));
+  --mg-aria-color-selected-surface: rgb(var(--mg-color-interactive) / 0.12);
+  --mg-aria-color-border: rgb(var(--mg-color-neutral-400));
+  --mg-aria-color-invalid: rgb(var(--mg-color-red-900));
+  --mg-aria-radius: var(--mg-radius-form-input);
+  --mg-aria-radius-button: var(--mg-radius-button);
+  --mg-aria-radius-control: var(--mg-radius-form-input);
+  --mg-aria-radius-surface: var(--mg-card-border-radius);
+  --mg-aria-shadow:
+    0 0 0 var(--mg-aria-focus-offset) var(--mg-aria-color-surface),
+    0 0 0 calc(var(--mg-aria-focus-offset) + var(--mg-aria-focus-width))
+      var(--mg-aria-color-accent);
+  --mg-aria-surface-shadow: var(--mg-shadow-raised);
+  --mg-aria-surface-shadow-hover: var(--mg-shadow-raised-hover);
+}
+
 // Header height
 $header-height-xlarge: 115px;
 $header-height-medium: 75px;

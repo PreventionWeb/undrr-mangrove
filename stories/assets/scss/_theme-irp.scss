@@ -4,6 +4,8 @@ $_irp-color-primary--raw: 15 120 191;
 $_irp-color-green--raw: 140 198 63;
 
 .mg-theme-irp {
+  @include mg-aria-runtime-theme-aliases;
+
   // Runtime marker: lets JS/tooling detect that this brand theme is active
   // (guards the sub-brand body-class trap). See docs/RELEASE-2.0.md.
   --mg-theme-loaded: irp;

@@ -1,3 +1,4 @@
+@charset "UTF-8";
 /*
  * Sass source for the React Aria Components styling surface.
  * The public aria/react-aria.css artifact is generated from this file by
@@ -17,20 +18,42 @@
 }
 
 :where(.react-aria-Button) {
+  align-items: center;
   background: var(--mg-aria-color-accent);
   border: var(--mg-aria-border-width) solid var(--mg-aria-color-accent);
-  border-radius: var(--mg-aria-radius);
+  border-radius: var(--mg-aria-radius-button);
   color: var(--mg-aria-color-on-accent);
+  cursor: pointer;
+  display: inline-flex;
+  font-weight: 600;
+  justify-content: center;
+  min-block-size: calc(var(--mg-aria-space-4) * 2);
   padding: var(--mg-aria-space-2) var(--mg-aria-space-3);
+}
+
+:where(.react-aria-Button[data-hovered]) {
+  background: var(--mg-aria-color-accent-active);
 }
 
 :where(.react-aria-Button[data-pressed]) {
   background: var(--mg-aria-color-accent-active);
+  scale: 0.96;
+}
+
+:where(.react-aria-Button[data-disabled]) {
+  cursor: not-allowed;
+  opacity: 0.55;
 }
 
 .react-aria-Button[data-focus-visible],
-.react-aria-Input[data-focus-visible] {
+.react-aria-Input[data-focus-visible],
+.react-aria-DateInput[data-focus-within],
+.react-aria-CalendarCell[data-focus-visible],
+.react-aria-GridListItem[data-focus-visible],
+.react-aria-ListBoxItem[data-focus-visible],
+.react-aria-MenuItem[data-focus-visible] {
   box-shadow: var(--mg-aria-shadow);
+  outline: none;
 }
 
 .react-aria-TextField,
@@ -57,8 +80,9 @@
 .react-aria-DateInput {
   background: var(--mg-aria-color-surface);
   border: var(--mg-aria-border-width) solid var(--mg-aria-color-border);
-  border-radius: var(--mg-aria-radius);
+  border-radius: var(--mg-aria-radius-control);
   color: var(--mg-aria-color-text);
+  min-block-size: calc(var(--mg-aria-space-4) * 2);
   padding: var(--mg-aria-space-2);
 }
 
@@ -78,21 +102,32 @@
   font-family: var(--mg-aria-font-family);
   font-size: var(--mg-aria-font-size);
   gap: var(--mg-aria-space-2);
+  min-block-size: calc(var(--mg-aria-space-4) * 2);
 }
 
 .react-aria-Checkbox::before {
+  align-items: center;
   background: var(--mg-aria-color-surface);
   border: var(--mg-aria-border-width) solid var(--mg-aria-color-border);
-  border-radius: var(--mg-aria-radius);
+  border-radius: var(--mg-aria-radius-control);
   color: var(--mg-aria-color-on-accent);
   content: "";
-  height: var(--mg-aria-space-3);
-  width: var(--mg-aria-space-3);
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-weight: 700;
+  height: var(--mg-aria-space-4);
+  justify-content: center;
+  width: var(--mg-aria-space-4);
 }
 
 .react-aria-Checkbox[data-selected]::before {
   background: var(--mg-aria-color-accent);
   border-color: var(--mg-aria-color-accent);
+  content: "✓";
+}
+
+.react-aria-Checkbox[data-focus-visible]::before {
+  box-shadow: var(--mg-aria-shadow);
 }
 
 .react-aria-Table {
@@ -106,8 +141,8 @@
 }
 
 .aria-spike-table-scroll {
-  border: var(--mg-aria-border-width) solid var(--mg-aria-color-border);
-  border-radius: var(--mg-aria-radius);
+  border-radius: var(--mg-aria-radius-surface);
+  box-shadow: var(--mg-aria-surface-shadow);
   overflow: auto;
 }
 
@@ -190,7 +225,10 @@
 }
 
 .react-aria-MenuItem {
-  border-radius: var(--mg-aria-radius);
+  align-items: center;
+  border-radius: var(--mg-aria-radius-control);
+  display: flex;
+  min-block-size: calc(var(--mg-aria-space-4) * 2);
   padding: var(--mg-aria-space-2) var(--mg-aria-space-3);
 }
 
@@ -210,7 +248,7 @@
 
 .react-aria-Modal {
   background: var(--mg-aria-color-surface);
-  border-radius: var(--mg-aria-radius);
+  border-radius: var(--mg-aria-radius-surface);
   box-sizing: border-box;
   box-shadow: var(--mg-aria-overlay-shadow);
   color: var(--mg-aria-color-text);
@@ -231,7 +269,7 @@
   align-items: center;
   background: var(--mg-aria-color-subtle-surface);
   border: var(--mg-aria-border-width) solid var(--mg-aria-color-border);
-  border-radius: var(--mg-aria-radius);
+  border-radius: var(--mg-aria-radius-surface);
   color: var(--mg-aria-color-muted-text);
   display: grid;
   gap: var(--mg-aria-space-1);
@@ -248,7 +286,7 @@
 }
 
 .react-aria-DropZone img {
-  border-radius: var(--mg-aria-radius);
+  border-radius: var(--mg-aria-radius-control);
   max-inline-size: var(--mg-aria-width-full);
 }
 
@@ -275,6 +313,7 @@
 }
 
 .react-aria-CalendarCell[data-selected] {
+  border-radius: var(--mg-aria-radius-control);
   background: var(--mg-aria-color-accent);
   color: var(--mg-aria-color-on-accent);
 }
@@ -290,8 +329,72 @@
   max-width: var(--mg-aria-width-full);
 }
 
-.aria-integration-demo > .react-aria-Button {
+.aria-integration-demo {
+  display: grid;
+  font-family: var(--mg-aria-font-family);
+  gap: var(--mg-aria-space-4);
+  max-width: calc(var(--mg-aria-dialog-width) * 1.5);
+}
+
+.aria-integration-demo__intro {
+  display: grid;
+  gap: var(--mg-aria-space-1);
+}
+
+.aria-integration-demo__intro > * {
+  margin: 0;
+}
+
+.aria-integration-demo__intro h2 {
+  color: var(--mg-aria-color-text);
+  text-wrap: balance;
+}
+
+.aria-integration-demo__intro p {
+  color: var(--mg-aria-color-muted-text);
+  text-wrap: pretty;
+}
+
+.aria-integration-demo__surface {
+  border-radius: var(--mg-aria-radius-surface);
+  box-shadow: var(--mg-aria-surface-shadow);
+  display: grid;
+  gap: var(--mg-aria-space-4);
+  padding: var(--mg-aria-space-4);
+}
+
+.aria-integration-demo__fields {
+  align-items: start;
+  display: grid;
+  gap: var(--mg-aria-space-3);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+}
+
+.aria-integration-demo__checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mg-aria-space-2) var(--mg-aria-space-4);
+}
+
+.aria-integration-demo__surface > .react-aria-Button {
   justify-self: start;
+}
+
+.aria-crud-toolbar {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mg-aria-space-2);
+}
+
+.aria-crud-search {
+  flex: 1 1 20rem;
+  min-width: min(100%, 20rem);
+}
+
+.aria-crud-toolbar > .mg-button,
+.aria-crud-actions > .mg-button {
+  min-block-size: calc(var(--mg-aria-space-4) * 2);
 }
 
 .aria-crud-actions {
@@ -353,6 +456,49 @@
   white-space: nowrap;
 }
 
+.aria-crud-list {
+  border-radius: var(--mg-aria-radius-surface);
+  color: var(--mg-aria-color-text);
+  font-family: var(--mg-aria-font-family);
+}
+
+.aria-crud-card + .aria-crud-card {
+  margin-block-start: var(--mg-aria-space-3);
+}
+
+.aria-crud-card {
+  border-radius: var(--mg-aria-radius-surface);
+  box-shadow: var(--mg-aria-surface-shadow);
+  display: grid;
+  gap: var(--mg-aria-space-3);
+  padding: var(--mg-aria-space-3);
+}
+
+.aria-crud-card[data-hovered] {
+  box-shadow: var(--mg-aria-surface-shadow-hover);
+}
+
+.aria-crud-card__header,
+.aria-crud-card__meta {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mg-aria-space-2);
+}
+
+.aria-crud-card__header {
+  justify-content: space-between;
+}
+
+.aria-crud-card__header .aria-crud-event-identity {
+  flex: 1 1 12rem;
+  min-width: 0;
+}
+
+.aria-crud-card__meta .mg-tag {
+  margin: 0;
+}
+
 .aria-crud-event-identity small {
   color: var(--mg-aria-color-muted-text);
   font-size: var(--mg-aria-font-size-small);
@@ -375,9 +521,12 @@
 :where(.react-aria-Input) {
   background: var(--mg-aria-color-surface);
   border: var(--mg-aria-border-width) solid var(--mg-aria-color-border);
-  border-radius: var(--mg-aria-radius);
+  border-radius: var(--mg-aria-radius-control);
+  box-sizing: border-box;
   color: var(--mg-aria-color-text);
+  min-block-size: calc(var(--mg-aria-space-4) * 2);
   padding: var(--mg-aria-space-2);
+  width: var(--mg-aria-width-full);
 }
 
 :where(.react-aria-Input[data-invalid]),
@@ -392,7 +541,7 @@
 
 .react-aria-Tooltip {
   background: var(--mg-aria-color-text);
-  border-radius: var(--mg-aria-radius);
+  border-radius: var(--mg-aria-radius-control);
   color: var(--mg-aria-color-on-accent);
   font-family: var(--mg-aria-font-family);
   font-size: var(--mg-aria-font-size-small);
@@ -407,8 +556,7 @@
 
 .react-aria-Popover {
   background: var(--mg-aria-color-surface);
-  border: var(--mg-aria-border-width) solid var(--mg-aria-color-border);
-  border-radius: var(--mg-aria-radius);
+  border-radius: var(--mg-aria-radius-surface);
   box-shadow: var(--mg-aria-overlay-shadow);
   padding: var(--mg-aria-space-1);
   z-index: var(--mg-aria-overlay-z-index);
@@ -420,7 +568,10 @@
 }
 
 .react-aria-ListBoxItem {
-  border-radius: var(--mg-aria-radius);
+  align-items: center;
+  border-radius: var(--mg-aria-radius-control);
+  display: flex;
+  min-block-size: calc(var(--mg-aria-space-4) * 2);
   padding: var(--mg-aria-space-2);
 }
 
@@ -430,8 +581,7 @@
 }
 
 .react-aria-GridList {
-  border: var(--mg-aria-border-width) solid var(--mg-aria-color-border);
-  border-radius: var(--mg-aria-radius);
+  border-radius: var(--mg-aria-radius-surface);
   color: var(--mg-aria-color-text);
   font-family: var(--mg-aria-font-family);
 }
@@ -441,6 +591,31 @@
   padding: var(--mg-aria-space-2);
 }
 
-.react-aria-GridListItem[data-focused] {
+.react-aria-GridListItem[data-focused],
+.aria-crud-card[data-focus-visible] {
   box-shadow: var(--mg-aria-shadow);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  :where(.react-aria-Button) {
+    transition: background-color var(--mg-aria-motion-duration-fast) var(--mg-aria-motion-easing), border-color var(--mg-aria-motion-duration-fast) var(--mg-aria-motion-easing), color var(--mg-aria-motion-duration-fast) var(--mg-aria-motion-easing), scale var(--mg-aria-motion-duration-fast) var(--mg-aria-motion-easing);
+  }
+  .react-aria-Cell {
+    transition: background-color var(--mg-aria-motion-duration-fast) var(--mg-aria-motion-easing);
+  }
+  .aria-crud-card {
+    transition: box-shadow var(--mg-aria-motion-duration-fast) var(--mg-aria-motion-easing);
+  }
+}
+@media (forced-colors: active) {
+  .react-aria-Button[data-focus-visible],
+  .react-aria-Input[data-focus-visible],
+  .react-aria-DateInput[data-focus-within],
+  .react-aria-Checkbox[data-focus-visible]::before,
+  .react-aria-GridListItem[data-focus-visible],
+  .react-aria-ListBoxItem[data-focus-visible],
+  .react-aria-MenuItem[data-focus-visible] {
+    outline: var(--mg-aria-focus-width) solid CanvasText;
+    outline-offset: var(--mg-aria-focus-offset);
+  }
 }

@@ -30,7 +30,7 @@ describe('Mangrove 2.0 token contract (compiled CSS)', () => {
 
   beforeAll(() => {
     base = compile('style');
-    brandCss = Object.fromEntries(BRANDS.map((b) => [b, compile(`style-${b}`)]));
+    brandCss = Object.fromEntries(BRANDS.map(b => [b, compile(`style-${b}`)]));
     allCss = compile('style-all');
   });
 
@@ -43,45 +43,64 @@ describe('Mangrove 2.0 token contract (compiled CSS)', () => {
   });
 
   test('every bundle identifies the package version in its preserved banner', () => {
-    ['style', ...BRANDS.map((b) => `style-${b}`), 'style-all'].forEach((name) => {
+    ['style', ...BRANDS.map(b => `style-${b}`), 'style-all'].forEach(name => {
       expect(bundleName(name)).toContain(`Version: ${version}`);
     });
   });
 
-  describe.each(BRANDS)('per-brand bundle: style-%s', (brand) => {
+  describe.each(BRANDS)('per-brand bundle: style-%s', brand => {
     test('is activated by its own theme marker and no other', () => {
       const css = brandCss[brand];
       // The marker proves the brand's _theme-*.scss block compiled in — this is
       // the guard against a theme block silently vanishing from the build.
       expect(css).toMatch(new RegExp(`--mg-theme-loaded:\\s*${brand}\\b`));
-      BRANDS.filter((other) => other !== brand).forEach((other) => {
-        expect(css).not.toMatch(new RegExp(`--mg-theme-loaded:\\s*${other}\\b`));
+      BRANDS.filter(other => other !== brand).forEach(other => {
+        expect(css).not.toMatch(
+          new RegExp(`--mg-theme-loaded:\\s*${other}\\b`)
+        );
       });
     });
 
     test('still carries the base :root palette', () => {
       expect(brandCss[brand]).toMatch(/--mg-color-blue-900:\s*0 79 145/);
     });
+
+    test('refreshes React Aria aliases inside the runtime theme', () => {
+      const themeBlock = brandCss[brand].match(
+        new RegExp(`\\.mg-theme-${brand}\\s*\\{([^}]*)\\}`)
+      )?.[1];
+
+      expect(themeBlock).toMatch(
+        /--mg-aria-color-accent:\s*rgb\(var\(--mg-color-interactive\)\)/
+      );
+      expect(themeBlock).toMatch(
+        /--mg-aria-radius-button:\s*var\(--mg-radius-button\)/
+      );
+    });
   });
 
   test('combined style-all bundle carries every brand theme', () => {
-    BRANDS.forEach((brand) => {
+    BRANDS.forEach(brand => {
       expect(allCss).toMatch(new RegExp(`--mg-theme-loaded:\\s*${brand}\\b`));
       expect(allCss).toMatch(new RegExp(`\\.mg-theme-${brand}\\b`));
     });
   });
 
-  const bundleName = (name) => {
-    if (name === 'style' || name === 'style-all') return name === 'style' ? base : allCss;
+  const bundleName = name => {
+    if (name === 'style' || name === 'style-all')
+      return name === 'style' ? base : allCss;
     return brandCss[name.replace('style-', '')];
   };
-  const ALL_BUNDLES = ['style', ...BRANDS.map((b) => `style-${b}`), 'style-all'];
+  const ALL_BUNDLES = ['style', ...BRANDS.map(b => `style-${b}`), 'style-all'];
 
   // Components standardized on `rgb(var(--x) / a)`; `rgba(var(` is the classic
   // typo that renders inconsistently across browsers.
-  test.each(ALL_BUNDLES)('%s leaks no $mg- SCSS variable and no rgba(var(', (name) => {
-    const css = bundleName(name);
-    expect(css).not.toMatch(/\$mg-/);
-    expect(css).not.toContain('rgba(var(');
-  });
+  test.each(ALL_BUNDLES)(
+    '%s leaks no $mg- SCSS variable and no rgba(var(',
+    name => {
+      const css = bundleName(name);
+      expect(css).not.toMatch(/\$mg-/);
+      expect(css).not.toContain('rgba(var(');
+    }
+  );
 });
