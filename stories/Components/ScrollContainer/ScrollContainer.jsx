@@ -95,11 +95,13 @@ const ScrollContainer = ({
       const newScrollLeft =
         containerRef.current.scrollLeft +
         (direction === 'right' ? scrollAmount : -scrollAmount);
+      const prefersReducedMotion =
+        window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ??
+        false;
 
-      // Use smooth scrolling for better user experience
       containerRef.current.scrollTo({
         left: newScrollLeft,
-        behavior: 'smooth',
+        behavior: prefersReducedMotion ? 'auto' : 'smooth',
       });
     },
     [stepSize]
@@ -222,6 +224,11 @@ const ScrollContainer = ({
     updateArrowVisibility();
 
     const container = containerRef.current;
+    const content = contentRef.current;
+    const resizeObserver =
+      typeof ResizeObserver === 'undefined'
+        ? null
+        : new ResizeObserver(updateArrowVisibility);
     if (container) {
       container.addEventListener('scroll', updateArrowVisibility, {
         passive: true,
@@ -238,6 +245,8 @@ const ScrollContainer = ({
       }
 
       container.addEventListener('click', handleClick, { capture: true });
+      resizeObserver?.observe(container);
+      if (content) resizeObserver?.observe(content);
     }
 
     return () => {
@@ -257,6 +266,7 @@ const ScrollContainer = ({
         // Remove click handler
         container.removeEventListener('click', handleClick, { capture: true });
       }
+      resizeObserver?.disconnect();
     };
   }, [
     checkMobileStatus,
