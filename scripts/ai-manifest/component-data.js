@@ -456,6 +456,9 @@ export default {
       'mg-table--border',
       'mg-table--stacked',
       'mg-table--scroll',
+      'mg-table__cell--start',
+      'mg-table__cell--center',
+      'mg-table__cell--end',
     ],
     examples: [
       {
@@ -465,19 +468,19 @@ export default {
     <tr>
       <th scope="col">Country</th>
       <th scope="col">Hazard type</th>
-      <th scope="col">People affected</th>
+      <th class="mg-table__cell--end" scope="col">People affected</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td>Nepal</td>
       <td>Earthquake</td>
-      <td>2.8 million</td>
+      <td class="mg-table__cell--end">2.8 million</td>
     </tr>
     <tr>
       <td>Philippines</td>
       <td>Typhoon</td>
-      <td>4.1 million</td>
+      <td class="mg-table__cell--end">4.1 million</td>
     </tr>
   </tbody>
 </table>`,
