@@ -6,7 +6,7 @@ import { Hero } from '../../Components/Hero/Hero';
 import ScrollContainer from '../../Components/ScrollContainer/ScrollContainer';
 import { TextCta } from '../../Components/TextCta/TextCta';
 
-import heroImage from '../../assets/images/sample_image-lg.jpg';
+const heroImage = 'https://www.undrr.org/sites/default/files/2021-04/WiA-childyouthengage.jpg';
 import figcaptionImage from '../../assets/images/figcaption.jpg';
 import logo from '../../assets/images/undrr-logo-white.svg';
 import './intro-landing.css';
