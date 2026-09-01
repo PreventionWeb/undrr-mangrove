@@ -389,6 +389,9 @@ $mg-tabs-border-bottom: true !default;
   --mg-hero-overlay-padding:     var(--mg-spacing-300);
   --mg-hero-overlay-radius:      var(--mg-spacing-50);
   --mg-hero-overlay-shadow:      0 18px 55px rgb(var(--mg-color-neutral-900) / 0.22);
+  --mg-hero-gradient-start-opacity:  0.98;
+  --mg-hero-gradient-middle-opacity: 0.82;
+  --mg-hero-gradient-end-opacity:    0.08;
 
   // Widths (build-time resolved)
   --mg-width-150:                #{mg-rem(150)};

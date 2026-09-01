@@ -7,6 +7,11 @@
 //   margin: 0 auto;
 // }
 .mg-hero {
+  --mg-hero-gradient-color: var(--mg-color-blue-900);
+  --mg-hero-gradient-start: var(--mg-hero-gradient-start-opacity);
+  --mg-hero-gradient-middle: var(--mg-hero-gradient-middle-opacity);
+  --mg-hero-gradient-end: var(--mg-hero-gradient-end-opacity);
+
   background-size: cover;
   background-position: center;
   color: rgb(var(--mg-color-neutral-0));
@@ -16,6 +21,28 @@
   margin-left: calc(50% - (50vw)); // to expand out of the parent container
   padding-left: var(--mg-spacing-100);
   width: 100vw;
+
+  &:not(.mg-hero--split)::before {
+    background: linear-gradient(
+      90deg,
+      rgb(var(--mg-hero-gradient-color) / var(--mg-hero-gradient-start)) 0%,
+      rgb(var(--mg-hero-gradient-color) / var(--mg-hero-gradient-middle)) 48%,
+      rgb(var(--mg-hero-gradient-color) / var(--mg-hero-gradient-end)) 100%
+    );
+    content: "";
+    inset: 0;
+    pointer-events: none;
+    position: absolute;
+
+    @media (max-width: $mg-breakpoint-tablet) {
+      background: linear-gradient(
+        0deg,
+        rgb(var(--mg-hero-gradient-color) / var(--mg-hero-gradient-start)) 0%,
+        rgb(var(--mg-hero-gradient-color) / var(--mg-hero-gradient-middle)) 68%,
+        rgb(var(--mg-hero-gradient-color) / var(--mg-hero-gradient-end)) 100%
+      );
+    }
+  }
 
   @media (min-width: $mg-breakpoint-tablet) {
     aspect-ratio: 16 / 4; // we use 16:4, which is closer to the real crop ratio
@@ -67,13 +94,13 @@
 
   &__overlay {
     align-items: center;
-    background: linear-gradient(135deg, rgb(var(--mg-color-blue-900) / 0.96), rgb(var(--mg-color-blue-900) / var(--mg-opacity-hero)));
-    border-radius: var(--mg-hero-overlay-radius);
-    box-shadow: var(--mg-hero-overlay-shadow);
+    background: transparent;
     display: grid;
     margin: var(--mg-spacing-hero-overlay);
     max-width: var(--mg-hero-overlay-max-width);
     padding: var(--mg-hero-overlay-padding);
+    position: relative;
+    z-index: 1;
   }
 
   &__content {
@@ -223,22 +250,24 @@ $variant-colour-props: (
 );
 
 @each $name, $prop in $variant-colour-props {
-  .mg-hero--#{$name} .mg-hero__overlay {
-    background: linear-gradient(135deg, rgb(var(#{$prop}) / 0.96), rgb(var(#{$prop}) / var(--mg-opacity-hero)));
+  .mg-hero--#{$name} {
+    --mg-hero-gradient-color: var(#{$prop});
 
-    a.mg-button,
-    a.mg-button:hover,
-    a.mg-button:visited {
-      color: rgb(var(#{$prop}));
-    }
+    .mg-hero__overlay {
+      a.mg-button,
+      a.mg-button:hover,
+      a.mg-button:visited {
+        color: rgb(var(#{$prop}));
+      }
 
-    // Preserve secondary button's dedicated tokens over the generic color above
-    a.mg-button-secondary,
-    a.mg-button-secondary:hover,
-    a.mg-button-secondary:visited {
-      background-color: var(--mg-color-hero-button-secondary-background);
-      color: rgb(var(--mg-color-hero-button-secondary-color));
-      border-color: rgb(var(--mg-border-color-hero-button-secondary));
+      // Preserve secondary button's dedicated tokens over the generic color above
+      a.mg-button-secondary,
+      a.mg-button-secondary:hover,
+      a.mg-button-secondary:visited {
+        background-color: var(--mg-color-hero-button-secondary-background);
+        color: rgb(var(--mg-color-hero-button-secondary-color));
+        border-color: rgb(var(--mg-border-color-hero-button-secondary));
+      }
     }
   }
 }
@@ -247,6 +276,24 @@ $variant-colour-props: (
 [dir="rtl"] .mg-hero:not(.mg-hero--split) {
   margin-right: calc(50% - (50vw)); // to expand out of the parent container
   padding-right: var(--mg-spacing-100);
+
+  &::before {
+    background: linear-gradient(
+      270deg,
+      rgb(var(--mg-hero-gradient-color) / var(--mg-hero-gradient-start)) 0%,
+      rgb(var(--mg-hero-gradient-color) / var(--mg-hero-gradient-middle)) 48%,
+      rgb(var(--mg-hero-gradient-color) / var(--mg-hero-gradient-end)) 100%
+    );
+
+    @media (max-width: $mg-breakpoint-tablet) {
+      background: linear-gradient(
+        0deg,
+        rgb(var(--mg-hero-gradient-color) / var(--mg-hero-gradient-start)) 0%,
+        rgb(var(--mg-hero-gradient-color) / var(--mg-hero-gradient-middle)) 68%,
+        rgb(var(--mg-hero-gradient-color) / var(--mg-hero-gradient-end)) 100%
+      );
+    }
+  }
 
   @media (min-width: $mg-breakpoint-tablet) {
     padding-right: calc(50vw - calc($mg-breakpoint-desktop / 2)); // to keep the overlay fixed
