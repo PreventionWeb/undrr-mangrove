@@ -1,6 +1,9 @@
 import React from 'react';
 import ScrollContainer from './ScrollContainer.jsx';
-import { CtaButton } from '../Buttons/CtaButton/CtaButton';
+import {
+  ScrollExampleCard,
+  scrollCardExamples,
+} from './ScrollContainerExamples';
 import {
   LABELS_AR,
   LABELS_ES,
@@ -41,48 +44,16 @@ const Template = args => (
   <section style={{ maxWidth: '800px', margin: '0 auto' }}>
     <ScrollContainer {...args}>
       {/* Example content to demonstrate horizontal scrolling */}
-      {Array(8)
-        .fill()
-        .map((_, i) => (
-          <article
-            key={i}
-            className="mg-card mg-card__vc"
-            style={{
-              minWidth: '350px',
-              boxSizing: 'border-box',
-            }}
-          >
-            <div className="mg-card__visual">
-              <img
-                alt="A person looks on"
-                className="mg-card__image"
-                src="https://www.undrr.org/sites/default/files/2020-01/Home---about-us_0.jpg"
-              />
-            </div>
-            <div className="mg-card__content">
-              <header className="mg-card__title">
-                <a href="https://www.undrr.org">
-                  Title in large size with up to two lines of text {i + 1}
-                </a>
-              </header>
-              <p className="mg-card__summary">
-                Climate change is a{' '}
-                <a className="mg-card__text-link" href="https://www.undrr.org">
-                  global health emergency
-                </a>
-                , with impacts felt most acutely by vulnerable populations and
-                communities. This paper explores health risks from climate
-                change in a global context, setting out key risks actions
-              </p>
-              <CtaButton
-                Type="Primary"
-                Variant="CTA"
-                label="Primary action"
-                href="https://www.undrr.org"
-              />
-            </div>
-          </article>
-        ))}
+      {[...scrollCardExamples, ...scrollCardExamples.slice(0, 3)].map(
+        (card, i) => (
+          <ScrollExampleCard
+            card={card}
+            index={i}
+            key={`${card.title}-${i}`}
+            showAction
+          />
+        )
+      )}
     </ScrollContainer>
   </section>
 );
