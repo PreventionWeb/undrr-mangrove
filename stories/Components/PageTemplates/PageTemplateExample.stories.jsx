@@ -147,6 +147,18 @@ const insightCards = [
     imgback:
       'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=900&q=80',
   },
+  {
+    contenttile: 'Policy update',
+    title: 'Strengthening resilience through national planning',
+    summaryText:
+      'New policy approaches connect risk reduction targets with climate adaptation, public investment and local delivery.',
+    label1: '6 August 2026',
+    button: 'Read the update',
+    link: '#',
+    imgalt: 'People collaborating around a meeting table',
+    imgback:
+      'https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=900&q=80',
+  },
 ];
 
 const topicOptions = [
@@ -294,7 +306,7 @@ const PageTemplateExample = () => {
             headerText="Latest insights"
             descriptionText="Research, data and guidance from across the UNDRR network"
           />
-          <ScrollContainer showArrows minWidth="1320px">
+          <ScrollContainer showArrows itemWidth="300px" stepSize={324}>
             {insightCards.map(card => (
               <VerticalCard key={card.title} data={[card]} />
             ))}

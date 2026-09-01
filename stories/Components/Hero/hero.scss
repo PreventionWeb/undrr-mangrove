@@ -192,6 +192,17 @@
   padding-bottom: var(--mg-spacing-50);
   padding-top: var(--mg-spacing-75);
 
+  @media (max-width: $mg-breakpoint-tablet) {
+    align-items: flex-start;
+    flex-direction: column;
+    flex-wrap: nowrap;
+
+    .mg-button.mg-button-link {
+      inline-size: fit-content;
+      max-inline-size: 100%;
+    }
+  }
+
   .mg-button + .mg-button {
     margin-inline-start: 0;
   }
