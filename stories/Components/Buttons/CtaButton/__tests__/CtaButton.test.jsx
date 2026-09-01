@@ -38,9 +38,8 @@ describe('CtaButton', () => {
       'mg-button-primary',
       'custom-class'
     );
-    expect(screen.getByText('Browse publications')).toHaveClass(
-      'mg-button__label'
-    );
+    expect(screen.getByRole('link')).toHaveTextContent('Browse publications');
+    expect(screen.getByRole('link').children).toHaveLength(0);
   });
 
   it('has no detectable accessibility violations', async () => {

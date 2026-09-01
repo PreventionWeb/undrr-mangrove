@@ -42,7 +42,7 @@ export function CtaButton({
         ? { 'aria-disabled': 'true', tabIndex: -1 }
         : { href, onClick })}
     >
-      <span className="mg-button__label">{label}</span>
+      {label}
     </a>
   );
 }
