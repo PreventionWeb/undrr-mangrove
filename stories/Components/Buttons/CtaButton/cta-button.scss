@@ -131,13 +131,16 @@ button {
   color: rgb(var(--mg-color-text));
   flex: 0 0 auto;
   justify-content: flex-start;
+  max-width: 100%;
   min-height: mg-rem(44);
   padding: var(--mg-spacing-50) 0;
   text-align: start;
   white-space: normal;
 
   .mg-button__label {
-    white-space: nowrap;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    white-space: normal;
   }
 
   // The compact editorial treatment keeps its label steady and gives the

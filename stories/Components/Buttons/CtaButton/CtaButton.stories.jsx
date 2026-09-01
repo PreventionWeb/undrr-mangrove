@@ -67,6 +67,10 @@ export const LongLabels = {
         label="Alle Veröffentlichungen zur Katastrophenvorsorge durchsuchen"
         Variant="CTA"
       />
+      <CtaButton
+        label="Consulter toutes les publications sur la réduction des risques de catastrophe"
+        Variant="CTA"
+      />
       <div dir="rtl" lang="ar">
         <CtaButton
           label="استعرض جميع المنشورات المتعلقة بالحد من مخاطر الكوارث"

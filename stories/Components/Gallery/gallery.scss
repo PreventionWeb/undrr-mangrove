@@ -346,9 +346,10 @@
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    width: var(--mg-spacing-300);
-    height: var(--mg-spacing-300);
+    width: mg-rem(44);
+    height: mg-rem(44);
     border: none;
+    border-radius: 50%;
     background: rgb(var(--mg-color-neutral-700));
     color: rgb(var(--mg-color-white));
     font-size: $mg-font-size-400;
@@ -387,10 +388,9 @@
       right: var(--mg-spacing-100);
     }
 
-    // Smaller arrows on mobile to avoid overlap with content
+    // Keep the recommended target size on touch viewports; use the inset to
+    // reduce overlap with the media rather than shrinking the control.
     @include devicebreak(small) {
-      width: var(--mg-spacing-250);
-      height: var(--mg-spacing-250);
       font-size: $mg-font-size-300;
 
       &--prev {
@@ -414,9 +414,10 @@
   }
 
   &__arrow-button {
-    width: var(--mg-spacing-300);
-    height: var(--mg-spacing-300);
+    width: mg-rem(44);
+    height: mg-rem(44);
     border: none;
+    border-radius: 50%;
     background: rgb(var(--mg-color-neutral-700));
     color: rgb(var(--mg-color-white));
     font-size: $mg-font-size-400;

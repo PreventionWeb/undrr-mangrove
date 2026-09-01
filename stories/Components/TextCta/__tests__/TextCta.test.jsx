@@ -84,19 +84,22 @@ describe('TextCta', () => {
   it('renders buttons as links', () => {
     render(<TextCta buttons={defaultButtons} />);
 
-    const readMore = screen.getByText('Read more');
+    const readMore = screen.getByRole('link', { name: 'Read more' });
     expect(readMore.tagName).toBe('A');
     expect(readMore).toHaveAttribute('href', '/about');
     expect(readMore).toHaveClass('mg-button-primary');
 
-    const contact = screen.getByText('Contact us');
+    const contact = screen.getByRole('link', { name: 'Contact us' });
     expect(contact).toHaveClass('mg-button-secondary');
   });
 
   it('defaults button href to # when url is missing', () => {
     render(<TextCta buttons={[{ label: 'Click' }]} />);
 
-    expect(screen.getByText('Click')).toHaveAttribute('href', '#');
+    expect(screen.getByRole('link', { name: 'Click' })).toHaveAttribute(
+      'href',
+      '#'
+    );
   });
 
   it('composes button variants and external-link attributes', () => {
@@ -115,7 +118,7 @@ describe('TextCta', () => {
       />
     );
 
-    const link = screen.getByText('View source');
+    const link = screen.getByRole('link', { name: 'View source' });
     expect(link).toHaveClass('mg-button-secondary', 'mg-button-outline');
     expect(link).toHaveAttribute('target', '_blank');
     expect(link).toHaveAttribute('rel', 'noopener noreferrer');
