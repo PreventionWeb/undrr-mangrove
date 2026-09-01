@@ -47,6 +47,7 @@ See the [GitHub Release](https://github.com/unisdr/undrr-mangrove/releases/tag/v
 
 - `FormAction` now ships as a direct `components/FormAction.js` ESM entry as well as SCSS and the package-root export.
 - Production component bundles use isolated, uncached Babel output so Storybook's development `jsxDEV` transform cannot leak into published files. Manifest validation now rejects any production component bundle containing development JSX runtime calls.
+- Compiled CSS banners now identify the exact Mangrove package version, synchronized from `package.json` before every Sass build.
 - The Yarn lockfile is synchronized with the first-alpha dependency removals so immutable installs succeed from the release commit.
 
 #### Removed: deprecated Pagination component
