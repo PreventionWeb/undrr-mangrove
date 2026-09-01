@@ -8,6 +8,7 @@
  * structural invariants the release depends on. It intentionally checks
  * compiled output (not source) because that is what consumers actually load.
  */
+const fs = require('fs');
 const path = require('path');
 const sass = require('sass');
 const { version } = require('../../../../package.json');
@@ -207,9 +208,158 @@ describe('distributed React Aria surface', () => {
     }
   );
 
+  test('styles a floor proportion of React Aria stock classes', () => {
+    // A consumer importing aria.css gets every unstyled component bare, so
+    // coverage is a product fact rather than a metric. This is a floor, not a
+    // target: it exists so a refactor cannot quietly drop components. Raise it
+    // when coverage genuinely improves. `node scripts/aria-coverage.cjs --list`
+    // prints what is still missing.
+    const FLOOR = 65;
+    const pkgDir = path.resolve(
+      __dirname,
+      '../../../../node_modules/react-aria-components'
+    );
+    const stock = new Set();
+    const walk = dir => {
+      for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+        const full = path.join(dir, entry.name);
+        if (entry.isDirectory()) walk(full);
+        else if (/\.(js|mjs|cjs|d\.ts)$/.test(entry.name)) {
+          for (const m of fs
+            .readFileSync(full, 'utf8')
+            .matchAll(/react-aria-([A-Z][A-Za-z]+)/g))
+            stock.add(m[1]);
+        }
+      }
+    };
+    walk(pkgDir);
+
+    const styled = new Set(
+      [...ariaCss.matchAll(/\.react-aria-([A-Za-z]+)/g)].map(m => m[1])
+    );
+    const covered = [...stock].filter(name => styled.has(name));
+
+    expect(covered.length).toBeGreaterThanOrEqual(FLOOR);
+  });
+
   test('declares no cascade layer', () => {
     // DELTA has unlayered legacy CSS that outranks any layered rule, so the
     // agreed distribution shape is ordinary author CSS.
     expect(ariaCss).not.toContain('@layer');
+  });
+});
+
+/**
+ * Contrast is a property of the RESOLVED token chain, not of any one file, so
+ * it cannot be reviewed by reading the stylesheet. An accessibility audit found
+ * real failures here that were invisible in source: DELTA's field borders sat
+ * at 2.10:1 and IRP's slider fill at 2.93:1 against its track. These assertions
+ * turn that audit into build errors so a future token change or a mechanical
+ * restyle cannot quietly reintroduce them.
+ */
+describe('React Aria token contrast (WCAG 2.2 AA)', () => {
+  const srgb = channel => {
+    const c = channel / 255;
+    return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+  };
+  const luminance = ({ r, g, b }) =>
+    0.2126 * srgb(r) + 0.7152 * srgb(g) + 0.0722 * srgb(b);
+  const contrast = (a, b) => {
+    const [x, y] = [luminance(a), luminance(b)].sort((m, n) => n - m);
+    return (x + 0.05) / (y + 0.05);
+  };
+  // Translucent tokens (selected surfaces) must be composited before measuring.
+  const flatten = (fg, bg) =>
+    fg.a === 1
+      ? fg
+      : {
+          r: fg.r * fg.a + bg.r * (1 - fg.a),
+          g: fg.g * fg.a + bg.g * (1 - fg.a),
+          b: fg.b * fg.a + bg.b * (1 - fg.a),
+          a: 1,
+        };
+
+  const parseColor = value => {
+    if (!value) return null;
+    const fn = value
+      .trim()
+      .match(/^rgb\(\s*(\d+)\s+(\d+)\s+(\d+)\s*(?:\/\s*([\d.]+))?\s*\)$/);
+    if (fn) return { r: +fn[1], g: +fn[2], b: +fn[3], a: fn[4] ? +fn[4] : 1 };
+    const triplet = value.trim().match(/^(\d+)\s+(\d+)\s+(\d+)$/);
+    return triplet
+      ? { r: +triplet[1], g: +triplet[2], b: +triplet[3], a: 1 }
+      : null;
+  };
+
+  // Custom properties resolve at the element where they are declared, so a
+  // theme block's declarations must override the :root ones.
+  const declarations = (css, selector) => {
+    const out = {};
+    for (const m of css.matchAll(/(--[a-z0-9-]+)\s*:\s*([^;}]+)[;}]/g))
+      if (!(m[1] in out)) out[m[1]] = m[2].trim();
+    if (selector) {
+      const block =
+        css.match(new RegExp(`\\${selector}\\s*\\{([^}]*)\\}`))?.[1] ?? '';
+      for (const m of block.matchAll(/(--[a-z0-9-]+)\s*:\s*([^;}]+)[;}]/g))
+        out[m[1]] = m[2].trim();
+    }
+    return out;
+  };
+
+  const deref = (vars, value, depth = 0) => {
+    if (depth > 15 || !value) return value;
+    const next = value.replace(
+      /var\(\s*(--[a-z0-9-]+)\s*(?:,([^)]*))?\)/g,
+      (_, name, fallback) =>
+        vars[name] !== undefined ? vars[name] : (fallback || '').trim()
+    );
+    return next === value ? next.trim() : deref(vars, next, depth + 1);
+  };
+
+  const WHITE = { r: 255, g: 255, b: 255, a: 1 };
+
+  // [foreground, background, minimum]. 3:1 is SC 1.4.11 non-text contrast;
+  // 4.5:1 is SC 1.4.3 for text.
+  const PAIRS = [
+    ['color-text', 'color-surface', 4.5],
+    ['color-muted-text', 'color-surface', 4.5],
+    ['color-on-accent', 'color-accent', 4.5],
+    ['color-invalid', 'color-surface', 4.5],
+    ['color-border', 'color-surface', 3],
+    ['color-border', 'color-field-surface', 3],
+    ['color-accent', 'color-surface', 3],
+    // The filled portion of a slider, progress bar or switch against its rail.
+    ['color-accent', 'color-track', 3],
+    ['color-focus-ring', 'color-surface', 3],
+    ['color-focus-ring', 'color-field-surface', 3],
+  ];
+
+  const THEMES = [['base', null], ...BRANDS.map(b => [b, `.mg-theme-${b}`])];
+
+  const themeCss = {};
+  beforeAll(() => {
+    themeCss.base = compile('style');
+    BRANDS.forEach(brand => {
+      themeCss[brand] = compile(`style-${brand}`);
+    });
+  });
+
+  describe.each(THEMES)('%s theme', (theme, selector) => {
+    test.each(PAIRS)('%s on %s meets %s:1', (fg, bg, minimum) => {
+      const css = themeCss[theme];
+      const vars = declarations(css, selector);
+      const read = token => parseColor(deref(vars, vars[`--mg-aria-${token}`]));
+
+      const foreground = read(fg);
+      const background = read(bg);
+      // A missing token is a contract bug, not a silent pass.
+      expect(foreground).not.toBeNull();
+      expect(background).not.toBeNull();
+
+      const solidBg = flatten(background, WHITE);
+      const ratio = contrast(flatten(foreground, solidBg), solidBg);
+
+      expect(Number(ratio.toFixed(2))).toBeGreaterThanOrEqual(minimum);
+    });
   });
 });

@@ -21,7 +21,9 @@
      so they sit outside the runtime theme aliases. */
   --mg-aria-radius-pill: 9999px;
   --mg-aria-track-thickness: 0.5rem;
-  --mg-aria-thumb-size: 1.25rem;
+  /* 24px: WCAG 2.5.8 minimum target size. Also sets the switch track
+     geometry, which derives from this value. */
+  --mg-aria-thumb-size: 1.5rem;
   --mg-aria-dialog-width: 42rem;
   --mg-aria-dialog-available-width: calc(100% - var(--mg-aria-space-4) * 2);
   --mg-aria-dialog-available-height: calc(100% - var(--mg-aria-space-4) * 2);

@@ -8,6 +8,12 @@
  * that matters when arguing this surface is a usable alternative to a
  * batteries-included component library.
  *
+ * Method caveat: the denominator is derived by grepping the package for
+ * `react-aria-<Name>` string literals, which includes names that appear only
+ * as `@selector` annotations in type declarations. It is a good relative
+ * measure and a fair absolute one, but treat it as approximate rather than an
+ * authoritative component count.
+ *
  * Usage: node scripts/aria-coverage.cjs [--list] [--json]
  */
 const fs = require('fs');
