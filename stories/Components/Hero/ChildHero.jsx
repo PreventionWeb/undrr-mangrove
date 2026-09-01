@@ -52,7 +52,11 @@ export function ChildHero({ data, variant = 'primary' }) {
               <div className="mg-hero__summaryText">{item.summaryText}</div>
 
               <div className="mg-hero__buttons">
-                <CtaButton type="Primary" label={item.primary_button} />
+                <CtaButton
+                  Type="Primary"
+                  Variant="CTA"
+                  label={item.primary_button}
+                />
                 {/* <a href={item.link} className="mg-hero__button mg-hero__button-primary">{item.primary_button}</a> */}
               </div>
             </article>

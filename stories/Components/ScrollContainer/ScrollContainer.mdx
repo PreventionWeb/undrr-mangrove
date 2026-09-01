@@ -20,20 +20,26 @@ A basic scroll container implementation with default settings.
 
 A scroll container with a custom height setting.
 
-<Canvas of={ScrollContainerStories.CustomHeight} meta={ScrollContainerStories} />
+<Canvas
+  of={ScrollContainerStories.CustomHeight}
+  meta={ScrollContainerStories}
+/>
 
 ## With minimum width
 
 A scroll container with a minimum width setting.
 
-<Canvas of={ScrollContainerStories.WithMinWidth} meta={ScrollContainerStories} />
+<Canvas
+  of={ScrollContainerStories.WithMinWidth}
+  meta={ScrollContainerStories}
+/>
 
 ## With navigation arrows
 
 A scroll container with navigation arrows for easier scrolling. The arrows appear at the top of the container when content overflows horizontally and the `showArrows` prop is set to `true`. The arrows will only be visible when there is content to scroll to in that direction.
 
 <div style={{ maxWidth: '800px', margin: '0 auto', position: 'relative' }}>
-  <ScrollContainer showArrows={true} minWidth="1200px" padding="1rem">
+  <ScrollContainer showArrows={true} itemWidth="350px">
     {Array(5)
       .fill()
       .map((_, i) => (
@@ -42,8 +48,6 @@ A scroll container with navigation arrows for easier scrolling. The arrows appea
           className="mg-card mg-card__vc"
           style={{
             minWidth: '350px',
-            marginRight: '20px',
-            padding: '20px',
             boxSizing: 'border-box',
           }}
         >
@@ -216,13 +220,15 @@ These are gaps that affect users or accessibility auditors:
 ScrollContainer supports [layered hydration](https://github.com/unisdr/undrr-mangrove/blob/main/docs/HYDRATION.md). Use data attributes on a container element with server-rendered child content:
 
 ```html
-<div data-mg-scroll-container
+<div
+  data-mg-scroll-container
   data-height="300px"
   data-min-width="200px"
   data-item-width="250px"
   data-padding="16"
   data-show-arrows="true"
-  data-step-size="300">
+  data-step-size="300"
+>
   <div class="mg-scroll__content">
     <div class="card">Card 1</div>
     <div class="card">Card 2</div>
@@ -230,27 +236,34 @@ ScrollContainer supports [layered hydration](https://github.com/unisdr/undrr-man
 </div>
 ```
 
-| Attribute | Default | Description |
-|-----------|---------|-------------|
-| `data-height` | `'auto'` | Container height (CSS value) |
-| `data-min-width` | `'auto'` | Minimum width (CSS value) |
-| `data-item-width` | `'auto'` | Width for individual items (CSS value) |
-| `data-padding` | `'0'` | Container padding |
+| Attribute          | Default   | Description                                    |
+| ------------------ | --------- | ---------------------------------------------- |
+| `data-height`      | `'auto'`  | Container height (CSS value)                   |
+| `data-min-width`   | `'auto'`  | Minimum width (CSS value)                      |
+| `data-item-width`  | `'auto'`  | Width for individual items (CSS value)         |
+| `data-padding`     | `'0'`     | Container padding                              |
 | `data-show-arrows` | `'false'` | Show navigation arrows (`'true'` or `'false'`) |
-| `data-step-size` | `null` | Scroll step in pixels for arrow navigation |
+| `data-step-size`   | `null`    | Scroll step in pixels for arrow navigation     |
 
 Child elements are extracted from a `.mg-scroll__content` wrapper inside the container. If no wrapper is found, the container's `innerHTML` is used directly.
 
 ```js
-import createHydrator from "https://assets.undrr.org/static/mangrove/1.8.2/components/hydrate.js";
-import ScrollContainer, { fromElement } from "https://assets.undrr.org/static/mangrove/1.8.2/components/ScrollContainer.js";
-createHydrator({ selector: "[data-mg-scroll-container]", component: ScrollContainer, fromElement });
+import createHydrator from 'https://assets.undrr.org/static/mangrove/1.8.2/components/hydrate.js';
+import ScrollContainer, {
+  fromElement,
+} from 'https://assets.undrr.org/static/mangrove/1.8.2/components/ScrollContainer.js';
+createHydrator({
+  selector: '[data-mg-scroll-container]',
+  component: ScrollContainer,
+  fromElement,
+});
 ```
 
 See the [hydration guide](https://github.com/unisdr/undrr-mangrove/blob/main/docs/HYDRATION.md) for the full API and integration details.
 
 ## Changelog
 
+- **1.5** — 2026-09-01 ([#1086](https://github.com/unisdr/undrr-mangrove/pull/1086)): Consolidated collection spacing into one moderate `spacing-150` flex gap and removed per-item margins, eliminating doubled whitespace between cards and keeping the collection edges flush with the viewport.
 - **1.4** — 2026-08-31 ([#1086](https://github.com/unisdr/undrr-mangrove/pull/1086)): Replaced physical item margins with logical inline spacing so horizontal collections preserve their rhythm in RTL layouts.
 - **1.3** — 2026-08-31 ([#1086](https://github.com/unisdr/undrr-mangrove/pull/1086)): Moved navigation below the collection, refreshed arrows as subtle circular controls with tactile states, and added proximity scroll snapping while preserving mouse drag and touch scrolling.
 - **1.2** — 2026-06-19 ([mangrove#1056](https://github.com/unisdr/undrr-mangrove/pull/1056)): Consolidated `scrollLeftLabel` and `scrollRightLabel` props into a single `labels` object with `DEFAULT_SCROLL_LABELS` export. Backwards compatible — `DEFAULT_SCROLL_LABELS` covers all keys. Co-located `_labels.js` provides `LABELS_ES/FR/JA/ZH/AR/RU`; locale toolbar now switches translated strings in all stories.

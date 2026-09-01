@@ -90,11 +90,13 @@ export default App;
 ```
 
 The component will then load resources from:
+
 - `https://your-cdn.com/cookie-banner/cookieconsent.css`
 - `https://your-cdn.com/cookie-banner/cookieconsent.umd.js`
 - `https://your-cdn.com/cookie-banner/cookieconsent-undrr.js`
 
 This is useful for:
+
 - Using a staging or development CDN
 - Hosting the cookie banner resources on your own CDN
 - Testing with different versions of the banner
@@ -135,7 +137,7 @@ When no `config` prop is supplied, the component loads UNDRR's maintained config
 You can combine the `cdnBaseUrl` prop with other configuration options:
 
 ```jsx
-<CookieConsentBanner 
+<CookieConsentBanner
   cdnBaseUrl="https://staging-cdn.example.com/cookie-banner"
   config={customConfig}
   debug={true}
@@ -143,6 +145,7 @@ You can combine the `cdnBaseUrl` prop with other configuration options:
 ```
 
 This allows you to:
+
 - Use a staging CDN for testing
 - Apply custom configuration over the CDN defaults
 - Enable debug logging to troubleshoot issues
@@ -219,12 +222,12 @@ const customConfig = {
 
 The CookieConsentBanner component accepts the following props:
 
-| Prop          | Type    | Default       | Description                                               |
-| ------------- | ------- | ------------- | --------------------------------------------------------- |
-| config        | Object  | defaultConfig | Configuration object for the cookie consent banner        |
-| debug         | Boolean | false         | Enable verbose console logging for troubleshooting        |
-| forceFallback | Boolean | false         | Skip CDN loading and use the local fallback configuration |
-| cdnBaseUrl    | String  | 'https://assets.undrr.org/static/cookie-banner/v1' | Base URL for CDN resources |
+| Prop          | Type    | Default                                            | Description                                               |
+| ------------- | ------- | -------------------------------------------------- | --------------------------------------------------------- |
+| config        | Object  | defaultConfig                                      | Configuration object for the cookie consent banner        |
+| debug         | Boolean | false                                              | Enable verbose console logging for troubleshooting        |
+| forceFallback | Boolean | false                                              | Skip CDN loading and use the local fallback configuration |
+| cdnBaseUrl    | String  | 'https://assets.undrr.org/static/cookie-banner/v1' | Base URL for CDN resources                                |
 
 ### Configuration Object Structure
 
@@ -305,5 +308,6 @@ The cookie consent banner is built with accessibility in mind, including:
 
 ## Changelog
 
+- **1.2** — 2026-09-01 ([#1086](https://github.com/unisdr/undrr-mangrove/pull/1086)): Added an imported Mangrove theme bridge for the CDN consent interface. Banner surfaces, text, links, buttons, toggles, separators, focus, motion, and RTL fonts now follow semantic Mangrove tokens while consent actions retain a clear filled-button hierarchy.
 - **1.1** — 2026-05-11: Return an empty Fragment instead of `null` so Storybook's `react-docgen` pass can classify the component and extract its `propTypes` for the AI manifest. No runtime change (empty Fragments render nothing in the DOM). [#1006](https://github.com/unisdr/undrr-mangrove/issues/1006).
 - **1.0** — 2025-06-17: Initial release

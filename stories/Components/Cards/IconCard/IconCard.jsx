@@ -99,7 +99,9 @@ export function IconCard({ data, centered = false, variant = 'default' }) {
           {(item.icon || item.imgback || item.iconColor) && (
             <div className="mg-card__visual">
               {item.visualLabel && (
-                <span className="mg-card__visual-label">{item.visualLabel}</span>
+                <span className="mg-card__visual-label">
+                  {item.visualLabel}
+                </span>
               )}
               {item.srOnlyTitle && item.link ? (
                 <a href={item.link} className="mg-card__visual-link">
@@ -150,7 +152,8 @@ export function IconCard({ data, centered = false, variant = 'default' }) {
             {item.button && (
               <div className="mg-card__cta">
                 <CtaButton
-                  type={item.buttonType || 'Primary'}
+                  Type={item.buttonType || 'Primary'}
+                  Variant="CTA"
                   label={item.button}
                   href={item.link}
                 />

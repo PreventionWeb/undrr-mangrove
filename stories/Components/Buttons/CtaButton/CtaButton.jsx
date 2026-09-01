@@ -14,6 +14,7 @@ import PropTypes from 'prop-types';
 export function CtaButton({
   label,
   Type = 'Primary',
+  Variant = 'Default',
   Outline = false,
   State = 'Default',
   ...props
@@ -22,7 +23,7 @@ export function CtaButton({
   const isDisabled = State === 'Disabled';
   const className = [
     'mg-button',
-    'mg-button-link',
+    Variant === 'CTA' && 'mg-button-cta',
     `mg-button-${type}`,
     Outline && 'mg-button-outline',
     isDisabled && 'disabled',
@@ -45,6 +46,8 @@ CtaButton.propTypes = {
   label: PropTypes.string.isRequired,
   /** Visual emphasis variant */
   Type: PropTypes.oneOf(['Primary', 'Secondary']),
+  /** Treatment variant: conventional button or editorial CTA link. */
+  Variant: PropTypes.oneOf(['Default', 'CTA']),
   /** Use a transparent outlined treatment */
   Outline: PropTypes.bool,
   /** Enabled or disabled state */

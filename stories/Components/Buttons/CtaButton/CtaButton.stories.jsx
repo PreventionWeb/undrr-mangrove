@@ -26,6 +26,11 @@ export default {
       control: { type: 'inline-radio' },
     },
 
+    Variant: {
+      options: ['Default', 'CTA'],
+      control: { type: 'inline-radio' },
+    },
+
     Outline: {
       control: { type: 'boolean' },
     },
@@ -44,6 +49,15 @@ export const DefaultButtons = {
   },
 
   name: 'Buttons',
+};
+
+export const EditorialCta = {
+  args: {
+    label: 'Browse all publications',
+    Type: 'Primary',
+    Variant: 'CTA',
+  },
+  name: 'Editorial CTA',
 };
 
 export const AllVariants = {

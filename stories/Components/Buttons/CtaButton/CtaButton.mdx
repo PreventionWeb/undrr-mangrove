@@ -40,6 +40,7 @@ Mangrove's standard button component. Buttons are designed as call-to-action (CT
 | `.mg-button.mg-button-secondary`                   | Supporting action — lower visual weight than primary   |
 | `.mg-button.mg-button-primary.mg-button-outline`   | Primary emphasis with a transparent surface            |
 | `.mg-button.mg-button-secondary.mg-button-outline` | Secondary emphasis with a transparent surface          |
+| `.mg-button.mg-button-primary.mg-button-cta`       | Editorial navigation with a circular direction badge   |
 | `.mg-button.disabled`                              | Inactive state — not clickable                         |
 
 ### Content
@@ -52,6 +53,14 @@ Mangrove's standard button component. Buttons are designed as call-to-action (CT
 Button colors adapt to the active theme (UNDRR, PreventionWeb, DELTA, etc.). In dark contexts like heroes and CTAs, buttons invert to ensure contrast.
 
 <Canvas of={CtaButtonStories.DefaultButtons} meta={CtaButtonStories} />
+
+### Editorial CTA
+
+Use `Variant="CTA"` for navigational prompts in cards, heroes, and section
+headers. Keep consent, form submission, and utility actions on the default
+filled-button treatment.
+
+<Canvas of={CtaButtonStories.EditorialCta} meta={CtaButtonStories} />
 
 ### All variants
 
@@ -70,6 +79,7 @@ Primary, secondary, and disabled buttons on light and dark backgrounds for easy 
 
 ## Changelog
 
+- **1.6** — 2026-09-01 ([#1086](https://github.com/unisdr/undrr-mangrove/pull/1086)): Made the editorial treatment an explicit `Variant="CTA"` option using the descriptive `.mg-button-cta` modifier. CtaButton now defaults to the conventional shared button treatment; cards and heroes opt into the editorial variant intentionally.
 - **1.5** — 2026-08-31 ([#1086](https://github.com/unisdr/undrr-mangrove/pull/1086)): Added a reduced-motion-aware `scale(0.96)` pressed state to conventional buttons. Editorial link CTAs keep their labels stable and retain the directional badge-only response.
 - **1.4** — 2026-08-31 ([#1086](https://github.com/unisdr/undrr-mangrove/pull/1086)): Refreshed React `CtaButton` instances as compact editorial links with an optically aligned circular direction badge, tactile press state, RTL direction, and context-aware hero colours. Raw `.mg-button` controls retain their conventional treatment.
 - **1.3.1** — 2026-08-31: Buttons now transition background/border/text colours smoothly on hover (gated by `prefers-reduced-motion`), and the keyboard focus indicator is a clearer token-driven ring (neutral separator + `--mg-color-focus-ring`) instead of a low-contrast same-colour glow.

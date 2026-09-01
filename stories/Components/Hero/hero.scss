@@ -38,9 +38,9 @@
   }
 
   // Editorial link-style CTA used by CtaButton.
-  a.mg-button.mg-button-link,
-  a.mg-button.mg-button-link:hover,
-  a.mg-button.mg-button-link:visited {
+  a.mg-button.mg-button-cta,
+  a.mg-button.mg-button-cta:hover,
+  a.mg-button.mg-button-cta:visited {
     background: transparent;
     border-color: transparent;
     color: rgb(var(--mg-color-neutral-0));
@@ -197,7 +197,7 @@
     flex-direction: column;
     flex-wrap: nowrap;
 
-    .mg-button.mg-button-link {
+    .mg-button.mg-button-cta {
       inline-size: fit-content;
       max-inline-size: 100%;
     }
@@ -278,9 +278,9 @@ $variant-colour-props: (
     background-color: rgb(var(--mg-color-neutral-0));
   }
 
-  a.mg-button.mg-button-link,
-  a.mg-button.mg-button-link:hover,
-  a.mg-button.mg-button-link:visited {
+  a.mg-button.mg-button-cta,
+  a.mg-button.mg-button-cta:hover,
+  a.mg-button.mg-button-cta:visited {
     background: transparent;
     border-color: transparent;
     color: rgb(var(--mg-color-neutral-0));

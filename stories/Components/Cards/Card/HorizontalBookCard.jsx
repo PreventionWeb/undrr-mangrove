@@ -8,11 +8,21 @@ const cls = (...classes) =>
   classes.filter(Boolean).length > 0 ? classes.filter(Boolean).join(' ') : null;
 
 export function HorizontalBookCard({ data, variant = 'primary', className }) {
-  const variantClass = variant && variant !== 'primary' ? `mg-card--${variant}` : null;
+  const variantClass =
+    variant && variant !== 'primary' ? `mg-card--${variant}` : null;
   return (
     <>
       {data.map((item, index) => (
-        <article key={index} className={cls('mg-card', 'mg-card__hc', 'mg-card-book__hc', variantClass, className)}>
+        <article
+          key={index}
+          className={cls(
+            'mg-card',
+            'mg-card__hc',
+            'mg-card-book__hc',
+            variantClass,
+            className
+          )}
+        >
           {item.imgback && (
             <div className="mg-card__visual">
               <img
@@ -51,7 +61,12 @@ export function HorizontalBookCard({ data, variant = 'primary', className }) {
               }}
             />
             {item.link && (
-              <CtaButton type="Primary" label={item.button} href={item.link} />
+              <CtaButton
+                Type="Primary"
+                Variant="CTA"
+                label={item.button}
+                href={item.link}
+              />
             )}
           </div>
         </article>

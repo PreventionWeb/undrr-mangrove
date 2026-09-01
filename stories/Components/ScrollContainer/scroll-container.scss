@@ -41,7 +41,8 @@
 
       @media (prefers-reduced-motion: no-preference) {
         transition:
-          background-color var(--mg-motion-duration-fast) var(--mg-motion-easing-standard),
+          background-color var(--mg-motion-duration-fast)
+            var(--mg-motion-easing-standard),
           color var(--mg-motion-duration-fast) var(--mg-motion-easing-standard),
           scale var(--mg-motion-duration-fast) var(--mg-motion-easing-standard);
       }
@@ -82,7 +83,8 @@
     // TODO: Review - do we need it
     // Firefox scrollbar styling
     scrollbar-width: thin;
-    scrollbar-color: rgb(var(--mg-color-neutral-500)) rgb(var(--mg-color-neutral-100));
+    scrollbar-color: rgb(var(--mg-color-neutral-500))
+      rgb(var(--mg-color-neutral-100));
 
     @include devicebreak(small) {
       height: auto;
@@ -148,6 +150,7 @@
     align-items: flex-start;
     display: flex;
     flex-wrap: nowrap;
+    gap: var(--mg-spacing-150);
     height: auto;
 
     @include devicebreak(small) {
@@ -161,7 +164,6 @@
     width: var(--scroll-item-width, 300px);
     min-width: var(--scroll-item-width, 300px);
     flex-shrink: 0;
-    margin-inline-end: var(--mg-spacing-300);
     white-space: normal;
     overflow-wrap: break-word;
     scroll-snap-align: start;
@@ -169,10 +171,6 @@
     @include devicebreak(small) {
       display: inline-block;
       vertical-align: top;
-    }
-
-    &:last-child {
-      margin-inline-end: 0;
     }
   }
 }

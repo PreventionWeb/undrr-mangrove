@@ -89,10 +89,14 @@ function HeroContent({ item, HeadingTag }) {
       </div>
       <div className="mg-hero__buttons">
         {item.primary_button && (
-          <CtaButton Type="Primary" label={item.primary_button} />
+          <CtaButton Type="Primary" Variant="CTA" label={item.primary_button} />
         )}
         {item.secondary_button && (
-          <CtaButton Type="Secondary" label={item.secondary_button} />
+          <CtaButton
+            Type="Secondary"
+            Variant="CTA"
+            label={item.secondary_button}
+          />
         )}
       </div>
     </article>
