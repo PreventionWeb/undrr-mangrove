@@ -4,6 +4,10 @@
  * `yarn build:aria`; do not edit that generated CSS directly.
  * This intentionally targets React Aria's stock classes and consumes only
  * --mg-aria-* tokens, so consumers can import it without Mangrove components.
+ *
+ * Keep this file limited to reusable React Aria primitive and state styles.
+ * Composition styles for the Storybook spike demos belong in _spike-demo.scss,
+ * which is not part of the distributed CSS surface.
  */
 .react-aria-Button,
 .react-aria-Input,
@@ -15,7 +19,6 @@
   font-size: var(--mg-aria-font-size);
   line-height: var(--mg-aria-line-height);
 }
-
 :where(.react-aria-Button) {
   align-items: center;
   background: var(--mg-aria-color-accent);
@@ -29,7 +32,6 @@
   min-block-size: calc(var(--mg-aria-space-4) * 2);
   padding: var(--mg-aria-space-2) var(--mg-aria-space-3);
 }
-
 :where(.react-aria-Button[data-hovered]) {
   background: var(--mg-aria-color-accent-active);
 }
@@ -51,7 +53,6 @@
   box-shadow: var(--mg-aria-shadow);
   outline: none;
 }
-
 .react-aria-TextField,
 .react-aria-SearchField,
 .react-aria-Select,
@@ -70,7 +71,6 @@
   flex: 1;
   min-width: 0;
 }
-
 .react-aria-DateInput {
   background: var(--mg-aria-color-surface);
   border: var(--mg-aria-border-width) solid var(--mg-aria-color-border);
@@ -86,7 +86,6 @@
   background: var(--mg-aria-color-subtle-surface);
   box-shadow: var(--mg-aria-shadow);
 }
-
 .react-aria-Checkbox {
   align-items: center;
   color: var(--mg-aria-color-text);
@@ -118,7 +117,6 @@
 .react-aria-Checkbox[data-focus-visible]::before {
   box-shadow: var(--mg-aria-shadow);
 }
-
 .react-aria-Table {
   border-collapse: collapse;
   color: var(--mg-aria-color-text);
@@ -127,11 +125,6 @@
   min-width: var(--mg-aria-width-full);
   table-layout: fixed;
   width: var(--mg-aria-width-full);
-}
-.aria-spike-table-scroll {
-  border-radius: var(--mg-aria-radius-surface);
-  box-shadow: var(--mg-aria-surface-shadow);
-  overflow: auto;
 }
 .react-aria-Column {
   background: var(--mg-aria-color-subtle-surface);
@@ -152,32 +145,6 @@
 .react-aria-ColumnResizer[data-resizing] {
   background: var(--mg-aria-color-accent);
 }
-.aria-spike-column-header {
-  align-items: center;
-  display: flex;
-  justify-content: space-between;
-  width: var(--mg-aria-width-full);
-}
-.aria-spike-column-header > span {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.aria-crud-selection-column,
-.aria-crud-favorite-column,
-.aria-crud-selection-cell,
-.aria-crud-favorite-cell {
-  text-align: center;
-}
-.aria-crud-selection-column,
-.aria-crud-favorite-column {
-  padding-inline: 0;
-}
-.aria-crud-selection-cell,
-.aria-crud-favorite-cell {
-  padding: 0;
-}
 .react-aria-Cell {
   border-bottom: var(--mg-aria-border-width) solid var(--mg-aria-color-border);
   overflow: hidden;
@@ -188,8 +155,7 @@
 .react-aria-Row[data-hovered] .react-aria-Cell {
   background: var(--mg-aria-color-subtle-surface);
 }
-.react-aria-Row[data-selected] .react-aria-Cell,
-.aria-spike-row-selected .react-aria-Cell {
+.react-aria-Row[data-selected] .react-aria-Cell {
   background: var(--mg-aria-color-selected-surface);
 }
 .react-aria-Menu {
@@ -261,12 +227,6 @@
   color: var(--mg-aria-color-text);
   font-family: var(--mg-aria-font-family);
 }
-.aria-calendar-header {
-  align-items: center;
-  display: flex;
-  justify-content: space-between;
-  margin-block-end: var(--mg-aria-space-2);
-}
 .react-aria-CalendarGrid {
   border-collapse: collapse;
 }
@@ -282,165 +242,6 @@
 }
 .react-aria-CalendarCell[data-focused] {
   box-shadow: var(--mg-aria-shadow);
-}
-.aria-crud-demo {
-  display: grid;
-  font-family: var(--mg-aria-font-family);
-  gap: var(--mg-aria-space-4);
-  max-width: var(--mg-aria-width-full);
-}
-.aria-integration-demo {
-  display: grid;
-  font-family: var(--mg-aria-font-family);
-  gap: var(--mg-aria-space-4);
-  max-width: calc(var(--mg-aria-dialog-width) * 1.5);
-}
-.aria-integration-demo__intro {
-  display: grid;
-  gap: var(--mg-aria-space-1);
-}
-.aria-integration-demo__intro > * {
-  margin: 0;
-}
-.aria-integration-demo__intro h2 {
-  color: var(--mg-aria-color-text);
-  text-wrap: balance;
-}
-.aria-integration-demo__intro p {
-  color: var(--mg-aria-color-muted-text);
-  text-wrap: pretty;
-}
-.aria-integration-demo__surface {
-  border-radius: var(--mg-aria-radius-surface);
-  box-shadow: var(--mg-aria-surface-shadow);
-  display: grid;
-  gap: var(--mg-aria-space-4);
-  padding: var(--mg-aria-space-4);
-}
-.aria-integration-demo__fields {
-  align-items: start;
-  display: grid;
-  gap: var(--mg-aria-space-3);
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
-}
-.aria-integration-demo__checks {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--mg-aria-space-2) var(--mg-aria-space-4);
-}
-.aria-integration-demo__surface > .react-aria-Button {
-  justify-self: start;
-}
-.aria-crud-toolbar {
-  align-items: center;
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--mg-aria-space-2);
-}
-.aria-crud-search {
-  flex: 1 1 20rem;
-  min-width: min(100%, 20rem);
-}
-.aria-crud-toolbar > .mg-button,
-.aria-crud-actions > .mg-button {
-  min-block-size: calc(var(--mg-aria-space-4) * 2);
-}
-.aria-crud-actions {
-  align-items: end;
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--mg-aria-space-2);
-}
-.aria-crud-editor__identity,
-.aria-crud-editor__fields {
-  width: var(--mg-aria-width-full);
-}
-.aria-crud-editor > [slot="title"],
-.aria-crud-editor__identity,
-.aria-crud-editor__fields,
-.aria-crud-editor > .aria-crud-actions {
-  grid-column: 1 / -1;
-}
-.aria-crud-editor {
-  display: grid;
-  gap: var(--mg-aria-space-3);
-  grid-template-columns: minmax(0, 1fr);
-}
-.aria-crud-editor__fields {
-  display: grid;
-  gap: var(--mg-aria-space-3);
-}
-.aria-crud-editor > .aria-crud-actions {
-  justify-content: flex-end;
-}
-.aria-crud-event-identity {
-  align-items: center;
-  display: flex;
-  gap: var(--mg-aria-space-2);
-}
-.aria-crud-event-identity img {
-  background: var(--mg-aria-color-subtle-surface);
-  block-size: calc(var(--mg-aria-space-4) * 2);
-  inline-size: calc(var(--mg-aria-space-4) * 2);
-  object-fit: contain;
-}
-.aria-crud-event-identity > span {
-  display: grid;
-  min-width: 0;
-}
-.aria-crud-event-identity strong,
-.aria-crud-event-identity small {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.aria-crud-list {
-  border-radius: var(--mg-aria-radius-surface);
-  color: var(--mg-aria-color-text);
-  font-family: var(--mg-aria-font-family);
-}
-.aria-crud-card + .aria-crud-card {
-  margin-block-start: var(--mg-aria-space-3);
-}
-.aria-crud-card {
-  border-radius: var(--mg-aria-radius-surface);
-  box-shadow: var(--mg-aria-surface-shadow);
-  display: grid;
-  gap: var(--mg-aria-space-3);
-  padding: var(--mg-aria-space-3);
-}
-.aria-crud-card[data-hovered] {
-  box-shadow: var(--mg-aria-surface-shadow-hover);
-}
-.aria-crud-card__header,
-.aria-crud-card__meta {
-  align-items: center;
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--mg-aria-space-2);
-}
-.aria-crud-card__header {
-  justify-content: space-between;
-}
-.aria-crud-card__header .aria-crud-event-identity {
-  flex: 1 1 12rem;
-  min-width: 0;
-}
-.aria-crud-card__meta .mg-tag {
-  margin: 0;
-}
-.aria-crud-event-identity small {
-  color: var(--mg-aria-color-muted-text);
-  font-size: var(--mg-aria-font-size-small);
-}
-.aria-crud-favorite-button {
-  align-items: center;
-  display: inline-flex;
-  font-size: var(--mg-aria-space-4);
-  justify-content: center;
-  min-block-size: calc(var(--mg-aria-space-4) * 2);
-  min-inline-size: calc(var(--mg-aria-space-4) * 2);
-  padding: 0;
 }
 .react-aria-Label {
   color: var(--mg-aria-color-text);
@@ -476,7 +277,6 @@
   color: var(--mg-aria-color-invalid);
   font-size: var(--mg-aria-font-size-small);
 }
-
 .react-aria-Popover {
   background: var(--mg-aria-color-surface);
   border-radius: var(--mg-aria-radius-surface);
@@ -509,12 +309,8 @@
     var(--mg-aria-color-border);
   padding: var(--mg-aria-space-2);
 }
-.react-aria-GridListItem[data-focused],
-.aria-crud-card[data-focus-visible] {
+.react-aria-GridListItem[data-focused] {
   box-shadow: var(--mg-aria-shadow);
-}
-.aria-crud-card[data-focus-visible] {
-  outline: none;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -531,10 +327,6 @@
     transition: background-color var(--mg-aria-motion-duration-fast)
       var(--mg-aria-motion-easing);
   }
-  .aria-crud-card {
-    transition: box-shadow var(--mg-aria-motion-duration-fast)
-      var(--mg-aria-motion-easing);
-  }
 }
 
 @media (forced-colors: active) {
@@ -545,7 +337,6 @@
   .react-aria-Checkbox[data-focus-visible]::before,
   .react-aria-CalendarCell[data-focus-visible],
   .react-aria-GridListItem[data-focus-visible],
-  .aria-crud-card[data-focus-visible],
   .react-aria-ListBoxItem[data-focus-visible],
   .react-aria-MenuItem[data-focus-visible] {
     outline: var(--mg-aria-focus-width) solid CanvasText;

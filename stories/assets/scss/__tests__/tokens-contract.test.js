@@ -130,3 +130,60 @@ describe('Mangrove 2.0 token contract (compiled CSS)', () => {
     }
   );
 });
+
+/**
+ * The distributed React Aria surface is a *public package export*
+ * (`@undrr/undrr-mangrove/aria.css`). Storybook's spike demos live in the same
+ * Sass tree and are trivially easy to re-add to the shipped entry point by
+ * accident, which would leak `.aria-crud-*` fixture styling into every
+ * consumer's bundle. These assertions pin the boundary.
+ */
+describe('distributed React Aria surface', () => {
+  // Selector prefixes that belong to the Storybook spike demos, plus the
+  // Mangrove component classes the demos compose with. None may appear in the
+  // shipped stylesheet.
+  const DEMO_SELECTOR =
+    /\.(aria-spike-|aria-crud-|aria-integration-demo|aria-calendar-header|mg-button|mg-tag)/;
+
+  let ariaCss;
+
+  beforeAll(() => {
+    ariaCss = compile('aria/_react-aria');
+  });
+
+  test('carries the reusable React Aria primitives', () => {
+    [
+      'Button',
+      'Input',
+      'Table',
+      'Cell',
+      'Popover',
+      'Modal',
+      'Checkbox',
+    ].forEach(part => {
+      expect(ariaCss).toContain(`.react-aria-${part}`);
+    });
+  });
+
+  test('carries no spike-demo composition selectors', () => {
+    const leaked = ariaCss
+      .split('\n')
+      .filter(line => DEMO_SELECTOR.test(line))
+      .map(line => line.trim());
+
+    expect(leaked).toEqual([]);
+  });
+
+  test('resolves every value through a --mg-aria-* custom property', () => {
+    // Literals belong in the token files; the shared stylesheet must stay
+    // theme-neutral so a token swap fully re-skins it.
+    expect(ariaCss).not.toMatch(/:\s*#[0-9a-f]{3,8}\b/i);
+    expect(ariaCss).not.toMatch(/:\s*rgb\(\s*\d/);
+  });
+
+  test('declares no cascade layer', () => {
+    // DELTA has unlayered legacy CSS that outranks any layered rule, so the
+    // agreed distribution shape is ordinary author CSS.
+    expect(ariaCss).not.toContain('@layer');
+  });
+});

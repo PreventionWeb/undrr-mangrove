@@ -14,6 +14,22 @@
     "./tokens/mangrove.css": "./aria/tokens/mangrove.css",
     "./tokens/delta.css": "./aria/tokens/delta.css"
   },
+  "files": [
+    "src",
+    "aria",
+    "stories",
+    "schemas/dist",
+    "CHANGELOG.md",
+    "!stories/assets/css",
+    "!**/__tests__",
+    "!**/__snapshots__",
+    "!**/*.test.js",
+    "!**/*.test.jsx",
+    "!**/*.stories.js",
+    "!**/*.stories.jsx",
+    "!**/*.mdx",
+    "!stories/Documentation"
+  ],
   "scripts": {
     "prepare": "node scripts/setup-git-hooks.cjs",
     "hooks:install": "node scripts/setup-git-hooks.cjs",
