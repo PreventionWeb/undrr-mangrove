@@ -23,8 +23,8 @@ const destinations = [
     icon: 'mg-icon mg-icon-lightbulb',
     title: 'Foundations',
     summaryText:
-      'Explore the tokens, typography, spacing and themes behind every component.',
-    kind: 'design-decisions-colors',
+      'Explore the principles, tokens and themes behind every component.',
+    kind: 'design-decisions-experience-principles',
   },
   {
     icon: 'mg-icon mg-icon-cubes',

@@ -22,11 +22,20 @@ If your project uses those same content structures, everything that depends on t
 
 <TableOfContents
   tocData={[
-    { id: 'content-structure-vs-visual-style', text: 'Content structure vs. visual style' },
-    { id: 'what-stays-the-same-what-doesnt', text: "What stays the same, what doesn't" },
+    {
+      id: 'content-structure-vs-visual-style',
+      text: 'Content structure vs. visual style',
+    },
+    {
+      id: 'what-stays-the-same-what-doesnt',
+      text: "What stays the same, what doesn't",
+    },
     { id: 'what-mangrove-is-not', text: 'What Mangrove is not' },
     { id: 'why-this-approach', text: 'Why this approach' },
-    { id: 'mangrove-alongside-application-frameworks', text: 'Mangrove alongside application frameworks' },
+    {
+      id: 'mangrove-alongside-application-frameworks',
+      text: 'Mangrove alongside application frameworks',
+    },
     { id: 'why-semantic-css', text: 'Why semantic CSS' },
     { id: 'adopting-mangrove', text: 'Adopting Mangrove' },
     { id: 'shared-infrastructure', text: 'Shared infrastructure' },
@@ -64,7 +73,9 @@ What each property controls:
 
 ## What Mangrove is not
 
-**Mangrove is not a visual brand enforcer.** It doesn't dictate colors, button styles, or how your hero looks. Those are design tokens (named values for colors, spacing, and component treatments) that each property controls. You can make the title bigger, the subline smaller, the accent color green. That's all CSS. Mangrove only cares that the hero *has* a title, a subline, and a link, because if a hero stops carrying links, every content pattern that assumed it would breaks.
+**Mangrove is not a visual brand enforcer.** It doesn't dictate colors, button styles, or how your hero looks. Those are design tokens (named values for colors, spacing, and component treatments) that each property controls. You can make the title bigger, the subline smaller, the accent color green. That's all CSS. Mangrove only cares that the hero _has_ a title, a subline, and a link, because if a hero stops carrying links, every content pattern that assumed it would breaks.
+
+Mangrove does define an accessible interaction and baseline geometry contract that themes must preserve. The <LinkTo kind="design-decisions-experience-principles" story="docs">experience principles</LinkTo> explain how shared behaviour and theme expression fit together.
 
 **Mangrove is not a full application framework.** It doesn't handle data tables, form validation, dashboards, workflow state, or user management. If you need PrimeReact or Material UI for that, use them. Mangrove sits alongside those libraries.
 
@@ -82,10 +93,10 @@ And when UNDRR rebrands -- which will happen eventually -- properties using Mang
 
 If your team has already invested in PrimeReact or a similar library, that investment isn't wasted. Mangrove sits alongside application-level libraries. It doesn't replace them.
 
-| Layer | Owned by | Examples |
-|-------|----------|----------|
-| **Brand and content** | Mangrove | Header, footer, mega menu, content cards, typography, color tokens, syndicated content blocks |
-| **Application UI** | Your framework | Data tables, form controls, dashboards, filters, tree views, date pickers |
+| Layer                 | Owned by       | Examples                                                                                      |
+| --------------------- | -------------- | --------------------------------------------------------------------------------------------- |
+| **Brand and content** | Mangrove       | Header, footer, mega menu, content cards, typography, color tokens, syndicated content blocks |
+| **Application UI**    | Your framework | Data tables, form controls, dashboards, filters, tree views, date pickers                     |
 
 A page might look like this (this example assumes a React app importing Mangrove from npm; for Drupal integration, see the <LinkTo kind="getting-started-getting-started-guide" story="docs">getting started guide</LinkTo>):
 
@@ -118,7 +129,7 @@ The two don't conflict. Mangrove scopes all styles under the `mg-` BEM prefix, a
 
 Mangrove uses BEM-namespaced CSS (Block-Element-Modifier naming like `mg-card`, `mg-hero`, `mg-footer__links`) rather than utility classes. The reason comes down to content portability.
 
-UNDRR syndicates content as rendered HTML with `mg-` class names baked into the markup. That content gets displayed across PreventionWeb, MCR2030, IRP, and other properties, each with its own visual identity. With semantic class names, the HTML says *what something is* (`mg-card`), and the CSS says *how it looks*, per theme. Swapping visual identity is a CSS import, not a template audit.
+UNDRR syndicates content as rendered HTML with `mg-` class names baked into the markup. That content gets displayed across PreventionWeb, MCR2030, IRP, and other properties, each with its own visual identity. With semantic class names, the HTML says _what something is_ (`mg-card`), and the CSS says _how it looks_, per theme. Swapping visual identity is a CSS import, not a template audit.
 
 Component libraries like PrimeReact also use semantic naming (`p-card`, `p-card-header`) and have their own theming systems. But no component library covers everything -- there's no PrimeReact hero, no off-the-shelf mega menu that matches your site's navigation model. Developers fill those gaps, and when they reach for utility classes to do it, the visual decisions get baked into the markup: `bg-stone-50 rounded-xl p-8 flex flex-col gap-4`. Which of those classes are structural? Which are decorative? When the next property needs a different look, there's no reliable way to separate them.
 
@@ -186,16 +197,18 @@ Content syndication is where alignment with Mangrove is most visible, but it's o
 **Search syndication.** The SyndicationSearchWidget queries UNDRR's Elasticsearch index and can render results as cards, lists, or book covers. On a landing page, you can strip out the search box, facets, and pager entirely and just show a row of content cards -- a "latest publications" rail or a topic-specific news feed:
 
 ```jsx
-<SyndicationSearchWidget config={{
-  searchEndpoint: 'https://www.undrr.org/search-endpoint',
-  displayMode: 'card',
-  resultsPerPage: 4,
-  showSearchBox: false,
-  showFacets: false,
-  showPager: false,
-  defaultSort: 'newest',
-  customFilters: ['type:publication'],
-}} />
+<SyndicationSearchWidget
+  config={{
+    searchEndpoint: 'https://www.undrr.org/search-endpoint',
+    displayMode: 'card',
+    resultsPerPage: 4,
+    showSearchBox: false,
+    showFacets: false,
+    showPager: false,
+    defaultSort: 'newest',
+    customFilters: ['type:publication'],
+  }}
+/>
 ```
 
 The cards use `mg-` classes. Without Mangrove CSS, they're unstyled divs. See the <LinkTo kind="components-syndicated-search-integrations" story="syndicated-cards">syndicated cards example</LinkTo> for a live demo.
@@ -228,9 +241,18 @@ Use Mangrove for the content patterns your UI shares with the rest of UNDRR. Use
 
 **Next steps:**
 
-1. <LinkTo kind="getting-started-getting-started-guide" story="docs">Getting started guide</LinkTo> -- set up Mangrove and render your first component
-2. <LinkTo kind="getting-started-integration-theming-guide" story="docs">Theming guide</LinkTo> -- create a theme for your property
-3. <LinkTo kind="contributing-component-standards" story="docs">Component standards</LinkTo> -- conventions, contribution process, and code quality
+1. <LinkTo kind="getting-started-getting-started-guide" story="docs">
+     Getting started guide
+   </LinkTo>
+   -- set up Mangrove and render your first component
+2. <LinkTo kind="getting-started-integration-theming-guide" story="docs">
+     Theming guide
+   </LinkTo>
+   -- create a theme for your property
+3. <LinkTo kind="contributing-component-standards" story="docs">
+     Component standards
+   </LinkTo>
+   -- conventions, contribution process, and code quality
 4. Contact the UNDRR web team for architectural questions
 
 ---

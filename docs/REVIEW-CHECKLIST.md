@@ -58,6 +58,14 @@ See [Testing](https://unisdr.github.io/undrr-mangrove/?path=/docs/contributing-b
 
 - [ ] `npx -y react-doctor@latest .` shows no new errors and the score is equal or higher than where you found it. See the [`react-doctor` guidance](AI-CODING-AGENTS.md#component-quality-checks-with-react-doctor) for house conventions and known false positives.
 
+## Visual refinements
+
+- [ ] Change follows the [experience principles](https://unisdr.github.io/undrr-mangrove/?path=/docs/design-decisions-experience-principles--docs), including the boundary between shared behaviour and theme-owned expression
+- [ ] PR states the user or system problem and why the change belongs to the component, a shared token, or a specific theme
+- [ ] Before and after evidence covers representative viewport sizes and relevant interaction or validation states
+- [ ] Affected themes, keyboard and touch interaction, zoom or reflow, RTL, text expansion, forced colours, and reduced motion have been checked as applicable
+- [ ] Changed defaults are additive where possible and document compatibility, changelog, and migration impact
+
 ## Internationalization
 
 - [ ] Text comes from props, not hardcoded
