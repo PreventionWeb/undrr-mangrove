@@ -1,6 +1,8 @@
 import React from 'react';
 import LinkTo from '@storybook/addon-links/react';
+import { linkTo } from '@storybook/addon-links';
 import { CtaButton } from '../../Components/Buttons/CtaButton/CtaButton';
+import { IconCard } from '../../Components/Cards/IconCard/IconCard';
 import { VerticalCard } from '../../Components/Cards/Card/VerticalCard';
 import ScrollContainer from '../../Components/ScrollContainer/ScrollContainer';
 
@@ -10,43 +12,56 @@ import logo from '../../assets/images/undrr-logo-white.svg';
 import './intro-landing.css';
 
 const destinations = [
-  [
-    '01',
-    'Getting started',
-    'Install Mangrove and choose the integration path that fits your project.',
-    'getting-started-getting-started-guide',
-  ],
-  [
-    '02',
-    'Foundations',
-    'Explore the tokens, typography, spacing and themes behind every component.',
-    'design-decisions-colors',
-  ],
-  [
-    '03',
-    'Components',
-    'Browse production-ready patterns for content, forms and navigation.',
-    'brand-component-gallery',
-  ],
-  [
-    '04',
-    'Platform services',
-    'Connect shared search, content, analytics and critical messaging services.',
-    'platform-services-search-syndication',
-  ],
-  [
-    '05',
-    'Accessibility',
-    'Build inclusive experiences with our standards, checks and guidance.',
-    'getting-started-accessibility',
-  ],
-  [
-    '06',
-    'Contributing',
-    'Learn the component workflow and help improve the shared library.',
-    'contributing-build-a-component-step-by-step',
-  ],
+  {
+    icon: 'mg-icon mg-icon-graduation-cap',
+    title: 'Getting started',
+    summaryText:
+      'Install Mangrove and choose the integration path that fits your project.',
+    kind: 'getting-started-getting-started-guide',
+  },
+  {
+    icon: 'mg-icon mg-icon-lightbulb',
+    title: 'Foundations',
+    summaryText:
+      'Explore the tokens, typography, spacing and themes behind every component.',
+    kind: 'design-decisions-colors',
+  },
+  {
+    icon: 'mg-icon mg-icon-cubes',
+    title: 'Components',
+    summaryText:
+      'Browse production-ready patterns for content, forms and navigation.',
+    kind: 'brand-component-gallery',
+  },
+  {
+    icon: 'mg-icon mg-icon-globe',
+    title: 'Platform services',
+    summaryText:
+      'Connect shared search, content, analytics and critical messaging services.',
+    kind: 'platform-services-search-syndication',
+  },
+  {
+    icon: 'mg-icon mg-icon-life-ring',
+    title: 'Accessibility',
+    summaryText:
+      'Build inclusive experiences with our standards, checks and guidance.',
+    kind: 'getting-started-accessibility',
+  },
+  {
+    icon: 'mg-icon mg-icon-code-branch',
+    title: 'Contributing',
+    summaryText:
+      'Learn the component workflow and help improve the shared library.',
+    kind: 'contributing-build-a-component-step-by-step',
+  },
 ];
+
+function storyNavigation(kind) {
+  return event => {
+    event.preventDefault();
+    linkTo(kind, 'docs')();
+  };
+}
 
 const componentExamples = [
   {
@@ -154,15 +169,18 @@ export function IntroLanding() {
           <h2 id="mg-intro-resources">What’s inside</h2>
         </div>
         <div className="mg-intro__grid">
-          {destinations.map(([number, title, summary, kind]) => (
-            <article className="mg-intro__card" key={number}>
-              <span className="mg-intro__number">{number}</span>
-              <h3>{title}</h3>
-              <p>{summary}</p>
-              <LinkTo kind={kind} story="docs">
-                Explore <span aria-hidden="true">→</span>
-              </LinkTo>
-            </article>
+          {destinations.map(destination => (
+            <IconCard
+              data={[
+                {
+                  ...destination,
+                  imageScale: 'small',
+                  linkText: 'Explore →',
+                  onClick: storyNavigation(destination.kind),
+                },
+              ]}
+              key={destination.title}
+            />
           ))}
         </div>
       </section>
