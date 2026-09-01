@@ -60,6 +60,12 @@
   outline: none;
 }
 
+.react-aria-Input[data-focus-visible],
+.react-aria-DateInput[data-focus-within] {
+  background: var(--mg-aria-color-field-surface-focus);
+  border-color: var(--mg-aria-color-border-focus);
+}
+
 .react-aria-TextField,
 .react-aria-SearchField,
 .react-aria-Select,
@@ -82,7 +88,7 @@
 }
 
 .react-aria-DateInput {
-  background: var(--mg-aria-color-surface);
+  background: var(--mg-aria-color-field-surface);
   border: var(--mg-aria-border-width) solid var(--mg-aria-color-border);
   border-radius: var(--mg-aria-radius-control);
   color: var(--mg-aria-color-text);
@@ -167,7 +173,7 @@
 }
 
 .react-aria-Cell {
-  border-bottom: var(--mg-aria-border-width) solid var(--mg-aria-color-border);
+  border-block-end: var(--mg-aria-border-width) solid var(--mg-aria-color-border);
   overflow: hidden;
   padding: var(--mg-aria-space-2);
   text-overflow: ellipsis;
@@ -286,7 +292,7 @@
 }
 
 :where(.react-aria-Input) {
-  background: var(--mg-aria-color-surface);
+  background: var(--mg-aria-color-field-surface);
   border: var(--mg-aria-border-width) solid var(--mg-aria-color-border);
   border-radius: var(--mg-aria-radius-control);
   box-sizing: border-box;

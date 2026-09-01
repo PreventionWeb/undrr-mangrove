@@ -116,6 +116,40 @@ column visibility, sorting/resizing, multi-row selection, favourites, nested
 row actions, pagination, and functioning create/edit/delete overlays including
 validation, ComboBox, date picker, and image-drop handling.
 
+The adapter tracks the `2.0.0-alpha.2` design foundation ([PR #1086]
+(https://github.com/unisdr/undrr-mangrove/pull/1086)) rather than re-deriving
+its own values. That release introduced dedicated seams for surface, border,
+shadow, radius, focus and motion, and an audit against them found four places
+where the React Aria surface had drifted:
+
+- **Focus ring colour.** alpha.2 gives the ring its own `--mg-color-focus-ring`
+  seam so a theme can retint focus independently of the interactive colour. The
+  Aria ring resolved through the accent colour instead, so it would not have
+  followed such a retint. It now maps to `--mg-aria-color-focus-ring`.
+- **Field surface.** Mangrove's own inputs rest on `--mg-color-neutral-50` and
+  lift to `--mg-color-neutral-0` on focus. React Aria inputs were plain white in
+  both states, so an Aria field sat visibly differently beside a Mangrove field
+  on the same page. New `--mg-aria-color-field-surface` and
+  `--mg-aria-color-field-surface-focus` keys now resolve to the same
+  `rgb(230 230 230)` and `rgb(255 255 255)` the Mangrove control uses.
+- **Focused field border.** `--mg-aria-color-border-focus` now follows
+  `--mg-color-form-focus`, matching `_form-base.scss`.
+- **Raised surface.** `--mg-aria-color-surface` hardcoded white rather than
+  following the `--mg-surface-raised` foundation token that themes own.
+
+One physical `border-bottom` on `Cell` also became `border-block-end`, so the
+distributed stylesheet is now free of physical box-side properties in line with
+alpha.2's logical-property pass. The 40px minimum hit area, reduced-motion and
+forced-colours treatments already matched.
+
+DELTA's token file gains the same contract keys with DELTA-appropriate values;
+its fields are flat on the raised surface rather than tinted, so both field
+states deliberately resolve to the same value there. A test now asserts that
+every `--mg-aria-*` the stylesheet consumes is defined by _both_ token files,
+which is the invariant the "swap one file to retheme" claim rests on — a key
+added to the stylesheet but not to a token file would otherwise degrade
+silently to an unset value instead of failing the build.
+
 The Mangrove stories also exercise the v2 experience-principle layer without
 turning the spike into a wrapper library. React Aria controls now consume
 theme-owned button, form, and surface geometry; raised surfaces use Mangrove's

@@ -9,10 +9,15 @@
   --mg-aria-color-on-accent: rgb(var(--mg-color-white));
   --mg-aria-color-text: rgb(var(--mg-color-text));
   --mg-aria-color-muted-text: rgb(var(--mg-color-neutral-600));
-  --mg-aria-color-surface: rgb(var(--mg-color-white));
+  --mg-aria-color-surface: var(--mg-surface-raised);
+  /* Form controls sit on the tinted field surface Mangrove's own inputs use,
+     and lift to the plain surface on focus, matching _form-base.scss. */
+  --mg-aria-color-field-surface: rgb(var(--mg-color-neutral-50));
+  --mg-aria-color-field-surface-focus: rgb(var(--mg-color-neutral-0));
   --mg-aria-color-subtle-surface: rgb(var(--mg-color-neutral-25));
   --mg-aria-color-selected-surface: rgb(var(--mg-color-interactive) / 0.12);
   --mg-aria-color-border: rgb(var(--mg-color-neutral-400));
+  --mg-aria-color-border-focus: rgb(var(--mg-color-form-focus));
   --mg-aria-color-invalid: rgb(var(--mg-color-red-900));
   --mg-aria-space-1: var(--mg-spacing-50);
   --mg-aria-space-2: var(--mg-spacing-100);
@@ -22,12 +27,15 @@
   --mg-aria-radius-button: var(--mg-radius-button);
   --mg-aria-radius-control: var(--mg-radius-form-input);
   --mg-aria-radius-surface: var(--mg-card-border-radius);
+  /* The focus ring has its own seam in 2.0 so a theme can retint it
+     independently of the interactive colour. */
+  --mg-aria-color-focus-ring: rgb(var(--mg-color-focus-ring));
   --mg-aria-focus-width: var(--mg-focus-ring-width);
   --mg-aria-focus-offset: var(--mg-focus-ring-offset);
   --mg-aria-shadow:
     0 0 0 var(--mg-aria-focus-offset) var(--mg-aria-color-surface),
     0 0 0 calc(var(--mg-aria-focus-offset) + var(--mg-aria-focus-width))
-      var(--mg-aria-color-accent);
+      var(--mg-aria-color-focus-ring);
   --mg-aria-surface-shadow: var(--mg-shadow-raised);
   --mg-aria-surface-shadow-hover: var(--mg-shadow-raised-hover);
   --mg-aria-overlay-shadow: 0 var(--mg-aria-space-1) var(--mg-aria-space-3)

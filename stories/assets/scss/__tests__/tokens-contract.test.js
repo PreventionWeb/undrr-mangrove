@@ -21,9 +21,12 @@ const RUNTIME_ARIA_ALIASES = [
   'color-text',
   'color-muted-text',
   'color-surface',
+  'color-field-surface',
+  'color-field-surface-focus',
   'color-subtle-surface',
   'color-selected-surface',
   'color-border',
+  'color-border-focus',
   'color-invalid',
   'space-1',
   'space-2',
@@ -33,6 +36,7 @@ const RUNTIME_ARIA_ALIASES = [
   'radius-button',
   'radius-control',
   'radius-surface',
+  'color-focus-ring',
   'focus-width',
   'focus-offset',
   'shadow',
@@ -180,6 +184,27 @@ describe('distributed React Aria surface', () => {
     expect(ariaCss).not.toMatch(/:\s*#[0-9a-f]{3,8}\b/i);
     expect(ariaCss).not.toMatch(/:\s*rgb\(\s*\d/);
   });
+
+  test.each([
+    ['mangrove', 'aria/_tokens-mangrove'],
+    ['delta', 'aria/_tokens-delta'],
+  ])(
+    'every --mg-aria-* it consumes is defined by the %s token file',
+    (_name, entry) => {
+      // This is what makes "swap one token file to retheme" true. A property
+      // added to the stylesheet but not to both token files degrades silently
+      // to an unset value rather than failing the build.
+      const used = new Set(
+        [...ariaCss.matchAll(/var\(\s*(--mg-aria-[a-z0-9-]+)/g)].map(m => m[1])
+      );
+      const tokenCss = compile(entry);
+      const defined = new Set(
+        [...tokenCss.matchAll(/(--mg-aria-[a-z0-9-]+)\s*:/g)].map(m => m[1])
+      );
+
+      expect([...used].filter(prop => !defined.has(prop))).toEqual([]);
+    }
+  );
 
   test('declares no cascade layer', () => {
     // DELTA has unlayered legacy CSS that outranks any layered rule, so the
