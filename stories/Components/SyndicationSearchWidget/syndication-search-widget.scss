@@ -672,15 +672,17 @@ $search-input-padding-x: var(--mg-spacing-250);
   width: 100%;
   padding: var(--mg-spacing-50);
   font-size: $mg-font-size-200;
-  border: 1px solid $search-border;
-  border-radius: $search-radius;
-  background-color: #fff;
+  border: 1px solid rgb(var(--mg-color-neutral-600) / 0.22);
+  border-radius: var(--mg-radius-form-input);
+  background-color: rgb(var(--mg-color-neutral-50));
   cursor: pointer;
 
-  &:focus {
+  &:focus-visible {
+    background-color: rgb(var(--mg-color-neutral-0));
     outline: none;
     border-color: $search-primary;
-    box-shadow: 0 0 0 2px rgb(var(--mg-color-blue-900) / 0.15);
+
+    @include mg-focus-ring;
   }
 
   &[multiple] {
@@ -928,8 +930,8 @@ $search-input-padding-x: var(--mg-spacing-250);
   font-size: $mg-font-size-300;
   color: $search-text;
   text-align: left;
-  background-color: rgb(var(--mg-color-white));
-  border: 2px solid rgb(var(--mg-color-black));
+  background-color: rgb(var(--mg-color-neutral-50));
+  border: 1px solid rgb(var(--mg-color-neutral-600) / 0.22);
   border-radius: var(--mg-radius-form-input);
   cursor: pointer;
   transition: border-color 0.15s, box-shadow 0.15s;
@@ -939,8 +941,11 @@ $search-input-padding-x: var(--mg-spacing-250);
   }
 
   &:focus-visible {
+    background-color: rgb(var(--mg-color-neutral-0));
+    border-color: $search-primary;
     outline: 0;
-    box-shadow: 0 0 4px rgb(var(--mg-color-form-focus));
+
+    @include mg-focus-ring;
   }
 
   .mg-select--open & {
@@ -1010,14 +1015,16 @@ $search-input-padding-x: var(--mg-spacing-250);
   width: 100%;
   padding: var(--mg-spacing-50);
   font-size: $mg-font-size-300;
-  border: 2px solid rgb(var(--mg-color-black));
+  border: 1px solid rgb(var(--mg-color-neutral-600) / 0.22);
   border-radius: var(--mg-radius-form-input);
-  background-color: rgb(var(--mg-color-white));
+  background-color: rgb(var(--mg-color-neutral-50));
 
   &:focus-visible {
+    background-color: rgb(var(--mg-color-neutral-0));
     outline: 0;
     border-color: $search-primary;
-    box-shadow: 0 0 4px rgb(var(--mg-color-form-focus));
+
+    @include mg-focus-ring;
   }
 
   &::placeholder {

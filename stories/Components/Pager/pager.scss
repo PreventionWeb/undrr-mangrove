@@ -162,18 +162,20 @@
 
 .mg-pager__jump-input {
   width: 4em;
-  min-height: 40px;
+  min-height: mg-rem(44);
   padding: var(--mg-spacing-25) var(--mg-spacing-50);
   font-size: $mg-font-size-200;
   color: rgb(var(--mg-color-text));
-  background: #fff;
-  border: 1px solid rgb(var(--mg-color-neutral-100));
-  border-radius: var(--mg-spacing-25);
+  background: rgb(var(--mg-color-neutral-50));
+  border: 1px solid rgb(var(--mg-color-neutral-600) / 0.22);
+  border-radius: var(--mg-radius-form-input);
   text-align: center;
 
   &:focus-visible {
-    outline: 2px solid rgb(var(--mg-color-interactive));
-    outline-offset: 2px;
+    background: rgb(var(--mg-color-neutral-0));
+    border-color: rgb(var(--mg-color-interactive));
+
+    @include mg-focus-ring;
   }
 }
 
@@ -181,16 +183,22 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 40px;
+  min-height: mg-rem(44);
   padding: var(--mg-spacing-25) var(--mg-spacing-75);
   font-size: $mg-font-size-200;
   font-weight: 500;
-  color: #fff;
+  color: rgb(var(--mg-color-neutral-0));
   background: rgb(var(--mg-color-interactive));
   border: 1px solid rgb(var(--mg-color-interactive));
-  border-radius: var(--mg-spacing-25);
+  border-radius: var(--mg-radius-button);
   cursor: pointer;
-  transition: background-color 0.15s;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition:
+      background-color var(--mg-motion-duration-fast) var(--mg-motion-easing-standard),
+      border-color var(--mg-motion-duration-fast) var(--mg-motion-easing-standard),
+      scale var(--mg-motion-duration-fast) var(--mg-motion-easing-standard);
+  }
 
   &:hover:not(:disabled) {
     background: rgb(var(--mg-color-interactive-active));
@@ -198,8 +206,11 @@
   }
 
   &:focus-visible {
-    outline: 2px solid rgb(var(--mg-color-interactive));
-    outline-offset: 2px;
+    @include mg-focus-ring;
+  }
+
+  &:active:not(:disabled) {
+    scale: 0.96;
   }
 
   &:disabled {

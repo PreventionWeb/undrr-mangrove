@@ -71,6 +71,7 @@ Primary, secondary, and disabled buttons on light and dark backgrounds for easy 
 ### Usage
 
 - Apply `.mg-button` as the base class, then add an emphasis class (`.mg-button-primary`, `.mg-button-secondary`). Add `.mg-button-outline` when the action needs an unfilled treatment.
+- Wrap adjacent actions in `.mg-buttons` to get consistent, wrapping and RTL-safe spacing. Do not add margins directly to individual buttons.
 - Copy the HTML from the HTML tab of the canvas
 
 ### Interactions
@@ -79,6 +80,7 @@ Primary, secondary, and disabled buttons on light and dark backgrounds for easy 
 
 ## Changelog
 
+- **1.8** — 2026-09-01 ([#1086](https://github.com/unisdr/undrr-mangrove/pull/1086)): Softened conventional buttons with the shared small-radius token, replaced physical adjacent margins with the RTL-safe `.mg-buttons` gap container, and hardened disabled links so caller props cannot restore navigation. Long editorial labels now wrap safely in narrow German and Arabic examples. Added focused behaviour and accessibility coverage.
 - **1.7.1** — 2026-09-01 ([#1086](https://github.com/unisdr/undrr-mangrove/pull/1086)): Removed the CTA badge's horizontal hover translation so label and arrow geometry remain pixel-stable between rest, hover, and focus states; colour and underline continue to communicate hover.
 - **1.7** — 2026-09-01 ([#1086](https://github.com/unisdr/undrr-mangrove/pull/1086)): Switched conventional and editorial button labels from Roboto Condensed to regular Roboto for a calmer, more legible action treatment. Arabic buttons now use the corresponding body family; the CTA chevron retains bold weight for clarity.
 - **1.6.1** — 2026-09-01 ([#1086](https://github.com/unisdr/undrr-mangrove/pull/1086)): Increased the editorial CTA chevron to 18px with bold heading weight and refined optical centring, improving its visual balance within the 22px circular badge.

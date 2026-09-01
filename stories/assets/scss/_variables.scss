@@ -347,13 +347,13 @@ $mg-tabs-border-bottom: true !default;
   --mg-radius-tag:               var(--mg-spacing-0);
 
   // Button
-  --mg-radius-button:            var(--mg-spacing-0);
+  --mg-radius-button:            var(--mg-spacing-50);
   --mg-border-width-button:      1px;
   --mg-padding-button:           var(--mg-spacing-100) var(--mg-spacing-150);
   --mg-font-size-button:         #{$mg-font-size-250};
 
   // Form
-  --mg-radius-form-input:        var(--mg-spacing-0);
+  --mg-radius-form-input:        var(--mg-spacing-50);
 
   // Focus ring
   --mg-focus-ring-width:         2px;

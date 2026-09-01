@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 /**
  * UNDRR Required Scripts
@@ -39,6 +39,12 @@ import { TableTag } from '../../Atom/Table/Table';
 import { TextInput } from '../Forms/TextInput/TextInput';
 import { Select } from '../Forms/Select/Select';
 import { Checkbox } from '../Forms/Checkbox/Checkbox';
+import { Radio } from '../Forms/Radio/Radio';
+import { Textarea } from '../Forms/Textarea/Textarea';
+import { FormErrorSummary } from '../Forms/FormErrorSummary/FormErrorSummary';
+import { Pager } from '../Pager/Pager';
+import { SyndicationSearchWidget } from '../SyndicationSearchWidget/SyndicationSearchWidget';
+import { defaultConfig as searchShowcaseConfig } from '../SyndicationSearchWidget/_storyHelpers';
 import deltaLogo from '../../assets/images/delta-logo-placeholder.svg';
 
 const sampleHeroData = [
@@ -167,6 +173,96 @@ const topicOptions = [
   { value: 'resilient-investment', label: 'Resilient investment' },
 ];
 
+const searchFixture = {
+  hits: {
+    hits: [
+      {
+        _id: 'showcase-result-1',
+        _source: {
+          title: 'Financing resilience before disasters strike',
+          url: '#search-result-1',
+          type: 'publication',
+          field_domain_access: ['www_undrr_org'],
+        },
+        highlight: {
+          body: [
+            'Practical approaches for moving investment towards prevention and anticipatory action.',
+          ],
+        },
+      },
+      {
+        _id: 'showcase-result-2',
+        _source: {
+          title: 'Tracking disaster losses across regions',
+          url: '#search-result-2',
+          type: 'data',
+          field_domain_access: ['www_undrr_org'],
+        },
+        highlight: {
+          body: [
+            'Comparable data helps governments direct resources towards communities most exposed.',
+          ],
+        },
+      },
+      {
+        _id: 'showcase-result-3',
+        _source: {
+          title: 'Building inclusive early warning systems',
+          url: '#search-result-3',
+          type: 'guidance',
+          field_domain_access: ['www_undrr_org'],
+        },
+        highlight: {
+          body: [
+            'People-centred guidance for warnings that are understandable and actionable.',
+          ],
+        },
+      },
+    ],
+    total: { value: 24, relation: 'eq' },
+  },
+  aggregations: {},
+  took: 18,
+};
+
+const MockedSearchShowcase = () => {
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    const originalFetch = window.fetch;
+    window.fetch = url =>
+      Promise.resolve({
+        ok: true,
+        json: () =>
+          Promise.resolve(
+            String(url).includes('preventionweb.net/api')
+              ? { results: [] }
+              : searchFixture
+          ),
+      });
+    setReady(true);
+
+    return () => {
+      window.fetch = originalFetch;
+    };
+  }, []);
+
+  if (!ready) {
+    return <p>Preparing search fixture…</p>;
+  }
+
+  return (
+    <SyndicationSearchWidget
+      config={{
+        ...searchShowcaseConfig,
+        defaultQuery: 'resilience',
+        resultsPerPage: 3,
+        debounceDelay: 0,
+      }}
+    />
+  );
+};
+
 const sampleMegaMenuSections = [
   {
     title: 'Section 1',
@@ -202,6 +298,7 @@ const sampleMegaMenuSections = [
 
 // Define the Page Template Example component
 const PageTemplateExample = () => {
+  const [showcasePage, setShowcasePage] = useState(3);
   useEffect(() => {
     // Initialize table of contents
     const contentElement = document.querySelector('.page-template-example');
@@ -303,6 +400,39 @@ const PageTemplateExample = () => {
         <Tab tabdata={sampleTabDataStacked} variant={'stacked'} />
         <section className="mg-container--spacer">
           <SectionHeader
+            headerText="Frequently asked questions"
+            descriptionText="Native disclosure elements share the same calm plus and minus treatment as stacked tabs."
+          />
+          <details className="mg-details" open>
+            <summary>How does Mangrove support accessible services?</summary>
+            <div className="mg-details__content">
+              <p>
+                Components include semantic markup, keyboard interaction,
+                visible focus states and documented accessibility contracts.
+              </p>
+            </div>
+          </details>
+          <details className="mg-details">
+            <summary>Can components be used without React?</summary>
+            <div className="mg-details__content">
+              <p>
+                Core styles and documented HTML patterns can be used directly,
+                with hydration added only where richer behaviour is needed.
+              </p>
+            </div>
+          </details>
+          <details className="mg-details">
+            <summary>How are themes and languages supported?</summary>
+            <div className="mg-details__content">
+              <p>
+                Shared tokens provide theme adaptation, while logical CSS
+                properties and Arabic font routing support RTL interfaces.
+              </p>
+            </div>
+          </details>
+        </section>
+        <section className="mg-container--spacer">
+          <SectionHeader
             headerText="Latest insights"
             descriptionText="Research, data and guidance from across the UNDRR network"
           />
@@ -355,6 +485,18 @@ const PageTemplateExample = () => {
             variant="striped"
             responsive="scroll"
           />
+          <Pager
+            page={showcasePage}
+            totalPages={20}
+            onPageChange={setShowcasePage}
+            layout="bar"
+            range={{
+              start: (showcasePage - 1) * 10 + 1,
+              end: showcasePage * 10,
+            }}
+            rangeLabel="Showing {start}–{end} of 200 records"
+            showJumpTo
+          />
         </section>
         <section className="mg-container--spacer mg-grid mg-grid__col-2">
           <div>
@@ -388,6 +530,14 @@ const PageTemplateExample = () => {
               label="I agree to receive email updates"
               value="yes"
             />
+            <Textarea
+              id="showcase-interests"
+              name="interests"
+              label="What would you like to hear about?"
+              placeholder="Tell us about your areas of interest"
+              helpText="Optional. Use up to 300 characters."
+              rows={3}
+            />
             <button className="mg-button mg-button-primary" type="submit">
               Subscribe
             </button>
@@ -419,6 +569,106 @@ export default {
 // Define the story
 export const Default = {
   render: () => <PageTemplateExample />,
+  parameters: {
+    layout: 'fullscreen',
+  },
+};
+
+const ComponentLaboratoryExample = () => {
+  const [page, setPage] = useState(4);
+  const errors = [
+    { id: 'lab-email', message: 'Enter a valid email address' },
+    { id: 'lab-purpose', message: 'Describe how you plan to use the data' },
+  ];
+
+  return (
+    <main className="mg-container mg-container--spacer">
+      <SectionHeader
+        headerText="Component laboratory"
+        descriptionText="A dense integration canvas for search, data display, disclosures, form states and navigation."
+      />
+      <section
+        className="mg-container--spacer"
+        aria-labelledby="lab-search-title"
+      >
+        <h2 id="lab-search-title">Syndicated search</h2>
+        <MockedSearchShowcase />
+      </section>
+      <section className="mg-container--spacer mg-grid mg-grid__col-2">
+        <div>
+          <h2>Disclosure and structured data</h2>
+          <details className="mg-details" open>
+            <summary>About these reporting figures</summary>
+            <div className="mg-details__content">
+              <p>
+                Figures combine validated national reporting with regional
+                quality assurance and publication status.
+              </p>
+            </div>
+          </details>
+          <TableTag
+            text="Reporting status"
+            tdtext="Validated"
+            details="Published with supporting methodology"
+            variant="striped"
+            responsive="scroll"
+          />
+        </div>
+        <form onSubmit={event => event.preventDefault()} noValidate>
+          <h2>Validation states</h2>
+          <FormErrorSummary errors={errors} />
+          <TextInput
+            id="lab-email"
+            name="email"
+            type="email"
+            label="Email address"
+            defaultValue="not-an-email"
+            error
+            errorText="Enter a valid email address"
+            required
+          />
+          <Textarea
+            id="lab-purpose"
+            name="purpose"
+            label="How will you use the data?"
+            error
+            errorText="Describe how you plan to use the data"
+            required
+          />
+          <fieldset>
+            <legend>Preferred format</legend>
+            <Radio name="format" value="csv" label="CSV" defaultChecked />
+            <Radio name="format" value="json" label="JSON" />
+          </fieldset>
+          <div className="mg-buttons">
+            <button className="mg-button mg-button-primary" type="submit">
+              Submit request
+            </button>
+            <button
+              className="mg-button mg-button-primary mg-button-outline"
+              type="reset"
+            >
+              Reset form
+            </button>
+          </div>
+        </form>
+      </section>
+      <Pager
+        page={page}
+        totalPages={24}
+        onPageChange={setPage}
+        layout="bar"
+        range={{ start: (page - 1) * 10 + 1, end: page * 10 }}
+        rangeLabel="Showing {start}–{end} of 240 components"
+        showJumpTo
+      />
+    </main>
+  );
+};
+
+export const ComponentLaboratory = {
+  render: () => <ComponentLaboratoryExample />,
+  name: 'Component laboratory',
   parameters: {
     layout: 'fullscreen',
   },

@@ -56,8 +56,11 @@
   }
 }
 
-.mg-button + .mg-button {
-  margin-left: mg-rem(10);
+.mg-buttons {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mg-spacing-75);
 }
 
 button {
@@ -129,7 +132,8 @@ button {
   justify-content: flex-start;
   min-height: mg-rem(44);
   padding: var(--mg-spacing-50) 0;
-  white-space: nowrap;
+  text-align: start;
+  white-space: normal;
 
   // The compact editorial treatment keeps its label steady and gives the
   // directional badge the tactile response instead of scaling the whole row.

@@ -17,24 +17,30 @@ export function CtaButton({
   Variant = 'Default',
   Outline = false,
   State = 'Default',
+  href = '#',
+  onClick,
+  className,
   ...props
 }) {
   const type = Type === 'Secondary' ? 'secondary' : 'primary';
   const isDisabled = State === 'Disabled';
-  const className = [
+  const computedClassName = [
     'mg-button',
     Variant === 'CTA' && 'mg-button-cta',
     `mg-button-${type}`,
     Outline && 'mg-button-outline',
     isDisabled && 'disabled',
+    className,
   ]
     .filter(Boolean)
     .join(' ');
   return (
     <a
-      className={className}
-      {...(isDisabled ? { 'aria-disabled': 'true' } : { href: '#' })}
+      className={computedClassName}
       {...props}
+      {...(isDisabled
+        ? { 'aria-disabled': 'true', tabIndex: -1 }
+        : { href, onClick })}
     >
       {label}
     </a>
@@ -52,4 +58,10 @@ CtaButton.propTypes = {
   Outline: PropTypes.bool,
   /** Enabled or disabled state */
   State: PropTypes.oneOf(['Default', 'Disabled']),
+  /** Link destination. Omitted from disabled controls. */
+  href: PropTypes.string,
+  /** Link activation handler. Omitted from disabled controls. */
+  onClick: PropTypes.func,
+  /** Additional classes to compose with the Mangrove button classes. */
+  className: PropTypes.string,
 };

@@ -60,6 +60,24 @@ export const EditorialCta = {
   name: 'Editorial CTA',
 };
 
+export const LongLabels = {
+  render: () => (
+    <div style={{ display: 'grid', gap: '1rem', maxWidth: '260px' }}>
+      <CtaButton
+        label="Alle Veröffentlichungen zur Katastrophenvorsorge durchsuchen"
+        Variant="CTA"
+      />
+      <div dir="rtl" lang="ar">
+        <CtaButton
+          label="استعرض جميع المنشورات المتعلقة بالحد من مخاطر الكوارث"
+          Variant="CTA"
+        />
+      </div>
+    </div>
+  ),
+  name: 'Long labels',
+};
+
 export const AllVariants = {
   render: (_args, { globals: { locale } }) => {
     const caption = getCaptionForLocale(locale);
