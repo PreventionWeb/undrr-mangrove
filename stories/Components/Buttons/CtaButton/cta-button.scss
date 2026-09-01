@@ -139,7 +139,10 @@ button {
 
   .mg-button__label {
     min-width: 0;
-    overflow-wrap: anywhere;
+
+    // Preserve the intrinsic width of ordinary labels in flex layouts while
+    // still allowing unusually long translated words to wrap when constrained.
+    overflow-wrap: break-word;
     white-space: normal;
   }
 

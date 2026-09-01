@@ -2,8 +2,7 @@
  * @file _labels.js
  * @description Translated label sets for ShareButtons.
  *
- * Imported by Translations.stories.jsx (per-language stories) and
- * ShareButtons.stories.jsx (locale toolbar decorator).
+ * Imported by ShareButtons.stories.jsx for the locale toolbar decorator.
  */
 
 export const LABELS_ES = {

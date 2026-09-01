@@ -195,7 +195,7 @@ export default {
   },
   'components-buttons-chips': {
     description:
-      'Small interactive tag-like buttons for filters and selections. Optional dismiss (X) variant.',
+      'Compact pill-shaped controls for categories and active filters. The default variant is a link; the dismissible variant is a button with a visible X and a localisable accessible name.',
   },
 
   // --- Cards ---
