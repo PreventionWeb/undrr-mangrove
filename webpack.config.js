@@ -90,6 +90,7 @@ export default [
       MegaMenu: './stories/Components/MegaMenu/MegaMenu.hydrate.js',
       ScrollContainer:
         './stories/Components/ScrollContainer/ScrollContainer.hydrate.js',
+      UserFeedback: './stories/Components/UserFeedback/UserFeedback.hydrate.js',
       QuoteHighlight:
         './stories/Components/QuoteHighlight/QuoteHighlight.hydrate.js',
       SyndicationSearchWidget:

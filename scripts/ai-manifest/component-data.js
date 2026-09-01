@@ -55,6 +55,8 @@ export const REQUIRES_REACT = {
     'Snackbar manages auto-dismiss timing and state. Requires React.',
   'components-scrollcontainer':
     'ScrollContainer manages horizontal scroll state with navigation buttons. Requires React. Can be hydrated via createHydrator.',
+  'components-user-feedback':
+    'UserFeedback manages a binary page response, confirmation state and focus. Requires React for button behavior and can be hydrated via createHydrator with data-mg-user-feedback. Place it as a separate sibling immediately before Footer when the pattern is used.',
   'components-buttons-sharebuttons':
     'ShareButtons manages share URLs and clipboard state. Requires React. Can be hydrated via createHydrator with data-mg-share-buttons.',
   'components-table-of-contents':
@@ -705,6 +707,20 @@ npm run build</code></pre>
   </div>
 </section>`,
       },
+    ],
+  },
+
+  // --- User feedback (auto-rendered) ---
+  'components-user-feedback': {
+    description:
+      'Standalone page-usefulness prompt generally paired as the sibling immediately before Footer. Response storage and consent remain product-owned.',
+    cssClasses: [
+      'mg-user-feedback',
+      'mg-user-feedback__prompt',
+      'mg-user-feedback__question',
+      'mg-user-feedback__actions',
+      'mg-user-feedback__issue',
+      'mg-user-feedback__confirmation',
     ],
   },
 

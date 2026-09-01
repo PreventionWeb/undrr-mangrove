@@ -155,6 +155,7 @@ const COMPONENT_IDS = {
   Gallery: 'components-gallery',
   Pager: 'components-pager',
   ShareButtons: 'components-buttons-sharebuttons',
+  UserFeedback: 'components-user-feedback',
 };
 
 function buildSampleProps(React) {
@@ -457,6 +458,7 @@ function buildSampleProps(React) {
         ),
       ],
     },
+    UserFeedback: {},
     Gallery: {
       media: [
         {

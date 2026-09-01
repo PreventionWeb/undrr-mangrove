@@ -1,0 +1,122 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as UserFeedbackStories from './UserFeedback.stories';
+
+<Meta of={UserFeedbackStories} />
+
+> If you are creating or modifying this component, see [docs/REVIEW-CHECKLIST.md](../../../docs/REVIEW-CHECKLIST.md) for Mangrove's component standards.
+
+# User feedback
+
+A compact page-level prompt that lets people say whether a page was useful or report a more detailed issue. It was distilled from the [UNDRR microsites pattern](https://gitlab.com/undrr/drupal-microsites/-/commit/d74d9ab342fec6cbbaeeebf026f116e4da3bbecf) and aligned with Mangrove's theme, translation and hydration contracts.
+
+## When to use
+
+- Place it near the end of a content page, generally as the sibling immediately before `Footer`.
+- Use the binary response for low-friction page analytics, not as a substitute for user research.
+- Keep the issue link available when a product has a team or workflow that can act on reports.
+
+User feedback and Footer remain separate components. Stack them as adjacent siblings in a page template; do not nest either component inside the other. Neither one imports or configures the other.
+
+<Canvas of={UserFeedbackStories.Default} meta={UserFeedbackStories} />
+
+The locale toolbar supplies translated labels to the same story. The long-label story exists only as a distinct layout stress condition.
+
+<Canvas of={UserFeedbackStories.LongLabels} meta={UserFeedbackStories} />
+
+## React
+
+```jsx
+import { UserFeedback } from '@undrr/undrr-mangrove';
+import SiteFooter from './SiteFooter';
+
+const recordResponse = response => {
+  analytics.track('page_feedback', { response });
+};
+
+export default function PageEnd() {
+  return (
+    <>
+      <UserFeedback
+        feedbackUrl="/contact/website-feedback"
+        onResponse={recordResponse}
+      />
+      <SiteFooter />
+    </>
+  );
+}
+```
+
+`onResponse` receives either `"yes"` or `"no"`. Mangrove does not send, store or persist the answer; the consuming product owns analytics, consent and retention.
+
+## Hydration
+
+Render an empty container with component data. Localised labels are optional and fall back to English individually.
+
+```html
+<div
+  data-mg-user-feedback
+  data-feedback-url="/contact/website-feedback"
+  data-question="Is this page useful?"
+  data-yes-label="Yes"
+  data-no-label="No"
+  data-report-issue-label="Report an issue on this page"
+></div>
+```
+
+```js
+import createHydrator from '@undrr/undrr-mangrove/components/hydrate.js';
+import UserFeedback, {
+  fromElement,
+} from '@undrr/undrr-mangrove/components/UserFeedback.js';
+
+createHydrator({
+  selector: '[data-mg-user-feedback]',
+  component: UserFeedback,
+  fromElement,
+});
+```
+
+## Static HTML
+
+When JavaScript is unavailable, render the initial prompt as useful static HTML and submit responses through product-owned URLs or a small progressive-enhancement script. Do not render inert Yes/No buttons.
+
+```html
+<section
+  class="mg-user-feedback mg-container mg-grid mg-grid__col-2"
+  aria-label="Is this page useful?"
+  data-vf-google-analytics-region="undrr-feedback-container"
+>
+  <div class="mg-user-feedback__prompt">
+    <h2 class="mg-user-feedback__question">Is this page useful?</h2>
+    <div class="mg-user-feedback__actions">
+      <a class="mg-button mg-button-secondary" href="/feedback?response=yes">
+        Yes
+      </a>
+      <a class="mg-button mg-button-secondary" href="/feedback?response=no">
+        No
+      </a>
+    </div>
+  </div>
+  <a
+    class="mg-user-feedback__issue"
+    data-mg-user-feedback-form
+    data-mg-user-feedback-type="report-issue"
+    href="/contact/website-feedback"
+  >
+    Report an issue on this page
+  </a>
+</section>
+```
+
+## Behavior and accessibility
+
+- Yes and No are native buttons and work with Enter and Space.
+- Selecting a response replaces the prompt with a polite confirmation and moves focus to it, so keyboard and screen-reader users do not lose their place.
+- The detailed-feedback link in the initial prompt stays in the current tab. The optional follow-up link opens a new tab and uses `noopener noreferrer`.
+- The section has a stable accessible name after the visible question is replaced.
+- Logical alignment supports RTL, labels wrap at narrow widths, and existing button tokens provide focus, forced-colour and reduced-motion behavior.
+- Existing `data-vf-google-analytics-region` and `data-mg-user-feedback-*` hooks preserve the source pattern's analytics integration points.
+
+## Changelog
+
+- **1.0** — 2026-09-01 ([#1086](https://github.com/unisdr/undrr-mangrove/pull/1086)): Distilled the UNDRR microsites page-feedback pattern into a standalone, pre-footer React component with progressive static HTML guidance, Drupal-friendly hydration, product-owned response callbacks, seven toolbar locales, logical RTL layout, responsive long-label handling and accessible confirmation focus.

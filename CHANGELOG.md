@@ -33,6 +33,7 @@ See the [GitHub Release](https://github.com/unisdr/undrr-mangrove/releases/tag/v
 #### Components and compositions
 
 - New `FormAction` composition joins a field and its key action for search, subscription and select-and-continue flows, with React and vanilla HTML examples, accessible help/error wiring, RTL support and optional mobile stacking.
+- New standalone `UserFeedback` component distils the UNDRR microsites page-usefulness pattern for the common pre-footer position, with a package-root React export, direct hydratable component bundle, product-owned response handling, seven toolbar locales and accessible confirmation focus.
 - Vertical, horizontal, book, icon and stats cards receive theme-aware presentation refinements. Vertical-card media now fills its frame consistently without changing the intentional sizing of book, horizontal or icon variants.
 - The Storybook introduction and Component Laboratory demonstrate production component compositions, responsive collections, deterministic syndicated-search states, forms and data-rich examples. Landing-page showcase cards now link to relevant library guidance and stories.
 
