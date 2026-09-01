@@ -73,7 +73,7 @@ The `split` prop controls the content/media column ratio, aligned to the MG 12-c
 
 - **1.6** — 2026-09-01 ([#1086](https://github.com/unisdr/undrr-mangrove/pull/1086)):
   - Refreshed the background hero with a full-bleed directional gradient that keeps text contrast strong while revealing more of the image. The gradient follows the content edge in LTR and RTL, shifts vertically on narrow screens, and exposes semantic opacity tokens for theme tuning.
-  - Changed CTA groups from an inline row to an intrinsic-width vertical stack at constrained tablet and mobile widths, preventing adjacent labels and direction badges from colliding.
+  - Gave adjacent Hero CTAs a clearer 24px horizontal rhythm and changed groups from an inline row to an intrinsic-width vertical stack at constrained tablet and mobile widths, preventing adjacent labels and direction badges from colliding.
   - Preserved the compact transparent CTA treatment across every background and split colour variant by preventing conventional button overrides from leaking into `.mg-button-cta`; directional badges now inherit the active Hero colour.
   - Replaced placeholder story copy and repeated imagery with realistic UNDRR infrastructure content, descriptive alternatives and varied source imagery.
 - **1.5** — 2026-04-15 ([#942](https://github.com/unisdr/undrr-mangrove/issues/942)): Added `layout="split"` — solid-background two-column layout with `headingLevel` and `split` props. Title now always rendered inside a heading element (`headingLevel`, default `h1`); links are placed inside the heading rather than replacing it. Split layout media column accepts `type: 'image'` (default), `type: 'video'` (iframe embed), or `type: 'html'` (pre-sanitized HTML string).

@@ -84,6 +84,7 @@
 }
 
 .mg-intro__actions {
+  gap: var(--mg-spacing-100) var(--mg-spacing-250);
   margin-top: 2rem;
 }
 
