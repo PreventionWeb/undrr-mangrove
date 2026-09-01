@@ -46,11 +46,15 @@
 
   @media (min-width: $mg-breakpoint-tablet) {
     aspect-ratio: 16 / 4; // we use 16:4, which is closer to the real crop ratio
-    padding-left: calc(50vw - calc($mg-breakpoint-desktop / 2)); // to keep the overlay fixed
+    padding-left: calc(
+      50vw - calc($mg-breakpoint-desktop / 2)
+    ); // to keep the overlay fixed
   }
 
   @media (min-width: $mg-breakpoint-desktop-wide) {
-    padding-left: calc(50vw - calc($mg-breakpoint-desktop-wide / 2)); // to keep the overlay fixed
+    padding-left: calc(
+      50vw - calc($mg-breakpoint-desktop-wide / 2)
+    ); // to keep the overlay fixed
   }
 
   // Button overrides
@@ -78,9 +82,9 @@
     }
   }
 
-  a.mg-button-secondary,
-  a.mg-button-secondary:hover,
-  a.mg-button-secondary:visited {
+  a.mg-button-secondary:not(.mg-button-cta),
+  a.mg-button-secondary:not(.mg-button-cta):hover,
+  a.mg-button-secondary:not(.mg-button-cta):visited {
     background-color: var(--mg-color-hero-button-secondary-background);
     color: rgb(var(--mg-color-hero-button-secondary-color));
     border-color: rgb(var(--mg-border-color-hero-button-secondary));
@@ -245,7 +249,7 @@
 // Stylistic variants
 $variant-colour-props: (
   "secondary": "--mg-color-orange-800",
-  "tertiary":  "--mg-color-neutral-900",
+  "tertiary": "--mg-color-neutral-900",
   "quaternary": "--mg-color-red-800",
 );
 
@@ -254,16 +258,16 @@ $variant-colour-props: (
     --mg-hero-gradient-color: var(#{$prop});
 
     .mg-hero__overlay {
-      a.mg-button,
-      a.mg-button:hover,
-      a.mg-button:visited {
+      a.mg-button:not(.mg-button-cta),
+      a.mg-button:not(.mg-button-cta):hover,
+      a.mg-button:not(.mg-button-cta):visited {
         color: rgb(var(#{$prop}));
       }
 
       // Preserve secondary button's dedicated tokens over the generic color above
-      a.mg-button-secondary,
-      a.mg-button-secondary:hover,
-      a.mg-button-secondary:visited {
+      a.mg-button-secondary:not(.mg-button-cta),
+      a.mg-button-secondary:not(.mg-button-cta):hover,
+      a.mg-button-secondary:not(.mg-button-cta):visited {
         background-color: var(--mg-color-hero-button-secondary-background);
         color: rgb(var(--mg-color-hero-button-secondary-color));
         border-color: rgb(var(--mg-border-color-hero-button-secondary));
@@ -296,11 +300,15 @@ $variant-colour-props: (
   }
 
   @media (min-width: $mg-breakpoint-tablet) {
-    padding-right: calc(50vw - calc($mg-breakpoint-desktop / 2)); // to keep the overlay fixed
+    padding-right: calc(
+      50vw - calc($mg-breakpoint-desktop / 2)
+    ); // to keep the overlay fixed
   }
 
   @media (min-width: $mg-breakpoint-desktop-wide) {
-    padding-right: calc(50vw - calc($mg-breakpoint-desktop-wide / 2)); // to keep the overlay fixed
+    padding-right: calc(
+      50vw - calc($mg-breakpoint-desktop-wide / 2)
+    ); // to keep the overlay fixed
   }
 }
 
@@ -338,9 +346,9 @@ $variant-colour-props: (
     }
   }
 
-  a.mg-button-secondary,
-  a.mg-button-secondary:hover,
-  a.mg-button-secondary:visited {
+  a.mg-button-secondary:not(.mg-button-cta),
+  a.mg-button-secondary:not(.mg-button-cta):hover,
+  a.mg-button-secondary:not(.mg-button-cta):visited {
     background-color: var(--mg-color-hero-button-secondary-background);
     color: rgb(var(--mg-color-hero-button-secondary-color));
     border-color: rgb(var(--mg-border-color-hero-button-secondary));

@@ -84,58 +84,21 @@
 }
 
 .mg-intro__actions {
-  align-items: center;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
   margin-top: 2rem;
 }
 
-.mg-intro .mg-intro__button {
-  align-items: center;
-  border: 1px solid transparent;
-  border-radius: var(--mg-radius-button, 0.25rem);
-  display: inline-flex;
-  font-weight: 700;
-  gap: 0.75rem;
-  justify-content: center;
-  min-height: 2.75rem;
-  padding: 0.7rem 1.1rem;
-  text-decoration: none;
-  transition:
-    background-color 160ms ease,
-    border-color 160ms ease,
-    color 160ms ease,
-    transform 160ms ease;
+.mg-intro__hero .mg-button.mg-button-cta,
+.mg-intro__hero .mg-button.mg-button-cta:hover,
+.mg-intro__hero .mg-button.mg-button-cta:visited {
+  background: transparent;
+  border-color: transparent;
+  color: white;
+  text-decoration-color: currentcolor;
 }
 
-.mg-intro .mg-intro__button:hover {
-  text-decoration: none;
-  transform: translateY(-2px);
-}
-.mg-intro .mg-intro__button:focus-visible {
-  outline: 3px solid rgb(var(--mg-color-focus-ring, 64 132 226));
-  outline-offset: 3px;
-}
-.mg-intro__button--primary,
-.mg-intro__button--light {
+.mg-intro__hero .mg-button.mg-button-cta::after {
   background: white;
   color: #123b68;
-}
-.mg-intro__button--primary:hover,
-.mg-intro__button--light:hover {
-  background: #edf5fc;
-  color: #092b51;
-}
-.mg-intro__button--secondary,
-.mg-intro__button--outline-light {
-  border-color: rgb(255 255 255 / 0.72) !important;
-  color: white !important;
-}
-.mg-intro__button--secondary:hover,
-.mg-intro__button--outline-light:hover {
-  background: rgb(255 255 255 / 0.12);
-  color: white;
 }
 
 .mg-intro__statement {
@@ -264,11 +227,5 @@
   }
   .mg-intro__project-links .mg-intro__actions {
     justify-content: flex-start;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .mg-intro__button {
-    transition: none;
   }
 }

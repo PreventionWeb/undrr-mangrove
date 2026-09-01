@@ -1,5 +1,4 @@
 import React from 'react';
-import LinkTo from '@storybook/addon-links/react';
 import { linkTo } from '@storybook/addon-links';
 import { CtaButton } from '../../Components/Buttons/CtaButton/CtaButton';
 import { IconCard } from '../../Components/Cards/IconCard/IconCard';
@@ -126,21 +125,18 @@ export function IntroLanding() {
             Mangrove gives UNDRR teams accessible, reusable content patterns
             while leaving every product free to express its own brand.
           </p>
-          <div className="mg-intro__actions">
-            <LinkTo
-              kind="getting-started-getting-started-guide"
-              story="docs"
-              className="mg-intro__button mg-intro__button--primary"
-            >
-              Get started <span aria-hidden="true">→</span>
-            </LinkTo>
-            <LinkTo
-              kind="brand-component-gallery"
-              story="docs"
-              className="mg-intro__button mg-intro__button--secondary"
-            >
-              Browse components
-            </LinkTo>
+          <div className="mg-buttons mg-intro__actions">
+            <CtaButton
+              label="Get started"
+              Variant="CTA"
+              onClick={storyNavigation('getting-started-getting-started-guide')}
+            />
+            <CtaButton
+              label="Browse components"
+              Type="Secondary"
+              Variant="CTA"
+              onClick={storyNavigation('brand-component-gallery')}
+            />
           </div>
         </div>
       </section>
@@ -210,7 +206,7 @@ export function IntroLanding() {
           <h2>Use it. Inspect it. Improve it.</h2>
           <p>Install the package or work with the source on GitHub.</p>
         </div>
-        <div className="mg-intro__actions">
+        <div className="mg-buttons mg-intro__actions">
           <CtaButton
             className="mg-intro__project-button"
             label="View GitHub"
