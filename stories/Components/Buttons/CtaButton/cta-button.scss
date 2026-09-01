@@ -131,18 +131,19 @@ button {
   color: rgb(var(--mg-color-text));
   flex: 0 0 auto;
   justify-content: flex-start;
-  max-width: 100%;
+
+  // Firefox can otherwise shrink the label to its min-content width without
+  // accounting for the generated badge. Keep ordinary two-word CTAs intact.
+  max-inline-size: 100%;
   min-height: mg-rem(44);
+  min-inline-size: mg-rem(96);
   padding: var(--mg-spacing-50) 0;
   text-align: start;
   white-space: normal;
 
   .mg-button__label {
     min-width: 0;
-
-    // Preserve the intrinsic width of ordinary labels in flex layouts while
-    // still allowing unusually long translated words to wrap when constrained.
-    overflow-wrap: break-word;
+    overflow-wrap: anywhere;
     white-space: normal;
   }
 
