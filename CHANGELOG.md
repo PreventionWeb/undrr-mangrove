@@ -15,11 +15,13 @@ _Notable cross-cutting changes between releases land here. Per-component changes
 
 ## 2.0.0 — unreleased
 
-Development releases began with `2.0.0-alpha.1` under the npm `next` dist-tag. See [PR #1061](https://github.com/unisdr/undrr-mangrove/pull/1061) and the [Storybook release notes](https://unisdr.github.io/undrr-mangrove/?path=/docs/getting-started-release-notes-v2-0--docs) for the first alpha; the tagged GitHub Release link lands with the stable 2.0.0.
+Development releases began with `2.0.0-alpha.1` under the npm `next` dist-tag. See [PR #1061](https://github.com/unisdr/undrr-mangrove/pull/1061) for the first alpha and [PR #1086](https://github.com/unisdr/undrr-mangrove/pull/1086) for alpha.2. The [Storybook release notes](https://unisdr.github.io/undrr-mangrove/?path=/docs/getting-started-release-notes-v2-0--docs) cover the complete 2.0 line; the tagged stable GitHub Release link lands with 2.0.0.
 
-### Planned for `2.0.0-alpha.2`: experience and interaction baseline
+### `2.0.0-alpha.2` — 2026-09-01
 
-[PR #1086](https://github.com/unisdr/undrr-mangrove/pull/1086) establishes the next 2.0 alpha baseline across Mangrove's component surfaces and interactions while preserving Drupal hydration contracts, theme ownership and existing BEM APIs except for the intentionally retired Pagination component.
+See the [GitHub Release](https://github.com/unisdr/undrr-mangrove/releases/tag/v2.0.0-alpha.2) for the curated release summary once the manual release is published.
+
+[PR #1086](https://github.com/unisdr/undrr-mangrove/pull/1086) establishes the second 2.0 alpha baseline across Mangrove's component surfaces and interactions while preserving Drupal hydration contracts, theme ownership and existing BEM APIs except for the intentionally retired Pagination component.
 
 #### Visual foundations and interaction
 
@@ -39,6 +41,12 @@ Development releases began with `2.0.0-alpha.1` under the npm `next` dist-tag. S
 - Logical properties, focus states, target sizing, reduced motion, forced colours, narrow layouts, RTL and long translations are covered across representative components and themes.
 - Storybook's global locale toolbar is the canonical translation mechanism. Redundant per-language story groups are removed; dedicated RTL and long-label stories remain only where they exercise a distinct layout or interaction condition.
 - Component guidance and changelogs, the Experience principles, contribution guidance and AI manifest examples are synchronized with the updated markup and public classes.
+
+#### Build and packaging
+
+- `FormAction` now ships as a direct `components/FormAction.js` ESM entry as well as SCSS and the package-root export.
+- Production component bundles use isolated, uncached Babel output so Storybook's development `jsxDEV` transform cannot leak into published files. Manifest validation now rejects any production component bundle containing development JSX runtime calls.
+- The Yarn lockfile is synchronized with the first-alpha dependency removals so immutable installs succeed from the release commit.
 
 #### Removed: deprecated Pagination component
 

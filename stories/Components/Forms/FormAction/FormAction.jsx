@@ -28,6 +28,7 @@ export function FormAction({
       .join(' ') || undefined;
 
   const controlElement = cloneElement(control, {
+    key: control.key || 'control',
     id: controlId,
     className: appendClassName(
       control.props.className,
@@ -37,6 +38,7 @@ export function FormAction({
     'aria-invalid': errorText ? 'true' : control.props['aria-invalid'],
   });
   const actionElement = cloneElement(action, {
+    key: action.key || 'action',
     className: appendClassName(
       action.props.className,
       'mg-form-action__action'

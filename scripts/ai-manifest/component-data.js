@@ -804,7 +804,7 @@ npm run build</code></pre>
     examples: [
       {
         name: 'Joined email subscription',
-        html: `<form action="/subscribe" method="post">
+        html: `<form class="mg-form-field" action="/subscribe" method="post">
   <label class="mg-form-label" for="subscription-email">Email address</label>
   <div class="mg-form-action">
     <input class="mg-form-input mg-form-action__control" id="subscription-email" name="email" type="email" autocomplete="email" required>

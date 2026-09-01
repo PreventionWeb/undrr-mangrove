@@ -17,7 +17,7 @@ const analyzeBundle = process.env.ANALYZE === 'true';
 export default [
   {
     mode: packMode,
-    cache: { type: 'filesystem' },
+    cache: { type: 'filesystem', name: `assets-${packMode}` },
     entry: webpackEntry('js'),
     output: {
       path: path.resolve(currentDirPath, 'dist'),
@@ -78,7 +78,10 @@ export default [
   },
   {
     mode: packMode, // Set mode dynamically
-    cache: { type: 'filesystem' },
+    cache:
+      packMode === 'development'
+        ? { type: 'filesystem', name: 'components-development' }
+        : false,
     entry: {
       hydrate: './src/hydrate.js',
       // Drupal-integrated components (hydration + npm)
@@ -107,6 +110,7 @@ export default [
       FormGroup: './stories/Components/Forms/FormGroup/FormGroup.jsx',
       FormErrorSummary:
         './stories/Components/Forms/FormErrorSummary/FormErrorSummary.jsx',
+      FormAction: './stories/Components/Forms/FormAction/FormAction.jsx',
       VerticalCard: './stories/Components/Cards/Card/VerticalCard.jsx',
       HorizontalCard: './stories/Components/Cards/Card/HorizontalCard.jsx',
       BookCard: './stories/Components/Cards/Card/BookCard.jsx',
@@ -164,10 +168,18 @@ Compiled on: ${new Date().toISOString()}`,
               // Ignore project-level .babelrc.json and babel.config.js so
               // the ESM component bundles don't get core-js polyfill
               // require() calls injected by babel-plugin-polyfill-corejs3.
-              cacheDirectory: true,
+              cacheDirectory: packMode === 'development',
               configFile: false,
               babelrc: false,
-              presets: [['@babel/preset-react', { runtime: 'automatic' }]],
+              presets: [
+                [
+                  '@babel/preset-react',
+                  {
+                    runtime: 'automatic',
+                    development: packMode === 'development',
+                  },
+                ],
+              ],
             },
           },
         },
