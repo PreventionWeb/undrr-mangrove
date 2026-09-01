@@ -276,8 +276,12 @@
 :where(.react-aria-TextField[data-invalid] .react-aria-Input) {
   border-color: var(--mg-aria-color-invalid);
 }
-.react-aria-Text[data-slot="description"] {
+/* React Aria forwards `slot` to the DOM as a plain HTML attribute; it never
+   emits `data-slot`. Matching on `[slot]` is what actually hits the helper and
+   error text React Aria renders inside a field. */
+.react-aria-Text[slot="description"] {
   color: var(--mg-aria-color-muted-text);
+  display: block;
   font-size: var(--mg-aria-font-size-small);
 }
 .react-aria-Tooltip {
@@ -288,9 +292,10 @@
   font-size: var(--mg-aria-font-size-small);
   padding: var(--mg-aria-space-1) var(--mg-aria-space-2);
 }
-.react-aria-Text[data-slot="errorMessage"],
+.react-aria-Text[slot="errorMessage"],
 .react-aria-FieldError {
   color: var(--mg-aria-color-invalid);
+  display: block;
   font-size: var(--mg-aria-font-size-small);
 }
 .react-aria-Popover {
@@ -544,7 +549,12 @@
   border-radius: var(--mg-aria-radius-surface);
   color: var(--mg-aria-color-text);
   font-family: var(--mg-aria-font-family);
-  overflow: hidden;
+  /* The trigger button is inset only by the group border, so a plain
+     `overflow: hidden` clips its focus ring away entirely. `clip` plus a margin
+     the size of the ring lets the ring escape. overflow-clip-margin takes a
+     bare length only; calc() is silently dropped. */
+  overflow: clip;
+  overflow-clip-margin: var(--mg-aria-space-1);
 }
 .react-aria-Disclosure {
   color: var(--mg-aria-color-text);
@@ -765,8 +775,11 @@
   gap: var(--mg-aria-space-1);
   inline-size: var(--mg-aria-width-full);
 }
+/* React Aria renders these labels as a <span>; without an explicit block they
+   only lay out correctly by accident of the grid parent. */
 .react-aria-ProgressBar .react-aria-Label,
 .react-aria-Meter .react-aria-Label {
+  display: block;
   font-size: var(--mg-aria-font-size-small);
 }
 /* React Aria renders only the outer element for these two; the bar and fill
@@ -814,7 +827,10 @@
   color: var(--mg-aria-color-text);
   font-weight: 600;
 }
-.react-aria-Breadcrumb[data-disabled] {
+/* React Aria sets data-disabled when `isDisabled || isCurrent`, so the current
+   crumb carries both attributes. Without the :not() guard the current page
+   renders dimmed and not-allowed, as if it were unavailable. */
+.react-aria-Breadcrumb[data-disabled]:not([data-current]) {
   cursor: not-allowed;
   opacity: 0.55;
 }
@@ -835,7 +851,9 @@
   color: var(--mg-aria-color-text);
   text-decoration: none;
 }
-.react-aria-Link[data-disabled] {
+/* Same data-disabled/data-current overlap as Breadcrumb: a Link rendered as the
+   current crumb must not be dimmed. */
+.react-aria-Link[data-disabled]:not([data-current]) {
   color: var(--mg-aria-color-muted-text);
   cursor: not-allowed;
   opacity: 0.55;
@@ -963,15 +981,65 @@
     outline: var(--mg-aria-focus-width) solid CanvasText;
     outline-offset: var(--mg-aria-focus-offset);
   }
-  .react-aria-Switch[data-selected]::before,
+  /* Every forced-color-adjust opt-out below is paired with a system-colour
+     repaint. An unpaired opt-out keeps the brand colour, which a High Contrast
+     user has explicitly asked not to see; no opt-out at all flattens the
+     indicator into the forced canvas so the control reads as empty. */
+  .react-aria-Switch::before,
+  .react-aria-Switch::after,
   .react-aria-Radio[data-selected]::before,
   .react-aria-Tab[data-selected],
   .react-aria-Tag[data-selected],
-  .react-aria-ToggleButton[data-selected] {
+  .react-aria-ToggleButton[data-selected],
+  .react-aria-SliderFill,
+  .react-aria-SliderThumb,
+  .react-aria-ProgressBar .bar,
+  .react-aria-ProgressBar .fill,
+  .react-aria-Meter .bar,
+  .react-aria-Meter .fill {
     forced-color-adjust: none;
   }
+  .react-aria-Switch::before {
+    background: Canvas;
+    border-color: CanvasText;
+  }
+  .react-aria-Switch::after {
+    background: CanvasText;
+  }
+  .react-aria-Switch[data-selected]::before {
+    background: Highlight;
+    border-color: Highlight;
+  }
+  .react-aria-Switch[data-selected]::after {
+    background: HighlightText;
+  }
+  .react-aria-Radio[data-selected]::before {
+    background: Highlight;
+    border-color: Canvas;
+    outline-color: Highlight;
+  }
+  .react-aria-Tab[data-selected],
+  .react-aria-Tag[data-selected],
+  .react-aria-ToggleButton[data-selected] {
+    background: Highlight;
+    border-color: Highlight;
+    color: HighlightText;
+  }
   .react-aria-SliderFill,
+  .react-aria-SliderThumb,
+  .react-aria-ProgressBar .fill,
+  .react-aria-Meter .fill {
+    background: Highlight;
+  }
   .react-aria-SliderThumb {
-    forced-color-adjust: none;
+    border-color: CanvasText;
+  }
+  /* Without a rail outline the unfilled remainder is indistinguishable from the
+     page, so a part-full bar reads as a short floating block. */
+  .react-aria-ProgressBar .bar,
+  .react-aria-Meter .bar {
+    background: Canvas;
+    border: var(--mg-aria-border-width) solid CanvasText;
+    box-sizing: border-box;
   }
 }
