@@ -21,6 +21,7 @@
 
   // Vertical CARD
   &__vc {
+    align-content: flex-start;
     display: grid;
     gap: var(--mg-spacing-50);
 
@@ -29,6 +30,11 @@
       border-radius: calc(var(--mg-card-border-radius) / 2);
       overflow: hidden;
       outline: 1px solid rgb(var(--mg-color-neutral-900) / 0.1);
+    }
+
+    &:not(.mg-card__book) .mg-card__image {
+      block-size: 100%;
+      inline-size: 100%;
     }
 
     @include mg-card-image-zoom;
