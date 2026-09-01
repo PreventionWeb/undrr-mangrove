@@ -1,6 +1,6 @@
 .mg-intro {
   color: rgb(var(--mg-color-neutral-900));
-  margin-bottom: var(--mg-spacing-300);
+  padding-block-end: var(--mg-spacing-300);
 }
 
 .mg-intro > .mg-hero,
