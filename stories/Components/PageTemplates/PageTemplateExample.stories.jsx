@@ -42,6 +42,7 @@ import { Checkbox } from '../Forms/Checkbox/Checkbox';
 import { Radio } from '../Forms/Radio/Radio';
 import { Textarea } from '../Forms/Textarea/Textarea';
 import { FormErrorSummary } from '../Forms/FormErrorSummary/FormErrorSummary';
+import { FormAction } from '../Forms/FormAction/FormAction';
 import { Pager } from '../Pager/Pager';
 import { SyndicationSearchWidget } from '../SyndicationSearchWidget/SyndicationSearchWidget';
 import { defaultConfig as searchShowcaseConfig } from '../SyndicationSearchWidget/_storyHelpers';
@@ -507,14 +508,25 @@ const PageTemplateExample = () => {
             </p>
           </div>
           <form onSubmit={event => event.preventDefault()}>
-            <TextInput
-              id="showcase-email"
-              name="email"
-              type="email"
+            <FormAction
               label="Email address"
-              placeholder="name@example.org"
               helpText="We will only use this address for your selected updates."
-              required
+              stackOnMobile
+              control={
+                <input
+                  className="mg-form-input"
+                  id="showcase-email"
+                  name="email"
+                  type="email"
+                  placeholder="name@example.org"
+                  required
+                />
+              }
+              action={
+                <button className="mg-button mg-button-primary" type="submit">
+                  Subscribe
+                </button>
+              }
             />
             <Select
               id="showcase-topic"
@@ -538,9 +550,6 @@ const PageTemplateExample = () => {
               helpText="Optional. Use up to 300 characters."
               rows={3}
             />
-            <button className="mg-button mg-button-primary" type="submit">
-              Subscribe
-            </button>
           </form>
         </section>
         <TextCta

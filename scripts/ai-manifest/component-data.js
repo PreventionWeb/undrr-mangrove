@@ -789,6 +789,28 @@ npm run build</code></pre>
     description:
       'Fieldset wrapper for grouping related form controls with a legend. Error and disabled states.',
   },
+  'components-forms-form-action': {
+    description:
+      'Joins one form field to one high-priority action as a continuous control for search, subscribe, apply, check, redeem, or compact submission flows. Keep the field and button as separate semantic controls. Do not use for unrelated actions, destructive actions, multi-step forms, or multiple fields sharing one submit button. Add mg-form-action--stack-mobile when a long or translated action needs the full mobile width.',
+    cssClasses: [
+      'mg-form-action',
+      'mg-form-action--stack-mobile',
+      'mg-form-action__control',
+      'mg-form-action__action',
+    ],
+    examples: [
+      {
+        name: 'Joined email subscription',
+        html: `<form action="/subscribe" method="post">
+  <label class="mg-form-label" for="subscription-email">Email address</label>
+  <div class="mg-form-action">
+    <input class="mg-form-input mg-form-action__control" id="subscription-email" name="email" type="email" autocomplete="email" required>
+    <button class="mg-button mg-button-primary mg-form-action__action" type="submit">Subscribe</button>
+  </div>
+</form>`,
+      },
+    ],
+  },
   'components-forms-formerrorsummary': {
     description:
       'Error summary box listing all form validation errors with anchor links to each field.',
