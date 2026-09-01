@@ -3,8 +3,7 @@
   padding-block-end: var(--mg-spacing-300);
 }
 
-.mg-intro > .mg-hero,
-.mg-intro > .mg-cta {
+.mg-intro > .mg-hero {
   border-radius: var(--mg-radius-button);
   overflow: hidden;
 }
@@ -59,8 +58,4 @@
   height: 100%;
   max-width: none;
   min-height: 19rem;
-}
-
-.mg-intro > .mg-cta {
-  margin-top: clamp(var(--mg-spacing-300), 7vw, var(--mg-spacing-500));
 }

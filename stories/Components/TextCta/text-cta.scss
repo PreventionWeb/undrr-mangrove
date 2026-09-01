@@ -82,7 +82,7 @@
 
     @include devicebreak(medium) {
       .mg-cta__body {
-        align-items: end;
+        align-items: center;
         display: grid;
         gap: var(--mg-spacing-300);
         grid-template-columns: minmax(0, 1fr) auto;
