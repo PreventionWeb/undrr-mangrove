@@ -216,3 +216,34 @@ export const BorderedStackedTable = {
 
   name: 'Bordered stacked table',
 };
+
+export const ColumnAlignment = {
+  render: () => (
+    <table className="mg-table mg-table--striped">
+      <thead>
+        <tr>
+          <th scope="col">Region</th>
+          <th className="mg-table__cell--center" scope="col">
+            Status
+          </th>
+          <th className="mg-table__cell--end" scope="col">
+            Reports
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row">Africa</th>
+          <td className="mg-table__cell--center">On track</td>
+          <td className="mg-table__cell--end">18</td>
+        </tr>
+        <tr>
+          <th scope="row">Asia-Pacific</th>
+          <td className="mg-table__cell--center">Review</td>
+          <td className="mg-table__cell--end">24</td>
+        </tr>
+      </tbody>
+    </table>
+  ),
+  name: 'Column alignment',
+};

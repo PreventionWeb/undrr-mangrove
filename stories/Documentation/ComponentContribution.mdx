@@ -523,6 +523,8 @@ UNDRR websites serve content in Arabic and other right-to-left (RTL) languages. 
 
 The Storybook locale toolbar (globe icon) controls text direction. Selecting **Arabic** sets `dir="rtl"` and `lang="ar"` on the document and on the `#storybook-root` element. The runtime globals `window.UNDRR.langCode` and `window.UNDRR.dir` are also updated. Selecting any other locale resets to `dir="ltr"`.
 
+Use this toolbar as the canonical language switcher for component stories. Read `context.globals.locale` in the story or apply a shared locale-label decorator; do not add one exported story per language. A dedicated RTL or translation-stress story is appropriate only when it demonstrates a distinct layout or interaction condition, such as directional chart axes or deliberately constrained long labels.
+
 > **Note:** `window.UNDRR.langCode` stores the English-language name of the locale (e.g., `'arabic'`, `'english'`, `'japanese'`), not an ISO 639-1 code. To get the ISO code (e.g., `'ar'`, `'en'`), use the `langArr` mapping in `.storybook/preview.js` or the `lang` attribute on the `<html>` element.
 
 This logic lives in `.storybook/preview.js` in the `getLangCode` decorator. There is also a legacy manual RTL toggle (`setDirection` decorator) that can override the locale setting.

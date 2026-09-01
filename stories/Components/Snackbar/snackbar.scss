@@ -33,12 +33,6 @@
   fill: rgb(var(--mg-color-white));
   width: 100%;
 
-  // Ensure appropriate color contrast for accessibility
-  &__error {
-    background-color: rgb(var(--mg-color-red-900));
-    color: rgb(var(--mg-color-white)); // Ensure text is readable
-  }
-
   // severity - use colors with sufficient contrast ratio
   &__error {
     background-color: rgb(var(--mg-color-red-900));
@@ -51,7 +45,9 @@
       $lightness: -10%
     ); // Dark amber color for warning state
 
-    color: rgb(var(--mg-color-white)); // Use white text to be consistent with other severity types
+    color: rgb(
+      var(--mg-color-white)
+    ); // Use white text to be consistent with other severity types
   }
 
   &__info {
@@ -86,7 +82,7 @@
   }
 
   &__message {
-    margin-right: var(--mg-spacing-200);
+    margin-inline-end: var(--mg-spacing-200);
     flex: 1; // Allow message to take up available space
     overflow-wrap: break-word; // Prevent overflow of long words
   }
@@ -94,15 +90,16 @@
   // Make button larger on touch devices for better usability
   .mg-button {
     min-width: 88px;
-    min-height: 36px;
+    min-height: 44px;
     padding: var(--mg-spacing-50) var(--mg-spacing-150);
     font-weight: bold;
     cursor: pointer;
-    border-radius: 4px;
+    border-radius: var(--mg-radius-button);
     border: 1px solid rgb(255 255 255 / 0.5);
     background-color: rgb(255 255 255 / 0.1);
     color: inherit;
-    transition: background-color 0.2s ease;
+    transition: background-color var(--mg-motion-duration-fast)
+      var(--mg-motion-easing-standard);
 
     &:hover {
       background-color: rgb(255 255 255 / 0.2);

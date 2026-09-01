@@ -29,13 +29,13 @@ describe('Hero — background layout (default)', () => {
   it('applies background image via inline style', () => {
     const { container } = render(<Hero data={[baseItem]} />);
     const section = container.querySelector('.mg-hero');
-    expect(section).toHaveStyle(
-      `background-image: url(${baseItem.imgback})`
-    );
+    expect(section).toHaveStyle(`background-image: url(${baseItem.imgback})`);
   });
 
   it('renders a variant class', () => {
-    const { container } = render(<Hero data={[baseItem]} variant="secondary" />);
+    const { container } = render(
+      <Hero data={[baseItem]} variant="secondary" />
+    );
     expect(container.querySelector('.mg-hero--secondary')).toBeInTheDocument();
   });
 
@@ -47,6 +47,47 @@ describe('Hero — background layout (default)', () => {
   it('does not render mg-hero--split class', () => {
     const { container } = render(<Hero data={[baseItem]} />);
     expect(container.querySelector('.mg-hero--split')).not.toBeInTheDocument();
+  });
+
+  it('supports contained and immersive presentation classes', () => {
+    const { container } = render(
+      <Hero data={[baseItem]} contained size="immersive" />
+    );
+
+    expect(container.querySelector('.mg-hero')).toHaveClass(
+      'mg-hero--contained',
+      'mg-hero--immersive'
+    );
+  });
+
+  it('renders an optional logo and structured action links', () => {
+    const onClick = jest.fn();
+    render(
+      <Hero
+        data={[
+          {
+            ...baseItem,
+            primary_button: undefined,
+            logo: { src: '/logo.svg', alt: 'UNDRR' },
+            buttons: [
+              { label: 'Get started', url: '/start' },
+              { label: 'Browse', type: 'Secondary', onClick },
+            ],
+          },
+        ]}
+      />
+    );
+
+    expect(screen.getByRole('img', { name: 'UNDRR' })).toHaveAttribute(
+      'src',
+      '/logo.svg'
+    );
+    expect(screen.getByRole('link', { name: 'Get started' })).toHaveAttribute(
+      'href',
+      '/start'
+    );
+    screen.getByRole('link', { name: 'Browse' }).click();
+    expect(onClick).toHaveBeenCalledTimes(1);
   });
 });
 
@@ -77,31 +118,25 @@ describe('Hero — headingLevel', () => {
 
 describe('Hero — split layout', () => {
   it('renders mg-hero--split class', () => {
-    const { container } = render(
-      <Hero data={[splitItem]} layout="split" />
-    );
+    const { container } = render(<Hero data={[splitItem]} layout="split" />);
     expect(container.querySelector('.mg-hero--split')).toBeInTheDocument();
   });
 
   it('does not apply background-image inline style', () => {
-    const { container } = render(
-      <Hero data={[splitItem]} layout="split" />
-    );
+    const { container } = render(<Hero data={[splitItem]} layout="split" />);
     const section = container.querySelector('.mg-hero--split');
-    expect(section).not.toHaveStyle('background-image: url(https://example.com/image.jpg)');
+    expect(section).not.toHaveStyle(
+      'background-image: url(https://example.com/image.jpg)'
+    );
   });
 
   it('renders __split-grid container', () => {
-    const { container } = render(
-      <Hero data={[splitItem]} layout="split" />
-    );
+    const { container } = render(<Hero data={[splitItem]} layout="split" />);
     expect(container.querySelector('.mg-hero__split-grid')).toBeInTheDocument();
   });
 
   it('applies default split class mg-hero--split-2-3', () => {
-    const { container } = render(
-      <Hero data={[splitItem]} layout="split" />
-    );
+    const { container } = render(<Hero data={[splitItem]} layout="split" />);
     expect(container.querySelector('.mg-hero--split-2-3')).toBeInTheDocument();
   });
 
@@ -123,7 +158,9 @@ describe('Hero — split layout', () => {
     const { container } = render(
       <Hero data={[splitItem]} layout="split" variant="secondary" />
     );
-    expect(container.querySelector('.mg-hero--split.mg-hero--secondary')).toBeInTheDocument();
+    expect(
+      container.querySelector('.mg-hero--split.mg-hero--secondary')
+    ).toBeInTheDocument();
   });
 
   it('renders media image', () => {
@@ -143,9 +180,7 @@ describe('Hero — split layout', () => {
   });
 
   it('renders gracefully without media (no __media element)', () => {
-    const { container } = render(
-      <Hero data={[baseItem]} layout="split" />
-    );
+    const { container } = render(<Hero data={[baseItem]} layout="split" />);
     expect(container.querySelector('.mg-hero__media')).not.toBeInTheDocument();
   });
 
@@ -175,9 +210,14 @@ describe('Hero — split layout media types', () => {
     const { container } = render(<Hero data={[videoItem]} layout="split" />);
     const iframe = container.querySelector('.mg-hero__media-iframe');
     expect(iframe).toBeInTheDocument();
-    expect(iframe).toHaveAttribute('src', 'https://www.youtube.com/embed/abc123');
+    expect(iframe).toHaveAttribute(
+      'src',
+      'https://www.youtube.com/embed/abc123'
+    );
     expect(iframe).toHaveAttribute('title', 'UNDRR video');
-    expect(container.querySelector('.mg-hero__media--video')).toBeInTheDocument();
+    expect(
+      container.querySelector('.mg-hero__media--video')
+    ).toBeInTheDocument();
   });
 
   it('falls back to a default iframe title when media.title is omitted', () => {
@@ -195,12 +235,17 @@ describe('Hero — split layout media types', () => {
   it('renders raw HTML when media.type="html"', () => {
     const htmlItem = {
       ...baseItem,
-      media: { type: 'html', html: '<p class="custom-embed">Custom widget</p>' },
+      media: {
+        type: 'html',
+        html: '<p class="custom-embed">Custom widget</p>',
+      },
     };
     const { container } = render(<Hero data={[htmlItem]} layout="split" />);
     const slot = container.querySelector('.mg-hero__media--html');
     expect(slot).toBeInTheDocument();
-    expect(slot.querySelector('.custom-embed')).toHaveTextContent('Custom widget');
+    expect(slot.querySelector('.custom-embed')).toHaveTextContent(
+      'Custom widget'
+    );
   });
 
   it('renders an image when media.type is omitted (backwards compatible)', () => {

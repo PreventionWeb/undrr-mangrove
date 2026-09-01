@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { axe } from 'jest-axe';
 import { IconCard } from '../IconCard';
 
@@ -182,6 +182,28 @@ describe('IconCard', () => {
     // Visual should be wrapped in a link
     const visualLink = container.querySelector('.mg-card__visual-link');
     expect(visualLink).toHaveAttribute('href', '/example');
+  });
+
+  it('supports client-side navigation handlers without requiring a link URL', () => {
+    const onClick = jest.fn(event => event.preventDefault());
+    render(
+      <IconCard
+        data={makeData({
+          icon: 'mg-icon mg-icon-globe',
+          linkText: 'Explore',
+          onClick,
+        })}
+      />,
+    );
+
+    const titleLink = screen.getByRole('link', { name: 'Test card' });
+    const actionLink = screen.getByRole('link', { name: 'Explore' });
+    expect(titleLink).toHaveAttribute('href', '#');
+    expect(actionLink).toHaveAttribute('href', '#');
+
+    fireEvent.click(titleLink);
+    fireEvent.click(actionLink);
+    expect(onClick).toHaveBeenCalledTimes(2);
   });
 
   // --------------------------------------------------

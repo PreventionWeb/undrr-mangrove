@@ -11,6 +11,13 @@
     &:hover {
       color: rgb(var(--mg-color-neutral-600));
       cursor: pointer;
+      text-decoration: underline;
+    }
+
+    &:focus-visible {
+      @include mg-focus-ring;
+
+      text-decoration: underline;
     }
 
     &.selected {

@@ -8,7 +8,13 @@ export const DEFAULT_SCROLL_LABELS = {
 
 // Separate arrow buttons component
 const ArrowButtons = React.memo(
-  ({ onScroll, leftButtonRef, rightButtonRef, scrollLeftLabel = 'Scroll left', scrollRightLabel = 'Scroll right' }) => {
+  ({
+    onScroll,
+    leftButtonRef,
+    rightButtonRef,
+    scrollLeftLabel = 'Scroll left',
+    scrollRightLabel = 'Scroll right',
+  }) => {
     return (
       <nav className="mg-scroll__nav">
         <button
@@ -49,6 +55,7 @@ const ScrollContainer = ({
   padding = '0',
   className = '',
   showArrows = false,
+  stretchItems = false,
   stepSize = null,
   labels = {},
   ...props
@@ -88,11 +95,13 @@ const ScrollContainer = ({
       const newScrollLeft =
         containerRef.current.scrollLeft +
         (direction === 'right' ? scrollAmount : -scrollAmount);
+      const prefersReducedMotion =
+        window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ??
+        false;
 
-      // Use smooth scrolling for better user experience
       containerRef.current.scrollTo({
         left: newScrollLeft,
-        behavior: 'smooth',
+        behavior: prefersReducedMotion ? 'auto' : 'smooth',
       });
     },
     [stepSize]
@@ -215,6 +224,11 @@ const ScrollContainer = ({
     updateArrowVisibility();
 
     const container = containerRef.current;
+    const content = contentRef.current;
+    const resizeObserver =
+      typeof ResizeObserver === 'undefined'
+        ? null
+        : new ResizeObserver(updateArrowVisibility);
     if (container) {
       container.addEventListener('scroll', updateArrowVisibility, {
         passive: true,
@@ -231,6 +245,8 @@ const ScrollContainer = ({
       }
 
       container.addEventListener('click', handleClick, { capture: true });
+      resizeObserver?.observe(container);
+      if (content) resizeObserver?.observe(content);
     }
 
     return () => {
@@ -250,6 +266,7 @@ const ScrollContainer = ({
         // Remove click handler
         container.removeEventListener('click', handleClick, { capture: true });
       }
+      resizeObserver?.disconnect();
     };
   }, [
     checkMobileStatus,
@@ -281,14 +298,16 @@ const ScrollContainer = ({
       >
         <div
           ref={contentRef}
-          className={`mg-scroll__content${isMobileRef.current ? '' : ' mg-grid'}`}
+          className={`mg-scroll__content${
+            stretchItems ? ' mg-scroll__content--stretch' : ''
+          }${isMobileRef.current ? '' : ' mg-grid'}`}
         >
           {/* In some environments (like Gutenberg), children is an array of HTML strings */}
           {Array.isArray(children) && !React.isValidElement(children[0])
             ? children.map((child, index) => (
-                  <div key={index} className="mg-scroll__item-wrapper">
-                    <div dangerouslySetInnerHTML={{ __html: String(child) }} />
-                  </div>
+                <div key={index} className="mg-scroll__item-wrapper">
+                  <div dangerouslySetInnerHTML={{ __html: String(child) }} />
+                </div>
               ))
             : React.Children.map(children, child => (
                 <div className="mg-scroll__item-wrapper">{child}</div>
@@ -307,6 +326,8 @@ ScrollContainer.propTypes = {
   padding: PropTypes.string,
   className: PropTypes.string,
   showArrows: PropTypes.bool,
+  /** Stretch item wrappers and their direct children to a shared row height. */
+  stretchItems: PropTypes.bool,
   stepSize: PropTypes.number,
   /** Translated UI label strings */
   labels: PropTypes.shape({

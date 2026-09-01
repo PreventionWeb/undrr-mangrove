@@ -14,9 +14,9 @@ The error pages and guidance shown here are recommendations. When implementing i
 For static error pages (e.g., for CDN or upstream error handling), it is important to:
 
 - **Include UNDRR analytics code** to track error events and user behavior:
-    `<script type="text/javascript" src="https://assets.undrr.org/static/analytics/v1.0.0/google_analytics_enhancements.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>`
+  `<script type="text/javascript" src="https://assets.undrr.org/static/analytics/v1.0.0/google_analytics_enhancements.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>`
 - **Include UNDRR critical messaging JavaScript** to ensure users receive important updates or alerts, even on error pages.
-    `<script src="https://messaging.undrr.org/src/undrr-messaging.js" defer></script>`
+  `<script src="https://messaging.undrr.org/src/undrr-messaging.js" defer></script>`
 
 ## When to use
 
@@ -116,15 +116,15 @@ The static HTML templates in this component are designed for use with [Cloudflar
 
 ### Available Cloudflare tokens
 
-| Token | Description |
-|-------|-------------|
-| `::RAY_ID::` | Unique request identifier for support tickets |
-| `::CLIENT_IP::` | Visitor's IP address |
-| `::GEO::` | Visitor's country/region |
-| `::CLOUDFLARE_ERROR_500S_BOX::` | Server error details (5xx errors) |
-| `::CLOUDFLARE_ERROR_1000S_BOX::` | Cloudflare-specific error codes |
-| `::CAPTCHA_BOX::` | Interactive Challenge / Managed Challenge |
-| `::IM_UNDER_ATTACK_BOX::` | Non-Interactive Challenge (JS Challenge) |
+| Token                            | Description                                   |
+| -------------------------------- | --------------------------------------------- |
+| `::RAY_ID::`                     | Unique request identifier for support tickets |
+| `::CLIENT_IP::`                  | Visitor's IP address                          |
+| `::GEO::`                        | Visitor's country/region                      |
+| `::CLOUDFLARE_ERROR_500S_BOX::`  | Server error details (5xx errors)             |
+| `::CLOUDFLARE_ERROR_1000S_BOX::` | Cloudflare-specific error codes               |
+| `::CAPTCHA_BOX::`                | Interactive Challenge / Managed Challenge     |
+| `::IM_UNDER_ATTACK_BOX::`        | Non-Interactive Challenge (JS Challenge)      |
 
 See [Cloudflare error tokens documentation](https://developers.cloudflare.com/rules/custom-errors/reference/error-tokens/) for full details.
 
@@ -154,9 +154,12 @@ For static error pages (e.g., for CDN or upstream error handling), include these
 
 ```html
 <!-- UNDRR analytics - tracks error events -->
-<script type="text/javascript"
+<script
+  type="text/javascript"
   src="https://assets.undrr.org/static/analytics/v1.0.0/google_analytics_enhancements.js"
-  crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  crossorigin="anonymous"
+  referrerpolicy="no-referrer"
+></script>
 
 <!-- UNDRR critical messaging - displays important alerts -->
 <script src="https://messaging.undrr.org/src/undrr-messaging.js" defer></script>
@@ -170,16 +173,17 @@ Use these static HTML pages directly from the CDN when integrating with CDNs or 
 
 ### Cloudflare custom error page types
 
-| Cloudflare Setting | Template | Required Token | Description |
-|-------------------|----------|----------------|-------------|
-| 500 class errors | `5xx.html` | `::CLOUDFLARE_ERROR_500S_BOX::` | Covers all 5xx server errors with one page |
-| IP/Country challenge | `challenge.html` | `::CAPTCHA_BOX::` | Interactive challenge for visitors based on IP or country |
-| Managed challenge / I'm Under Attack Mode | `managed-challenge.html` | `::CAPTCHA_BOX::` | Managed challenge, returns 403 status |
-| 1000 class errors | — | `::CLOUDFLARE_ERROR_1000S_BOX::` | Cloudflare-specific errors (use 5xx.html or create custom) |
+| Cloudflare Setting                        | Template                 | Required Token                   | Description                                                |
+| ----------------------------------------- | ------------------------ | -------------------------------- | ---------------------------------------------------------- |
+| 500 class errors                          | `5xx.html`               | `::CLOUDFLARE_ERROR_500S_BOX::`  | Covers all 5xx server errors with one page                 |
+| IP/Country challenge                      | `challenge.html`         | `::CAPTCHA_BOX::`                | Interactive challenge for visitors based on IP or country  |
+| Managed challenge / I'm Under Attack Mode | `managed-challenge.html` | `::CAPTCHA_BOX::`                | Managed challenge, returns 403 status                      |
+| 1000 class errors                         | —                        | `::CLOUDFLARE_ERROR_1000S_BOX::` | Cloudflare-specific errors (use 5xx.html or create custom) |
 
 ### CDN links for Cloudflare
 
 **Cloudflare-specific templates:**
+
 ```text
 https://assets.undrr.org/static/mangrove/1.8.2/error-pages/5xx.html
 https://assets.undrr.org/static/mangrove/1.8.2/error-pages/challenge.html
@@ -187,6 +191,7 @@ https://assets.undrr.org/static/mangrove/1.8.2/error-pages/managed-challenge.htm
 ```
 
 **Individual error pages** (for platforms that support per-code configuration):
+
 ```text
 https://assets.undrr.org/static/mangrove/1.8.2/error-pages/401.html
 https://assets.undrr.org/static/mangrove/1.8.2/error-pages/403.html
@@ -212,6 +217,7 @@ https://assets.undrr.org/static/mangrove/1.8.2/error-pages/504.html
 
 ## Changelog
 
+- **1.4.1** — 2026-09-01 ([#1086](https://github.com/unisdr/undrr-mangrove/pull/1086)): Replaced the challenge panel's hard-coded radius and shadow with shared card surface tokens so it follows theme expression.
 - **1.4.0** — 2026-03-21: Converted inline styles from 10px-root rem values to px. Static templates now work correctly with the standard 1.4 theme (no root font-size override). ([#857](https://github.com/unisdr/undrr-mangrove/issues/857))
 - **1.3.0** — 2026-02-13: Challenge pages now use neutral background and teal accent to differentiate from error pages ([#2615](https://gitlab.com/undrr/web-backlog/-/issues/2615))
 - **1.2.0** — 2025-11-25: Added 401, 500, 504, 5xx, challenge, managed-challenge static templates; client-side URL display; `vf:page-type` meta tags ([#2556](https://gitlab.com/undrr/web-backlog/-/issues/2556))

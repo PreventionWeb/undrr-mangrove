@@ -35,6 +35,7 @@
 // Components
 @import "../../Components/Boilerplate/boilerplate";
 @import "../../Components/Forms/form-base";
+@import "../../Components/Forms/FormAction/form-action";
 @import "../../Components/Forms/FormGroup/form-group";
 @import "../../Components/Forms/TextInput/text-input";
 @import "../../Components/Forms/Textarea/textarea";
@@ -44,7 +45,6 @@
 @import "../../Components/Breadcrumbs/breadcrumbs";
 
 // Deprecated (February 2026) — removal planned by end of 2026. Use Pager instead.
-// @import "../../Components/Pagination/pagination";
 @import "../../Components/Pager/pager";
 @import "../../Components/Gallery/gallery";
 @import "../../Components/HighlightBox/highlight-box";
@@ -57,10 +57,12 @@
 @import "../../Components/Cards/Card/card";
 @import "../../Components/Cards/StatsCard/stats-card";
 @import "../../Components/Snackbar/snackbar";
+@import "../../Components/CookieConsentBanner/cookie-consent-banner";
 @import "../../Components/Hero/hero";
 @import "../../Components/TextCta/text-cta";
 @import "../../Components/ScrollContainer/scroll-container";
 @import "../../Components/Tab/tab";
+@import "../../Components/UserFeedback/user-feedback";
 
 // CSS+vanilla-JS component — Drupal integration via Gutenberg block, not a React export.
 @import "../../Components/TableOfContents/table-of-contents";

@@ -1,4 +1,5 @@
 import { TextCta } from './TextCta';
+import { INLINE_CTA_ARGS } from './_fixtures';
 
 export default {
   title: 'Components/CTA',
@@ -61,6 +62,10 @@ export const LeftAligned = {
     buttons: [{ label: 'Take action', url: '#' }],
     centered: false,
   },
+};
+
+export const Inline = {
+  args: INLINE_CTA_ARGS,
 };
 
 export const WithImage = {

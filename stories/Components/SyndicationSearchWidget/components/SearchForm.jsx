@@ -49,7 +49,7 @@ export function SearchForm({ value, onChange, isStale, isLoading, widgetId = '' 
 
   return (
     <form
-      className="mg-search__form"
+      className="mg-search__form mg-form-action"
       role="search"
       aria-label={labels.searchFormLabel}
       onSubmit={handleSubmit}
@@ -62,7 +62,7 @@ export function SearchForm({ value, onChange, isStale, isLoading, widgetId = '' 
         <input
           id={inputId}
           type="search"
-          className="mg-search__input form-control"
+          className="mg-search__input form-control mg-form-action__control"
           placeholder={labels.searchPlaceholder}
           value={value}
           onChange={handleChange}
@@ -96,7 +96,7 @@ export function SearchForm({ value, onChange, isStale, isLoading, widgetId = '' 
           icon + label to avoid stacking multiple animated indicators. */}
       <button
         type="submit"
-        className="mg-button mg-button-primary mg-search__submit"
+        className="mg-button mg-button-primary mg-search__submit mg-form-action__action"
         aria-label={labels.submitSearch}
         aria-busy={isLoading || isStale}
       >

@@ -2,8 +2,8 @@
  * @file _labels.js
  * @description Translated label sets for SyndicationSearchWidget.
  *
- * Imported by Translations.stories.jsx (per-language stories) and
- * _storyHelpers.jsx (locale toolbar decorator). Never import from .stories files.
+ * Imported by _storyHelpers.jsx for global locale-toolbar integration across
+ * the widget stories. Never import from .stories files.
  */
 
 export const LABELS_ES = {

@@ -73,6 +73,12 @@ Clear cell boundaries for when you need extra visual definition. Uses the `.mg-t
 
 <Canvas of={TableStories.BorderedTable} meta={TableStories} />
 
+### Column alignment
+
+Table content starts at the logical inline edge by default, so text remains easy to scan in both left-to-right and right-to-left layouts. Apply `.mg-table__cell--center` only to content that benefits from centring, such as a compact status, and `.mg-table__cell--end` to numeric columns that should align for comparison. `.mg-table__cell--start` explicitly restores the default when a cell must override a broader alignment rule.
+
+<Canvas of={TableStories.ColumnAlignment} meta={TableStories} />
+
 ## Size options
 
 ### Small table
@@ -119,6 +125,7 @@ Striped tables work especially well for financial data or any content where user
 - **Size:** `mg-table--small` (large is default)
 - **Styling:** `mg-table--striped`, `mg-table--border`
 - **Responsive:** `mg-table--stacked`, `mg-table--scroll`
+- **Cell alignment:** `mg-table__cell--start`, `mg-table__cell--center`, `mg-table__cell--end`
 
 ### Class combinations
 
@@ -126,7 +133,9 @@ Combine modifier classes to get the right table for your context:
 
 ```html
 <!-- Small, striped, stacks on mobile -->
-<table class="mg-table mg-table--small mg-table--striped mg-table--stacked">…</table>
+<table class="mg-table mg-table--small mg-table--striped mg-table--stacked">
+  …
+</table>
 
 <!-- Bordered, auto-responsive (uses JS or CSS container) -->
 <table class="mg-table mg-table--border mg-table--auto">…</table>
@@ -147,6 +156,7 @@ The table component handles all the responsive heavy lifting for you, so you can
 
 ## Changelog
 
+- **2.2** — 2026-09-01 ([#1086](https://github.com/unisdr/undrr-mangrove/pull/1086)): Made logical start alignment the table default and added explicit start, centre and end cell modifiers for textual, status and numeric columns across LTR and RTL layouts.
 - **2.1** — 2026-04-05 ([undrr-mangrove#907](https://github.com/unisdr/undrr-mangrove/pull/907)): Fixed `mg-table--striped` stripe color from `$mg-color-neutral-200` (`#b3b3b3`) to `$mg-color-neutral-25` (`#f2f2f2`) — the previous value was far too dark
 - **2.0** — 2025-06-12: **Breaking:** All `table` elements must now include the `.mg-table` class for proper styling and functionality
 - **1.0** — 2022-12-12: Released component

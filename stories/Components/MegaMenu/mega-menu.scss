@@ -1,7 +1,7 @@
 .mg-mega-wrapper {
   position: relative;
   background: rgb(var(--mg-color-white));
-  box-shadow: 0 2px 3px 0 rgb(51 51 51 / 0.31);
+  box-shadow: inset 0 -1px 0 rgb(var(--mg-color-neutral-600) / 0.24);
   z-index: var(--mg-z-index-nav);
 }
 
@@ -135,7 +135,7 @@
 
     @media screen and (min-width: $mg-breakpoint-tablet) {
       &--active {
-        background: rgb(var(--mg-color-blue-900) / 0.2);
+        box-shadow: inset 0 -3px 0 rgb(var(--mg-color-interactive));
 
         a,
         .mg-mega-topbar__item-link {
@@ -189,10 +189,10 @@
   top: 1px;
   align-items: flex-start;
   justify-content: start;
-  background-color: rgb(var(--mg-color-neutral-0) / 0.7);
-  backdrop-filter: blur(10px);
-  border-radius: var(--mg-radius-tab);
-  box-shadow: -1px 5px 10px -1px rgb(0 0 0 / 0.25);
+  background-color: rgb(var(--mg-color-neutral-0));
+  box-shadow:
+    inset 0 1px 0 rgb(var(--mg-color-neutral-600) / 0.2),
+    0 18px 45px rgb(var(--mg-color-neutral-900) / 0.14);
   inset-inline-start: 0;
   z-index: 1; // submenu floats above page content within mega-menu stacking context
   width: 100%;
@@ -260,10 +260,8 @@
 }
 
 .mg-mega-content__left {
-  box-shadow: inset 0 5px 5px -3px rgb(0 0 0 / 0.2);
-
   // RTL-friendly border
-  border-inline-end: 2px solid rgb(var(--mg-color-neutral-800) / 0.2);
+  border-inline-end: 1px solid rgb(var(--mg-color-neutral-600) / 0.24);
 
   // Mobile-first: Hide section list on mobile
   .mg-mega-content__section-list {
@@ -395,7 +393,6 @@
 }
 
 .mg-mega-content__right {
-  box-shadow: inset 0 5px 5px -3px rgb(0 0 0 / 0.2);
   flex: 1;
   display: flex;
 

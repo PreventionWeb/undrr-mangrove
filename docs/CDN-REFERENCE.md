@@ -73,6 +73,7 @@ Precompiled React components for use without a build process. The `hydrate.js` r
 | SyndicationSearchWidget | `/components/SyndicationSearchWidget.js` |
 | IconCard | `/components/IconCard.js` |
 | Gallery | `/components/Gallery.js` |
+| UserFeedback | `/components/UserFeedback.js` |
 | StatsCard | `/components/StatsCard.js` |
 | Pager | `/components/Pager.js` |
 

@@ -201,6 +201,187 @@
   position: relative;
 }
 
+// Modern tab variants: horizontal tabs behave like a navigation rail, while
+// stacked tabs behave like disclosure rows. These selectors intentionally sit
+// after the legacy shared styles so existing markup and JS contracts remain
+// unchanged while the current variants receive the refreshed visual language.
+.mg-tabs--horizontal {
+  .mg-tabs__list {
+    background: transparent;
+    box-shadow: inset 0 -1px 0 rgb(var(--mg-color-neutral-600) / 0.24);
+
+    &::after {
+      display: none;
+    }
+  }
+
+  .mg-tabs__link {
+    align-items: center;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: inset 0 -3px 0 transparent;
+    color: rgb(var(--mg-color-text));
+    display: flex;
+    min-height: mg-rem(44);
+    padding: var(--mg-spacing-150) var(--mg-spacing-200);
+    text-align: start;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition:
+        background-color var(--mg-motion-duration-fast) var(--mg-motion-easing-standard),
+        box-shadow var(--mg-motion-duration-fast) var(--mg-motion-easing-standard),
+        color var(--mg-motion-duration-fast) var(--mg-motion-easing-standard);
+    }
+
+    &:hover {
+      background: rgb(var(--mg-color-interactive) / 0.06);
+      border: 0;
+      box-shadow: inset 0 -3px 0 rgb(var(--mg-color-interactive) / 0.45);
+      color: rgb(var(--mg-color-interactive-active));
+    }
+
+    &:focus-visible {
+      @include mg-focus-ring;
+
+      background: rgb(var(--mg-color-interactive) / 0.06);
+      border: 0;
+    }
+
+    &.is-active,
+    &.is-active:hover,
+    &.is-active:focus-visible {
+      background: transparent;
+      border: 0;
+      box-shadow: inset 0 -3px 0 rgb(var(--mg-color-interactive));
+      color: rgb(var(--mg-color-interactive));
+    }
+  }
+
+  @media (min-width: $mg-breakpoint-mobile) {
+    .mg-tabs__list {
+      display: grid;
+      min-width: 0;
+      overflow-x: auto;
+      scrollbar-width: thin;
+    }
+
+    .mg-tabs__item {
+      display: flex;
+    }
+
+    .mg-tabs-content {
+      padding-top: var(--mg-spacing-100);
+    }
+  }
+}
+
+@mixin modern-stacked-tabs {
+  .mg-tabs__list {
+    background: transparent;
+
+    &::after {
+      display: none;
+    }
+  }
+
+  .mg-tabs__item {
+    box-shadow: inset 0 -1px 0 rgb(var(--mg-color-neutral-600) / 0.24);
+    margin-bottom: 0;
+  }
+
+  .mg-tabs__link {
+    background: rgb(var(--mg-color-neutral-0));
+    border: 0;
+    border-radius: 0;
+    color: rgb(var(--mg-color-text));
+    min-height: mg-rem(48);
+    padding-block: var(--mg-spacing-150);
+    padding-inline: var(--mg-spacing-200) mg-rem(44);
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition:
+        background-color var(--mg-motion-duration-fast) var(--mg-motion-easing-standard),
+        color var(--mg-motion-duration-fast) var(--mg-motion-easing-standard);
+    }
+
+    &:hover,
+    &:focus-visible,
+    &.is-active,
+    &.mg-tabs__stacked--open {
+      background: rgb(var(--mg-color-interactive) / 0.06);
+      border: 0;
+      color: rgb(var(--mg-color-interactive-active));
+    }
+
+    &:focus-visible {
+      @include mg-focus-ring;
+    }
+
+    &::before {
+      align-items: center;
+      background: rgb(var(--mg-color-interactive) / 0.06);
+      border: 0;
+      border-radius: 50%;
+      content: "+";
+      display: flex;
+      font-family: $mg-font-family;
+      font-size: $mg-font-size-400;
+      font-weight: 400;
+      height: mg-rem(30);
+      justify-content: center;
+      right: var(--mg-spacing-100);
+      top: 50%;
+      transform: translateY(-50%);
+      width: mg-rem(30);
+
+      @media (prefers-reduced-motion: no-preference) {
+        transition:
+          background-color var(--mg-motion-duration-fast) var(--mg-motion-easing-standard),
+          scale var(--mg-motion-duration-fast) var(--mg-motion-easing-standard);
+      }
+    }
+
+    &.mg-tabs__stacked--open::before {
+      content: "−";
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    &:hover::before {
+      background: rgb(var(--mg-color-interactive) / 0.12);
+    }
+
+    &:active::before {
+      scale: 0.96;
+    }
+  }
+
+  .mg-tabs__section {
+    background: rgb(var(--mg-color-neutral-0));
+    border-radius: 0;
+    box-shadow: none;
+    padding: var(--mg-spacing-150) var(--mg-spacing-200) var(--mg-spacing-200);
+    text-wrap: pretty;
+
+    > :last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+// The explicit stacked variant remains a disclosure pattern at every width.
+.mg-tabs--stacked {
+  @include modern-stacked-tabs;
+}
+
+// Horizontal tabs collapse to the same disclosure pattern on small screens.
+.mg-tabs--horizontal {
+  @media (max-width: $mg-breakpoint-mobile) {
+    @include modern-stacked-tabs;
+  }
+}
+
 [dir="rtl"] {
   .mg-tabs {
     > ul {
@@ -220,24 +401,24 @@
 
   // Flip stacked chevron for RTL
   .mg-tabs--stacked .mg-tabs__link {
-    padding-right: var(--mg-padding-tab);
+    padding-right: var(--mg-spacing-200);
     padding-left: mg-rem(40);
 
     &:before {
       right: auto;
-      left: var(--mg-spacing-150);
+      left: var(--mg-spacing-100);
     }
   }
 
   // Horizontal tabs only have chevrons at mobile breakpoint
   @media (max-width: $mg-breakpoint-mobile) {
     .mg-tabs--horizontal .mg-tabs__link {
-      padding-right: var(--mg-padding-tab);
+      padding-right: var(--mg-spacing-200);
       padding-left: mg-rem(40);
 
       &:before {
         right: auto;
-        left: var(--mg-spacing-150);
+        left: var(--mg-spacing-100);
       }
     }
   }

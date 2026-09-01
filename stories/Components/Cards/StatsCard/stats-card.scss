@@ -76,8 +76,7 @@
     outline: none;
 
     &::after {
-      outline: 2px solid rgb(var(--mg-color-interactive));
-      outline-offset: 2px;
+      @include mg-focus-ring;
     }
   }
 
@@ -120,8 +119,7 @@
       }
 
       &:focus {
-        outline: 2px solid rgb(var(--mg-color-interactive));
-        outline-offset: 2px;
+        @include mg-focus-ring;
       }
     }
   }

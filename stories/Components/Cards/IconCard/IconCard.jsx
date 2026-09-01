@@ -31,6 +31,7 @@ const cls = (...classes) =>
  * @property {string} summaryText - Card body text, HTML supported (matches VerticalCard)
  * @property {string} link - URL for card link
  * @property {string} linkText - Text for text link CTA
+ * @property {Function} onClick - Optional activation handler for client-side routing
  * @property {string} iconColor - Background color for the icon badge (CSS color, e.g., "#f4b8a8")
  * @property {string} iconFgColor - Foreground (glyph) color for the icon (CSS color). Overrides the default neutral gray.
  * @property {string} borderColor - Border color for the card (CSS color, e.g., "#e8963a")
@@ -99,10 +100,16 @@ export function IconCard({ data, centered = false, variant = 'default' }) {
           {(item.icon || item.imgback || item.iconColor) && (
             <div className="mg-card__visual">
               {item.visualLabel && (
-                <span className="mg-card__visual-label">{item.visualLabel}</span>
+                <span className="mg-card__visual-label">
+                  {item.visualLabel}
+                </span>
               )}
-              {item.srOnlyTitle && item.link ? (
-                <a href={item.link} className="mg-card__visual-link">
+              {item.srOnlyTitle && (item.link || item.onClick) ? (
+                <a
+                  href={item.link || '#'}
+                  onClick={item.onClick}
+                  className="mg-card__visual-link"
+                >
                   <Visual item={item} />
                 </a>
               ) : (
@@ -128,8 +135,12 @@ export function IconCard({ data, centered = false, variant = 'default' }) {
                   item.srOnlyTitle && 'mg-u-sr-only'
                 )}
               >
-                {item.link && !item.button && !item.srOnlyTitle ? (
-                  <a href={item.link}>{item.title?.trim()}</a>
+                {(item.link || item.onClick) &&
+                !item.button &&
+                !item.srOnlyTitle ? (
+                  <a href={item.link || '#'} onClick={item.onClick}>
+                    {item.title?.trim()}
+                  </a>
                 ) : (
                   item.title?.trim()
                 )}
@@ -150,16 +161,20 @@ export function IconCard({ data, centered = false, variant = 'default' }) {
             {item.button && (
               <div className="mg-card__cta">
                 <CtaButton
-                  type={item.buttonType || 'Primary'}
+                  Type={item.buttonType || 'Primary'}
+                  Variant="CTA"
                   label={item.button}
-                  href={item.link}
+                  href={item.link || '#'}
+                  onClick={item.onClick}
                 />
               </div>
             )}
 
             {item.linkText && !item.button && (
               <p className="mg-card__link">
-                <a href={item.link}>{item.linkText}</a>
+                <a href={item.link || '#'} onClick={item.onClick}>
+                  {item.linkText}
+                </a>
               </p>
             )}
           </div>
@@ -205,6 +220,8 @@ IconCard.propTypes = {
       link: PropTypes.string,
       /** Text for text link CTA */
       linkText: PropTypes.string,
+      /** Optional activation handler for client-side routing. */
+      onClick: PropTypes.func,
       /** Button label text */
       button: PropTypes.string,
       /** Button style: 'Primary' or 'Secondary' */

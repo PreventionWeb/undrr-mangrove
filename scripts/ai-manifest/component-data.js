@@ -29,32 +29,62 @@
 // ---------------------------------------------------------------------------
 
 export const REQUIRES_REACT = {
-  'components-syndicated-search': 'SyndicationSearchWidget is a complex search interface querying an Elasticsearch API. Requires React 19. Can be hydrated on a vanilla HTML page using the createHydrator pattern with data-mg-search-widget attributes. Supports full UI string translation via the labels prop (or data-labels JSON attribute in Drupal). Ships with label sets for ES, FR, JA, ZH (Simplified), AR, and RU. See the hydration documentation.',
-  'components-syndicated-search-translations': 'SyndicationSearchWidget translation label sets for ES, FR, JA, ZH-Hans, AR, and RU. Pass via the labels prop (React) or data-labels JSON attribute (Drupal). String keys support {token} substitution; function keys handle Intl.PluralRules plural forms for Arabic (6-form) and Russian (3-form). Function keys cannot be serialized to JSON for data-labels.',
-  'components-syndicated-search-display-modes': 'SyndicationSearchWidget display-mode variants (list / card / card-book layouts and teaser-field visibility). Requires React 19. Same hydration pattern as the main widget.',
-  'components-syndicated-search-filters': 'SyndicationSearchWidget filter and facet customisation variants (customFilters, customFacets, allowedTypes). Requires React 19. Same hydration pattern as the main widget.',
-  'components-syndicated-search-integrations': 'SyndicationSearchWidget integration / syndication examples (taxonomy term results, custom endpoints, syndicated card layouts as content blocks). Requires React 19. Same hydration pattern as the main widget.',
-  'components-syndicated-search-layouts': 'SyndicationSearchWidget layout variants — facets sidebar, horizontal facet strip, and external-region portals (facetsTarget, searchTarget). Requires React 19. Same hydration pattern as the main widget.',
-  'components-syndicated-search-toggles': 'SyndicationSearchWidget UI visibility toggles (showPager, showSearchMetrics). Requires React 19. Same hydration pattern as the main widget.',
-  'components-megamenu': 'MegaMenu manages complex open/close state and keyboard navigation. Requires React. Can be hydrated via createHydrator. Adds mg-mega-wrapper--js-active on mount so pointer-events restrictions only apply when the sidebar is available; plain HTML nav markup and failed-hydration states remain fully clickable on mobile.',
-  'components-gallery': 'Gallery provides a lightbox image viewer. Requires React for modal state and keyboard navigation. Can be hydrated via createHydrator.',
-  'components-pager': 'Pager manages pagination state. Requires React. Import via npm. Supports translated labels via props: prevLabel, nextLabel, goPrevLabel, goNextLabel, pageLabel, currentPageLabel, pageOfLabel (all string or function). Can be hydrated via createHydrator using data-prev-label, data-next-label, etc. attributes.',
-  'components-cookieconsentbanner': 'CookieConsentBanner manages consent state and cookie storage. Requires React.',
-  'components-snackbar': 'Snackbar manages auto-dismiss timing and state. Requires React.',
-  'components-scrollcontainer': 'ScrollContainer manages horizontal scroll state with navigation buttons. Requires React. Can be hydrated via createHydrator.',
-  'components-buttons-sharebuttons': 'ShareButtons manages share URLs and clipboard state. Requires React. Can be hydrated via createHydrator with data-mg-share-buttons.',
-  'components-table-of-contents': 'TableOfContents inspects the DOM for heading elements and manages scroll-spy state. React component available, or use the vanilla JS at js/table-of-contents.js with data-mg-table-of-contents.',
-  'components-buttons-sharebuttons-translations': 'ShareButtons translation label sets for ES, FR, JA, ZH, AR, RU. Pass via the labels prop.',
-  'components-gallery-translations': 'Gallery translation label sets for ES, FR, JA, ZH, AR, RU. Pass galleryAriaLabel, prevLabel, nextLabel, loadingLabel props.',
-  'components-megamenu-translations': 'MegaMenu translation label sets for ES, FR, JA, ZH, AR, RU. Pass navLabel, closeMobileNavLabel props.',
-  'components-snackbar-translations': 'Snackbar translation label sets for ES, FR, JA, ZH, AR, RU. Pass closeLabel, closeAriaLabel props.',
-  'components-scrollcontainer-translations': 'ScrollContainer translation label sets for ES, FR, JA, ZH, AR, RU. Pass scrollLeftLabel, scrollRightLabel props.',
-  'components-pagination-translations': 'Pagination translation label sets for ES, FR, JA, ZH, AR, RU. Pass prevLabel, nextLabel, nextAriaLabel props.',
-  'components-breadcrumbs-translations': 'Breadcrumbs translation label sets for ES, FR, JA, ZH, AR, RU. Pass navLabel prop.',
-  'components-tableofcontents-translations': 'TableOfContents translation label sets for ES, FR, JA, ZH, AR, RU. Pass title prop.',
-  'components-onthispagenav-translations': 'OnThisPageNav translation label sets for ES, FR, JA, ZH, AR, RU. Pass label prop.',
-  'components-forms-formerrorsummary-translations': 'FormErrorSummary translation label sets for ES, FR, JA, ZH, AR, RU. Pass title prop.',
-  'components-tab-translations': 'Tab translation label sets for ES, FR, JA, ZH, AR, RU. Pass filterPlaceholder prop.',
+  'spike-react-aria-crud':
+    'Experimental Storybook-only React Aria CRUD fixture. Requires React and is not a supported Mangrove component export.',
+  'spike-react-aria-integration':
+    'Experimental Storybook-only React Aria integration fixture. Requires React and is not a supported Mangrove component export.',
+  'components-syndicated-search':
+    'SyndicationSearchWidget is a complex search interface querying an Elasticsearch API. Requires React 19. Can be hydrated on a vanilla HTML page using the createHydrator pattern with data-mg-search-widget attributes. Supports full UI string translation via the labels prop (or data-labels JSON attribute in Drupal). Ships with label sets for ES, FR, JA, ZH (Simplified), AR, and RU. See the hydration documentation.',
+  'components-syndicated-search-translations':
+    'SyndicationSearchWidget translation label sets for ES, FR, JA, ZH-Hans, AR, and RU. Pass via the labels prop (React) or data-labels JSON attribute (Drupal). String keys support {token} substitution; function keys handle Intl.PluralRules plural forms for Arabic (6-form) and Russian (3-form). Function keys cannot be serialized to JSON for data-labels.',
+  'components-syndicated-search-display-modes':
+    'SyndicationSearchWidget display-mode variants (list / card / card-book layouts and teaser-field visibility). Requires React 19. Same hydration pattern as the main widget.',
+  'components-syndicated-search-filters':
+    'SyndicationSearchWidget filter and facet customisation variants (customFilters, customFacets, allowedTypes). Requires React 19. Same hydration pattern as the main widget.',
+  'components-syndicated-search-integrations':
+    'SyndicationSearchWidget integration / syndication examples (taxonomy term results, custom endpoints, syndicated card layouts as content blocks). Requires React 19. Same hydration pattern as the main widget.',
+  'components-syndicated-search-layouts':
+    'SyndicationSearchWidget layout variants — facets sidebar, horizontal facet strip, and external-region portals (facetsTarget, searchTarget). Requires React 19. Same hydration pattern as the main widget.',
+  'components-syndicated-search-toggles':
+    'SyndicationSearchWidget UI visibility toggles (showPager, showSearchMetrics). Requires React 19. Same hydration pattern as the main widget.',
+  'components-megamenu':
+    'MegaMenu manages complex open/close state and keyboard navigation. Requires React. Can be hydrated via createHydrator. Adds mg-mega-wrapper--js-active on mount so pointer-events restrictions only apply when the sidebar is available; plain HTML nav markup and failed-hydration states remain fully clickable on mobile.',
+  'components-gallery':
+    'Gallery provides a lightbox image viewer. Requires React for modal state and keyboard navigation. Can be hydrated via createHydrator.',
+  'components-pager':
+    'Pager manages pagination state. Requires React. Import via npm. Supports translated labels via props: prevLabel, nextLabel, goPrevLabel, goNextLabel, pageLabel, currentPageLabel, pageOfLabel (all string or function). Can be hydrated via createHydrator using data-prev-label, data-next-label, etc. attributes.',
+  'components-cookieconsentbanner':
+    'CookieConsentBanner manages consent state and cookie storage. Requires React.',
+  'components-snackbar':
+    'Snackbar manages auto-dismiss timing and state. Requires React.',
+  'components-scrollcontainer':
+    'ScrollContainer manages horizontal scroll state with navigation buttons. Requires React. Can be hydrated via createHydrator.',
+  'components-user-feedback':
+    'UserFeedback manages a binary page response, confirmation state and focus. Requires React for button behavior and can be hydrated via createHydrator with data-mg-user-feedback. Place it as a separate sibling immediately before Footer when the pattern is used.',
+  'components-buttons-sharebuttons':
+    'ShareButtons manages share URLs and clipboard state. Requires React. Can be hydrated via createHydrator with data-mg-share-buttons.',
+  'components-table-of-contents':
+    'TableOfContents inspects the DOM for heading elements and manages scroll-spy state. React component available, or use the vanilla JS at js/table-of-contents.js with data-mg-table-of-contents.',
+  'components-buttons-sharebuttons-translations':
+    'ShareButtons translation label sets for ES, FR, JA, ZH, AR, RU. Pass via the labels prop.',
+  'components-gallery-translations':
+    'Gallery translation label sets for ES, FR, JA, ZH, AR, RU. Pass galleryAriaLabel, prevLabel, nextLabel, loadingLabel props.',
+  'components-megamenu-translations':
+    'MegaMenu translation label sets for ES, FR, JA, ZH, AR, RU. Pass navLabel, closeMobileNavLabel props.',
+  'components-snackbar-translations':
+    'Snackbar translation label sets for ES, FR, JA, ZH, AR, RU. Pass closeLabel, closeAriaLabel props.',
+  'components-scrollcontainer-translations':
+    'ScrollContainer translation label sets for ES, FR, JA, ZH, AR, RU. Pass scrollLeftLabel, scrollRightLabel props.',
+  'components-breadcrumbs-translations':
+    'Breadcrumbs translation label sets for ES, FR, JA, ZH, AR, RU. Pass navLabel prop.',
+  'components-tableofcontents-translations':
+    'TableOfContents translation label sets for ES, FR, JA, ZH, AR, RU. Pass title prop.',
+  'components-onthispagenav-translations':
+    'OnThisPageNav translation label sets for ES, FR, JA, ZH, AR, RU. Pass label prop.',
+  'components-forms-formerrorsummary-translations':
+    'FormErrorSummary translation label sets for ES, FR, JA, ZH, AR, RU. Pass title prop.',
+  'components-tab-translations':
+    'Tab translation label sets for ES, FR, JA, ZH, AR, RU. Pass filterPlaceholder prop.',
 };
 
 // ---------------------------------------------------------------------------
@@ -64,9 +94,13 @@ export const REQUIRES_REACT = {
 export default {
   // --- Layout ---
   'design-decisions-container': {
-    description: 'Centered responsive container with breakpoint-driven max-widths (480/900/1164/1440px). Variants for padding and vertical spacing.',
+    description:
+      'Centered responsive container with breakpoint-driven max-widths (480/900/1164/1440px). Variants for padding and vertical spacing.',
     cssClasses: [
-      'mg-container', 'mg-container--slim', 'mg-container--padded', 'mg-container--spacer',
+      'mg-container',
+      'mg-container--slim',
+      'mg-container--padded',
+      'mg-container--spacer',
     ],
     examples: [
       {
@@ -99,15 +133,28 @@ export default {
   },
 
   'design-decisions-grid-layout': {
-    description: 'Responsive CSS grid system. 1-12 column layouts with column and row spanning, plus a single-row auto-fit fallback. Flexbox fallback for older browsers.',
+    description:
+      'Responsive CSS grid system. 1-12 column layouts with column and row spanning, plus a single-row auto-fit fallback. Flexbox fallback for older browsers.',
     cssClasses: [
-      'mg-grid', 'mg-grid--auto-fit',
-      'mg-grid__col-1', 'mg-grid__col-2', 'mg-grid__col-3',
-      'mg-grid__col-4', 'mg-grid__col-5', 'mg-grid__col-6',
-      'mg-grid__col-7', 'mg-grid__col-8', 'mg-grid__col-9',
-      'mg-grid__col-10', 'mg-grid__col-11', 'mg-grid__col-12',
-      'mg-grid__col--span-2', 'mg-grid__col--span-3', 'mg-grid__col--span-all',
-      'mg-grid__row--span-2', 'mg-grid__row--span-all',
+      'mg-grid',
+      'mg-grid--auto-fit',
+      'mg-grid__col-1',
+      'mg-grid__col-2',
+      'mg-grid__col-3',
+      'mg-grid__col-4',
+      'mg-grid__col-5',
+      'mg-grid__col-6',
+      'mg-grid__col-7',
+      'mg-grid__col-8',
+      'mg-grid__col-9',
+      'mg-grid__col-10',
+      'mg-grid__col-11',
+      'mg-grid__col-12',
+      'mg-grid__col--span-2',
+      'mg-grid__col--span-3',
+      'mg-grid__col--span-all',
+      'mg-grid__row--span-2',
+      'mg-grid__row--span-all',
     ],
     examples: [
       {
@@ -148,16 +195,33 @@ export default {
   },
 
   // --- Buttons (auto-rendered) ---
-  'components-buttons-buttons': { description: 'Primary and secondary CTA buttons with disabled variant. Themed via design tokens. WCAG AA contrast on both light and dark backgrounds.' },
-  'components-buttons-chips': { description: 'Small interactive tag-like buttons for filters and selections. Optional dismiss (X) variant.' },
+  'components-buttons-buttons': {
+    description:
+      'Primary and secondary CTA buttons with disabled variant. Themed via design tokens. WCAG AA contrast on both light and dark backgrounds.',
+  },
+  'components-buttons-chips': {
+    description:
+      'Compact pill-shaped controls for categories and active filters. The default variant is a link; the dismissible variant is a button with a visible X and a localisable accessible name.',
+  },
 
   // --- Cards ---
   'components-cards-vertical-card': {
-    description: 'Card with stacked image, labels, title, summary, and optional CTA button. Four color variants.',
+    description:
+      'Card with stacked image, labels, title, summary, and optional CTA button. Four color variants.',
     cssClasses: [
-      'mg-card', 'mg-card__vc', 'mg-card--secondary', 'mg-card--tertiary', 'mg-card--quaternary',
-      'mg-card__visual', 'mg-card__image', 'mg-card__content', 'mg-card__meta',
-      'mg-card__label', 'mg-card__label--active', 'mg-card__title', 'mg-card__summary',
+      'mg-card',
+      'mg-card__vc',
+      'mg-card--secondary',
+      'mg-card--tertiary',
+      'mg-card--quaternary',
+      'mg-card__visual',
+      'mg-card__image',
+      'mg-card__content',
+      'mg-card__meta',
+      'mg-card__label',
+      'mg-card__label--active',
+      'mg-card__title',
+      'mg-card__summary',
     ],
     examples: [
       {
@@ -228,11 +292,20 @@ export default {
   },
 
   'components-cards-horizontal-card': {
-    description: 'Side-by-side card with image left and content right. Labels, title, summary, and CTA button.',
+    description:
+      'Side-by-side card with image left and content right. Labels, title, summary, and CTA button.',
     cssClasses: [
-      'mg-card', 'mg-card__hc', 'mg-card--secondary', 'mg-card__visual', 'mg-card__image',
-      'mg-card__content', 'mg-card__meta', 'mg-card__label', 'mg-card__label--active',
-      'mg-card__title', 'mg-card__summary',
+      'mg-card',
+      'mg-card__hc',
+      'mg-card--secondary',
+      'mg-card__visual',
+      'mg-card__image',
+      'mg-card__content',
+      'mg-card__meta',
+      'mg-card__label',
+      'mg-card__label--active',
+      'mg-card__title',
+      'mg-card__summary',
     ],
     examples: [
       {
@@ -256,14 +329,28 @@ export default {
     ],
   },
 
-  'components-cards-icon-card': { description: 'Card with icon or image, title, summary, and optional CTA. Variants: default, centered, negative (dark background). Image scale options: small, medium, large, full. Supports custom icon background/foreground colors (iconColor, iconFgColor), border color, and label position (top or content area).' },
-  'components-cards-book-card': { description: 'Minimal card for publications: cover image and title only.' },
+  'components-cards-icon-card': {
+    description:
+      'Card with icon or image, title, summary, and optional CTA. Variants: default, centered, negative (dark background). Image scale options: small, medium, large, full. Supports custom icon background/foreground colors (iconColor, iconFgColor), border color, and label position (top or content area).',
+  },
+  'components-cards-book-card': {
+    description: 'Minimal card for publications: cover image and title only.',
+  },
 
   'components-cards-horizontal-book-card': {
-    description: 'Horizontal card for publications: cover image left, title and summary right.',
+    description:
+      'Horizontal card for publications: cover image left, title and summary right.',
     cssClasses: [
-      'mg-card', 'mg-card__hc', 'mg-card-book__hc', 'mg-card__visual', 'mg-card__image',
-      'mg-card__content', 'mg-card__meta', 'mg-card__label', 'mg-card__title', 'mg-card__summary',
+      'mg-card',
+      'mg-card__hc',
+      'mg-card-book__hc',
+      'mg-card__visual',
+      'mg-card__image',
+      'mg-card__content',
+      'mg-card__meta',
+      'mg-card__label',
+      'mg-card__title',
+      'mg-card__summary',
     ],
     examples: [
       {
@@ -286,12 +373,22 @@ export default {
     ],
   },
 
-  'components-cards-stats-card': { description: 'Grid of numeric statistics with optional icons, labels, and descriptions. Variants: default, compact, highlighted, negative.' },
+  'components-cards-stats-card': {
+    description:
+      'Grid of numeric statistics with optional icons, labels, and descriptions. Variants: default, compact, highlighted, negative.',
+  },
 
   // --- Tags ---
   'components-tag': {
-    description: 'Small label for categorization. Variants: default, secondary, outline, accent. Can be span or link.',
-    cssClasses: ['mg-tag', 'mg-tag--secondary', 'mg-tag--outline', 'mg-tag--accent', 'mg-tag-container'],
+    description:
+      'Small label for categorization. Variants: default, secondary, outline, accent. Can be span or link.',
+    cssClasses: [
+      'mg-tag',
+      'mg-tag--secondary',
+      'mg-tag--outline',
+      'mg-tag--accent',
+      'mg-tag-container',
+    ],
     examples: [
       {
         name: 'Tag variants',
@@ -315,7 +412,8 @@ export default {
 
   // --- Typography ---
   'components-typography': {
-    description: 'Base typography styles applied to standard HTML heading and body elements. Use `mg-details` on a `<details>` element to apply Mangrove styled disclosure.',
+    description:
+      'Base typography styles applied to standard HTML heading and body elements. Use `mg-details` on a `<details>` element to apply Mangrove styled disclosure.',
     cssClasses: ['mg-details'],
     examples: [
       {
@@ -341,7 +439,8 @@ export default {
   },
 
   'components-typography-links': {
-    description: 'Link styles applied to standard anchor elements. Underlined by default with interactive color.',
+    description:
+      'Link styles applied to standard anchor elements. Underlined by default with interactive color.',
     cssClasses: [],
     examples: [
       {
@@ -354,8 +453,19 @@ export default {
 
   // --- Table ---
   'components-table': {
-    description: 'Styled HTML table with size (small), variant (striped/border), and responsive (stacked/scroll) options.',
-    cssClasses: ['mg-table', 'mg-table--small', 'mg-table--striped', 'mg-table--border', 'mg-table--stacked', 'mg-table--scroll'],
+    description:
+      'Styled HTML table with size (small), variant (striped/border), and responsive (stacked/scroll) options.',
+    cssClasses: [
+      'mg-table',
+      'mg-table--small',
+      'mg-table--striped',
+      'mg-table--border',
+      'mg-table--stacked',
+      'mg-table--scroll',
+      'mg-table__cell--start',
+      'mg-table__cell--center',
+      'mg-table__cell--end',
+    ],
     examples: [
       {
         name: 'Default table',
@@ -364,19 +474,19 @@ export default {
     <tr>
       <th scope="col">Country</th>
       <th scope="col">Hazard type</th>
-      <th scope="col">People affected</th>
+      <th class="mg-table__cell--end" scope="col">People affected</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td>Nepal</td>
       <td>Earthquake</td>
-      <td>2.8 million</td>
+      <td class="mg-table__cell--end">2.8 million</td>
     </tr>
     <tr>
       <td>Philippines</td>
       <td>Typhoon</td>
-      <td>4.1 million</td>
+      <td class="mg-table__cell--end">4.1 million</td>
     </tr>
   </tbody>
 </table>`,
@@ -403,7 +513,8 @@ export default {
 
   // --- Preview access ---
   'components-preview-access': {
-    description: 'Page-level gate that hides an unfinished page behind a PIN-prompt modal until a reviewer enters the right code. Drop <div data-mg-preview-access> into a page and load js/preview-access.js. Unlock persists in sessionStorage for the browser session. CSS-first anti-flash via :has(). Editorial signalling only — not a security mechanism, since the PIN sits in the DOM.',
+    description:
+      'Page-level gate that hides an unfinished page behind a PIN-prompt modal until a reviewer enters the right code. Drop <div data-mg-preview-access> into a page and load js/preview-access.js. Unlock persists in sessionStorage for the browser session. CSS-first anti-flash via :has(). Editorial signalling only — not a security mechanism, since the PIN sits in the DOM.',
     cssClasses: [
       'mg-preview-access--unlocked',
       'mg-preview-access__overlay',
@@ -438,13 +549,18 @@ export default {
 
   // --- On this page nav ---
   'components-on-this-page-nav': {
-    description: 'Sticky horizontal "On this page" navigation bar with IntersectionObserver scroll-spy. Two modes: auto-detect (scans h2/h3/h4 headings) or explicit (author-provided links). Optional CTA button. Vanilla JS — requires on-this-page-nav.js.',
+    description:
+      'Sticky horizontal "On this page" navigation bar with IntersectionObserver scroll-spy. Two modes: auto-detect (scans h2/h3/h4 headings) or explicit (author-provided links). Optional CTA button. Vanilla JS — requires on-this-page-nav.js.',
     cssClasses: [
-      'mg-on-this-page-nav', 'mg-on-this-page-nav--hidden',
+      'mg-on-this-page-nav',
+      'mg-on-this-page-nav--hidden',
       'mg-on-this-page-nav--has-left-overflow',
-      'mg-on-this-page-nav__list', 'mg-on-this-page-nav__item',
-      'mg-on-this-page-nav__link', 'mg-on-this-page-nav__link--active',
-      'mg-on-this-page-nav__cta', 'mg-on-this-page-nav--exclude',
+      'mg-on-this-page-nav__list',
+      'mg-on-this-page-nav__item',
+      'mg-on-this-page-nav__link',
+      'mg-on-this-page-nav__link--active',
+      'mg-on-this-page-nav__cta',
+      'mg-on-this-page-nav--exclude',
       'mg-on-this-page-nav__scroll-btn',
       'mg-on-this-page-nav__scroll-btn--prev',
       'mg-on-this-page-nav__scroll-btn--next',
@@ -469,10 +585,16 @@ export default {
   },
 
   // --- Tabs (auto-rendered) ---
-  'components-tabs': { description: 'Tabbed content with stacked or horizontal variants. Requires tabs.js vanilla JS for interactivity. The script adds ARIA roles (tablist, tab, tabpanel) and keyboard navigation at runtime — do not omit the script or tabs will be inaccessible.' },
+  'components-tabs': {
+    description:
+      'Tabbed content with stacked or horizontal variants. Requires tabs.js vanilla JS for interactivity. The script adds ARIA roles (tablist, tab, tabpanel) and keyboard navigation at runtime — do not omit the script or tabs will be inaccessible.',
+  },
 
   // --- Highlight box (auto-rendered) ---
-  'components-highlightbox': { description: 'Highlighted content box. Tones: default, primary, secondary. Layouts: centered, float-start, float-end. Supports embedded video.' },
+  'components-highlightbox': {
+    description:
+      'Highlighted content box. Tones: default, primary, secondary. Layouts: centered, float-start, float-end. Supports embedded video.',
+  },
 
   // --- CodeBlock ---
   'components-codeblock': {
@@ -487,8 +609,8 @@ IMPORTANT — token classes: \`.token.keyword\`, \`.token.string\`, \`.token.tag
 For inline \`<code>\` snippets in prose, use the bare HTML element — the global \`code.scss\` styles it automatically. The CodeBlock component is only for block-level code display.`,
     cssClasses: [
       // Mangrove-defined classes:
-      'mg-code-block',      // <figure> wrapper with filename header
-      'mg-code--block',     // standalone block variant (e.g. ShareButtons URL display)
+      'mg-code-block', // <figure> wrapper with filename header
+      'mg-code--block', // standalone block variant (e.g. ShareButtons URL display)
       // Prism.js token classes (styled by Mangrove, emitted by Prism/react-syntax-highlighter):
       // .token.comment .token.keyword .token.string .token.number .token.function
       // .token.class-name .token.tag .token.attr-name .token.attr-value
@@ -518,28 +640,56 @@ npm run build</code></pre>
   },
 
   // --- Quote highlight (auto-rendered) ---
-  'components-quotehighlight': { description: 'Testimonial or pull quote with attribution, portrait, and optional large image. Background: light, dark, bright. Variants: line separator or image. Alignment: full, left, right.' },
+  'components-quotehighlight': {
+    description:
+      'Testimonial or pull quote with attribution, portrait, and optional large image. Background: light, dark, bright. Variants: line separator or image. Alignment: full, left, right.',
+  },
 
   // --- Hero ---
   'components-hero-hero': {
-    description: 'Full-width hero banner with title, summary, and CTA buttons. Four color variants. Two layouts: `background` (full-bleed image with overlay, default) and `split` (solid theme-colour background with a content column plus a media column). Split layout supports 2/3, 1/2, and 1/3 content-to-media ratios, a configurable heading level (h1–h3), and three media types: `image` (default), `video` (iframe embed — provide the provider embed URL and a `title` for accessibility), or `html` (pre-sanitized HTML string for custom embeds; consumer must sanitize).',
+    description:
+      'Full-width hero banner with title, summary, and CTA buttons. Four color variants. Two layouts: `background` (full-bleed image with overlay, default) and `split` (solid theme-colour background with a content column plus a media column). Split layout supports 2/3, 1/2, and 1/3 content-to-media ratios, a configurable heading level (h1–h3), and three media types: `image` (default), `video` (iframe embed — provide the provider embed URL and a `title` for accessibility), or `html` (pre-sanitized HTML string for custom embeds; consumer must sanitize).',
     cssClasses: [
-      'mg-hero', 'mg-hero--secondary', 'mg-hero--tertiary', 'mg-hero--quaternary',
-      'mg-hero--split', 'mg-hero--split-2-3', 'mg-hero--split-1-2', 'mg-hero--split-1-3',
-      'mg-hero__overlay', 'mg-hero__split-grid', 'mg-hero__content',
-      'mg-hero__meta', 'mg-hero__label', 'mg-hero__title', 'mg-hero__summaryText', 'mg-hero__buttons',
-      'mg-hero__media', 'mg-hero__media--video', 'mg-hero__media--html',
-      'mg-hero__media-img', 'mg-hero__media-iframe',
+      'mg-hero',
+      'mg-hero--secondary',
+      'mg-hero--tertiary',
+      'mg-hero--quaternary',
+      'mg-hero--split',
+      'mg-hero--split-2-3',
+      'mg-hero--split-1-2',
+      'mg-hero--split-1-3',
+      'mg-hero__overlay',
+      'mg-hero__split-grid',
+      'mg-hero__content',
+      'mg-hero__meta',
+      'mg-hero__label',
+      'mg-hero__title',
+      'mg-hero__summaryText',
+      'mg-hero__buttons',
+      'mg-hero__media',
+      'mg-hero__media--video',
+      'mg-hero__media--html',
+      'mg-hero__media-img',
+      'mg-hero__media-iframe',
     ],
   },
 
   'components-hero-hero-child': {
-    description: 'DEPRECATED — planned for removal by end of 2026. Never adopted in production across UNDRR sites; do not use in new work. Migrate to the main Hero component (`headingLevel="h2"`/`"h3"` or `layout="split"`), which covers the same use cases. Kept available for reference only. Smaller hero banner for child/section pages. Single CTA button, linked label.',
+    description:
+      'DEPRECATED — planned for removal by end of 2026. Never adopted in production across UNDRR sites; do not use in new work. Migrate to the main Hero component (`headingLevel="h2"`/`"h3"` or `layout="split"`), which covers the same use cases. Kept available for reference only. Smaller hero banner for child/section pages. Single CTA button, linked label.',
     deprecated: true,
-    deprecationNotice: 'Planned for removal by end of 2026. Migrate to `components-hero-hero`.',
+    deprecationNotice:
+      'Planned for removal by end of 2026. Migrate to `components-hero-hero`.',
     cssClasses: [
-      'mg-hero', 'mg-hero--child', 'mg-hero__overlay', 'mg-hero__content',
-      'mg-hero__meta', 'mg-hero__label', 'mg-hero__title', 'mg-hero__summaryText', 'mg-hero__buttons',
+      'mg-hero',
+      'mg-hero--child',
+      'mg-hero__overlay',
+      'mg-hero__content',
+      'mg-hero__meta',
+      'mg-hero__label',
+      'mg-hero__title',
+      'mg-hero__summaryText',
+      'mg-hero__buttons',
     ],
     examples: [
       {
@@ -564,10 +714,26 @@ npm run build</code></pre>
     ],
   },
 
+  // --- User feedback (auto-rendered) ---
+  'components-user-feedback': {
+    description:
+      'Standalone page-usefulness prompt generally paired as the sibling immediately before Footer. Response storage and consent remain product-owned.',
+    cssClasses: [
+      'mg-user-feedback',
+      'mg-user-feedback__prompt',
+      'mg-user-feedback__question',
+      'mg-user-feedback__actions',
+      'mg-user-feedback__issue',
+      'mg-user-feedback__confirmation',
+    ],
+  },
+
   // --- Footer (auto-rendered + embed) ---
   'components-footer': {
-    description: 'Site footer with optional UNDRR syndication. Loads global footer content from PreventionWeb via a widget script. Works with or without React.',
-    doNotModify: 'The Footer structure is a UNDRR branding requirement. Use the documented markup exactly as shown. Do not simplify, reorganize, or omit elements.',
+    description:
+      'Site footer with optional UNDRR syndication. Loads global footer content from PreventionWeb via a widget script. Works with or without React.',
+    doNotModify:
+      'The Footer structure is a UNDRR branding requirement. Use the documented markup exactly as shown. Do not simplify, reorganize, or omit elements.',
     vanillaHtmlEmbed: {
       description:
         'The UNDRR global footer can be embedded on any page using the PreventionWeb syndication widget. No React required. The widget script fetches footer content from PreventionWeb and injects it into the container element.',
@@ -598,8 +764,10 @@ npm run build</code></pre>
       configOptions: {
         contenttype: 'Type of syndicated content (e.g. landingpage)',
         pageid: 'PreventionWeb page ID to syndicate',
-        includecss: 'Whether to include PreventionWeb default styles (set false when using Mangrove CSS)',
-        suffixID: 'Unique suffix for the widget container class (creates pw-widget-{suffixID})',
+        includecss:
+          'Whether to include PreventionWeb default styles (set false when using Mangrove CSS)',
+        suffixID:
+          'Unique suffix for the widget container class (creates pw-widget-{suffixID})',
         activedomain: 'Domain for absolute URLs in syndicated content',
       },
     },
@@ -607,36 +775,95 @@ npm run build</code></pre>
 
   // --- Page header (auto-rendered) ---
   'components-pageheader': {
-    description: 'UNDRR page header with colored decoration stripe, logo, user account link, and language selector dropdown.',
-    doNotModify: 'The PageHeader structure (decoration stripe, toolbar wrapper, logo section) is a UNDRR branding requirement. Use the documented markup exactly as shown. The four empty divs inside mg-page-header__decoration are intentional — they render the colored stripe segments.',
+    description:
+      'UNDRR page header with colored decoration stripe, logo, user account link, and language selector dropdown.',
+    doNotModify:
+      'The PageHeader structure (decoration stripe, toolbar wrapper, logo section) is a UNDRR branding requirement. Use the documented markup exactly as shown. The four empty divs inside mg-page-header__decoration are intentional — they render the colored stripe segments.',
   },
 
   // --- Navigation (auto-rendered) ---
-  'components-navigation-breadcrumbs': { description: 'Breadcrumb navigation trail. White variant available for dark backgrounds.' },
-  'components-navigation-pagination': { description: 'Page navigation with previous/next links and page number display. Uses legacy class names without the mg- prefix.' },
+  'components-navigation-breadcrumbs': {
+    description:
+      'Breadcrumb navigation trail. White variant available for dark backgrounds.',
+  },
 
   // --- Forms (auto-rendered) ---
-  'components-forms-text-input': { description: 'Text input field with label, help text, required indicator, and error state.' },
-  'components-forms-select': { description: 'Dropdown select field with label, placeholder, help text, and error state.' },
-  'components-forms-checkbox': { description: 'Styled checkbox with label. Error and disabled states available.' },
-  'components-forms-radio': { description: 'Styled radio button with label. Error and disabled states available.' },
-  'components-forms-textarea': { description: 'Multi-line text input with label, help text, and error state.' },
-  'components-forms-formgroup': { description: 'Fieldset wrapper for grouping related form controls with a legend. Error and disabled states.' },
-  'components-forms-formerrorsummary': { description: 'Error summary box listing all form validation errors with anchor links to each field.' },
+  'components-forms-text-input': {
+    description:
+      'Text input field with label, help text, required indicator, and error state.',
+  },
+  'components-forms-select': {
+    description:
+      'Dropdown select field with label, placeholder, help text, and error state.',
+  },
+  'components-forms-checkbox': {
+    description:
+      'Styled checkbox with label. Error and disabled states available.',
+  },
+  'components-forms-radio': {
+    description:
+      'Styled radio button with label. Error and disabled states available.',
+  },
+  'components-forms-textarea': {
+    description:
+      'Multi-line text input with label, help text, and error state.',
+  },
+  'components-forms-formgroup': {
+    description:
+      'Fieldset wrapper for grouping related form controls with a legend. Error and disabled states.',
+  },
+  'components-forms-form-action': {
+    description:
+      'Joins one form field to one high-priority action as a continuous control for search, subscribe, apply, check, redeem, or compact submission flows. Keep the field and button as separate semantic controls. Do not use for unrelated actions, destructive actions, multi-step forms, or multiple fields sharing one submit button. Add mg-form-action--stack-mobile when a long or translated action needs the full mobile width.',
+    cssClasses: [
+      'mg-form-action',
+      'mg-form-action--stack-mobile',
+      'mg-form-action__control',
+      'mg-form-action__action',
+    ],
+    examples: [
+      {
+        name: 'Joined email subscription',
+        html: `<form class="mg-form-field" action="/subscribe" method="post">
+  <label class="mg-form-label" for="subscription-email">Email address</label>
+  <div class="mg-form-action">
+    <input class="mg-form-input mg-form-action__control" id="subscription-email" name="email" type="email" autocomplete="email" required>
+    <button class="mg-button mg-button-primary mg-form-action__action" type="submit">Subscribe</button>
+  </div>
+</form>`,
+      },
+    ],
+  },
+  'components-forms-formerrorsummary': {
+    description:
+      'Error summary box listing all form validation errors with anchor links to each field.',
+  },
 
   // --- CTA ---
   'components-cta': {
-    description: 'Call-to-action banner with heading, rich text body, action buttons, and optional image. Four color variants (primary, secondary, tertiary, quaternary) plus custom backgroundColor override. Supports centered and side-by-side (with image) layouts.',
+    description:
+      'Call-to-action banner with heading, rich text body, action buttons, and optional image. Four color variants (primary, secondary, tertiary, quaternary) plus custom backgroundColor override. Supports centered and side-by-side (with image) layouts.',
     cssClasses: [
-      'mg-cta', 'mg-cta--primary', 'mg-cta--secondary', 'mg-cta--tertiary', 'mg-cta--quaternary',
-      'mg-cta--centered', 'mg-cta--with-image',
-      'mg-cta__inner', 'mg-cta__body', 'mg-cta__headline', 'mg-cta__text', 'mg-cta__actions', 'mg-cta__image',
+      'mg-cta',
+      'mg-cta--primary',
+      'mg-cta--secondary',
+      'mg-cta--tertiary',
+      'mg-cta--quaternary',
+      'mg-cta--centered',
+      'mg-cta--with-image',
+      'mg-cta__inner',
+      'mg-cta__body',
+      'mg-cta__headline',
+      'mg-cta__text',
+      'mg-cta__actions',
+      'mg-cta__image',
     ],
   },
 
   // --- Images ---
   'components-images-author-image': {
-    description: 'Circular author portrait with optional hover color accent (yellow, green, red, blue) and size variant.',
+    description:
+      'Circular author portrait with optional hover color accent (yellow, green, red, blue) and size variant.',
     cssClasses: ['mg-author-image'],
     examples: [
       {
@@ -669,7 +896,8 @@ npm run build</code></pre>
 
   // --- Logos ---
   'components-logos': {
-    description: 'Logo images for UNDRR, PreventionWeb, IRP, and partner organizations.',
+    description:
+      'Logo images for UNDRR, PreventionWeb, IRP, and partner organizations.',
     cssClasses: [],
     examples: [
       {
@@ -681,7 +909,8 @@ npm run build</code></pre>
 
   // --- Icons ---
   'components-icons': {
-    description: 'Mangrove icon font. Use span elements with mg-icon and mg-icon-{name} classes.',
+    description:
+      'Mangrove icon font. Use span elements with mg-icon and mg-icon-{name} classes.',
     cssClasses: ['mg-icon'],
     examples: [
       {
@@ -697,12 +926,21 @@ npm run build</code></pre>
   },
 
   // --- Utilities ---
-  'components-embedcontainer': { description: 'Responsive aspect-ratio wrapper for iframes and embeds. Default 16:9 with 4:3, 1:1, and 21:9 variants.' },
-  'components-fullwidth': { description: 'Makes content break out of its container to span the full viewport width. RTL-safe.' },
-  'components-loader': { description: 'Animated loading spinner. 40px on mobile, 96px on desktop.' },
+  'components-embedcontainer': {
+    description:
+      'Responsive aspect-ratio wrapper for iframes and embeds. Default 16:9 with 4:3, 1:1, and 21:9 variants.',
+  },
+  'components-fullwidth': {
+    description:
+      'Makes content break out of its container to span the full viewport width. RTL-safe.',
+  },
+  'components-loader': {
+    description: 'Animated loading spinner. 40px on mobile, 96px on desktop.',
+  },
 
   'components-showmore': {
-    description: 'Collapse long content behind a gradient fade with a toggle button. Height customizable via CSS variable.',
+    description:
+      'Collapse long content behind a gradient fade with a toggle button. Height customizable via CSS variable.',
     cssClasses: ['mg-show-more--collapsed', 'mg-show-more--button'],
     examples: [
       {
@@ -718,7 +956,8 @@ npm run build</code></pre>
   },
 
   'components-error-pages': {
-    description: 'Error page templates (404, 500, etc.) with heading, message, and return link.',
+    description:
+      'Error page templates (404, 500, etc.) with heading, message, and return link.',
     cssClasses: [],
     examples: [
       {
@@ -734,21 +973,26 @@ npm run build</code></pre>
 
   // --- CSS utilities and documentation pages ---
   'components-font-size-utilities': {
-    description: 'Font size utility classes (mg-font-size-*) for overriding typography scale.',
+    description:
+      'Font size utility classes (mg-font-size-*) for overriding typography scale.',
   },
   'components-normalize': {
-    description: 'CSS normalize/reset layer applied globally before component styles.',
+    description:
+      'CSS normalize/reset layer applied globally before component styles.',
   },
   'components-typography-typography-integration-example': {
-    description: 'Integration example showing Mangrove typography classes in a page context.',
+    description:
+      'Integration example showing Mangrove typography classes in a page context.',
   },
   'components-utility-css': {
-    description: 'CSS utility class reference (spacing, visibility, text alignment, floats).',
+    description:
+      'CSS utility class reference (spacing, visibility, text alignment, floats).',
   },
 
   // --- Page templates ---
   'example-page-template-example': {
-    description: 'Complete page templates showing how to compose Mangrove components into working UNDRR-branded pages with all required scripts and assets.',
+    description:
+      'Complete page templates showing how to compose Mangrove components into working UNDRR-branded pages with all required scripts and assets.',
     examples: [
       {
         name: 'Canonical UNDRR page shell (use this as your starting point)',
@@ -846,7 +1090,7 @@ npm run build</code></pre>
 </html>`,
       },
       {
-        name: 'Listing page (card grid with pagination)',
+        name: 'Listing page (card grid with pager)',
         html: `<!-- Main content for a listing/index page — wrap in <main id="main-content"> within the page shell -->
 <div class="mg-container mg-container--padded mg-container--spacer">
   <nav aria-label="Breadcrumbs" class="mg-breadcrumb">
@@ -898,14 +1142,24 @@ npm run build</code></pre>
     </article>
   </div>
 
-  <!-- Pagination (legacy class names without mg- prefix) -->
-  <nav class="pagination" aria-label="Pagination">
-    <ul>
-      <li><span class="pagination__disabled" aria-disabled="true">Previous</span></li>
-      <li><a href="?page=1" aria-current="page" aria-label="Page 1">1</a></li>
-      <li><a href="?page=2" aria-label="Page 2">2</a></li>
-      <li><a href="?page=3" aria-label="Page 3">3</a></li>
-      <li><a href="?page=2" aria-label="Next page">Next</a></li>
+  <!-- Pager -->
+  <nav class="mg-pager" aria-label="Pagination">
+    <ul class="mg-pager__list">
+      <li class="mg-pager__item mg-pager__item--prev">
+        <button class="mg-pager__link mg-pager__link--prev mg-pager__link--disabled" type="button" disabled aria-label="Go to previous page">
+          <span aria-hidden="true">&#8249;</span><span class="mg-pager__text">Previous</span>
+        </button>
+      </li>
+      <li class="mg-pager__item">
+        <button class="mg-pager__link mg-pager__link--number mg-pager__link--current" type="button" aria-current="page" aria-label="Page 1, current page">1</button>
+      </li>
+      <li class="mg-pager__item"><a class="mg-pager__link mg-pager__link--number" href="?page=2" aria-label="Page 2">2</a></li>
+      <li class="mg-pager__item"><a class="mg-pager__link mg-pager__link--number" href="?page=3" aria-label="Page 3">3</a></li>
+      <li class="mg-pager__item mg-pager__item--next">
+        <a class="mg-pager__link mg-pager__link--next" href="?page=2" aria-label="Go to next page">
+          <span class="mg-pager__text">Next</span><span aria-hidden="true">&#8250;</span>
+        </a>
+      </li>
     </ul>
   </nav>
 </div>`,
