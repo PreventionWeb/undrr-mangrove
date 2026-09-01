@@ -43,6 +43,7 @@ import { Radio } from '../Forms/Radio/Radio';
 import { Textarea } from '../Forms/Textarea/Textarea';
 import { FormErrorSummary } from '../Forms/FormErrorSummary/FormErrorSummary';
 import { FormAction } from '../Forms/FormAction/FormAction';
+import { FormGroup } from '../Forms/FormGroup/FormGroup';
 import { Pager } from '../Pager/Pager';
 import { SyndicationSearchWidget } from '../SyndicationSearchWidget/SyndicationSearchWidget';
 import { defaultConfig as searchShowcaseConfig } from '../SyndicationSearchWidget/_storyHelpers';
@@ -122,7 +123,7 @@ const insightCards = [
     contenttile: 'Data insight',
     title: 'Tracking disaster losses across regions',
     summaryText:
-      'Comparable data helps governments identify risk patterns and direct resources towards the communities most exposed.',
+      'Comparable data helps governments identify risk patterns and direct resources.',
     label1: '24 August 2026',
     button: 'Explore the data',
     link: '#',
@@ -446,27 +447,29 @@ const PageTemplateExample = () => {
         <section className="mg-container--spacer">
           <SectionHeader headerText="Explore disaster risk knowledge" />
           <form
-            className="mg-search__form"
             role="search"
             aria-label="Search disaster risk knowledge"
             onSubmit={event => event.preventDefault()}
           >
-            <TextInput
-              id="showcase-search"
-              name="query"
-              type="search"
+            <FormAction
               label="Search disaster risk knowledge"
               hideLabel
-              placeholder="Search reports, data and guidance"
-              defaultValue="resilience"
-              className="mg-search__input-wrapper"
+              control={
+                <input
+                  className="mg-form-input"
+                  id="showcase-search"
+                  name="query"
+                  type="search"
+                  placeholder="Search reports, data and guidance"
+                  defaultValue="resilience"
+                />
+              }
+              action={
+                <button className="mg-button mg-button-primary" type="submit">
+                  Search
+                </button>
+              }
             />
-            <button
-              className="mg-button mg-button-primary mg-search__submit"
-              type="submit"
-            >
-              Search
-            </button>
           </form>
           <p className="mg-form-help">
             The full syndicated search stories demonstrate live results, facets,
@@ -644,11 +647,10 @@ const ComponentLaboratoryExample = () => {
             errorText="Describe how you plan to use the data"
             required
           />
-          <fieldset>
-            <legend>Preferred format</legend>
+          <FormGroup legend="Preferred format">
             <Radio name="format" value="csv" label="CSV" defaultChecked />
             <Radio name="format" value="json" label="JSON" />
-          </fieldset>
+          </FormGroup>
           <div className="mg-buttons">
             <button className="mg-button mg-button-primary" type="submit">
               Submit request

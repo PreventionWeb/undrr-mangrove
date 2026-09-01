@@ -38,7 +38,7 @@ See [Accessibility](https://unisdr.github.io/undrr-mangrove/?path=/docs/getting-
 - [ ] Stories use CSF3 format (no `Template.bind({})`)
 - [ ] MDX docs follow the standard structure (overview, when to use, formatting, behaviors, CSS/JS references, changelog)
 - [ ] MDX includes the review checklist reference after `<Meta>` (see [component guide, step 5](https://unisdr.github.io/undrr-mangrove/?path=/docs/contributing-build-a-component-step-by-step--docs))
-- [ ] Changelog entry added to the component's MDX file (see [changelog format](https://unisdr.github.io/undrr-mangrove/?path=/docs/contributing-component-standards--docs))
+- [ ] One changelog version entry added to the component's MDX file for the PR (see [changelog format](https://unisdr.github.io/undrr-mangrove/?path=/docs/contributing-component-standards--docs)). Extend that entry with nested bullets when the same PR adds more work; do not bump the component version more than once within one PR.
 - [ ] Sentence case for all headings and UI text
 
 See [Writing guidelines](https://unisdr.github.io/undrr-mangrove/?path=/docs/contributing-writing-guidelines--docs) for UX writing standards.
