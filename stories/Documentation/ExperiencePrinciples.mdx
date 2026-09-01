@@ -1,6 +1,7 @@
 import { Meta } from '@storybook/addon-docs/blocks';
 import LinkTo from '@storybook/addon-links/react';
 import TableOfContents from '../Components/TableOfContents/TableOfContents';
+import ExperiencePrincipleExamples from './components/ExperiencePrincipleExamples';
 
 <Meta
   title="Design decisions/Experience principles"
@@ -20,7 +21,6 @@ import TableOfContents from '../Components/TableOfContents/TableOfContents';
     { id: 'scope-and-ownership', text: 'Scope and ownership' },
     { id: 'decision-order', text: 'Decision order' },
     { id: 'principles', text: 'Principles' },
-    { id: 'current-expression', text: 'Current expression' },
     { id: 'acceptance-checks', text: 'Acceptance checks' },
     { id: 'change-evidence', text: 'Change evidence' },
   ]}
@@ -64,13 +64,23 @@ Prefer evolution over replacement. Preserve semantic HTML, established content m
 
 Hierarchy should come from clear typography, spacing and meaningful imagery before decoration. Use readable line lengths and a deliberate rhythm. Use balanced heading wraps where they improve scanning without creating awkward breaks in translated or expanded text. Keep labels and actions concise.
 
+<ExperiencePrincipleExamples example="content" />
+
 ### Soften with restraint
 
 Use token-driven corner radii, lightly tinted surfaces and gentle separation to reduce visual hardness. Softer does not mean pill-shaped by default, borderless everywhere or visually vague. Structural boundaries must remain apparent, especially in forms, tables and dense information.
 
+<ExperiencePrincipleExamples example="softness" />
+
+<ExperiencePrincipleExamples example="density" />
+
 ### Make actions obvious and comfortable
 
 Buttons, links and controls should have consistent geometry, clear states and generous targets. Meet the WCAG 2.2 minimum of 24 by 24 CSS pixels and aim for 44 by 44 where space permits. Related fields and actions may join into one visual group when their relationship remains unambiguous. Icon weight, spacing and alignment should feel balanced at normal and zoomed sizes.
+
+<ExperiencePrincipleExamples example="actions" />
+
+<ExperiencePrincipleExamples example="forms" />
 
 ### Prefer quiet depth to heavy chrome
 
@@ -87,23 +97,6 @@ Every refinement must preserve or improve contrast, focus visibility, keyboard o
 ### Design once for every theme
 
 Express shared capability through semantic tokens and component variants. A refinement is not complete if it only works in the default theme. Brand-specific appearance remains in the theme layer.
-
-## Current expression
-
-These patterns describe the current direction, not permanent rules. They may evolve as evidence and product needs change.
-
-| Area       | Prefer                                                                         | Avoid                                                                             |
-| ---------- | ------------------------------------------------------------------------------ | --------------------------------------------------------------------------------- |
-| Surfaces   | Light neutral fills, visible separation, restrained token-driven radii         | Heavy boxes around every section, unclear boundaries or large decorative rounding |
-| Buttons    | Shared variants, stable geometry and visibly distinct states                   | One-off CTA markup, layout movement on hover or tiny icon targets                 |
-| Forms      | Softly filled fields with visible boundaries and clear grouped actions         | Fields that look inactive, or joining controls without a clear relationship       |
-| Cards      | Clear editorial hierarchy, varied real content and consistent action placement | Repeated placeholder content, irrelevant portraits or competing borders           |
-| Navigation | Calm active states, clear focus and adequate spacing                           | Relying on colour alone or changing layout between states                         |
-| Typography | Roboto for controls and body text, readable measure and considered wrapping    | Condensed type in controls, forced wrapping or size without hierarchy             |
-| Images     | Meaningful imagery, useful alternative text and credits where required         | Repetition for visual fill or imagery without editorial purpose                   |
-| Motion     | Short state feedback with reduced-motion support                               | Decorative entrance sequences, bounce or layout-shifting effects                  |
-
-A dense but clearly structured data table follows the principles. A lightly tinted field with no visible boundary does not. A theme-specific square button with complete states may follow the principles; a rounded button with weak contrast does not.
 
 ## Acceptance checks
 

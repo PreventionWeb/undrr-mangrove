@@ -17,7 +17,7 @@ describe('CtaButton', () => {
       <CtaButton label="Read the report" href="/report" State="Disabled" />
     );
 
-    const control = screen.getByText('Read the report');
+    const control = screen.getByText('Read the report').closest('a');
     expect(control).not.toHaveAttribute('href');
     expect(control).toHaveAttribute('aria-disabled', 'true');
     expect(control).toHaveAttribute('tabindex', '-1');
@@ -37,6 +37,9 @@ describe('CtaButton', () => {
       'mg-button-cta',
       'mg-button-primary',
       'custom-class'
+    );
+    expect(screen.getByText('Browse publications')).toHaveClass(
+      'mg-button__label'
     );
   });
 

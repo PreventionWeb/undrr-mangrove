@@ -47,7 +47,8 @@
   &:focus-visible {
     box-shadow:
       0 0 0 var(--mg-focus-ring-offset) rgb(var(--mg-color-neutral-0)),
-      0 0 0 calc(var(--mg-focus-ring-offset) + var(--mg-focus-ring-width)) rgb(var(--mg-color-focus-ring));
+      0 0 0 calc(var(--mg-focus-ring-offset) + var(--mg-focus-ring-width))
+        rgb(var(--mg-color-focus-ring));
     outline: 0;
   }
 
@@ -135,6 +136,10 @@ button {
   text-align: start;
   white-space: normal;
 
+  .mg-button__label {
+    white-space: nowrap;
+  }
+
   // The compact editorial treatment keeps its label steady and gives the
   // directional badge the tactile response instead of scaling the whole row.
   &:active:not(.disabled) {
@@ -160,8 +165,8 @@ button {
     padding-inline-start: 0.03em;
 
     @media (prefers-reduced-motion: no-preference) {
-      transition:
-        background-color var(--mg-motion-duration-fast) var(--mg-motion-easing-standard);
+      transition: background-color var(--mg-motion-duration-fast)
+        var(--mg-motion-easing-standard);
     }
   }
 
