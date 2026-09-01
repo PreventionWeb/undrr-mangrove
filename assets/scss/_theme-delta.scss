@@ -6,6 +6,9 @@ $_delta-color-dark--raw: 24 24 35;
 $_delta-color-card-bg--raw: 250 250 250;
 
 .mg-theme-delta {
+  // Runtime marker: lets JS/tooling detect that this brand theme is active
+  // (guards the sub-brand body-class trap). See docs/RELEASE-2.0.md.
+  --mg-theme-loaded: delta;
   --mg-color-interactive:          #{$_delta-color-primary--raw};
   --mg-color-interactive-active:   #{$_delta-color-primary--raw};
   --mg-color-tag:                  var(--mg-color-interactive);

@@ -3,6 +3,9 @@
 $_pw-color-primary--raw: 10 105 105;
 
 .mg-theme-preventionweb {
+  // Runtime marker: lets JS/tooling detect that this brand theme is active
+  // (guards the sub-brand body-class trap). See docs/RELEASE-2.0.md.
+  --mg-theme-loaded: preventionweb;
   --mg-color-interactive:          #{$_pw-color-primary--raw};
   --mg-color-interactive-active:   #{$_pw-color-primary--raw};
   --mg-color-tag:                  var(--mg-color-interactive);
