@@ -58,6 +58,39 @@
     ); // to keep the overlay fixed
   }
 
+  &--contained {
+    margin-inline: 0;
+    padding-inline: 0;
+    width: 100%;
+  }
+
+  &--immersive:not(.mg-hero--split) {
+    align-items: end;
+    aspect-ratio: unset;
+    min-height: clamp(mg-rem(496), 62vw, mg-rem(688));
+
+    .mg-hero__overlay {
+      align-items: end;
+      margin: 0;
+      max-width: mg-rem(768);
+      padding: clamp(mg-rem(32), 6vw, mg-rem(80));
+    }
+
+    .mg-hero__title,
+    .mg-hero__title .text-xxl {
+      font-size: clamp(mg-rem(38), 6vw, mg-rem(80));
+      letter-spacing: -0.045em;
+      line-height: 0.98;
+      max-width: 12ch;
+    }
+
+    .mg-hero__summaryText {
+      font-size: clamp(mg-rem(16), 1.8vw, mg-rem(21));
+      line-height: 1.55;
+      max-width: 37rem;
+    }
+  }
+
   // Button overrides
   a.mg-button,
   a.mg-button:hover,
@@ -112,6 +145,12 @@
     display: grid;
     margin-top: var(--mg-spacing-25);
     row-gap: mg-rem(10);
+  }
+
+  &__logo {
+    height: auto;
+    margin-bottom: clamp(var(--mg-spacing-300), 10vw, var(--mg-spacing-800));
+    width: min(mg-rem(208), 52vw);
   }
 
   &__meta {
@@ -205,6 +244,22 @@
           @include mg-typography("medium");
         }
       }
+    }
+
+    // Preserve heading typography when CMS content is wrapped in the inline
+    // span used by HeroTitle; host-page span rules must not shrink the title.
+    h1 > span,
+    h2 > span,
+    h3 > span,
+    h4 > span,
+    h5 > span,
+    h6 > span,
+    a > span {
+      font-family: inherit;
+      font-size: inherit;
+      font-weight: inherit;
+      letter-spacing: inherit;
+      line-height: inherit;
     }
   }
 
@@ -312,6 +367,11 @@ $variant-colour-props: (
       50vw - calc($mg-breakpoint-desktop-wide / 2)
     ); // to keep the overlay fixed
   }
+}
+
+[dir="rtl"] .mg-hero--contained:not(.mg-hero--split) {
+  margin-inline: 0;
+  padding-inline: 0;
 }
 
 // Split layout variant

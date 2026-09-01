@@ -78,6 +78,14 @@ describe('ScrollContainer Component', () => {
     expect(screen.getByTestId('scroll-item-0')).toBeInTheDocument();
   });
 
+  it('adds the shared-height modifier when stretchItems is enabled', () => {
+    const { container } = renderScrollContainer({ stretchItems: true });
+
+    expect(container.querySelector('.mg-scroll__content')).toHaveClass(
+      'mg-scroll__content--stretch'
+    );
+  });
+
   it('shows right arrow when content overflows', () => {
     renderScrollContainer();
 

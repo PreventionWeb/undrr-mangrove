@@ -65,6 +65,12 @@ The `split` prop controls the content/media column ratio, aligned to the MG 12-c
 
 <Canvas of={HeroStories.SplitWithHtml} meta={HeroStories} />
 
+## Example — immersive and contained
+
+Use `size="immersive"` for a tall editorial feature and `contained` when the Hero should respect its parent width. Content items may include a `logo` and a structured `buttons` array with URLs or click handlers.
+
+<Canvas of={HeroStories.ImmersiveContained} meta={HeroStories} />
+
 ## Interactions
 
 - Clicking the title (if a `link` is provided) or CTA buttons navigates to the linked destination.
@@ -76,6 +82,7 @@ The `split` prop controls the content/media column ratio, aligned to the MG 12-c
   - Gave adjacent Hero CTAs a clearer 24px horizontal rhythm and changed groups from an inline row to an intrinsic-width vertical stack at constrained tablet and mobile widths, preventing adjacent labels and direction badges from colliding.
   - Preserved the compact transparent CTA treatment across every background and split colour variant by preventing conventional button overrides from leaking into `.mg-button-cta`; directional badges now inherit the active Hero colour.
   - Replaced placeholder story copy and repeated imagery with realistic UNDRR infrastructure content, descriptive alternatives and varied source imagery.
+  - Added reusable contained and immersive presentation options, optional brand marks, and structured CTA data with real destinations or client-side handlers.
 - **1.5** — 2026-04-15 ([#942](https://github.com/unisdr/undrr-mangrove/issues/942)): Added `layout="split"` — solid-background two-column layout with `headingLevel` and `split` props. Title now always rendered inside a heading element (`headingLevel`, default `h1`); links are placed inside the heading rather than replacing it. Split layout media column accepts `type: 'image'` (default), `type: 'video'` (iframe embed), or `type: 'html'` (pre-sanitized HTML string).
 - **1.4** — 2026-04-13: `.mg-hero__title` and `.mg-hero__label` now use `$mg-font-family-headings` (Roboto Condensed). Added a `:lang(ar)` block routing both to `$mg-font-family-arabic-headings`.
 - **1.3** — 2026-03-14 ([web-backlog#2630](https://gitlab.com/undrr/web-backlog/-/work_items/2630)): Hero title color is now a theme token (`$mg-color-hero-title`, default white). Overlay width increased from `$mg-width-400` (40rem) to `$mg-width-600` (60rem) and padding from `$mg-spacing-200` to `$mg-spacing-400` for better content readability across all themes.

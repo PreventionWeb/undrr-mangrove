@@ -73,8 +73,28 @@ function HeroMedia({ media }) {
 }
 
 function HeroContent({ item, HeadingTag }) {
+  const buttons =
+    item.buttons ||
+    [
+      item.primary_button && {
+        label: item.primary_button,
+        type: 'Primary',
+      },
+      item.secondary_button && {
+        label: item.secondary_button,
+        type: 'Secondary',
+      },
+    ].filter(Boolean);
+
   return (
     <article className="mg-hero__content">
+      {item.logo?.src && (
+        <img
+          className="mg-hero__logo"
+          src={item.logo.src}
+          alt={item.logo.alt || ''}
+        />
+      )}
       <div className="mg-hero__meta">
         {item.label && <span className="mg-hero__label">{item.label}</span>}
       </div>
@@ -87,18 +107,22 @@ function HeroContent({ item, HeadingTag }) {
           <span className="mg-hero__label detail">{item.detail}</span>
         )}
       </div>
-      <div className="mg-hero__buttons">
-        {item.primary_button && (
-          <CtaButton Type="Primary" Variant="CTA" label={item.primary_button} />
-        )}
-        {item.secondary_button && (
-          <CtaButton
-            Type="Secondary"
-            Variant="CTA"
-            label={item.secondary_button}
-          />
-        )}
-      </div>
+      {buttons.length > 0 && (
+        <div className="mg-hero__buttons">
+          {buttons.map((button, index) => (
+            <CtaButton
+              key={`${button.label}-${index}`}
+              Type={button.type}
+              Variant="CTA"
+              label={button.label}
+              href={button.url}
+              onClick={button.onClick}
+              target={button.target}
+              rel={button.rel}
+            />
+          ))}
+        </div>
+      )}
     </article>
   );
 }
@@ -114,6 +138,8 @@ export function Hero({
   layout = 'background',
   headingLevel = 'h1',
   split = '2/3',
+  size = 'default',
+  contained = false,
 }) {
   const variantActive = variantOptions[variant];
   const HeadingTag = headingLevel;
@@ -129,6 +155,8 @@ export function Hero({
               'mg-hero',
               'mg-hero--split',
               `mg-hero--split-${splitSuffix}`,
+              size === 'immersive' && 'mg-hero--immersive',
+              contained && 'mg-hero--contained',
               variantActive && `mg-hero--${variantActive}`
             )}
           >
@@ -148,7 +176,12 @@ export function Hero({
       {data.map((item, index) => (
         <section
           key={index}
-          className={cls('mg-hero', 'mg-hero--' + `${variantActive}`)}
+          className={cls(
+            'mg-hero',
+            size === 'immersive' && 'mg-hero--immersive',
+            contained && 'mg-hero--contained',
+            variantActive && `mg-hero--${variantActive}`
+          )}
           style={{ backgroundImage: `url(${item.imgback})` }}
         >
           <div className="mg-hero__overlay">
@@ -182,6 +215,22 @@ Hero.propTypes = {
       detail: PropTypes.string,
       primary_button: PropTypes.string,
       secondary_button: PropTypes.string,
+      /** Optional brand mark displayed above the label and title. */
+      logo: PropTypes.shape({
+        src: PropTypes.string.isRequired,
+        alt: PropTypes.string,
+      }),
+      /** Structured CTA links. Replaces legacy button strings when supplied. */
+      buttons: PropTypes.arrayOf(
+        PropTypes.shape({
+          label: PropTypes.string.isRequired,
+          url: PropTypes.string,
+          type: PropTypes.oneOf(['Primary', 'Secondary']),
+          onClick: PropTypes.func,
+          target: PropTypes.string,
+          rel: PropTypes.string,
+        })
+      ),
       /**
        * Media for split layout. Discriminated by `type`:
        * - `image` (default): `src` (required), `alt` (optional; empty string for decorative).
@@ -205,4 +254,8 @@ Hero.propTypes = {
   headingLevel: PropTypes.oneOf(['h1', 'h2', 'h3']),
   /** Column split for `layout="split"`. Content column is always first. Defaults to `2/3`. */
   split: PropTypes.oneOf(['2/3', '1/2', '1/3']),
+  /** Visual height: standard banner or tall editorial feature. */
+  size: PropTypes.oneOf(['default', 'immersive']),
+  /** Keep the Hero within its parent instead of extending to the viewport edges. */
+  contained: PropTypes.bool,
 };

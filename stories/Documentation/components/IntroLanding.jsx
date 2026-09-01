@@ -1,13 +1,13 @@
 import React from 'react';
 import { linkTo } from '@storybook/addon-links';
-import { CtaButton } from '../../Components/Buttons/CtaButton/CtaButton';
 import { IconCard } from '../../Components/Cards/IconCard/IconCard';
 import { VerticalCard } from '../../Components/Cards/Card/VerticalCard';
+import { Hero } from '../../Components/Hero/Hero';
 import ScrollContainer from '../../Components/ScrollContainer/ScrollContainer';
 import { TextCta } from '../../Components/TextCta/TextCta';
 
 import heroImage from '../../assets/images/sample_image-lg.jpg';
-import authorImage from '../../assets/images/author.png';
+import figcaptionImage from '../../assets/images/figcaption.jpg';
 import logo from '../../assets/images/undrr-logo-white.svg';
 import './intro-landing.css';
 
@@ -84,14 +84,14 @@ const componentExamples = [
       'https://www.undrr.org/sites/default/files/styles/por/public/2022-08/Bali.JPG.jpg',
   },
   {
-    title: 'Local knowledge improves risk planning',
+    title: 'Infrastructure resilience protects essential services',
     summaryText:
-      'Responsive layouts, accessible interactions and reusable content models work together.',
-    button: 'Meet the experts',
+      'Risk-informed infrastructure investment keeps transport, water, energy and communications working through disruption.',
+    button: 'Explore the principles',
     link: 'https://www.undrr.org',
-    imgalt: 'Portrait of UNDRR Special Representative Kamal Kishore',
+    imgalt: 'Aerial view of a canal through Almaty, Kazakhstan',
     imgback:
-      'https://www.undrr.org/sites/default/files/styles/por/public/2024-05/Kamal-Kishore_UNDRR-SRSG-C-A.Tardy_min.jpg',
+      'https://www.undrr.org/sites/default/files/2023-11/resilient-infrastructure-pikoso-kz-shutterstock.jpg',
   },
   {
     title: 'From evidence to early action',
@@ -99,51 +99,64 @@ const componentExamples = [
       'Shared patterns help teams turn complex disaster risk information into useful, understandable guidance.',
     button: 'Explore the data',
     link: 'https://www.undrr.org',
-    imgalt: 'Portrait of a disaster risk reduction leader',
-    imgback: authorImage,
+    imgalt: 'People walking through terraced rice fields',
+    imgback:
+      'https://www.undrr.org/sites/default/files/styles/ultrawide_16_6/public/2023-03/Shutterstock_656134321-min.jpg?h=90c64985&itok=ukR7hDqu',
+  },
+  {
+    title: 'Risk knowledge supports stronger decisions',
+    summaryText:
+      'Shared evidence helps communities understand exposure, prioritize investment and act before hazards become disasters.',
+    button: 'Explore risk knowledge',
+    link: 'https://www.undrr.org',
+    imgalt: 'People collaborating on disaster risk reduction',
+    imgback:
+      'https://www.undrr.org/sites/default/files/2020-01/Home---about-us_0.jpg',
+  },
+  {
+    title: 'Recovery planning starts before disaster strikes',
+    summaryText:
+      'Prepared institutions recover faster, protect development gains and build back with future risks in mind.',
+    button: 'Read the guidance',
+    link: 'https://www.undrr.org',
+    imgalt: 'A community landscape illustrating recovery and resilience',
+    imgback: figcaptionImage,
   },
 ];
 
 export function IntroLanding() {
   return (
     <div className="mg-intro">
-      <section className="mg-intro__hero" aria-labelledby="mg-intro-title">
-        <img
-          className="mg-intro__hero-image"
-          src={heroImage}
-          alt="A person working in a harvested field"
-        />
-        <div className="mg-intro__hero-overlay" />
-        <div className="mg-intro__hero-content">
-          <img className="mg-intro__logo" src={logo} alt="UNDRR" />
-          <p className="mg-intro__eyebrow">
-            Component library and design system
-          </p>
-          <h1 id="mg-intro-title">
-            Build resilient digital experiences together.
-          </h1>
-          <p className="mg-intro__lede">
-            Mangrove gives UNDRR teams accessible, reusable content patterns
-            while leaving every product free to express its own brand.
-          </p>
-          <div className="mg-buttons mg-intro__actions">
-            <CtaButton
-              label="Get started"
-              Variant="CTA"
-              onClick={storyNavigation('getting-started-getting-started-guide')}
-            />
-            <CtaButton
-              label="Browse components"
-              Type="Secondary"
-              Variant="CTA"
-              onClick={storyNavigation('brand-component-gallery')}
-            />
-          </div>
-        </div>
-      </section>
+      <Hero
+        data={[
+          {
+            logo: { src: logo, alt: 'UNDRR' },
+            label: 'Component library and design system',
+            title: 'Build resilient digital experiences together.',
+            summaryText:
+              'Mangrove gives UNDRR teams accessible, reusable content patterns while leaving every product free to express its own brand.',
+            imgback: heroImage,
+            buttons: [
+              {
+                label: 'Get started',
+                onClick: storyNavigation(
+                  'getting-started-getting-started-guide'
+                ),
+              },
+              {
+                label: 'Browse components',
+                type: 'Secondary',
+                onClick: storyNavigation('brand-component-gallery'),
+              },
+            ],
+          },
+        ]}
+        contained
+        size="immersive"
+      />
 
       <section
-        className="mg-intro__statement"
+        className="mg-intro__statement mg-grid mg-grid__col-2"
         aria-labelledby="mg-intro-statement"
       >
         <h2 id="mg-intro-statement">
@@ -158,7 +171,7 @@ export function IntroLanding() {
       </section>
 
       <section
-        className="mg-intro__resources"
+        className="mg-intro__section"
         aria-labelledby="mg-intro-resources"
       >
         <div className="mg-intro__section-heading">
@@ -183,7 +196,7 @@ export function IntroLanding() {
       </section>
 
       <section
-        className="mg-intro__showcase"
+        className="mg-intro__section"
         aria-labelledby="mg-intro-showcase"
       >
         <div className="mg-intro__section-heading">
@@ -194,7 +207,7 @@ export function IntroLanding() {
             responsive scroll behavior available to product teams.
           </p>
         </div>
-        <ScrollContainer showArrows itemWidth="19rem">
+        <ScrollContainer showArrows stretchItems itemWidth="19rem">
           {componentExamples.map(example => (
             <VerticalCard data={[example]} key={example.title} />
           ))}

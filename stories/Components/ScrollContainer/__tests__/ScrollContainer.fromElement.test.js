@@ -17,6 +17,7 @@ describe('scrollContainerFromElement', () => {
       'item-width': '250px',
       padding: '16',
       'show-arrows': 'true',
+      'stretch-items': 'true',
       'step-size': '300',
     });
     const props = scrollContainerFromElement(container);
@@ -26,6 +27,7 @@ describe('scrollContainerFromElement', () => {
     expect(props.itemWidth).toBe('250px');
     expect(props.padding).toBe('16');
     expect(props.showArrows).toBe(true);
+    expect(props.stretchItems).toBe(true);
     expect(props.stepSize).toBe(300);
   });
 
@@ -38,6 +40,7 @@ describe('scrollContainerFromElement', () => {
     expect(props.itemWidth).toBe('auto');
     expect(props.padding).toBe('0');
     expect(props.showArrows).toBe(false);
+    expect(props.stretchItems).toBe(false);
     expect(props.stepSize).toBeNull();
   });
 

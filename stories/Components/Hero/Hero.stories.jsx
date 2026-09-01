@@ -1,5 +1,6 @@
 import React from 'react';
 import { Hero } from './Hero';
+import logo from '../../assets/images/undrr-logo-white.svg';
 
 const resilientInfrastructureWide =
   'https://www.undrr.org/sites/default/files/styles/ultrawide_16_6/public/2023-11/resilient-infrastructure-pikoso-kz-shutterstock.jpg?h=82ac03c6&itok=26BkbHiW';
@@ -167,6 +168,28 @@ export const WithHtmlInTitle = {
   render: (args, { globals: { locale } }) => {
     const caption = getCaptionForLocale(locale);
     return <Hero data={caption.contentdata} {...args} />;
+  },
+};
+
+export const ImmersiveContained = {
+  name: 'Immersive (contained)',
+  args: {
+    data: [
+      {
+        logo: { src: logo, alt: 'UNDRR' },
+        label: 'Component library and design system',
+        title: 'Build resilient digital experiences together.',
+        summaryText:
+          'Accessible, reusable content patterns help teams move faster while preserving each product’s identity.',
+        imgback: resilientInfrastructureWide,
+        buttons: [
+          { label: 'Get started', url: '#' },
+          { label: 'Browse components', url: '#', type: 'Secondary' },
+        ],
+      },
+    ],
+    contained: true,
+    size: 'immersive',
   },
 };
 
