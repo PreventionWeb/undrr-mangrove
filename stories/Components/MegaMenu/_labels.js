@@ -2,8 +2,8 @@
  * @file _labels.js
  * @description Translated label sets for MegaMenu.
  *
- * Imported by Translations.stories.jsx (per-language stories) and
- * MegaMenu.stories.jsx (locale toolbar decorator). Never import from .stories files.
+ * Imported by MegaMenu.stories.jsx for the global locale toolbar. Never import
+ * from .stories files.
  */
 
 // ---------------------------------------------------------------------------

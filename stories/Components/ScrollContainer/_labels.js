@@ -2,7 +2,7 @@
  * @file _labels.js
  * @description Translated label sets for the ScrollContainer component.
  *
- * Imported by ScrollContainer.Translations.stories.jsx and ScrollContainer.stories.js.
+ * Imported by ScrollContainer.stories.js for the global locale toolbar.
  * Never import from .stories files.
  */
 

@@ -1,7 +1,7 @@
 /**
  * @file _labels.js
  * @description Translated label sets for the Tab component.
- * Imported by Tab.Translations.stories.jsx and Tab.stories.jsx.
+ * Imported by Tab.stories.jsx for the global locale toolbar.
  */
 
 export const LABELS_ES = {

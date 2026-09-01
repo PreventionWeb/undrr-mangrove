@@ -165,7 +165,7 @@ See the [hydration guide](https://github.com/unisdr/undrr-mangrove/blob/main/doc
 
 ## Changelog
 
-- **1.2.4** — 2026-08-31 ([#1086](https://github.com/unisdr/undrr-mangrove/pull/1086)): Refreshed desktop navigation with an underline active state, an opaque high-clarity menu surface, lighter dividers, and restrained panel elevation.
+- **1.2.4** — 2026-08-31 ([#1086](https://github.com/unisdr/undrr-mangrove/pull/1086)): Refreshed desktop navigation with an underline active state, an opaque high-clarity menu surface, lighter dividers, and restrained panel elevation. Removed redundant per-language story exports in favour of the global locale toolbar.
 - **1.2.3** — 2026-06-19 ([mangrove#1056](https://github.com/unisdr/undrr-mangrove/pull/1056)): Consolidated `navLabel` and `closeMobileNavLabel` props into a single `labels` object with `DEFAULT_MEGAMENU_LABELS` export. Backwards compatible — `DEFAULT_MEGAMENU_LABELS` covers all keys. Co-located `_labels.js` provides `LABELS_ES/FR/JA/ZH/AR/RU`; locale toolbar now switches translated strings in all stories.
 
 - **1.2.2** — 2026-04-23: Declared `title` (required) and `icon` (optional) on the section-object `PropTypes` shape. Both props were already used by `TopBar` and `Sidebar` and documented in the section object properties table, but were absent from runtime `PropTypes` validation, so consumers got no warning when passing sections without a `title`.

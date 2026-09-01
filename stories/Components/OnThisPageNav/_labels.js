@@ -1,7 +1,7 @@
 /**
  * @file _labels.js
  * @description Translated label sets for the OnThisPageNav component.
- * Imported by OnThisPageNav.Translations.stories.jsx and OnThisPageNav.stories.jsx.
+ * Imported by OnThisPageNav.stories.jsx for the global locale toolbar.
  */
 
 export const LABELS_ES = {
