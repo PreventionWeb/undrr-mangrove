@@ -1,4 +1,5 @@
 import { TextCta } from './TextCta';
+import { INLINE_CTA_ARGS } from './_fixtures';
 
 export default {
   title: 'Components/CTA',
@@ -64,25 +65,7 @@ export const LeftAligned = {
 };
 
 export const Inline = {
-  args: {
-    eyebrow: 'Open source',
-    headline: 'Use it. Inspect it. Improve it.',
-    text: '<p>Install the package or work with the source on GitHub.</p>',
-    buttons: [
-      {
-        label: 'View GitHub',
-        url: 'https://github.com/unisdr/undrr-mangrove',
-      },
-      {
-        label: 'View npm',
-        url: 'https://www.npmjs.com/package/@undrr/undrr-mangrove',
-        type: 'Secondary',
-        outline: true,
-      },
-    ],
-    centered: false,
-    layout: 'inline',
-  },
+  args: INLINE_CTA_ARGS,
 };
 
 export const WithImage = {

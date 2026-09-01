@@ -50,7 +50,9 @@ export function VerticalCard({ data, variant = 'primary', className }) {
             )}
 
             <header className="mg-card__title">
-              <a href={item.link}>{item.title?.trim()}</a>
+              <a href={item.link} target={item.target} rel={item.rel}>
+                {item.title?.trim()}
+              </a>
             </header>
             {item.summaryText && (
               <p
@@ -66,6 +68,8 @@ export function VerticalCard({ data, variant = 'primary', className }) {
                 Variant="CTA"
                 label={item.button}
                 href={item.link}
+                target={item.target}
+                rel={item.rel}
               />
             )}
           </div>
@@ -76,7 +80,20 @@ export function VerticalCard({ data, variant = 'primary', className }) {
 }
 
 VerticalCard.propTypes = {
-  data: PropTypes.array.isRequired,
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      title: PropTypes.string.isRequired,
+      link: PropTypes.string,
+      target: PropTypes.string,
+      rel: PropTypes.string,
+      imgback: PropTypes.string,
+      imgalt: PropTypes.string,
+      summaryText: PropTypes.string,
+      label1: PropTypes.string,
+      label2: PropTypes.string,
+      button: PropTypes.string,
+    })
+  ).isRequired,
   variant: PropTypes.oneOf(['primary', 'secondary', 'tertiary', 'quaternary']),
   className: PropTypes.string,
 };

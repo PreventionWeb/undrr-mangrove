@@ -5,6 +5,7 @@ import { VerticalCard } from '../../Components/Cards/Card/VerticalCard';
 import { Hero } from '../../Components/Hero/Hero';
 import ScrollContainer from '../../Components/ScrollContainer/ScrollContainer';
 import { TextCta } from '../../Components/TextCta/TextCta';
+import { INLINE_CTA_ARGS } from '../../Components/TextCta/_fixtures';
 
 const heroImage = 'https://www.undrr.org/sites/default/files/2021-04/WiA-childyouthengage.jpg';
 import figcaptionImage from '../../assets/images/figcaption.jpg';
@@ -65,60 +66,66 @@ function storyNavigation(kind) {
 
 const componentExamples = [
   {
-    title: 'Anticipatory action protects harvests and livelihoods',
+    title: 'Start building with Mangrove',
     summaryText:
-      'See how a content card combines meaningful imagery, editorial hierarchy and a clear next step.',
-    button: 'Read the story',
-    link: 'https://www.undrr.org',
+      'Install the library, choose an integration path and build your first theme-aware page.',
+    button: 'Read getting started',
+    link: '/?path=/docs/getting-started-getting-started-guide--docs',
+    target: '_top',
     imgalt: 'A person working in a harvested field',
     imgback: heroImage,
   },
   {
-    title: 'Financing resilient cities',
+    title: 'Design with shared principles',
     summaryText:
-      'Theme-aware components keep their structure while adapting to each product’s visual identity.',
-    button: 'Explore the report',
-    link: 'https://www.undrr.org',
+      'Use Mangrove’s experience principles to make interfaces clear, calm and recognizably purposeful.',
+    button: 'Explore the principles',
+    link: '/?path=/docs/design-decisions-experience-principles--docs',
+    target: '_top',
     imgalt: 'People working together outdoors in Bali',
     imgback:
       'https://www.undrr.org/sites/default/files/styles/por/public/2022-08/Bali.JPG.jpg',
   },
   {
-    title: 'Infrastructure resilience protects essential services',
+    title: 'Build editorial card layouts',
     summaryText:
-      'Risk-informed infrastructure investment keeps transport, water, energy and communications working through disruption.',
-    button: 'Explore the principles',
-    link: 'https://www.undrr.org',
+      'Compose meaningful imagery, clear hierarchy, summaries and calls to action in a reusable content pattern.',
+    button: 'View card documentation',
+    link: '/?path=/docs/components-cards-vertical-card--docs',
+    target: '_top',
     imgalt: 'Aerial view of a canal through Almaty, Kazakhstan',
     imgback:
       'https://www.undrr.org/sites/default/files/2023-11/resilient-infrastructure-pikoso-kz-shutterstock.jpg',
   },
   {
-    title: 'From evidence to early action',
+    title: 'Explore syndicated search',
     summaryText:
-      'Shared patterns help teams turn complex disaster risk information into useful, understandable guidance.',
-    button: 'Explore the data',
-    link: 'https://www.undrr.org',
+      'See search, filters, results and pagination working together in the library’s most complete integration.',
+    button: 'Open the search story',
+    link: '/?path=/story/components-syndicated-search--default',
+    target: '_top',
     imgalt: 'People walking through terraced rice fields',
     imgback:
       'https://www.undrr.org/sites/default/files/styles/ultrawide_16_6/public/2023-03/Shutterstock_656134321-min.jpg?h=90c64985&itok=ukR7hDqu',
   },
   {
-    title: 'Risk knowledge supports stronger decisions',
+    title: 'Test accessible interactions',
     summaryText:
-      'Shared evidence helps communities understand exposure, prioritize investment and act before hazards become disasters.',
-    button: 'Explore risk knowledge',
-    link: 'https://www.undrr.org',
+      'Review keyboard, focus, contrast, reflow and assistive-technology requirements before shipping.',
+    button: 'Review accessibility',
+    link: '/?path=/docs/getting-started-accessibility--docs',
+    target: '_top',
     imgalt: 'People collaborating on disaster risk reduction',
     imgback:
       'https://www.undrr.org/sites/default/files/2020-01/Home---about-us_0.jpg',
   },
   {
-    title: 'Recovery planning starts before disaster strikes',
+    title: 'Contribute a component',
     summaryText:
-      'Prepared institutions recover faster, protect development gains and build back with future risks in mind.',
-    button: 'Read the guidance',
-    link: 'https://www.undrr.org',
+      'Follow the shared structure, documentation, testing and review standards used across Mangrove.',
+    button: 'Read component standards',
+    link: '/?path=/docs/contributing-component-standards--docs',
+    target: '_top',
     imgalt: 'A community landscape illustrating recovery and resilience',
     imgback: figcaptionImage,
   },
@@ -214,29 +221,7 @@ export function IntroLanding() {
         </ScrollContainer>
       </section>
 
-      <TextCta
-        eyebrow="Open source"
-        headline="Use it. Inspect it. Improve it."
-        text="<p>Install the package or work with the source on GitHub.</p>"
-        buttons={[
-          {
-            label: 'View GitHub',
-            url: 'https://github.com/unisdr/undrr-mangrove',
-            target: '_blank',
-            rel: 'noopener noreferrer',
-          },
-          {
-            label: 'View npm',
-            url: 'https://www.npmjs.com/package/@undrr/undrr-mangrove',
-            type: 'Secondary',
-            outline: true,
-            target: '_blank',
-            rel: 'noopener noreferrer',
-          },
-        ]}
-        centered={false}
-        layout="inline"
-      />
+      <TextCta {...INLINE_CTA_ARGS} />
     </div>
   );
 }
