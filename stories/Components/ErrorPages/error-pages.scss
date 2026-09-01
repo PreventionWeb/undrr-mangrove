@@ -47,8 +47,8 @@
       padding: mg-rem(30) mg-rem(25) mg-rem(20);
       margin-top: mg-rem(40);
       max-width: 540px;
-      border-radius: 8px;
-      box-shadow: 0 2px 12px rgb(0 0 0 / 0.08);
+      border-radius: var(--mg-card-border-radius);
+      box-shadow: var(--mg-card-shadow);
     }
 
     .undrr-logo {

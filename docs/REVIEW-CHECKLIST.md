@@ -10,7 +10,7 @@ Use this checklist when building or reviewing a component. Each item links to th
 - [ ] Files follow the standard layout: `ComponentName.jsx`, `component-name.scss`, `ComponentName.stories.jsx`, `ComponentName.mdx`
 - [ ] SCSS uses `var(--mg-color-*)` and `var(--mg-spacing-*)` for colors and spacing (no hardcoded values); SCSS variables from `_variables.scss` are used only for build-time tokens (breakpoints, font sizes, families); use `$mg-z-index-*` tokens for global stacking contexts — fixed, sticky, or portaled elements; derive backdrops with `$token - 1`
 - [ ] SCSS imported in `stories/assets/scss/_components.scss`
-- [ ] Component title, label, tag, and UI-chrome classes (e.g. `__title`, `__label`, `__value`, `__link` for nav, button classes) use `$mg-font-family-headings`, not `$mg-font-family-condensed` directly. Narrative h1–h6 inherit Roboto and should not declare a font-family. Add a matching `:lang(ar)` block routing to `$mg-font-family-arabic-headings`, since Roboto Condensed has no Arabic glyph coverage.
+- [ ] Component title, label, tag, and compact navigation-chrome classes (e.g. `__title`, `__label`, `__value`, and `__link` for nav) use `$mg-font-family-headings`, not `$mg-font-family-condensed` directly. Buttons and narrative h1–h6 use regular Roboto; buttons declare `$mg-font-family`, while narrative headings inherit it. Add matching `:lang(ar)` routing: compact heading chrome uses `$mg-font-family-arabic-headings`, while buttons use `$mg-font-family-arabic-body`.
 - [ ] No `defaultProps` (use destructured default parameters instead)
 
 See [Component standards](https://unisdr.github.io/undrr-mangrove/?path=/docs/contributing-component-standards--docs) for the full conventions.
@@ -38,7 +38,7 @@ See [Accessibility](https://unisdr.github.io/undrr-mangrove/?path=/docs/getting-
 - [ ] Stories use CSF3 format (no `Template.bind({})`)
 - [ ] MDX docs follow the standard structure (overview, when to use, formatting, behaviors, CSS/JS references, changelog)
 - [ ] MDX includes the review checklist reference after `<Meta>` (see [component guide, step 5](https://unisdr.github.io/undrr-mangrove/?path=/docs/contributing-build-a-component-step-by-step--docs))
-- [ ] Changelog entry added to the component's MDX file (see [changelog format](https://unisdr.github.io/undrr-mangrove/?path=/docs/contributing-component-standards--docs))
+- [ ] One changelog version entry added to the component's MDX file for the PR (see [changelog format](https://unisdr.github.io/undrr-mangrove/?path=/docs/contributing-component-standards--docs)). Extend that entry with nested bullets when the same PR adds more work; do not bump the component version more than once within one PR.
 - [ ] Sentence case for all headings and UI text
 
 See [Writing guidelines](https://unisdr.github.io/undrr-mangrove/?path=/docs/contributing-writing-guidelines--docs) for UX writing standards.
@@ -57,6 +57,14 @@ See [Testing](https://unisdr.github.io/undrr-mangrove/?path=/docs/contributing-b
 ## Component quality
 
 - [ ] `npx -y react-doctor@latest .` shows no new errors and the score is equal or higher than where you found it. See the [`react-doctor` guidance](AI-CODING-AGENTS.md#component-quality-checks-with-react-doctor) for house conventions and known false positives.
+
+## Visual refinements
+
+- [ ] Change follows the [experience principles](https://unisdr.github.io/undrr-mangrove/?path=/docs/design-decisions-experience-principles--docs), including the boundary between shared behaviour and theme-owned expression
+- [ ] PR states the user or system problem and why the change belongs to the component, a shared token, or a specific theme
+- [ ] Before and after evidence covers representative viewport sizes and relevant interaction or validation states
+- [ ] Affected themes, keyboard and touch interaction, zoom or reflow, RTL, text expansion, forced colours, and reduced motion have been checked as applicable
+- [ ] Changed defaults are additive where possible and document compatibility, changelog, and migration impact
 
 ## Internationalization
 

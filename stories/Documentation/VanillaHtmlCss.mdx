@@ -182,7 +182,7 @@ Quick reference for common CSS classes. See individual component docs for full d
 
 - `mg-breadcrumb` - Breadcrumb navigation
 - `mg-menu` - Primary navigation menus
-- `mg-pagination` - Page navigation
+- `mg-pager` - Page navigation
 
 ## Best practices
 
@@ -245,20 +245,20 @@ For complex interactive components (MegaMenu, charts, maps), use precompiled Rea
 
 **Available components:**
 
-| Component | CDN Path | Use case |
-|-----------|----------|----------|
-| ShareButtons | `/components/ShareButtons.js` | Social sharing |
-| MegaMenu | `/components/MegaMenu.js` | Full navigation with dropdowns |
-| ScrollContainer | `/components/ScrollContainer.js` | Horizontal scrolling |
-| BarChart | `/components/BarChart.js` | Data visualization |
-| MapComponent | `/components/MapComponent.js` | Interactive maps |
-| QuoteHighlight | `/components/QuoteHighlight.js` | Styled pull quotes |
-| Fetcher | `/components/Fetcher.js` | Data fetching wrapper |
-| SyndicationSearchWidget | `/components/SyndicationSearchWidget.js` | PreventionWeb search |
-| IconCard | `/components/IconCard.js` | Icon-based info cards |
-| Gallery | `/components/Gallery.js` | Image gallery with thumbnails |
-| StatsCard | `/components/StatsCard.js` | Statistics display |
-| Pager | `/components/Pager.js` | Pagination controls |
+| Component               | CDN Path                                 | Use case                       |
+| ----------------------- | ---------------------------------------- | ------------------------------ |
+| ShareButtons            | `/components/ShareButtons.js`            | Social sharing                 |
+| MegaMenu                | `/components/MegaMenu.js`                | Full navigation with dropdowns |
+| ScrollContainer         | `/components/ScrollContainer.js`         | Horizontal scrolling           |
+| BarChart                | `/components/BarChart.js`                | Data visualization             |
+| MapComponent            | `/components/MapComponent.js`            | Interactive maps               |
+| QuoteHighlight          | `/components/QuoteHighlight.js`          | Styled pull quotes             |
+| Fetcher                 | `/components/Fetcher.js`                 | Data fetching wrapper          |
+| SyndicationSearchWidget | `/components/SyndicationSearchWidget.js` | PreventionWeb search           |
+| IconCard                | `/components/IconCard.js`                | Icon-based info cards          |
+| Gallery                 | `/components/Gallery.js`                 | Image gallery with thumbnails  |
+| StatsCard               | `/components/StatsCard.js`               | Statistics display             |
+| Pager                   | `/components/Pager.js`                   | Pagination controls            |
 
 React 19 dropped UMD builds, so we use [import maps](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script/type/importmap) with [esm.sh](https://esm.sh/) to provide React dependencies:
 
@@ -335,7 +335,9 @@ Components that support hydration (ShareButtons, ScrollContainer, QuoteHighlight
 ```html
 <script type="module">
   import createHydrator from 'https://assets.undrr.org/static/mangrove/1.8.2/components/hydrate.js';
-  import ShareButtons, { fromElement } from 'https://assets.undrr.org/static/mangrove/1.8.2/components/ShareButtons.js';
+  import ShareButtons, {
+    fromElement,
+  } from 'https://assets.undrr.org/static/mangrove/1.8.2/components/ShareButtons.js';
 
   createHydrator({
     selector: '[data-mg-share-buttons]',
@@ -345,11 +347,12 @@ Components that support hydration (ShareButtons, ScrollContainer, QuoteHighlight
 </script>
 
 <!-- Container with props as data attributes -->
-<section data-mg-share-buttons
+<section
+  data-mg-share-buttons
   data-main-label="Share this"
   data-on-copy-label="Link copied"
-  data-sharing-subject="Sharing Link">
-</section>
+  data-sharing-subject="Sharing Link"
+></section>
 ```
 
 This pattern works for any component with hydration support. See the [Hydration guide](https://github.com/unisdr/undrr-mangrove/blob/main/docs/HYDRATION.md) for the full API, supported components, and how to add hydration to new components.
@@ -366,21 +369,21 @@ Components that don't yet export `fromElement` (BarChart, MapComponent, etc.) ca
 <script type="module">
   import React from 'react';
   import { createRoot } from 'react-dom/client';
-  const MegaMenuModule = await import(
-    'https://assets.undrr.org/static/mangrove/1.8.2/components/MegaMenu.js'
-  );
+  const MegaMenuModule =
+    await import('https://assets.undrr.org/static/mangrove/1.8.2/components/MegaMenu.js');
   let MegaMenu = MegaMenuModule?.default ?? MegaMenuModule;
   if (typeof MegaMenu !== 'function' && MegaMenu?.default) {
     MegaMenu = MegaMenu.default;
   }
   const container = document.querySelector('[data-mg-mega-menu]');
   if (container) {
-    createRoot(container).render(React.createElement(MegaMenu, { /* props */ }));
+    createRoot(container).render(React.createElement(MegaMenu, {/* props */}));
   }
 </script>
 ```
 
 For most use cases, the vanilla HTML markup (shown in component docs) is simpler. Use precompiled components only when you need:
+
 - Complex interactive behavior (MegaMenu dropdowns, chart interactions)
 - Dynamic data loading
 - State management
@@ -433,7 +436,9 @@ A self-contained page you can save as an `.html` file and open in a browser. It 
     <!-- Load the hydration runtime and component, then mount -->
     <script type="module">
       import createHydrator from 'https://assets.undrr.org/static/mangrove/1.8.2/components/hydrate.js';
-      import ShareButtons, { fromElement } from 'https://assets.undrr.org/static/mangrove/1.8.2/components/ShareButtons.js';
+      import ShareButtons, {
+        fromElement,
+      } from 'https://assets.undrr.org/static/mangrove/1.8.2/components/ShareButtons.js';
 
       createHydrator({
         selector: '[data-mg-share-buttons]',
@@ -487,7 +492,10 @@ See <LinkTo kind="platform-services-critical-messaging" story="docs">Critical me
 Import maps are supported in Chrome 89+, Safari 16.4+, and Firefox 108+. For older browsers, add the [es-module-shims](https://github.com/guybedford/es-module-shims) polyfill before your import map:
 
 ```html
-<script async src="https://ga.jspm.io/npm:es-module-shims@1.10.1/dist/es-module-shims.js"></script>
+<script
+  async
+  src="https://ga.jspm.io/npm:es-module-shims@1.10.1/dist/es-module-shims.js"
+></script>
 <script type="importmap">
   {
     "imports": {

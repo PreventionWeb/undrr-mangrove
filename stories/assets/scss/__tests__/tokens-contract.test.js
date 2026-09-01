@@ -10,6 +10,7 @@
  */
 const path = require('path');
 const sass = require('sass');
+const { version } = require('../../../../package.json');
 
 const SCSS_DIR = path.resolve(__dirname, '..');
 const BRANDS = ['preventionweb', 'irp', 'mcr', 'delta'];
@@ -39,6 +40,12 @@ describe('Mangrove 2.0 token contract (compiled CSS)', () => {
 
   test('base bundle carries no brand theme block', () => {
     expect(base).not.toMatch(/\.mg-theme-/);
+  });
+
+  test('every bundle identifies the package version in its preserved banner', () => {
+    ['style', ...BRANDS.map((b) => `style-${b}`), 'style-all'].forEach((name) => {
+      expect(bundleName(name)).toContain(`Version: ${version}`);
+    });
   });
 
   describe.each(BRANDS)('per-brand bundle: style-%s', (brand) => {

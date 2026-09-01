@@ -2,7 +2,7 @@
  * @file _labels.js
  * @description Translated label sets for the Gallery component.
  *
- * Imported by Gallery.Translations.stories.jsx and Gallery.stories.jsx.
+ * Imported by Gallery.stories.jsx for the global locale toolbar.
  * Never import from .stories files.
  */
 

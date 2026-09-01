@@ -1,8 +1,8 @@
 # Mangrove 2.0 release notes
 
-The main change in 2.0: all color and spacing tokens are now CSS custom properties. The SCSS variable theming API is replaced by CSS custom property overrides in `.mg-theme-X { }` selector blocks. Full diff: [PR #1061](https://github.com/unisdr/undrr-mangrove/pull/1061) (the tagged `v1.8.2...v2.0.0` comparison lands with the stable release).
+Mangrove 2.0 combines two related workstreams: the runtime theming foundation published in `2.0.0-alpha.1`, and the experience and interaction baseline in `2.0.0-alpha.2`. See [PR #1061](https://github.com/unisdr/undrr-mangrove/pull/1061) for the first alpha and [PR #1086](https://github.com/unisdr/undrr-mangrove/pull/1086) for alpha.2. The tagged `v1.8.2...v2.0.0` comparison lands with the stable release.
 
-> **If you consume the base UNDRR compiled CSS (CDN or prebuilt), no sub-brand theming:** no changes needed. The compiled `style.css` is a drop-in replacement.
+> **If you consume the base UNDRR compiled CSS (CDN or prebuilt), no sub-brand theming:** the alpha.1 theming migration requires no integration change. Alpha.2 intentionally refreshes component presentation and interaction while retaining existing Drupal hydration and BEM contracts, apart from the deprecated Pagination removal.
 >
 > **If you consume a sub-brand compiled stylesheet** (PreventionWeb, IRP, MCR, DELTA): one required change — add the matching `mg-theme-*` class to `<body>` or a wrapping element, or components fall back to the default UNDRR palette. See [Sub-brand theming migration](#sub-brand-theming-migration).
 >
@@ -12,7 +12,7 @@ The main change in 2.0: all color and spacing tokens are now CSS custom properti
 
 ## Try the alpha
 
-2.0 currently ships as a **prerelease** under the `next` dist-tag, so it never lands on `latest` — a plain `npm install @undrr/undrr-mangrove` stays on 1.x until 2.0 is stable.
+2.0 ships as a **prerelease** under the `next` dist-tag, so it never lands on `latest` — a plain `npm install @undrr/undrr-mangrove` stays on 1.x until 2.0 is stable. This release is `2.0.0-alpha.2`; until the manual publish completes, `@next` may still resolve to alpha.1.
 
 ```bash
 # npm (prerelease tag — does not become your default version)
@@ -21,17 +21,41 @@ npm install @undrr/undrr-mangrove@next
 
 ```html
 <!-- CDN, versioned path (pick the base or a sub-brand stylesheet) -->
-<link rel="stylesheet" href="https://assets.undrr.org/static/mangrove/2.0.0-alpha.1/css/style.css">
-<link rel="stylesheet" href="https://assets.undrr.org/static/mangrove/2.0.0-alpha.1/css/style-preventionweb.css">
+<link rel="stylesheet" href="https://assets.undrr.org/static/mangrove/2.0.0-alpha.2/css/style.css">
+<link rel="stylesheet" href="https://assets.undrr.org/static/mangrove/2.0.0-alpha.2/css/style-preventionweb.css">
 ```
 
 For a compiled-CSS consumer the entire trial is two lines: swap the stylesheet href above, and — for a sub-brand — add `class="mg-theme-{brand}"` to `<body>` or a wrapping element. Found a problem? See [where to report](#feedback).
+
+## Alpha roadmap
+
+| Prerelease | Status | Focus |
+|---|---|---|
+| `2.0.0-alpha.1` | Published under `next` | CSS custom-property theming, 16px root and sub-brand runtime selectors |
+| `2.0.0-alpha.2` | Prepared for manual release in [PR #1086](https://github.com/unisdr/undrr-mangrove/pull/1086) | Experience principles, component surfaces, interaction states, responsive behaviour and multilingual resilience |
+
+### Alpha.2 experience and interaction baseline
+
+Alpha.2 applies a shared experience direction without mechanically homogenising components or overriding theme-owned expression:
+
+- Shared surface, border, shadow, radius, focus and reduced-motion tokens provide a consistent foundation.
+- Buttons, forms, cards, hero compositions, tabs, disclosures, menus, on-page navigation, tables, Pager, ScrollContainer and Text CTA receive coordinated responsive and interaction refinements.
+- The new `FormAction` composition joins a field and its key action for search, subscription and select-and-continue flows, with accessible help and error wiring, RTL support and optional mobile stacking.
+- The new standalone `UserFeedback` component brings the common page-usefulness prompt into Mangrove for the usual pre-footer position. It ships as a package-root React export and direct hydratable bundle while keeping response storage, analytics and consent product-owned.
+- The editorial CTA gains stable hover geometry, logical RTL placement and safe wrapping for long translations. Conventional buttons remain the default for forms, consent and utility actions.
+- Chips distinguish navigational links from dismiss actions and add visible removal affordances, logical spacing, focus, reduced-motion and forced-colour support.
+- Inline code uses a compact theme-aware surface with clearer monospace typography and coherent decoration across wrapped snippets.
+- Storybook's global locale toolbar becomes the canonical translation mechanism; dedicated RTL and long-label stories remain where they test a distinct layout condition.
+- `FormAction` ships as a direct ESM component entry, and published component bundles are built against React's production JSX runtime rather than reusing Storybook development transforms.
+- Every compiled CSS bundle includes a preserved Mangrove version banner synchronized from `package.json`, making deployed asset versions visible in source and diagnostics.
+
+Alpha.2 has been checked across desktop and mobile layouts, Chromium and Firefox, RTL, long labels, keyboard focus, reduced motion, forced colours and representative UNDRR themes. See the [Experience principles](https://unisdr.github.io/undrr-mangrove/?path=/docs/design-decisions-experience-principles--docs) for the design guardrails behind these changes.
 
 ## Find your path
 
 | I am... | Go to... |
 |---|---|
-| A **base UNDRR** Drupal/CDN consumer, no custom SCSS | [What changed visually](#what-changed-visually) — nothing |
+| A **base UNDRR** Drupal/CDN consumer, no custom SCSS | [What changed visually](#what-changed-visually) and [the alpha.2 baseline](#alpha2-experience-and-interaction-baseline) |
 | A **sub-brand** Drupal/CDN consumer (PW, IRP, MCR, DELTA) | [Sub-brand theming migration](#sub-brand-theming-migration) — add the `mg-theme-*` body class |
 | A developer who imports Mangrove SCSS | [Breaking changes](#breaking-changes) |
 | A developer who overrides sub-brand tokens | [Sub-brand theming migration](#sub-brand-theming-migration) |
@@ -39,7 +63,9 @@ For a compiled-CSS consumer the entire trial is two lines: swap the stylesheet h
 
 ## What changed visually
 
-Nothing for **base UNDRR** consumers. Colors and spacing are identical — the values moved from SCSS variables to CSS custom properties, but the compiled `style.css` output is equivalent.
+In **alpha.1**, colors and spacing remain visually equivalent for base UNDRR consumers: the values moved from SCSS variables to CSS custom properties, but the compiled `style.css` output is equivalent.
+
+**Alpha.2** intentionally refreshes the presentation and interaction of core components. It introduces softer theme-aware surfaces, clearer focus and hover states, more consistent responsive spacing, joined form actions and stronger multilingual behaviour. Semantic shapes remain component-specific: carousel controls stay circular, chips retain meaningful pill geometry and institutional chrome continues to express its owning theme.
 
 **Sub-brand consumers (PreventionWeb, IRP, MCR, DELTA) have one required change.** Brand colors previously baked into every component rule at compile time; they now live in a `.mg-theme-{brand}` selector block. Add `class="mg-theme-{brand}"` to `<body>` or a wrapping element, or components render with the default UNDRR palette instead of the brand palette. See [Sub-brand theming migration](#sub-brand-theming-migration).
 
@@ -133,6 +159,10 @@ Consumers that ran on the legacy 10px root — a `html { font-size: 62.5% }` (or
 - **Convert your own rem-based CSS from a 10px to a 16px basis.** A rule that meant 14px as `1.4rem` under a 10px root now renders 22.4px; rewrite it (e.g. `0.875rem`, or use `px`). This is the substantive part of the migration — Mangrove's own output is already correct for the 16px root.
 
 There is no compatibility build; the 16px root is the only supported basis.
+
+### 6. Deprecated Pagination component removed
+
+The deprecated `Pagination` component, its stories and documentation are removed in alpha.2. Use `Pager`, which is the supported 2.0 pagination pattern. Existing consumers that still import or render `Pagination` must migrate before adopting this prerelease.
 
 ## Sub-brand theming migration
 

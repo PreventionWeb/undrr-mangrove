@@ -1,8 +1,8 @@
 {/* Maintenance note: the LinkTo `kind` values below are story IDs that change
-  when a component's Storybook title changes (e.g. renaming, re-categorising).
-  Validate against http://localhost:6006/index.json before shipping changes
-  that touch story titles. Consider adding an automated check to the
-  /document-release flow. */}
+when a component's Storybook title changes (e.g. renaming, re-categorising).
+Validate against http://localhost:6006/index.json before shipping changes
+that touch story titles. Consider adding an automated check to the
+/document-release flow. */}
 
 import { Meta } from '@storybook/addon-docs/blocks';
 import LinkTo from '@storybook/addon-links/react';
@@ -31,13 +31,13 @@ to the selected theme automatically.
 
 Components that define the overall shape of a page.
 
-| Component        | What it does                                                            | View                                                                     |
-| ---------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| Page header      | Sticky top navigation with UNDRR branding, language selector, and login | <LinkTo kind="components-pageheader" story="docs">View</LinkTo>          |
-| Mega menu        | Multi-column dropdown navigation for complex sites                      | <LinkTo kind="components-megamenu" story="docs">View</LinkTo>            |
+| Component        | What it does                                                            | View                                                                        |
+| ---------------- | ----------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| Page header      | Sticky top navigation with UNDRR branding, language selector, and login | <LinkTo kind="components-pageheader" story="docs">View</LinkTo>             |
+| Mega menu        | Multi-column dropdown navigation for complex sites                      | <LinkTo kind="components-megamenu" story="docs">View</LinkTo>               |
 | Breadcrumbs      | Hierarchical navigation trail                                           | <LinkTo kind="components-navigation-breadcrumbs" story="docs">View</LinkTo> |
-| On-this-page nav | Sticky table of contents for long articles                              | <LinkTo kind="components-on-this-page-nav" story="docs">View</LinkTo>    |
-| Footer           | Site-wide footer with navigation, social links, Sendai/SDG logos        | <LinkTo kind="components-footer" story="docs">View</LinkTo>              |
+| On-this-page nav | Sticky table of contents for long articles                              | <LinkTo kind="components-on-this-page-nav" story="docs">View</LinkTo>       |
+| Footer           | Site-wide footer with navigation, social links, Sendai/SDG logos        | <LinkTo kind="components-footer" story="docs">View</LinkTo>                 |
 
 ---
 
@@ -45,10 +45,10 @@ Components that define the overall shape of a page.
 
 High-visibility sections that establish context.
 
-| Component  | What it does                                                                | View                                                                  |
-| ---------- | --------------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| Hero       | Full-width banner with title, summary, call-to-action, and background image | <LinkTo kind="components-hero-hero" story="docs">View</LinkTo>        |
-| Child hero | Compact hero for sub-pages                                                  | <LinkTo kind="components-hero-hero-child" story="docs">View</LinkTo>  |
+| Component  | What it does                                                                | View                                                                 |
+| ---------- | --------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| Hero       | Full-width banner with title, summary, call-to-action, and background image | <LinkTo kind="components-hero-hero" story="docs">View</LinkTo>       |
+| Child hero | Compact hero for sub-pages                                                  | <LinkTo kind="components-hero-hero-child" story="docs">View</LinkTo> |
 
 ---
 
@@ -72,15 +72,14 @@ For listings, teasers, and content summaries.
 
 Buttons, forms, and user input.
 
-| Component     | What it does                             | View                                                                          |
-| ------------- | ---------------------------------------- | ----------------------------------------------------------------------------- |
-| Buttons       | Primary and secondary action buttons     | <LinkTo kind="components-buttons-buttons" story="docs">View</LinkTo>          |
-| Chips         | Filter chips and tag selectors           | <LinkTo kind="components-buttons-chips" story="docs">View</LinkTo>            |
-| Share buttons | Social media share links with copy-URL   | <LinkTo kind="components-buttons-sharebuttons" story="docs">View</LinkTo>     |
-| Forms         | Text inputs, checkboxes, radios, selects | <LinkTo kind="components-forms-checkbox" story="docs">View</LinkTo>           |
-| Tabs          | Horizontal tab bar with active state     | <LinkTo kind="components-tabs" story="docs">View</LinkTo>                     |
-| Pager         | Pagination for long result lists         | <LinkTo kind="components-pager" story="docs">View</LinkTo>                    |
-| Pagination    | Classic page number navigation           | <LinkTo kind="components-navigation-pagination" story="docs">View</LinkTo>    |
+| Component     | What it does                             | View                                                                      |
+| ------------- | ---------------------------------------- | ------------------------------------------------------------------------- |
+| Buttons       | Primary and secondary action buttons     | <LinkTo kind="components-buttons-buttons" story="docs">View</LinkTo>      |
+| Chips         | Filter chips and tag selectors           | <LinkTo kind="components-buttons-chips" story="docs">View</LinkTo>        |
+| Share buttons | Social media share links with copy-URL   | <LinkTo kind="components-buttons-sharebuttons" story="docs">View</LinkTo> |
+| Forms         | Text inputs, checkboxes, radios, selects | <LinkTo kind="components-forms-checkbox" story="docs">View</LinkTo>       |
+| Tabs          | Horizontal tab bar with active state     | <LinkTo kind="components-tabs" story="docs">View</LinkTo>                 |
+| Pager         | Pagination for long result lists         | <LinkTo kind="components-pager" story="docs">View</LinkTo>                |
 
 ---
 
@@ -88,12 +87,12 @@ Buttons, forms, and user input.
 
 For charts, maps, and media.
 
-| Component         | What it does                                | View                                                                       |
-| ----------------- | ------------------------------------------- | -------------------------------------------------------------------------- |
-| Bar chart         | Horizontal and vertical bar charts          | <LinkTo kind="components-charts-barchart" story="docs">View</LinkTo>       |
-| Map               | Interactive geographic maps (Leaflet-based) | <LinkTo kind="components-maps-mapcomponent" story="docs">View</LinkTo>     |
-| Gallery           | Image grid with lightbox                    | <LinkTo kind="components-gallery" story="docs">View</LinkTo>               |
-| Table of contents | Auto-generated content index                | <LinkTo kind="components-table-of-contents" story="docs">View</LinkTo>     |
+| Component         | What it does                                | View                                                                   |
+| ----------------- | ------------------------------------------- | ---------------------------------------------------------------------- |
+| Bar chart         | Horizontal and vertical bar charts          | <LinkTo kind="components-charts-barchart" story="docs">View</LinkTo>   |
+| Map               | Interactive geographic maps (Leaflet-based) | <LinkTo kind="components-maps-mapcomponent" story="docs">View</LinkTo> |
+| Gallery           | Image grid with lightbox                    | <LinkTo kind="components-gallery" story="docs">View</LinkTo>           |
+| Table of contents | Auto-generated content index                | <LinkTo kind="components-table-of-contents" story="docs">View</LinkTo> |
 
 ---
 
@@ -125,14 +124,14 @@ Utilities for structuring pages.
 
 Shared infrastructure across UNDRR sites.
 
-| Component          | What it does                       | View                                                                         |
-| ------------------ | ---------------------------------- | ---------------------------------------------------------------------------- |
-| Cookie consent     | GDPR-compliant cookie banner       | <LinkTo kind="components-cookieconsentbanner" story="docs">View</LinkTo>     |
-| Snackbar           | Temporary notifications and alerts | <LinkTo kind="components-snackbar" story="docs">View</LinkTo>                |
-| Syndication search | Cross-site content search widget   | <LinkTo kind="components-syndicated-search" story="docs">View</LinkTo> |
-| Fetcher            | Async content loading wrapper      | <LinkTo kind="components-fetcher" story="docs">View</LinkTo>                 |
-| Error pages        | 404, 500, and maintenance pages    | <LinkTo kind="components-error-pages" story="docs">View</LinkTo>             |
-| Page template      | Complete page layout example       | <LinkTo kind="example-page-template-example" story="docs">View</LinkTo>      |
+| Component          | What it does                       | View                                                                     |
+| ------------------ | ---------------------------------- | ------------------------------------------------------------------------ |
+| Cookie consent     | GDPR-compliant cookie banner       | <LinkTo kind="components-cookieconsentbanner" story="docs">View</LinkTo> |
+| Snackbar           | Temporary notifications and alerts | <LinkTo kind="components-snackbar" story="docs">View</LinkTo>            |
+| Syndication search | Cross-site content search widget   | <LinkTo kind="components-syndicated-search" story="docs">View</LinkTo>   |
+| Fetcher            | Async content loading wrapper      | <LinkTo kind="components-fetcher" story="docs">View</LinkTo>             |
+| Error pages        | 404, 500, and maintenance pages    | <LinkTo kind="components-error-pages" story="docs">View</LinkTo>         |
+| Page template      | Complete page layout example       | <LinkTo kind="example-page-template-example" story="docs">View</LinkTo>  |
 
 ---
 

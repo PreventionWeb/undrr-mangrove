@@ -1,22 +1,29 @@
 import React from 'react';
 import { Hero } from './Hero';
+import logo from '../../assets/images/undrr-logo-white.svg';
+
+const resilientInfrastructureWide =
+  'https://www.undrr.org/sites/default/files/styles/ultrawide_16_6/public/2023-11/resilient-infrastructure-pikoso-kz-shutterstock.jpg?h=82ac03c6&itok=26BkbHiW';
+const resilientInfrastructure =
+  'https://www.undrr.org/sites/default/files/2023-11/resilient-infrastructure-pikoso-kz-shutterstock.jpg';
+const disasterRiskWide =
+  'https://www.undrr.org/sites/default/files/styles/ultrawide_16_6/public/2023-03/Shutterstock_656134321-min.jpg?h=90c64985&itok=ukR7hDqu';
 
 const getCaptionForLocale = locale => {
   const contentByLocale = {
     english: {
       contentdata: [
         {
-          title: 'Text in xxl large size<br>&nbsp;Extra large',
+          title: 'Principles for resilient infrastructure',
           summaryText:
-            'Some introductory and summary text that can often occupy multiple lines.<br>&nbsp;This text is after a line break.',
-          detail: 'Detail label: Detail',
-          label: 'Label in medium size',
-          primary_button: 'Primary action',
-          secondary_button: 'Secondary action',
+            'Practical guidance to improve the continuity of critical services and make risk-informed investment decisions.',
+          detail: '72-page publication',
+          label: 'Guidance for resilient systems',
+          primary_button: 'Read the principles',
+          secondary_button: 'Explore infrastructure resilience',
           link: '/#',
-          imgalt: 'A person looks on',
-          imgback:
-            'https://www.undrr.org/sites/default/files/2020-01/Home---about-us_0.jpg',
+          imgalt: 'Aerial view of a canal through Almaty, Kazakhstan',
+          imgback: resilientInfrastructureWide,
         },
       ],
     },
@@ -30,9 +37,8 @@ const getCaptionForLocale = locale => {
           primary_button: 'إجراء أساسي',
           secondary_button: 'إجراء ثانوي',
           link: null,
-          imgalt: 'شخص ينظر',
-          imgback:
-            'https://www.undrr.org/sites/default/files/2020-01/Home---about-us_0.jpg',
+          imgalt: 'منظر جوي لقناة عبر ألماتي في كازاخستان',
+          imgback: resilientInfrastructureWide,
         },
       ],
     },
@@ -46,26 +52,24 @@ const getCaptionForLocale = locale => {
           primary_button: 'Primary action',
           secondary_button: 'Secondary action',
           link: '/#',
-          imgalt: 'A person looks on',
-          imgback:
-            'https://www.undrr.org/sites/default/files/2020-01/Home---about-us_0.jpg',
+          imgalt: 'Aerial view of a canal through Almaty, Kazakhstan',
+          imgback: resilientInfrastructureWide,
         },
       ],
     },
     default: {
       contentdata: [
         {
-          title: 'Text in xxl large size',
+          title: 'Principles for resilient infrastructure',
           summaryText:
-            'Some introductory and summary text that can often occupy multiple lines.',
-          detail: 'Detail label: Detail',
-          label: 'Label in medium size',
-          primary_button: 'Primary action',
-          secondary_button: 'Secondary action',
+            'Practical guidance to improve the continuity of critical services and make risk-informed investment decisions.',
+          detail: '72-page publication',
+          label: 'Guidance for resilient systems',
+          primary_button: 'Read the principles',
+          secondary_button: 'Explore infrastructure resilience',
           link: '/#',
-          imgalt: 'A person looks on',
-          imgback:
-            'https://www.undrr.org/sites/default/files/2020-01/Home---about-us_0.jpg',
+          imgalt: 'Aerial view of a canal through Almaty, Kazakhstan',
+          imgback: resilientInfrastructureWide,
         },
       ],
     },
@@ -123,16 +127,16 @@ export const NoLink = {
   args: {
     data: [
       {
-        title: 'Title without a link<br>&nbsp;and a line break',
+        title: 'Shifting to resilient infrastructure',
         summaryText:
-          'This summary supports HTML.<br>&nbsp;Here is some extra text with a line break.',
-        label: 'Label in medium size',
-        detail: 'Detail label: Detail',
-        primary_button: 'Primary action',
-        secondary_button: 'Secondary action',
+          'Prevent new risks and strengthen existing infrastructure challenged by climate change, obsolescence and multisector interdependence.',
+        label: 'Regional Assessment Report 2023',
+        detail: 'Europe and Central Asia',
+        primary_button: 'Explore the report',
+        secondary_button: 'Read the analysis',
         link: null,
-        imgback:
-          'https://www.undrr.org/sites/default/files/2020-01/Home---about-us_0.jpg',
+        imgalt: 'Aerial view of a canal through Almaty, Kazakhstan',
+        imgback: resilientInfrastructureWide,
       },
     ],
     variant: 'secondary',
@@ -147,15 +151,16 @@ export const WithHtmlInTitle = {
   args: {
     data: [
       {
-        title: 'Custom title<br>with&nbsp;line breaks and spaces',
-        summaryText: 'This is custom summary text.<br>&nbsp;Another line.',
-        label: 'Custom Label',
-        detail: 'Custom Detail',
-        primary_button: 'Custom primary',
-        secondary_button: 'Custom secondary',
+        title: 'Infrastructure resilience<br>can no longer be optional',
+        summaryText:
+          'Critical infrastructure keeps societies functioning. Higher resilience standards can protect lives, development gains and essential services.',
+        label: 'Expert perspective',
+        detail: 'Kamal Kishore, UN Special Representative',
+        primary_button: 'Read the perspective',
+        secondary_button: 'View the principles',
         link: '/#',
-        imgback:
-          'https://www.undrr.org/sites/default/files/2020-01/Home---about-us_0.jpg',
+        imgalt: 'People walking through terraced rice fields',
+        imgback: disasterRiskWide,
       },
     ],
     variant: 'tertiary',
@@ -163,6 +168,28 @@ export const WithHtmlInTitle = {
   render: (args, { globals: { locale } }) => {
     const caption = getCaptionForLocale(locale);
     return <Hero data={caption.contentdata} {...args} />;
+  },
+};
+
+export const ImmersiveContained = {
+  name: 'Immersive (contained)',
+  args: {
+    data: [
+      {
+        logo: { src: logo, alt: 'UNDRR' },
+        label: 'Component library and design system',
+        title: 'Build resilient digital experiences together.',
+        summaryText:
+          'Accessible, reusable content patterns help teams move faster while preserving each product’s identity.',
+        imgback: resilientInfrastructureWide,
+        buttons: [
+          { label: 'Get started', url: '#' },
+          { label: 'Browse components', url: '#', type: 'Secondary' },
+        ],
+      },
+    ],
+    contained: true,
+    size: 'immersive',
   },
 };
 
@@ -176,8 +203,8 @@ const splitMediaData = [
     secondary_button: 'Learn more',
     media: {
       type: 'image',
-      src: 'https://www.undrr.org/sites/default/files/2020-01/Home---about-us_0.jpg',
-      alt: 'Aerial view of a road through a green forest',
+      src: resilientInfrastructure,
+      alt: 'Aerial view of a canal through Almaty, Kazakhstan',
     },
   },
 ];
@@ -227,8 +254,8 @@ export const SplitWithVideo = {
         primary_button: 'More stories',
         media: {
           type: 'video',
-          src: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-          title: 'Early warning for all — UNDRR',
+          src: 'https://www.youtube.com/embed/lJWNmqYmKEQ',
+          title: 'This is how timely early warnings save lives — UNDRR',
         },
       },
     ],
@@ -255,7 +282,7 @@ export const SplitWithHtml = {
 <div style="padding: 1.5rem; box-sizing: border-box; height: 100%; display: flex; flex-direction: column; gap: 0.75rem;">
   <span style="align-self: flex-start; background: rgba(255, 255, 255, 0.18); color: #fff; font-size: 0.75rem; letter-spacing: 0.05em; text-transform: uppercase; padding: 0.25rem 0.75rem; border-radius: 999px;">Custom composition</span>
   <figure style="margin: 0; flex: 1; position: relative; overflow: hidden; border-radius: 4px;">
-    <img src="https://www.undrr.org/sites/default/files/2020-01/Home---about-us_0.jpg" alt="Aerial view of a road through a green forest" style="width: 100%; height: 100%; object-fit: cover; display: block;" />
+    <img src="${disasterRiskWide}" alt="People walking through terraced rice fields" style="width: 100%; height: 100%; object-fit: cover; display: block;" />
     <figcaption style="position: absolute; inset-inline: 0; inset-block-end: 0; background: rgba(0, 0, 0, 0.7); color: #fff; padding: 0.5rem 0.75rem; display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; font-size: 0.875rem;">
       <strong>From the cover essay</strong>
       <span>Photo: UNDRR</span>

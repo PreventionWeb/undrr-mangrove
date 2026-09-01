@@ -26,6 +26,12 @@ To keep copy consistent and high quality across UI, docs, and developer messages
 - Use the quick reference for AI tools and lookups: [`docs/WRITING-SHORT.md`](docs/WRITING-SHORT.md)
 - Headings and titles use sentence case, with proper nouns and acronyms capitalized.
 
+## Storybook translations and RTL
+
+Use Storybook's global locale toolbar for translated component content and text direction. Stories should read `context.globals.locale` directly or use a shared locale-label decorator; do not create one story export per language.
+
+Keep a dedicated RTL, long-label, or translation-stress story only when it exercises a distinct layout or interaction condition that the ordinary toolbar-driven story cannot demonstrate clearly. See the [RTL support and locale-toolbar guidance](https://unisdr.github.io/undrr-mangrove/?path=/docs/contributing-component-standards--docs#rtl-support) in the component contribution guide.
+
 ## Component changelogs
 
 Every component MDX file must include a `## Changelog` section tracking its version history. When submitting a PR that modifies a component, add a new changelog entry. This is separate from the project-level [GitHub Releases](https://github.com/unisdr/undrr-mangrove/releases).

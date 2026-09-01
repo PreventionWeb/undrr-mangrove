@@ -30,10 +30,9 @@
 // Text input
 // -----------------------------------------------------------------------------
 %mg-form-input-base {
-  @extend %background-white;
-
   appearance: none;
-  border: 2px solid rgb(var(--mg-color-black));
+  background-color: rgb(var(--mg-color-neutral-50));
+  border: 1px solid rgb(var(--mg-color-neutral-600) / 0.22);
   border-radius: var(--mg-radius-form-input);
   box-sizing: border-box;
   display: block;
@@ -49,7 +48,11 @@
   }
 
   &:focus-visible {
-    box-shadow: 0 0 4px rgb(var(--mg-color-form-focus));
+    background-color: rgb(var(--mg-color-neutral-0));
+    border-color: rgb(var(--mg-color-form-focus));
+    box-shadow:
+      0 0 0 var(--mg-focus-ring-offset) rgb(var(--mg-color-neutral-0)),
+      0 0 0 calc(var(--mg-focus-ring-offset) + var(--mg-focus-ring-width)) rgb(var(--mg-color-focus-ring));
     outline: 0;
   }
 }
@@ -101,10 +104,9 @@
 // Select
 // -----------------------------------------------------------------------------
 .mg-form-select {
-  @extend %background-white;
-
   appearance: none;
-  border: 2px solid rgb(var(--mg-color-black));
+  background-color: rgb(var(--mg-color-neutral-50));
+  border: 1px solid rgb(var(--mg-color-neutral-600) / 0.22);
   border-radius: var(--mg-radius-form-input);
   box-sizing: border-box;
   cursor: pointer;
@@ -123,7 +125,11 @@
   background-repeat: no-repeat;
 
   &:focus-visible {
-    box-shadow: 0 0 4px rgb(var(--mg-color-form-focus));
+    background-color: rgb(var(--mg-color-neutral-0));
+    border-color: rgb(var(--mg-color-form-focus));
+    box-shadow:
+      0 0 0 var(--mg-focus-ring-offset) rgb(var(--mg-color-neutral-0)),
+      0 0 0 calc(var(--mg-focus-ring-offset) + var(--mg-focus-ring-width)) rgb(var(--mg-color-focus-ring));
     outline: 0;
   }
 
@@ -145,6 +151,7 @@
 .mg-form-check {
   align-items: center;
   display: flex;
+  min-height: mg-rem(40);
   position: relative;
 
   // Base input (shared between checkbox and radio)
@@ -152,9 +159,9 @@
     appearance: none;
     border: 2px solid rgb(var(--mg-color-form-check));
     cursor: pointer;
-    height: 16px;
+    height: mg-rem(24);
     margin: 0;
-    width: 16px;
+    width: mg-rem(24);
 
     &:hover {
       border-color: rgb(var(--mg-color-form-check--hover));
@@ -166,7 +173,7 @@
     }
 
     &--checkbox {
-      border-radius: 0;
+      border-radius: var(--mg-radius-form-input);
     }
 
     &--radio {

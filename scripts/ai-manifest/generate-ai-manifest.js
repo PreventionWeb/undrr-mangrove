@@ -130,7 +130,6 @@ const COMPONENT_IDS = {
   IconCard: 'components-cards-icon-card',
   StatsCard: 'components-cards-stats-card',
   Breadcrumbs: 'components-navigation-breadcrumbs',
-  Pagination: 'components-navigation-pagination',
   Tab: 'components-tabs',
   Hero: 'components-hero-hero',
   PageHeader: 'components-pageheader',
@@ -148,6 +147,7 @@ const COMPONENT_IDS = {
   Radio: 'components-forms-radio',
   Textarea: 'components-forms-textarea',
   FormGroup: 'components-forms-formgroup',
+  FormAction: 'components-forms-form-action',
   FormErrorSummary: 'components-forms-formerrorsummary',
   MegaMenu: 'components-megamenu',
   SyndicationSearchWidget: 'components-syndicated-search',
@@ -155,6 +155,7 @@ const COMPONENT_IDS = {
   Gallery: 'components-gallery',
   Pager: 'components-pager',
   ShareButtons: 'components-buttons-sharebuttons',
+  UserFeedback: 'components-user-feedback',
 };
 
 function buildSampleProps(React) {
@@ -212,6 +213,19 @@ function buildSampleProps(React) {
           }),
           React.createElement('label', { htmlFor: 'r2' }, 'Practitioner')
         )
+      ),
+    },
+    FormAction: {
+      label: 'Email address',
+      control: React.createElement('input', {
+        className: 'mg-form-input',
+        name: 'email',
+        type: 'email',
+      }),
+      action: React.createElement(
+        'button',
+        { className: 'mg-button mg-button-primary', type: 'submit' },
+        'Subscribe'
       ),
     },
     FormErrorSummary: {
@@ -294,7 +308,6 @@ function buildSampleProps(React) {
         { text: 'Global Assessment Report 2024' },
       ],
     },
-    Pagination: { text: 'Page', text2: 'of' },
     Tab: {
       tabdata: [
         {
@@ -445,6 +458,7 @@ function buildSampleProps(React) {
         ),
       ],
     },
+    UserFeedback: {},
     Gallery: {
       media: [
         {
@@ -1004,6 +1018,17 @@ async function checkCuratedDrift() {
   return warnings;
 }
 
+function findDevelopmentJsxBundles() {
+  if (!fs.existsSync(distDir)) return [];
+
+  return fs.readdirSync(distDir).filter(fileName => {
+    if (!fileName.endsWith('.js')) return false;
+    return fs
+      .readFileSync(path.join(distDir, fileName), 'utf8')
+      .includes('jsxDEV');
+  });
+}
+
 // ---------------------------------------------------------------------------
 // Validate-only exit
 // ---------------------------------------------------------------------------
@@ -1033,6 +1058,17 @@ if (validateOnly) {
       'Add an entry to scripts/ai-manifest/component-data.js or REQUIRES_REACT for each:'
     );
     for (const id of uncoveredIds) console.error(`  - ${id}`);
+    failed = true;
+  }
+
+  const developmentJsxBundles = findDevelopmentJsxBundles();
+  if (developmentJsxBundles.length > 0) {
+    console.error(
+      'Validation failed: production component bundles contain development JSX runtime calls.'
+    );
+    for (const fileName of developmentJsxBundles) {
+      console.error(`  - ${fileName}`);
+    }
     failed = true;
   }
 

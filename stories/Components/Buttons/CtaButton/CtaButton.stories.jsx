@@ -26,6 +26,11 @@ export default {
       control: { type: 'inline-radio' },
     },
 
+    Variant: {
+      options: ['Default', 'CTA'],
+      control: { type: 'inline-radio' },
+    },
+
     Outline: {
       control: { type: 'boolean' },
     },
@@ -44,6 +49,37 @@ export const DefaultButtons = {
   },
 
   name: 'Buttons',
+};
+
+export const EditorialCta = {
+  args: {
+    label: 'Browse all publications',
+    Type: 'Primary',
+    Variant: 'CTA',
+  },
+  name: 'Editorial CTA',
+};
+
+export const LongLabels = {
+  render: () => (
+    <div style={{ display: 'grid', gap: '1rem', maxWidth: '260px' }}>
+      <CtaButton
+        label="Alle Veröffentlichungen zur Katastrophenvorsorge durchsuchen"
+        Variant="CTA"
+      />
+      <CtaButton
+        label="Consulter toutes les publications sur la réduction des risques de catastrophe"
+        Variant="CTA"
+      />
+      <div dir="rtl" lang="ar">
+        <CtaButton
+          label="استعرض جميع المنشورات المتعلقة بالحد من مخاطر الكوارث"
+          Variant="CTA"
+        />
+      </div>
+    </div>
+  ),
+  name: 'Long labels',
 };
 
 export const AllVariants = {
@@ -94,6 +130,7 @@ export const AllVariants = {
             >
               {caption.detail}
             </a>
+            <CtaButton label={caption.detail} Variant="CTA" />
           </div>
           <div
             style={{
@@ -109,56 +146,69 @@ export const AllVariants = {
             <span style={{ minWidth: '100px' }}>Primary outline</span>
             <span style={{ minWidth: '100px' }}>Secondary outline</span>
             <span>Disabled</span>
+            <span>Editorial CTA</span>
           </div>
         </div>
 
         {/* Dark background (hero context) */}
         <div
-          className="mg-hero"
+          className="mg-hero mg-hero--contained"
           style={{
             background: 'var(--mg-hero-bg, #004f91)',
             padding: '2rem',
             margin: 0,
             width: 'auto',
-            position: 'static',
+            position: 'relative',
+            aspectRatio: 'auto',
           }}
         >
-          <p
-            style={{
-              marginBottom: '0.75rem',
-              fontWeight: 600,
-              fontSize: '14px',
-              color: '#fff',
-            }}
-          >
-            Dark background (hero context)
-          </p>
           <div
+            className="mg-hero__overlay"
             style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: '10px',
-              alignItems: 'center',
+              margin: 0,
+              maxWidth: 'none',
+              padding: 0,
             }}
           >
-            <a href="#" className="mg-button mg-button-primary">
-              {caption.detail}
-            </a>
-            <a href="#" className="mg-button mg-button-secondary">
-              {caption.detail}
-            </a>
-          </div>
-          <div
-            style={{
-              marginTop: '0.5rem',
-              display: 'flex',
-              gap: '10px',
-              fontSize: '12px',
-              color: 'rgba(255,255,255,0.7)',
-            }}
-          >
-            <span style={{ minWidth: '100px' }}>Primary</span>
-            <span>Secondary</span>
+            <p
+              style={{
+                marginBottom: '0.75rem',
+                fontWeight: 600,
+                fontSize: '14px',
+                color: '#fff',
+              }}
+            >
+              Dark background (hero context)
+            </p>
+            <div
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: '10px',
+                alignItems: 'center',
+              }}
+            >
+              <a href="#" className="mg-button mg-button-primary">
+                {caption.detail}
+              </a>
+              <a href="#" className="mg-button mg-button-secondary">
+                {caption.detail}
+              </a>
+              <CtaButton label={caption.detail} Variant="CTA" />
+            </div>
+            <div
+              style={{
+                marginTop: '0.5rem',
+                display: 'flex',
+                gap: '10px',
+                fontSize: '12px',
+                color: 'rgba(255,255,255,0.7)',
+              }}
+            >
+              <span style={{ minWidth: '100px' }}>Primary</span>
+              <span>Secondary</span>
+              <span>Editorial CTA</span>
+            </div>
           </div>
         </div>
       </>

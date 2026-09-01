@@ -82,17 +82,30 @@
   font-size: $mg-font-size-300;
   line-height: 1.4;
   padding: var(--mg-spacing-25);
+  text-align: start;
   vertical-align: top;
 
   @include devicebreak(medium) {
-    padding: var(--mg-spacing-25) var(--mg-spacing-200) var(--mg-spacing-25) var(--mg-spacing-25);
+    padding: var(--mg-spacing-25) var(--mg-spacing-200) var(--mg-spacing-25)
+      var(--mg-spacing-25);
   }
 }
 
 .mg-table thead tr th {
   // background-color: rgb(var(--mg-color-neutral-300));
   font-weight: 600;
+}
+
+.mg-table .mg-table__cell--start {
+  text-align: start;
+}
+
+.mg-table .mg-table__cell--center {
   text-align: center;
+}
+
+.mg-table .mg-table__cell--end {
+  text-align: end;
 }
 
 .mg-table tbody tr {
@@ -119,10 +132,9 @@
 [dir="rtl"] {
   .mg-table th,
   .mg-table td {
-    text-align: right;
-
     @include devicebreak(medium) {
-      padding: var(--mg-spacing-25) var(--mg-spacing-25) var(--mg-spacing-25) var(--mg-spacing-200);
+      padding: var(--mg-spacing-25) var(--mg-spacing-25) var(--mg-spacing-25)
+        var(--mg-spacing-200);
     }
   }
 }

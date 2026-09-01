@@ -17,7 +17,7 @@
   align-items: center;
   background: transparent;
   display: flex;
-  font-family: $mg-font-family-headings;
+  font-family: $mg-font-family;
   font-size: var(--mg-font-size-button);
   font-weight: 600;
   line-height: 1;
@@ -28,8 +28,27 @@
   padding: var(--mg-padding-button);
   border: var(--mg-border-width-button) solid var(--mg-border-color-button);
 
+  @media (prefers-reduced-motion: no-preference) {
+    transition:
+      background-color 200ms ease,
+      border-color 200ms ease,
+      color 200ms ease,
+      scale var(--mg-motion-duration-fast) var(--mg-motion-easing-standard);
+  }
+
+  &:active:not(.disabled) {
+    scale: 0.96;
+  }
+
+  // Visible, token-driven focus ring. A neutral separator ring plus a
+  // focus-coloured ring reads clearly on any button background (unlike a
+  // same-colour glow), follows the button's border-radius, and is not clipped
+  // by overflow like an outline can be.
   &:focus-visible {
-    box-shadow: 0 0 4px rgb(var(--mg-color-button-background--hover));
+    box-shadow:
+      0 0 0 var(--mg-focus-ring-offset) rgb(var(--mg-color-neutral-0)),
+      0 0 0 calc(var(--mg-focus-ring-offset) + var(--mg-focus-ring-width))
+        rgb(var(--mg-color-focus-ring));
     outline: 0;
   }
 
@@ -38,8 +57,11 @@
   }
 }
 
-.mg-button + .mg-button {
-  margin-left: mg-rem(10);
+.mg-buttons {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mg-spacing-75);
 }
 
 button {
@@ -100,6 +122,79 @@ button {
   pointer-events: none;
 }
 
+// Compact editorial CTA: text plus a circular directional badge. Consumers opt
+// into this modifier so form submits and utility actions retain their
+// conventional button treatment.
+.mg-button.mg-button-cta {
+  background: transparent;
+  border-color: transparent;
+  color: rgb(var(--mg-color-text));
+  flex: 0 0 auto;
+  justify-content: flex-start;
+  max-inline-size: 100%;
+  min-height: mg-rem(44);
+  overflow-wrap: anywhere;
+  padding: var(--mg-spacing-50) 0;
+  padding-inline-end: calc(#{mg-rem(22)} + var(--mg-spacing-50));
+  position: relative;
+  text-align: start;
+  white-space: normal;
+
+  // The compact editorial treatment keeps its label steady and gives the
+  // directional badge the tactile response instead of scaling the whole row.
+  &:active:not(.disabled) {
+    scale: 1;
+  }
+
+  &::after {
+    align-items: center;
+    background: rgb(var(--mg-color-interactive));
+    border-radius: 50%;
+    color: rgb(var(--mg-color-neutral-0));
+    content: "›";
+    display: inline-flex;
+    flex: 0 0 mg-rem(22);
+    font-family: $mg-font-family;
+    font-size: mg-rem(18);
+    font-weight: 700;
+    height: mg-rem(22);
+    inline-size: mg-rem(22);
+    inset-block-start: 50%;
+    inset-inline-end: 0;
+    justify-content: center;
+    line-height: 1;
+    padding-block-end: 0.06em; // optically centres the asymmetric chevron
+    padding-inline-start: 0.03em;
+    position: absolute;
+    translate: 0 -50%;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition: background-color var(--mg-motion-duration-fast)
+        var(--mg-motion-easing-standard);
+    }
+  }
+
+  &:hover {
+    background: transparent;
+    border-color: transparent;
+    color: rgb(var(--mg-color-interactive-active));
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+
+    &::after {
+      background: rgb(var(--mg-color-interactive-active));
+    }
+  }
+
+  &:active::after {
+    scale: 0.96;
+  }
+}
+
+[dir="rtl"] .mg-button.mg-button-cta::after {
+  content: "‹";
+}
+
 // [dir='rtl'] {
 //   .button {
 //     &.button-primary {
@@ -122,6 +217,6 @@ button {
 // Arabic font override
 :lang(ar) {
   .mg-button {
-    font-family: $mg-font-family-arabic-headings;
+    font-family: $mg-font-family-arabic-body;
   }
 }

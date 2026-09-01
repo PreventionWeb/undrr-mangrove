@@ -78,6 +78,14 @@ describe('ScrollContainer Component', () => {
     expect(screen.getByTestId('scroll-item-0')).toBeInTheDocument();
   });
 
+  it('adds the shared-height modifier when stretchItems is enabled', () => {
+    const { container } = renderScrollContainer({ stretchItems: true });
+
+    expect(container.querySelector('.mg-scroll__content')).toHaveClass(
+      'mg-scroll__content--stretch'
+    );
+  });
+
   it('shows right arrow when content overflows', () => {
     renderScrollContainer();
 
@@ -180,6 +188,26 @@ describe('ScrollContainer Component', () => {
       left: expect.any(Number),
       behavior: 'smooth',
     });
+  });
+
+  it('disables smooth scrolling when reduced motion is requested', () => {
+    const originalMatchMedia = window.matchMedia;
+    window.matchMedia = jest.fn().mockReturnValue({ matches: true });
+    renderScrollContainer();
+
+    const container = screen
+      .getByRole('button', { name: 'Scroll left' })
+      .closest('.mg-scroll')
+      .querySelector('.mg-scroll__container');
+    container.scrollTo = jest.fn();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Scroll right' }));
+
+    expect(container.scrollTo).toHaveBeenCalledWith({
+      left: expect.any(Number),
+      behavior: 'auto',
+    });
+    window.matchMedia = originalMatchMedia;
   });
 
   it('does not show arrows when showArrows is false', () => {

@@ -2,8 +2,8 @@
  * @file _labels.js
  * @description Translated label sets for Snackbar.
  *
- * Imported by Translations.stories.jsx (per-language stories) and
- * Snackbar.stories.jsx (locale toolbar decorator). Never import from .stories files.
+ * Imported by Snackbar.stories.jsx for the global locale toolbar. Never import
+ * from .stories files.
  */
 
 // ---------------------------------------------------------------------------

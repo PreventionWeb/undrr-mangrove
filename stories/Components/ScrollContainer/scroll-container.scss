@@ -13,48 +13,57 @@
   }
 
   &:has(.mg-scroll__nav) {
-    margin-top: 40px;
+    margin-bottom: mg-rem(56);
   }
 
   &__nav {
     position: absolute;
 
     // TODO: Review this and ensure it works across all containers
-    top: -40px;
-    right: 0;
+    bottom: mg-rem(-48);
+    inset-inline-end: 0;
     display: flex;
     gap: var(--mg-spacing-50);
     z-index: 1; // scroll nav above container content — local to scroll-container stacking context
 
     &-button {
-      width: var(--mg-spacing-300);
-      height: var(--mg-spacing-300);
+      width: mg-rem(44);
+      height: mg-rem(44);
       border: none;
-      border-radius: 4px;
-      background: rgb(var(--mg-color-neutral-700));
-      color: rgb(var(--mg-color-white));
+      border-radius: 50%;
+      background: rgb(var(--mg-color-interactive) / 0.06);
+      color: rgb(var(--mg-color-interactive));
       font-size: $mg-font-size-300;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
 
-      @include transition(background-color 0.2s, opacity 0.2s);
-
-      &:hover {
-        background: rgb(var(--mg-color-neutral-600));
+      @media (prefers-reduced-motion: no-preference) {
+        transition:
+          background-color var(--mg-motion-duration-fast)
+            var(--mg-motion-easing-standard),
+          color var(--mg-motion-duration-fast) var(--mg-motion-easing-standard),
+          scale var(--mg-motion-duration-fast) var(--mg-motion-easing-standard);
       }
 
-      &:focus {
-        outline: none;
-        box-shadow:
-          0 0 0 2px rgb(var(--mg-color-white)),
-          0 0 0 4px rgb(var(--mg-color-neutral-700));
+      &:hover {
+        background: rgb(var(--mg-color-interactive));
+        color: rgb(var(--mg-color-neutral-0));
+      }
+
+      &:focus-visible {
+        @include mg-focus-ring;
+      }
+
+      &:active {
+        scale: 0.96;
       }
 
       &:disabled {
-        background: rgb(var(--mg-color-neutral-300));
-        cursor: not-allowed;
+        background: rgb(var(--mg-color-interactive) / 0.03);
+        color: rgb(var(--mg-color-neutral-500));
+        cursor: default;
       }
     }
   }
@@ -62,18 +71,20 @@
   &__container {
     display: block;
     overflow-x: auto;
-    overflow-y: auto;
+    overflow-y: hidden;
     width: 100%;
     max-width: 100%;
     max-height: inherit;
     position: relative;
     cursor: grab;
+    scroll-snap-type: inline proximity;
     -webkit-overflow-scrolling: touch;
 
     // TODO: Review - do we need it
     // Firefox scrollbar styling
     scrollbar-width: thin;
-    scrollbar-color: rgb(var(--mg-color-neutral-500)) rgb(var(--mg-color-neutral-100));
+    scrollbar-color: rgb(var(--mg-color-neutral-500))
+      rgb(var(--mg-color-neutral-100));
 
     @include devicebreak(small) {
       height: auto;
@@ -98,12 +109,12 @@
 
     &::-webkit-scrollbar-track {
       background: rgb(var(--mg-color-neutral-100));
-      border-radius: 4px;
+      border-radius: var(--mg-radius-form-input);
     }
 
     &::-webkit-scrollbar-thumb {
       background: rgb(var(--mg-color-neutral-500));
-      border-radius: 4px;
+      border-radius: var(--mg-radius-form-input);
 
       &:hover {
         background: rgb(var(--mg-color-neutral-600));
@@ -139,6 +150,7 @@
     align-items: flex-start;
     display: flex;
     flex-wrap: nowrap;
+    gap: var(--mg-spacing-150);
     height: auto;
 
     @include devicebreak(small) {
@@ -148,21 +160,29 @@
     }
   }
 
+  &__content--stretch {
+    align-items: stretch;
+
+    .mg-scroll__item-wrapper {
+      display: flex;
+
+      > * {
+        width: 100%;
+      }
+    }
+  }
+
   &__item-wrapper {
     width: var(--scroll-item-width, 300px);
     min-width: var(--scroll-item-width, 300px);
     flex-shrink: 0;
-    margin-right: var(--mg-spacing-300);
     white-space: normal;
     overflow-wrap: break-word;
+    scroll-snap-align: start;
 
     @include devicebreak(small) {
       display: inline-block;
       vertical-align: top;
-    }
-
-    &:last-child {
-      margin-right: 0;
     }
   }
 }

@@ -1,13 +1,28 @@
 /**
  * This is from the UNDRR Mangrove component library
  * https://github.com/unisdr/undrr-mangrove?tab=readme-ov-file
+ * Version: 2.0.0-alpha.2
  *
- *     _   _ _   _ ____  ____  ____    __  __
- *    | | | | \ | |  _ \|  _ \|  _ \  |  \/  | __ _ _ __   __ _ _ __ _____   _____
- *    | | | |  \| | | | | |_) | |_) | | |\/| |/ _` | '_ \ / _` | '__/ _ \ \ / / _ \
- *    | |_| | |\  | |_| |  _ <|  _ <  | |  | | (_| | | | | (_| | | | (_) \ V /  __/
- *     \___/|_| \_|____/|_| \_\_| \_\ |_|  |_|\__,_|_| |_|\__, |_|  \___/ \_/ \___|
- *                                                        |___/
+ *   ██╗   ██╗███╗   ██╗██████╗ ██████╗ ██████╗
+ *   ██║   ██║████╗  ██║██╔══██╗██╔══██╗██╔══██╗
+ *   ██║   ██║██╔██╗ ██║██║  ██║██████╔╝██████╔╝
+ *   ██║   ██║██║╚██╗██║██║  ██║██╔══██╗██╔══██╗
+ *   ╚██████╔╝██║ ╚████║██████╔╝██║  ██║██║  ██║
+ *    ╚═════╝ ╚═╝  ╚═══╝╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝
+ *
+ *   ███╗   ███╗█████╗  ███╗   ██╗ ██████╗ ██████╗  ██████╗ ██╗   ██╗███████╗
+ *   ████╗ ████║██╔══██╗████╗  ██║██╔════╝ ██╔══██╗██╔═══██╗██║   ██║██╔════╝
+ *   ██╔████╔██║███████║██╔██╗ ██║██║  ███╗██████╔╝██║   ██║██║   ██║█████╗
+ *   ██║╚██╔╝██║██╔══██║██║╚██╗██║██║   ██║██╔══██╗██║   ██║╚██╗ ██╔╝██╔══╝
+ *   ██║ ╚═╝ ██║██║  ██║██║ ╚████║╚██████╔╝██║  ██║╚██████╔╝ ╚████╔╝ ███████╗
+ *   ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝  ╚═╝ ╚═════╝   ╚═══╝  ╚══════╝
+ *
+ *                                                                 ██████╗
+ *                                                                 ╚════██╗
+ *                                                                  █████╔╝
+ *                                                                 ██╔═══╝
+ *                                                                 ███████╗
+ *                                                                 ╚══════╝
  */
 @use "sass:math";
 @use "sass:meta";
@@ -277,6 +292,9 @@ $mg-tabs-border-bottom: true !default;
   --mg-color-form-check--checked:  var(--mg-color-interactive);
   --mg-color-form-focus:           var(--mg-color-interactive);
 
+  // Focus ring
+  --mg-color-focus-ring:           var(--mg-color-interactive);
+
   // Brand hierarchy
   --mg-color-secondary:            var(--mg-color-orange-800);
   --mg-color-tertiary:             var(--mg-color-neutral-900);
@@ -344,22 +362,37 @@ $mg-tabs-border-bottom: true !default;
   --mg-radius-tag:               var(--mg-spacing-0);
 
   // Button
-  --mg-radius-button:            var(--mg-spacing-0);
+  --mg-radius-button:            var(--mg-spacing-50);
   --mg-border-width-button:      1px;
   --mg-padding-button:           var(--mg-spacing-100) var(--mg-spacing-150);
   --mg-font-size-button:         #{$mg-font-size-250};
 
   // Form
-  --mg-radius-form-input:        var(--mg-spacing-0);
+  --mg-radius-form-input:        var(--mg-spacing-50);
+
+  // Focus ring
+  --mg-focus-ring-width:         2px;
+  --mg-focus-ring-offset:        2px;
+  --mg-focus-ring-radius:        2px;
+
+  // Modernisation: shared surface, elevation, and motion semantics
+  --mg-surface-raised:           rgb(var(--mg-color-neutral-0));
+  --mg-shadow-raised:            inset 0 0 0 1px rgb(var(--mg-color-neutral-600) / 0.24);
+  --mg-shadow-raised-hover:      inset 0 0 0 2px rgb(var(--mg-color-interactive));
+  --mg-motion-duration-fast:     160ms;
+  --mg-motion-duration-medium:   300ms;
+  --mg-motion-easing-standard:   cubic-bezier(0.2, 0, 0, 1);
 
   // Card
-  --mg-card-background:          none;
-  --mg-card-padding:             0rem;
-  --mg-card-border-radius:       0;
+  --mg-card-background:          var(--mg-surface-raised);
+  --mg-card-padding:             var(--mg-spacing-150);
+  --mg-card-border-radius:       var(--mg-spacing-50);
+  --mg-card-shadow:              var(--mg-shadow-raised);
+  --mg-card-shadow-hover:        var(--mg-shadow-raised-hover);
   --mg-card-icon-badge-radius:   20%;
 
   // CTA
-  --mg-cta-padding:              var(--mg-spacing-400) 0;
+  --mg-cta-padding:              var(--mg-spacing-400);
 
   // Author image
   --mg-author-image-radius:      50%;
@@ -367,8 +400,13 @@ $mg-tabs-border-bottom: true !default;
   // Hero
   --mg-opacity-hero:             0.85;
   --mg-spacing-hero-overlay:     0;
-  --mg-hero-overlay-max-width:   #{mg-rem(400)};
-  --mg-hero-overlay-padding:     var(--mg-spacing-200);
+  --mg-hero-overlay-max-width:   #{mg-rem(600)};
+  --mg-hero-overlay-padding:     var(--mg-spacing-300);
+  --mg-hero-overlay-radius:      var(--mg-spacing-50);
+  --mg-hero-overlay-shadow:      0 18px 55px rgb(var(--mg-color-neutral-900) / 0.22);
+  --mg-hero-gradient-start-opacity:  0.98;
+  --mg-hero-gradient-middle-opacity: 0.82;
+  --mg-hero-gradient-end-opacity:    0.08;
 
   // Widths (build-time resolved)
   --mg-width-150:                #{mg-rem(150)};
@@ -393,3 +431,28 @@ $header-height-xlarge: 115px;
 $header-height-medium: 75px;
 
 /* variables end */
+
+// stylelint-disable comment-whitespace-inside -- Preserve the fixed-width source easter egg.
+/*============================================================================+
+| [z-level: -2] [Biome: Server Rack] [Activity: Constructing Frameworks]      |
++=============================================================================+
+|X|     d       |             _   _ _  _ ___  ___ ___               c       X |
+|X|   [HTML]    |      w     | | | | \| |   \| _ \ _ \       [JS]   |       X |
+|X|    \--/     |    [===]   | |_| | |  | |) |   /   /       \--/   |       X |
+|X|     ||      |     ||      \___/|_|\_|___/|_|_\_|_\        ||    |     d X |
+|X|     ||      |     ||                                            |   [=O=]X|
+|X| c   ||      |     ||                                          c \   [DB_]X|
+|X|    _||_     |    _||_      __  __   _   _  _  ___ ___  _____   __  ___  X |
+|X|d  [CSS ]    |   [NODE]    |  \/  | /_\ | \| |/ __| _ \/ _ \ \ / / | __| X |
+|X|\   \--/     |    \--/     | |\/| |/ _ \| |  | (_ |   / (_) \ V /  | _|  X |
+|X||    ||      | d   ||      |_|  |_/_/ \_\_|\_|\___|_|_\\___/ \_/   |___| X |
+|X||    ||      |     ||                                                    X |
+|X||    || d    |     ||                           ___              w       X |
+|X||  [=O=]     |     ||             c            |_  )    d      [=O=]     X |
+|X||  [API]     |     ||           [DOM]           / /   [=O=]    [JSON]    X |
+|X|\============|==== || =========  \--/          /___|  [CMS]      ||      X |
+|X|                   ||             ||                             ||      X |
++=============================================================================+
+| KEY: d=web-dwarf  c=coder-dwarf  w=wrangler  [=O=]=data forge  X=stairwell  |
++============================================================================*/
+// stylelint-enable comment-whitespace-inside

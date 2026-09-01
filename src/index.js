@@ -13,13 +13,21 @@ export { default as QuoteHighlight } from '../stories/Components/QuoteHighlight/
 // Drupal pages use Prism.js directly; no .hydrate.js/.fromElement.js needed for server-side blocks.
 export { CodeBlock } from '../stories/Components/CodeBlock/CodeBlock';
 export { default as SyndicationSearchWidget } from '../stories/Components/SyndicationSearchWidget/SyndicationSearchWidget';
-export { DEFAULT_LABELS, interpolateLabel } from '../stories/Components/SyndicationSearchWidget/context/SearchContext';
+export {
+  DEFAULT_LABELS,
+  interpolateLabel,
+} from '../stories/Components/SyndicationSearchWidget/context/SearchContext';
 export { Gallery } from '../stories/Components/Gallery/Gallery';
 export { default as IconCard } from '../stories/Components/Cards/IconCard/IconCard';
 export { default as StatsCard } from '../stories/Components/Cards/StatsCard/StatsCard';
 export { default as Pager } from '../stories/Components/Pager/Pager';
+export { default as FormAction } from '../stories/Components/Forms/FormAction/FormAction';
 export { default as TextCta } from '../stories/Components/TextCta/TextCta';
 export { default as Snackbar } from '../stories/Components/Snackbar/Snackbar';
+export {
+  default as UserFeedback,
+  DEFAULT_USER_FEEDBACK_LABELS,
+} from '../stories/Components/UserFeedback/UserFeedback';
 
 // Import global styles
 import '../stories/assets/scss/style.scss';

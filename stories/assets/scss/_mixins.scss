@@ -65,6 +65,39 @@
   background: linear-gradient($direction, $list);
 }
 
+// Focus ring — token-driven, theme-adaptive visible focus for keyboard users.
+// Emits a consistent WCAG 2.2 AA focus indicator wherever an interactive
+// element needs one. The ring colour follows `--mg-color-interactive`, so it
+// adapts per theme automatically. On links, pair with an explicit
+// `text-decoration: underline` so the affordance is not colour-only.
+@mixin mg-focus-ring {
+  border-radius: var(--mg-focus-ring-radius);
+  outline: var(--mg-focus-ring-width) solid rgb(var(--mg-color-focus-ring));
+  outline-offset: var(--mg-focus-ring-offset);
+}
+
+// Card image hover zoom — a subtle, modern "state affordance". Include inside
+// a card variant whose visual has `overflow: hidden` so the scale stays framed.
+// Motion is gated behind prefers-reduced-motion so it never animates for users
+// who opt out.
+@mixin mg-card-image-zoom {
+  .mg-card__image {
+    @media (prefers-reduced-motion: no-preference) {
+      transition:
+        opacity var(--mg-motion-duration-medium) var(--mg-motion-easing-standard),
+        transform var(--mg-motion-duration-medium) var(--mg-motion-easing-standard);
+    }
+  }
+
+  &:hover .mg-card__image {
+    opacity: 0.78;
+
+    @media (prefers-reduced-motion: no-preference) {
+      transform: scale(1.04);
+    }
+  }
+}
+
 /* mixing  end */
 
 /* placeholder start */

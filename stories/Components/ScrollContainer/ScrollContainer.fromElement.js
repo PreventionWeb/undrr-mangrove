@@ -26,6 +26,7 @@ export default function scrollContainerFromElement(container) {
     itemWidth: dataset.itemWidth || 'auto',
     padding: dataset.padding || '0',
     showArrows: dataset.showArrows === 'true',
+    stretchItems: dataset.stretchItems === 'true',
     stepSize: dataset.stepSize ? parseInt(dataset.stepSize, 10) : null,
   };
 

@@ -7,6 +7,12 @@
 //   margin: 0 auto;
 // }
 .mg-hero {
+  --mg-hero-cta-color: var(--mg-color-hero);
+  --mg-hero-gradient-color: var(--mg-color-blue-900);
+  --mg-hero-gradient-start: var(--mg-hero-gradient-start-opacity);
+  --mg-hero-gradient-middle: var(--mg-hero-gradient-middle-opacity);
+  --mg-hero-gradient-end: var(--mg-hero-gradient-end-opacity);
+
   background-size: cover;
   background-position: center;
   color: rgb(var(--mg-color-neutral-0));
@@ -17,13 +23,72 @@
   padding-left: var(--mg-spacing-100);
   width: 100vw;
 
+  &:not(.mg-hero--split)::before {
+    background: linear-gradient(
+      90deg,
+      rgb(var(--mg-hero-gradient-color) / var(--mg-hero-gradient-start)) 0%,
+      rgb(var(--mg-hero-gradient-color) / var(--mg-hero-gradient-middle)) 48%,
+      rgb(var(--mg-hero-gradient-color) / var(--mg-hero-gradient-end)) 100%
+    );
+    content: "";
+    inset: 0;
+    pointer-events: none;
+    position: absolute;
+
+    @media (max-width: $mg-breakpoint-tablet) {
+      background: linear-gradient(
+        0deg,
+        rgb(var(--mg-hero-gradient-color) / var(--mg-hero-gradient-start)) 0%,
+        rgb(var(--mg-hero-gradient-color) / var(--mg-hero-gradient-middle)) 68%,
+        rgb(var(--mg-hero-gradient-color) / var(--mg-hero-gradient-end)) 100%
+      );
+    }
+  }
+
   @media (min-width: $mg-breakpoint-tablet) {
     aspect-ratio: 16 / 4; // we use 16:4, which is closer to the real crop ratio
-    padding-left: calc(50vw - calc($mg-breakpoint-desktop / 2)); // to keep the overlay fixed
+    padding-left: calc(
+      50vw - calc($mg-breakpoint-desktop / 2)
+    ); // to keep the overlay fixed
   }
 
   @media (min-width: $mg-breakpoint-desktop-wide) {
-    padding-left: calc(50vw - calc($mg-breakpoint-desktop-wide / 2)); // to keep the overlay fixed
+    padding-left: calc(
+      50vw - calc($mg-breakpoint-desktop-wide / 2)
+    ); // to keep the overlay fixed
+  }
+
+  &--contained {
+    margin-inline: 0;
+    padding-inline: 0;
+    width: 100%;
+  }
+
+  &--immersive:not(.mg-hero--split) {
+    align-items: end;
+    aspect-ratio: unset;
+    min-height: clamp(mg-rem(496), 62vw, mg-rem(688));
+
+    .mg-hero__overlay {
+      align-items: end;
+      margin: 0;
+      max-width: mg-rem(768);
+      padding: clamp(mg-rem(32), 6vw, mg-rem(80));
+    }
+
+    .mg-hero__title,
+    .mg-hero__title .text-xxl {
+      font-size: clamp(mg-rem(38), 6vw, mg-rem(80));
+      letter-spacing: -0.045em;
+      line-height: 0.98;
+      max-width: 12ch;
+    }
+
+    .mg-hero__summaryText {
+      font-size: clamp(mg-rem(16), 1.8vw, mg-rem(21));
+      line-height: 1.55;
+      max-width: 37rem;
+    }
   }
 
   // Button overrides
@@ -37,9 +102,23 @@
     background-color: rgb(var(--mg-color-neutral-0));
   }
 
-  a.mg-button-secondary,
-  a.mg-button-secondary:hover,
-  a.mg-button-secondary:visited {
+  // Editorial link-style CTA used by CtaButton.
+  a.mg-button.mg-button-cta,
+  a.mg-button.mg-button-cta:hover,
+  a.mg-button.mg-button-cta:visited {
+    background: transparent;
+    border-color: transparent;
+    color: rgb(var(--mg-color-neutral-0));
+
+    &::after {
+      background: rgb(var(--mg-color-neutral-0));
+      color: rgb(var(--mg-hero-cta-color));
+    }
+  }
+
+  a.mg-button-secondary:not(.mg-button-cta),
+  a.mg-button-secondary:not(.mg-button-cta):hover,
+  a.mg-button-secondary:not(.mg-button-cta):visited {
     background-color: var(--mg-color-hero-button-secondary-background);
     color: rgb(var(--mg-color-hero-button-secondary-color));
     border-color: rgb(var(--mg-border-color-hero-button-secondary));
@@ -53,17 +132,25 @@
 
   &__overlay {
     align-items: center;
-    background-color: rgb(var(--mg-color-blue-900) / var(--mg-opacity-hero));
+    background: transparent;
     display: grid;
     margin: var(--mg-spacing-hero-overlay);
     max-width: var(--mg-hero-overlay-max-width);
     padding: var(--mg-hero-overlay-padding);
+    position: relative;
+    z-index: 1;
   }
 
   &__content {
     display: grid;
     margin-top: var(--mg-spacing-25);
     row-gap: mg-rem(10);
+  }
+
+  &__logo {
+    height: auto;
+    margin-bottom: clamp(var(--mg-spacing-300), 10vw, var(--mg-spacing-800));
+    width: min(mg-rem(208), 52vw);
   }
 
   &__meta {
@@ -104,6 +191,8 @@
     font-weight: bold;
     font-size: $mg-font-size-600;
     line-height: 1.2;
+    max-width: 18ch;
+    text-wrap: balance;
 
     a,
     a:hover,
@@ -156,19 +245,54 @@
         }
       }
     }
+
+    // Preserve heading typography when CMS content is wrapped in the inline
+    // span used by HeroTitle; host-page span rules must not shrink the title.
+    h1 > span,
+    h2 > span,
+    h3 > span,
+    h4 > span,
+    h5 > span,
+    h6 > span,
+    a > span {
+      font-family: inherit;
+      font-size: inherit;
+      font-weight: inherit;
+      letter-spacing: inherit;
+      line-height: inherit;
+    }
   }
 
   &__summaryText {
     @include mg-typography("small");
 
     margin-bottom: var(--mg-spacing-25);
+    max-width: 62ch;
+    text-wrap: pretty;
   }
 }
 
 .mg-hero__buttons {
-  padding-top: var(--mg-spacing-75);
   display: flex;
+  flex-wrap: wrap;
+  gap: var(--mg-spacing-100) var(--mg-spacing-250);
   padding-bottom: var(--mg-spacing-50);
+  padding-top: var(--mg-spacing-75);
+
+  @media (max-width: $mg-breakpoint-tablet) {
+    align-items: flex-start;
+    flex-direction: column;
+    flex-wrap: nowrap;
+
+    .mg-button.mg-button-cta {
+      inline-size: fit-content;
+      max-inline-size: 100%;
+    }
+  }
+
+  .mg-button + .mg-button {
+    margin-inline-start: 0;
+  }
 }
 
 // Child variant
@@ -181,27 +305,30 @@
 // Stylistic variants
 $variant-colour-props: (
   "secondary": "--mg-color-orange-800",
-  "tertiary":  "--mg-color-neutral-900",
+  "tertiary": "--mg-color-neutral-900",
   "quaternary": "--mg-color-red-800",
 );
 
 @each $name, $prop in $variant-colour-props {
-  .mg-hero--#{$name} .mg-hero__overlay {
-    background-color: rgb(var(#{$prop}) / var(--mg-opacity-hero));
+  .mg-hero--#{$name} {
+    --mg-hero-cta-color: var(#{$prop});
+    --mg-hero-gradient-color: var(#{$prop});
 
-    a.mg-button,
-    a.mg-button:hover,
-    a.mg-button:visited {
-      color: rgb(var(#{$prop}));
-    }
+    .mg-hero__overlay {
+      a.mg-button:not(.mg-button-cta),
+      a.mg-button:not(.mg-button-cta):hover,
+      a.mg-button:not(.mg-button-cta):visited {
+        color: rgb(var(#{$prop}));
+      }
 
-    // Preserve secondary button's dedicated tokens over the generic color above
-    a.mg-button-secondary,
-    a.mg-button-secondary:hover,
-    a.mg-button-secondary:visited {
-      background-color: var(--mg-color-hero-button-secondary-background);
-      color: rgb(var(--mg-color-hero-button-secondary-color));
-      border-color: rgb(var(--mg-border-color-hero-button-secondary));
+      // Preserve secondary button's dedicated tokens over the generic color above
+      a.mg-button-secondary:not(.mg-button-cta),
+      a.mg-button-secondary:not(.mg-button-cta):hover,
+      a.mg-button-secondary:not(.mg-button-cta):visited {
+        background-color: var(--mg-color-hero-button-secondary-background);
+        color: rgb(var(--mg-color-hero-button-secondary-color));
+        border-color: rgb(var(--mg-border-color-hero-button-secondary));
+      }
     }
   }
 }
@@ -211,13 +338,40 @@ $variant-colour-props: (
   margin-right: calc(50% - (50vw)); // to expand out of the parent container
   padding-right: var(--mg-spacing-100);
 
+  &::before {
+    background: linear-gradient(
+      270deg,
+      rgb(var(--mg-hero-gradient-color) / var(--mg-hero-gradient-start)) 0%,
+      rgb(var(--mg-hero-gradient-color) / var(--mg-hero-gradient-middle)) 48%,
+      rgb(var(--mg-hero-gradient-color) / var(--mg-hero-gradient-end)) 100%
+    );
+
+    @media (max-width: $mg-breakpoint-tablet) {
+      background: linear-gradient(
+        0deg,
+        rgb(var(--mg-hero-gradient-color) / var(--mg-hero-gradient-start)) 0%,
+        rgb(var(--mg-hero-gradient-color) / var(--mg-hero-gradient-middle)) 68%,
+        rgb(var(--mg-hero-gradient-color) / var(--mg-hero-gradient-end)) 100%
+      );
+    }
+  }
+
   @media (min-width: $mg-breakpoint-tablet) {
-    padding-right: calc(50vw - calc($mg-breakpoint-desktop / 2)); // to keep the overlay fixed
+    padding-right: calc(
+      50vw - calc($mg-breakpoint-desktop / 2)
+    ); // to keep the overlay fixed
   }
 
   @media (min-width: $mg-breakpoint-desktop-wide) {
-    padding-right: calc(50vw - calc($mg-breakpoint-desktop-wide / 2)); // to keep the overlay fixed
+    padding-right: calc(
+      50vw - calc($mg-breakpoint-desktop-wide / 2)
+    ); // to keep the overlay fixed
   }
+}
+
+[dir="rtl"] .mg-hero--contained:not(.mg-hero--split) {
+  margin-inline: 0;
+  padding-inline: 0;
 }
 
 // Split layout variant
@@ -241,9 +395,22 @@ $variant-colour-props: (
     background-color: rgb(var(--mg-color-neutral-0));
   }
 
-  a.mg-button-secondary,
-  a.mg-button-secondary:hover,
-  a.mg-button-secondary:visited {
+  a.mg-button.mg-button-cta,
+  a.mg-button.mg-button-cta:hover,
+  a.mg-button.mg-button-cta:visited {
+    background: transparent;
+    border-color: transparent;
+    color: rgb(var(--mg-color-neutral-0));
+
+    &::after {
+      background: rgb(var(--mg-color-neutral-0));
+      color: rgb(var(--mg-hero-cta-color));
+    }
+  }
+
+  a.mg-button-secondary:not(.mg-button-cta),
+  a.mg-button-secondary:not(.mg-button-cta):hover,
+  a.mg-button-secondary:not(.mg-button-cta):visited {
     background-color: var(--mg-color-hero-button-secondary-background);
     color: rgb(var(--mg-color-hero-button-secondary-color));
     border-color: rgb(var(--mg-border-color-hero-button-secondary));
@@ -363,9 +530,9 @@ $variant-colour-props: (
   .mg-hero--split.mg-hero--#{$name} {
     background-color: rgb(var(#{$prop}));
 
-    a.mg-button,
-    a.mg-button:hover,
-    a.mg-button:visited {
+    a.mg-button:not(.mg-button-cta),
+    a.mg-button:not(.mg-button-cta):hover,
+    a.mg-button:not(.mg-button-cta):visited {
       color: rgb(var(#{$prop}));
     }
   }

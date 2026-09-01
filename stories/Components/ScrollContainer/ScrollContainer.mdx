@@ -1,6 +1,10 @@
 import { Meta, Story, Canvas } from '@storybook/addon-docs/blocks';
 import * as ScrollContainerStories from './ScrollContainer.stories';
 import ScrollContainer from './ScrollContainer.jsx';
+import {
+  ScrollExampleCard,
+  scrollCardExamples,
+} from './ScrollContainerExamples';
 
 # Scroll container
 
@@ -20,50 +24,29 @@ A basic scroll container implementation with default settings.
 
 A scroll container with a custom height setting.
 
-<Canvas of={ScrollContainerStories.CustomHeight} meta={ScrollContainerStories} />
+<Canvas
+  of={ScrollContainerStories.CustomHeight}
+  meta={ScrollContainerStories}
+/>
 
 ## With minimum width
 
 A scroll container with a minimum width setting.
 
-<Canvas of={ScrollContainerStories.WithMinWidth} meta={ScrollContainerStories} />
+<Canvas
+  of={ScrollContainerStories.WithMinWidth}
+  meta={ScrollContainerStories}
+/>
 
 ## With navigation arrows
 
 A scroll container with navigation arrows for easier scrolling. The arrows appear at the top of the container when content overflows horizontally and the `showArrows` prop is set to `true`. The arrows will only be visible when there is content to scroll to in that direction.
 
 <div style={{ maxWidth: '800px', margin: '0 auto', position: 'relative' }}>
-  <ScrollContainer showArrows={true} minWidth="1200px" padding="1rem">
-    {Array(5)
-      .fill()
-      .map((_, i) => (
-        <article
-          key={i}
-          className="mg-card mg-card__vc"
-          style={{
-            minWidth: '350px',
-            marginRight: '20px',
-            padding: '20px',
-            boxSizing: 'border-box',
-          }}
-        >
-          <div className="mg-card__visual">
-            <img
-              alt="Example image"
-              className="mg-card__image"
-              src="https://www.undrr.org/sites/default/files/2020-01/Home---about-us_0.jpg"
-            />
-          </div>
-          <div className="mg-card__content">
-            <header className="mg-card__title">
-              <a href={`#${i + 1}`}>
-                Title in large size with up to two lines of text {i + 1}
-              </a>
-            </header>
-            <p className="mg-card__summary">Example content for card {i + 1}</p>
-          </div>
-        </article>
-      ))}
+  <ScrollContainer showArrows={true} itemWidth="350px">
+    {scrollCardExamples.map((card, i) => (
+      <ScrollExampleCard card={card} index={i} key={card.title} />
+    ))}
   </ScrollContainer>
 </div>
 
@@ -75,31 +58,9 @@ A scroll container with custom step size for navigation arrows. By default, clic
 
 <div style={{ maxWidth: '800px', margin: '0 auto', position: 'relative' }}>
   <ScrollContainer showArrows={true} stepSize={200}>
-    {Array(5)
-      .fill()
-      .map((_, i) => (
-        <article
-          key={i}
-          className="mg-card mg-card__vc"
-          style={{ minWidth: '350px' }}
-        >
-          <div className="mg-card__visual">
-            <img
-              alt="Example image"
-              className="mg-card__image"
-              src="https://www.undrr.org/sites/default/files/2020-01/Home---about-us_0.jpg"
-            />
-          </div>
-          <div className="mg-card__content">
-            <header className="mg-card__title">
-              <a href={`#${i + 1}`}>
-                Title in large size with up to two lines of text {i + 1}
-              </a>
-            </header>
-            <p className="mg-card__summary">Example content for card {i + 1}</p>
-          </div>
-        </article>
-      ))}
+    {scrollCardExamples.map((card, i) => (
+      <ScrollExampleCard card={card} index={i} key={card.title} />
+    ))}
   </ScrollContainer>
 </div>
 
@@ -112,33 +73,9 @@ This demonstrates a use case of where a single div may wrap all the child conten
 <div style={{ maxWidth: '800px', margin: '0 auto', position: 'relative' }}>
   <ScrollContainer showArrows={true}>
     <section className="mg-grid">
-      {Array(5)
-        .fill()
-        .map((_, i) => (
-          <article
-            key={i}
-            className="mg-card mg-card__vc"
-            style={{ minWidth: '350px' }}
-          >
-            <div className="mg-card__visual">
-              <img
-                alt="Example image"
-                className="mg-card__image"
-                src="https://www.undrr.org/sites/default/files/2020-01/Home---about-us_0.jpg"
-              />
-            </div>
-            <div className="mg-card__content">
-              <header className="mg-card__title">
-                <a href={`#${i + 1}`}>
-                  Title in large size with up to two lines of text {i + 1}
-                </a>
-              </header>
-              <p className="mg-card__summary">
-                Example content for card {i + 1}
-              </p>
-            </div>
-          </article>
-        ))}
+      {scrollCardExamples.map((card, i) => (
+        <ScrollExampleCard card={card} index={i} key={card.title} />
+      ))}
     </section>
   </ScrollContainer>
 </div>
@@ -160,16 +97,17 @@ const MyComponent = () => (
 
 ## Props
 
-| Prop       | Type    | Default  | Description                                         |
-| ---------- | ------- | -------- | --------------------------------------------------- |
-| children   | node    | Required | Content to be displayed inside the scroll container |
-| height     | string  | 'auto'   | Custom height for the container                     |
-| minWidth   | string  | 'auto'   | Minimum width for the container                     |
-| itemWidth  | string  | 'auto'   | Width for individual items within the container     |
-| padding    | string  | '0'      | Padding inside the container                        |
-| className  | string  | ''       | Additional CSS class names                          |
-| showArrows | boolean | false    | Whether to show navigation arrows                   |
-| stepSize   | number  | null     | Custom step size for arrow navigation (in pixels)   |
+| Prop         | Type    | Default  | Description                                         |
+| ------------ | ------- | -------- | --------------------------------------------------- |
+| children     | node    | Required | Content to be displayed inside the scroll container |
+| height       | string  | 'auto'   | Custom height for the container                     |
+| minWidth     | string  | 'auto'   | Minimum width for the container                     |
+| itemWidth    | string  | 'auto'   | Width for individual items within the container     |
+| padding      | string  | '0'      | Padding inside the container                        |
+| className    | string  | ''       | Additional CSS class names                          |
+| showArrows   | boolean | false    | Whether to show navigation arrows                   |
+| stretchItems | boolean | false    | Stretch mixed-length items to a shared row height   |
+| stepSize     | number  | null     | Custom step size for arrow navigation (in pixels)   |
 
 ## Behaviors
 
@@ -216,13 +154,16 @@ These are gaps that affect users or accessibility auditors:
 ScrollContainer supports [layered hydration](https://github.com/unisdr/undrr-mangrove/blob/main/docs/HYDRATION.md). Use data attributes on a container element with server-rendered child content:
 
 ```html
-<div data-mg-scroll-container
+<div
+  data-mg-scroll-container
   data-height="300px"
   data-min-width="200px"
   data-item-width="250px"
   data-padding="16"
   data-show-arrows="true"
-  data-step-size="300">
+  data-stretch-items="true"
+  data-step-size="300"
+>
   <div class="mg-scroll__content">
     <div class="card">Card 1</div>
     <div class="card">Card 2</div>
@@ -230,27 +171,41 @@ ScrollContainer supports [layered hydration](https://github.com/unisdr/undrr-man
 </div>
 ```
 
-| Attribute | Default | Description |
-|-----------|---------|-------------|
-| `data-height` | `'auto'` | Container height (CSS value) |
-| `data-min-width` | `'auto'` | Minimum width (CSS value) |
-| `data-item-width` | `'auto'` | Width for individual items (CSS value) |
-| `data-padding` | `'0'` | Container padding |
-| `data-show-arrows` | `'false'` | Show navigation arrows (`'true'` or `'false'`) |
-| `data-step-size` | `null` | Scroll step in pixels for arrow navigation |
+| Attribute            | Default   | Description                                       |
+| -------------------- | --------- | ------------------------------------------------- |
+| `data-height`        | `'auto'`  | Container height (CSS value)                      |
+| `data-min-width`     | `'auto'`  | Minimum width (CSS value)                         |
+| `data-item-width`    | `'auto'`  | Width for individual items (CSS value)            |
+| `data-padding`       | `'0'`     | Container padding                                 |
+| `data-show-arrows`   | `'false'` | Show navigation arrows (`'true'` or `'false'`)    |
+| `data-stretch-items` | `'false'` | Stretch mixed-length items to a shared row height |
+| `data-step-size`     | `null`    | Scroll step in pixels for arrow navigation        |
 
 Child elements are extracted from a `.mg-scroll__content` wrapper inside the container. If no wrapper is found, the container's `innerHTML` is used directly.
 
 ```js
-import createHydrator from "https://assets.undrr.org/static/mangrove/1.8.2/components/hydrate.js";
-import ScrollContainer, { fromElement } from "https://assets.undrr.org/static/mangrove/1.8.2/components/ScrollContainer.js";
-createHydrator({ selector: "[data-mg-scroll-container]", component: ScrollContainer, fromElement });
+import createHydrator from 'https://assets.undrr.org/static/mangrove/1.8.2/components/hydrate.js';
+import ScrollContainer, {
+  fromElement,
+} from 'https://assets.undrr.org/static/mangrove/1.8.2/components/ScrollContainer.js';
+createHydrator({
+  selector: '[data-mg-scroll-container]',
+  component: ScrollContainer,
+  fromElement,
+});
 ```
 
 See the [hydration guide](https://github.com/unisdr/undrr-mangrove/blob/main/docs/HYDRATION.md) for the full API and integration details.
 
 ## Changelog
 
+- **1.3** — 2026-09-01 ([#1086](https://github.com/unisdr/undrr-mangrove/pull/1086)):
+  - Moved navigation below the collection, refreshed arrows as subtle circular controls with tactile states, and added proximity scroll snapping while preserving mouse drag and touch scrolling.
+  - Consolidated spacing into one moderate `spacing-150` flex gap and removed physical per-item margins, eliminating doubled whitespace, keeping collection edges flush, and preserving rhythm in RTL layouts.
+  - Reworked documentation examples with varied images, headlines, summaries, and calls to action so demos exercise realistic mixed-length card content.
+  - Added `stretchItems` / `data-stretch-items` for equal-height mixed-content rails without consumer CSS.
+  - Raised arrow controls to the recommended 44px target, removed unintended vertical overflow, tokenised scrollbar radii, respected reduced-motion preferences, and recalculated arrow state when container or content dimensions change.
+  - Removed redundant per-language story exports in favour of the global locale toolbar.
 - **1.2** — 2026-06-19 ([mangrove#1056](https://github.com/unisdr/undrr-mangrove/pull/1056)): Consolidated `scrollLeftLabel` and `scrollRightLabel` props into a single `labels` object with `DEFAULT_SCROLL_LABELS` export. Backwards compatible — `DEFAULT_SCROLL_LABELS` covers all keys. Co-located `_labels.js` provides `LABELS_ES/FR/JA/ZH/AR/RU`; locale toolbar now switches translated strings in all stories.
 
 - **1.1** — 2026-03-03: Added hydration support with `fromElement` prop extraction and `createHydrator` integration
