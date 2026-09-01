@@ -10,7 +10,7 @@ Use this checklist when building or reviewing a component. Each item links to th
 - [ ] Files follow the standard layout: `ComponentName.jsx`, `component-name.scss`, `ComponentName.stories.jsx`, `ComponentName.mdx`
 - [ ] SCSS uses `var(--mg-color-*)` and `var(--mg-spacing-*)` for colors and spacing (no hardcoded values); SCSS variables from `_variables.scss` are used only for build-time tokens (breakpoints, font sizes, families); use `$mg-z-index-*` tokens for global stacking contexts — fixed, sticky, or portaled elements; derive backdrops with `$token - 1`
 - [ ] SCSS imported in `stories/assets/scss/_components.scss`
-- [ ] Component title, label, tag, and UI-chrome classes (e.g. `__title`, `__label`, `__value`, `__link` for nav, button classes) use `$mg-font-family-headings`, not `$mg-font-family-condensed` directly. Narrative h1–h6 inherit Roboto and should not declare a font-family. Add a matching `:lang(ar)` block routing to `$mg-font-family-arabic-headings`, since Roboto Condensed has no Arabic glyph coverage.
+- [ ] Component title, label, tag, and compact navigation-chrome classes (e.g. `__title`, `__label`, `__value`, and `__link` for nav) use `$mg-font-family-headings`, not `$mg-font-family-condensed` directly. Buttons and narrative h1–h6 use regular Roboto; buttons declare `$mg-font-family`, while narrative headings inherit it. Add matching `:lang(ar)` routing: compact heading chrome uses `$mg-font-family-arabic-headings`, while buttons use `$mg-font-family-arabic-body`.
 - [ ] No `defaultProps` (use destructured default parameters instead)
 
 See [Component standards](https://unisdr.github.io/undrr-mangrove/?path=/docs/contributing-component-standards--docs) for the full conventions.

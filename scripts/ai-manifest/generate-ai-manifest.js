@@ -130,7 +130,6 @@ const COMPONENT_IDS = {
   IconCard: 'components-cards-icon-card',
   StatsCard: 'components-cards-stats-card',
   Breadcrumbs: 'components-navigation-breadcrumbs',
-  Pagination: 'components-navigation-pagination',
   Tab: 'components-tabs',
   Hero: 'components-hero-hero',
   PageHeader: 'components-pageheader',
@@ -294,7 +293,6 @@ function buildSampleProps(React) {
         { text: 'Global Assessment Report 2024' },
       ],
     },
-    Pagination: { text: 'Page', text2: 'of' },
     Tab: {
       tabdata: [
         {

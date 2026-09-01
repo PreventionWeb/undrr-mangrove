@@ -44,7 +44,7 @@
   .c-bn,
   .cm__btn,
   .pm__btn {
-    font-family: $mg-font-family-headings;
+    font-family: $mg-font-family;
     font-weight: 600;
 
     @media (prefers-reduced-motion: no-preference) {
@@ -77,6 +77,6 @@
   .c-bn,
   .cm__btn,
   .pm__btn {
-    font-family: $mg-font-family-arabic-headings;
+    font-family: $mg-font-family-arabic-body;
   }
 }

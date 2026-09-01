@@ -79,6 +79,9 @@ Primary, secondary, and disabled buttons on light and dark backgrounds for easy 
 
 ## Changelog
 
+- **1.7.1** — 2026-09-01 ([#1086](https://github.com/unisdr/undrr-mangrove/pull/1086)): Removed the CTA badge's horizontal hover translation so label and arrow geometry remain pixel-stable between rest, hover, and focus states; colour and underline continue to communicate hover.
+- **1.7** — 2026-09-01 ([#1086](https://github.com/unisdr/undrr-mangrove/pull/1086)): Switched conventional and editorial button labels from Roboto Condensed to regular Roboto for a calmer, more legible action treatment. Arabic buttons now use the corresponding body family; the CTA chevron retains bold weight for clarity.
+- **1.6.1** — 2026-09-01 ([#1086](https://github.com/unisdr/undrr-mangrove/pull/1086)): Increased the editorial CTA chevron to 18px with bold heading weight and refined optical centring, improving its visual balance within the 22px circular badge.
 - **1.6** — 2026-09-01 ([#1086](https://github.com/unisdr/undrr-mangrove/pull/1086)): Made the editorial treatment an explicit `Variant="CTA"` option using the descriptive `.mg-button-cta` modifier. CtaButton now defaults to the conventional shared button treatment; cards and heroes opt into the editorial variant intentionally.
 - **1.5** — 2026-08-31 ([#1086](https://github.com/unisdr/undrr-mangrove/pull/1086)): Added a reduced-motion-aware `scale(0.96)` pressed state to conventional buttons. Editorial link CTAs keep their labels stable and retain the directional badge-only response.
 - **1.4** — 2026-08-31 ([#1086](https://github.com/unisdr/undrr-mangrove/pull/1086)): Refreshed React `CtaButton` instances as compact editorial links with an optically aligned circular direction badge, tactile press state, RTL direction, and context-aware hero colours. Raw `.mg-button` controls retain their conventional treatment.

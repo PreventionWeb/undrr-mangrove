@@ -17,7 +17,7 @@
   align-items: center;
   background: transparent;
   display: flex;
-  font-family: $mg-font-family-headings;
+  font-family: $mg-font-family;
   font-size: var(--mg-font-size-button);
   font-weight: 600;
   line-height: 1;
@@ -146,17 +146,18 @@ button {
     display: inline-flex;
     flex: 0 0 mg-rem(22);
     font-family: $mg-font-family;
-    font-size: $mg-font-size-300;
+    font-size: mg-rem(18);
+    font-weight: 700;
     height: mg-rem(22);
     justify-content: center;
     line-height: 1;
     margin-inline-start: var(--mg-spacing-50);
-    padding-bottom: 0.08em; // optically centres the asymmetric chevron
+    padding-block-end: 0.06em; // optically centres the asymmetric chevron
+    padding-inline-start: 0.03em;
 
     @media (prefers-reduced-motion: no-preference) {
       transition:
-        background-color var(--mg-motion-duration-fast) var(--mg-motion-easing-standard),
-        translate var(--mg-motion-duration-fast) var(--mg-motion-easing-standard);
+        background-color var(--mg-motion-duration-fast) var(--mg-motion-easing-standard);
     }
   }
 
@@ -169,7 +170,6 @@ button {
 
     &::after {
       background: rgb(var(--mg-color-interactive-active));
-      translate: 0.12em 0;
     }
   }
 
@@ -204,6 +204,6 @@ button {
 // Arabic font override
 :lang(ar) {
   .mg-button {
-    font-family: $mg-font-family-arabic-headings;
+    font-family: $mg-font-family-arabic-body;
   }
 }
