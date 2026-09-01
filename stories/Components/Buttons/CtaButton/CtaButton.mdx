@@ -80,13 +80,12 @@ Primary, secondary, and disabled buttons on light and dark backgrounds for easy 
 
 ## Changelog
 
-- **1.4** — 2026-09-01 ([#1086](https://github.com/unisdr/undrr-mangrove/pull/1086)):
+- **1.3.1** — 2026-09-01 ([#1086](https://github.com/unisdr/undrr-mangrove/pull/1086)):
   - Refreshed React `CtaButton` instances as compact editorial links with an optically aligned circular direction badge, tactile press state, RTL direction, context-aware hero colours, and safe wrapping for narrow German and Arabic labels.
   - Made the editorial treatment an explicit `Variant="CTA"` option; conventional form and utility actions retain their filled button treatment.
   - Switched button labels from Roboto Condensed to regular Roboto, strengthened and optically centred the CTA chevron, and kept label/badge geometry stable across hover and focus.
   - Softened conventional buttons with the shared small-radius token, replaced physical adjacent margins with the RTL-safe `.mg-buttons` gap container, and hardened disabled links so caller props cannot restore navigation.
-  - Added focused behaviour and accessibility coverage, including reduced-motion-aware `scale(0.96)` press feedback.
-- **1.3.1** — 2026-08-31: Buttons now transition background/border/text colours smoothly on hover (gated by `prefers-reduced-motion`), and the keyboard focus indicator is a clearer token-driven ring (neutral separator + `--mg-color-focus-ring`) instead of a low-contrast same-colour glow.
+  - Added focused behaviour and accessibility coverage, including smoother hover transitions, a clearer token-driven keyboard focus ring, and reduced-motion-aware `scale(0.96)` press feedback.
 - **1.3** — 2026-08-26: Add composable `.mg-button-outline` modifier for primary and secondary emphasis variants.
 - **1.2** — 2026-04-13: `.mg-button` now declares an explicit `font-family: $mg-font-family-headings;` (was inheriting body Roboto). Aligns with the existing `:lang(ar)` override which already used `$mg-font-family-arabic-headings` — Latin and Arabic now match.
 - **1.1** — 2026-03-22: Add "All variants" comparison story (light + dark backgrounds). Fix secondary button contrast to meet WCAG AA (blue-800/blue-700, was blue-600/blue-400). Fix disabled button contrast (neutral-500 bg + white text). Remove dead `mg-button-arrow` class and `For_Primary` prop. Add `:focus-visible` ring for buttons on dark backgrounds. Tokenize secondary button and hero secondary button colors for theme overriding.
