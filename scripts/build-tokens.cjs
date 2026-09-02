@@ -316,6 +316,16 @@ function main(argv) {
       continue;
     }
     fs.mkdirSync(path.dirname(absolute), { recursive: true });
+    // Only write when the content actually changed. Rewriting identical bytes
+    // still bumps mtime, which makes webpack rebuild and invalidates the chunk
+    // hash held by any open Storybook tab, producing a ChunkLoadError loop.
+    const previous = fs.existsSync(absolute)
+      ? fs.readFileSync(absolute, 'utf8')
+      : null;
+    if (previous === contents) {
+      console.log(`build-tokens: ${target.output} unchanged`);
+      return;
+    }
     fs.writeFileSync(absolute, contents);
     process.stdout.write(`build-tokens: wrote ${relative}\n`);
   }

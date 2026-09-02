@@ -31,6 +31,15 @@ function build(input, output, layerName) {
   const css = fs.readFileSync(input, 'utf8');
   const layered = wrapInLayer(css, layerName, input);
   fs.mkdirSync(path.dirname(output), { recursive: true });
+  // See build-tokens.cjs: an identical rewrite still bumps mtime and triggers a
+  // webpack rebuild, which breaks hot module replacement for open tabs.
+  const previous = fs.existsSync(output)
+    ? fs.readFileSync(output, 'utf8')
+    : null;
+  if (previous === layered) {
+    console.log(`Unchanged ${output}`);
+    return;
+  }
   fs.writeFileSync(output, layered);
   process.stdout.write(
     `Wrote ${output} (@layer ${layerName}, ${layered.length} bytes)\n`
