@@ -21,6 +21,12 @@ Base URL: `https://assets.undrr.org/static/mangrove/{version}/`
 | DELTA Resilience | `/css/style-delta.css` | deltaresilience.org |
 | Gutenberg editor | `/css/style-gutenberg.css` | Drupal Gutenberg block previews |
 
+`style.css` **is** the UNDRR theme. There is no `style-undrr.css`: UNDRR is the
+default palette and lives at `:root` in the base stylesheet, while each
+sub-brand adds a `.mg-theme-*` block on top. Sub-brand consumers also need the
+matching `mg-theme-{brand}` class on `<body>` from 2.0 onward — see the
+[2.0 release notes](https://github.com/unisdr/undrr-mangrove/blob/main/docs/RELEASE-2.0.md#sub-brand-theming-migration).
+
 #### Legacy theme variants
 
 Legacy variants keep the pre-1.4 behavior (`html { font-size: 10px }`). Use these if your site has custom CSS written for the 10px root. See the [v1.4 release notes](https://github.com/unisdr/undrr-mangrove/blob/main/docs/RELEASE-1.4.md#migration-root-font-size-change) for migration details.
@@ -38,6 +44,27 @@ The DELTA Resilience theme has no legacy variant.
 ```html
 <link rel="stylesheet" href="https://assets.undrr.org/static/mangrove/1.8.2/css/style.css" />
 ```
+
+### React Aria stylesheets (proposed, not yet published)
+
+Mangrove styles the stock `.react-aria-*` classes of
+[React Aria Components](https://react-spectrum.adobe.com/react-aria/), so those
+components pick up Mangrove theming with no `className` or configuration.
+
+**If you load `style.css` or any sub-brand stylesheet you already have this** —
+the React Aria rules are compiled into every theme stylesheet. Nothing to add.
+
+Standalone files (`aria/react-aria.css`, `aria/react-aria.layered.css` and
+`aria/tokens/{brand}.css`) exist in the repository for consumers who want that
+surface *without* a full Mangrove stylesheet, but they are **not currently
+distributed**: `yarn build` does not copy `aria/` into `dist/`, the release
+workflow does not copy it into the published package, and the published
+`package.json` is regenerated without an `exports` field. So there is no CDN
+path and no npm entry point for them today. Build them from source with
+`yarn build:aria` if you need them.
+
+Wiring these into the CDN and npm artifacts is open work tracked with the
+[React Aria spike](https://github.com/unisdr/undrr-mangrove/pull/1080).
 
 ### JavaScript modules
 

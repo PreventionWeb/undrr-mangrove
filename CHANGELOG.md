@@ -30,7 +30,7 @@ Proposed in [PR #1080](https://github.com/unisdr/undrr-mangrove/pull/1080). A fo
 #### React Aria Components surface
 
 - Stock `.react-aria-*` classes from [React Aria Components](https://react-spectrum.adobe.com/react-aria/) 1.20 are styled from Mangrove tokens, so React Aria components adopt the active `mg-theme-*` brand with no `className`, wrapper or configuration.
-- `aria/react-aria.css` and per-brand `aria/tokens/{brand}.css` are emitted standalone for consumers who do not load Mangrove's full stylesheet. Token files are wrapped in `:where(:root)` so Mangrove's own palette wins when both are present, regardless of load order.
+- `aria/react-aria.css` and per-brand `aria/tokens/{brand}.css` are built standalone for consumers who do not load Mangrove's full stylesheet. Token files are wrapped in `:where(:root)` so Mangrove's own palette wins when both are present, regardless of load order. **Not distributed yet:** `aria/` is not copied into `dist/` or the published package, and the published `package.json` is regenerated without an `exports` field.
 - `aria/react-aria.layered.css` provides the same surface inside a `@layer mangrove` block. See `docs/CASCADE-LAYERS.md`.
 - **Known:** the surface also compiles into `style.css`, so it currently reaches every consumer — roughly 42 KB of a 313 KB stylesheet. Making it opt-in is unresolved.
 

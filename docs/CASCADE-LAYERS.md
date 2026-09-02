@@ -7,19 +7,38 @@ every time.
 | File                          | Wrapped in a layer?  | Import this when                                                          |
 | ----------------------------- | -------------------- | ------------------------------------------------------------------------- |
 | `aria/react-aria.css`         | No                   | Your page has no cascade layers, or you want today's behaviour unchanged.  |
-| `aria/react-aria.layered.css` | Yes, `@layer mangrove` | You use Tailwind, or any framework that puts its CSS in a cascade layer. |
+| `aria/react-aria.layered.css` | Yes, `@layer mangrove` | You use Tailwind or another layer-based framework **and** you do not load a Mangrove brand stylesheet. See the note below. |
 
 Both files contain byte-identical rules. The layered one adds a single
 `@layer mangrove { … }` wrapper (with `@charset` hoisted above it, where it is
 still legal). Nothing else differs, and no version of Mangrove declares a layer
 order — the order is yours to set.
 
-Package entry points:
+> **The layered file only helps if you are not also loading a Mangrove brand
+> stylesheet.** The React Aria surface is currently compiled into `style.css`
+> and into every brand sheet (`style-preventionweb.css`, `style-irp.css`,
+> `style-mcr.css`, `style-delta.css`, `style-all.css`) — about 30
+> `.react-aria-*` rules, unlayered. Because unlayered CSS beats layered CSS,
+> that copy wins over `react-aria.layered.css` no matter what layer order you
+> declare. Adding the layered file on top of a brand stylesheet changes
+> nothing.
+>
+> So the layered file is for consumers who load **no** Mangrove brand
+> stylesheet and pull in `aria/react-aria.layered.css` on its own — typically
+> a React or Tailwind product using Mangrove only for the React Aria surface.
+>
+> If you load a brand stylesheet **and** need your layered utilities to win,
+> there is no supported answer yet: put your own CSS in an unlayered position,
+> or override with specificity. Making the aria surface opt-in rather than
+> compiling it into every sheet is the open packaging question that would fix
+> this properly.
 
-```js
-import '@undrr/undrr-mangrove/aria.css'; // unlayered
-import '@undrr/undrr-mangrove/aria.layered.css'; // @layer mangrove
-```
+Neither file is distributed yet. `yarn build` does not copy `aria/` into
+`dist/`, the release workflow does not copy it into the published package, and
+the published `package.json` is regenerated without an `exports` field — so
+there is no npm entry point and no CDN path for either file today. Build them
+from source with `yarn build:aria`. Wiring them into the published artifacts is
+open work.
 
 ## The problem the layered file solves
 
