@@ -618,6 +618,9 @@ $mg-font-size-1100: 4rem;
   // color.neutral-400
   --mg-color-neutral-400: 128 128 128;
 
+  // color.neutral-500
+  --mg-color-neutral-500: 102 102 102;
+
   // color.neutral-600
   --mg-color-neutral-600: 77 77 77;
 
@@ -667,6 +670,12 @@ $mg-font-size-1100: 4rem;
   // color.button-background--hover
   --mg-color-button-background--hover: rgb(var(--mg-color-interactive-active));
 
+  // color.button-outline-primary
+  --mg-color-button-outline-primary: var(--mg-color-interactive);
+
+  // color.button-outline-primary--hover
+  --mg-color-button-outline-primary--hover: var(--mg-color-interactive-active);
+
   // color.form-check
   --mg-color-form-check: var(--mg-color-interactive);
 
@@ -715,6 +724,9 @@ $mg-font-size-1100: 4rem;
   // padding.button
   --mg-padding-button: var(--mg-spacing-100) var(--mg-spacing-150);
 
+  // border-width.button
+  --mg-border-width-button: 1px;
+
   // tab.padding
   --mg-tab-padding: var(--mg-spacing-150) var(--mg-spacing-200);
 
@@ -736,6 +748,9 @@ $mg-font-size-1100: 4rem;
   // select in the system failed WCAG 1.4.11. neutral-400 is 3.95:1.
   --mg-form-input-border-color: rgb(var(--mg-color-neutral-400));
 
+  // form-input.block-size
+  --mg-form-input-block-size: 46px;
+
   // focus-ring.width
   --mg-focus-ring-width: 2px;
 
@@ -753,6 +768,9 @@ $mg-font-size-1100: 4rem;
 
   // motion.duration-fast
   --mg-motion-duration-fast: 160ms;
+
+  // motion.duration-medium
+  --mg-motion-duration-medium: 300ms;
 
   // motion.easing-standard
   --mg-motion-easing-standard: cubic-bezier(0.2, 0, 0, 1);

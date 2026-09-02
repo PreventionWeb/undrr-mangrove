@@ -276,6 +276,9 @@ $_delta-font-family-stack: '"Dubai", sans-serif';
   // color.neutral-400
   --mg-color-neutral-400: 128 128 128;
 
+  // color.neutral-500
+  --mg-color-neutral-500: 102 102 102;
+
   // color.neutral-600
   --mg-color-neutral-600: 77 77 77;
 
@@ -329,6 +332,19 @@ $_delta-font-family-stack: '"Dubai", sans-serif';
   // on hover. That is DELTA's actual behaviour, not an error.
   --mg-color-button-background--hover: rgb(16 108 184);
 
+  // color.button-outline-primary
+  // UNDRR Blue. DELTA's own design system labels this swatch "UNDRR Blue -
+  // Corporate blue" and marks it Brand. 54 uses in DELTA's code, 1551 fills
+  // and 1645 strokes in its Figma file. It is rgb(0 79 145), identical to
+  // Mangrove's --mg-color-blue-900: DELTA's brand blue is UNDRR's.
+  --mg-color-button-outline-primary: 0 79 145;
+
+  // color.button-outline-primary--hover
+  // Hover/active partner of the brand blue, 9 uses in DELTA. Note it is
+  // LIGHTER than the base colour, unlike Mangrove's convention of darkening
+  // on hover. That is DELTA's actual behaviour, not an error.
+  --mg-color-button-outline-primary--hover: 16 108 184;
+
   // color.form-check
   --mg-color-form-check: var(--mg-color-interactive);
 
@@ -374,6 +390,9 @@ $_delta-font-family-stack: '"Dubai", sans-serif';
   // padding.button
   --mg-padding-button: var(--mg-spacing-100) var(--mg-spacing-200);
 
+  // border-width.button
+  --mg-border-width-button: 1px;
+
   // tab.padding
   --mg-tab-padding: var(--mg-spacing-150) var(--mg-spacing-200);
 
@@ -395,6 +414,9 @@ $_delta-font-family-stack: '"Dubai", sans-serif';
   // select in the system failed WCAG 1.4.11. neutral-400 is 3.95:1.
   --mg-form-input-border-color: rgb(var(--mg-color-neutral-400));
 
+  // form-input.block-size
+  --mg-form-input-block-size: 46px;
+
   // focus-ring.width
   --mg-focus-ring-width: 2px;
 
@@ -412,6 +434,9 @@ $_delta-font-family-stack: '"Dubai", sans-serif';
 
   // motion.duration-fast
   --mg-motion-duration-fast: 160ms;
+
+  // motion.duration-medium
+  --mg-motion-duration-medium: 300ms;
 
   // motion.easing-standard
   --mg-motion-easing-standard: cubic-bezier(0.2, 0, 0, 1);

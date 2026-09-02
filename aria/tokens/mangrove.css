@@ -35,6 +35,7 @@
   --mg-color-neutral-25: 242 242 242;
   --mg-color-neutral-50: 230 230 230;
   --mg-color-neutral-400: 128 128 128;
+  --mg-color-neutral-500: 102 102 102;
   --mg-color-neutral-600: 77 77 77;
   --mg-color-neutral-800: 26 26 26;
   --mg-color-neutral-900: 0 0 0;
@@ -50,6 +51,8 @@
   --mg-color-button: var(--mg-color-neutral-0);
   --mg-color-button-background: rgb(var(--mg-color-interactive));
   --mg-color-button-background--hover: rgb(var(--mg-color-interactive-active));
+  --mg-color-button-outline-primary: var(--mg-color-interactive);
+  --mg-color-button-outline-primary--hover: var(--mg-color-interactive-active);
   --mg-color-form-check: var(--mg-color-interactive);
   --mg-color-form-check--hover: var(--mg-color-interactive-active);
   --mg-color-form-check--checked: var(--mg-color-interactive);
@@ -66,18 +69,21 @@
   --mg-radius-button: var(--mg-spacing-50);
   --mg-radius-form-input: var(--mg-spacing-50);
   --mg-padding-button: var(--mg-spacing-100) var(--mg-spacing-150);
+  --mg-border-width-button: 1px;
   --mg-tab-padding: var(--mg-spacing-150) var(--mg-spacing-200);
   --mg-tab-min-block-size: 2.75rem;
   --mg-tab-indicator-size: 3px;
   --mg-form-input-background: rgb(var(--mg-color-neutral-25));
   --mg-form-input-background--focus: rgb(var(--mg-color-neutral-0));
   --mg-form-input-border-color: rgb(var(--mg-color-neutral-400));
+  --mg-form-input-block-size: 46px;
   --mg-focus-ring-width: 2px;
   --mg-focus-ring-offset: 2px;
   --mg-surface-raised: rgb(var(--mg-color-neutral-0));
   --mg-shadow-raised: inset 0 0 0 1px rgb(var(--mg-color-neutral-600) / 0.24);
   --mg-shadow-raised-hover: inset 0 0 0 2px rgb(var(--mg-color-interactive));
   --mg-motion-duration-fast: 160ms;
+  --mg-motion-duration-medium: 300ms;
   --mg-motion-easing-standard: cubic-bezier(0.2, 0, 0, 1);
   --mg-card-border-radius: var(--mg-spacing-50);
   --mg-z-index-modal: 5000;
@@ -111,7 +117,12 @@
   --mg-aria-color-accent-active: rgb(var(--mg-color-interactive-active));
   --mg-aria-color-on-accent: rgb(var(--mg-color-white));
   --mg-aria-color-text: rgb(var(--mg-color-text));
-  --mg-aria-color-muted-text: rgb(var(--mg-color-neutral-600));
+  /* neutral-500, not neutral-600: post-#1086 every muted text in Mangrove is
+     neutral-500 (.mg-form-help in _form-base.scss, pager.scss,
+     --mg-empty-state-text-color). Verified to clear 4.5:1 on both
+     color-surface and color-field-surface, under WCAG 2 and the Oklab
+     measure, in all five themes — see the pairs added to ARIA_PAIRS. */
+  --mg-aria-color-muted-text: rgb(var(--mg-color-neutral-500));
   --mg-aria-color-surface: var(--mg-surface-raised);
   /* Form controls sit on the tinted field surface Mangrove's own inputs use,
      and lift to the plain surface on focus, matching _form-base.scss. */
@@ -130,6 +141,26 @@
     rgb(var(--mg-color-neutral-400))
   );
   --mg-aria-color-border-focus: rgb(var(--mg-color-form-focus));
+  /* The QUIET structural register, and the reason it exists: --mg-aria-color-
+     border is opaque neutral-400, which is correct where SC 1.4.11 needs 3:1
+     on a CONTROL boundary (a field, a checkbox) and much too loud everywhere
+     else. Modern Mangrove draws structure — table rules, tab rails, section
+     dividers, card edges — with a translucent neutral-600 instead. Identical
+     value to --mg-shadow-raised's inset and to the .mg-tabs__list rule
+     (tab.scss:211, 293; mega-menu.scss:4). Anything that is not a control
+     boundary should read this, not color-border. */
+  --mg-aria-color-rule: rgb(var(--mg-color-neutral-600) / 0.24);
+  /* Brand-tinted hover fill. Mangrove hovers with 6% of the interactive
+     colour (pager.scss, details.scss, scroll-container.scss, and the v2 tab
+     above via --mg-tab-background--hover), so a menu or a row that hovers grey
+     is the only brand-blind surface left in the adapter. Never the sole state
+     signal: it composites to ~4% luminance change and is paired with a colour
+     or weight change at the use site. */
+  --mg-aria-color-hover-surface: rgb(var(--mg-color-interactive) / 0.06);
+  /* A scannable wash for an invalid field. Deliberately far below any contrast
+     threshold: --mg-aria-color-invalid on the border and in the message stays
+     the contrast carrier, per "never rely on tint alone". */
+  --mg-aria-color-invalid-surface: rgb(var(--mg-color-red-900) / 0.04);
   /* Unfilled rails: slider track, progress/meter background, switch when off.
      Kept light so the filled portion clears 3:1 against it in every theme
      (neutral-100 put IRP at 2.93:1). The rail is defined against the page by a
@@ -144,6 +175,25 @@
   --mg-aria-radius-button: var(--mg-radius-button);
   --mg-aria-radius-control: var(--mg-radius-form-input);
   --mg-aria-radius-surface: var(--mg-card-border-radius);
+  /* Anything nested INSIDE a surface — a MenuItem in a Popover, a row in a
+     ListBox. Nothing guarantees a theme's control radius is smaller than its
+     surface radius, and MCR2030 is a live counter-example: a 10px MenuItem
+     inside a 5px Popover, the inner corner visibly outside the outer one.
+     min() makes inner <= outer true by construction in every theme. */
+  --mg-aria-radius-item: min(
+    var(--mg-aria-radius-control),
+    var(--mg-aria-radius-surface)
+  );
+  /* A 20-24px check is too small to carry a full field radius: at MCR2030's
+     10px it reads as a radio button, which is a meaning change, not a style
+     one. Capped at 4px, and still a theme's own radius wherever that is
+     smaller. */
+  --mg-aria-radius-check: min(var(--mg-aria-radius-control), 0.25rem);
+  /* Field height, so a NumberField stepper, a ComboBox trigger and a
+     DatePicker button end up the same height as the input they belong to.
+     They are currently 41px against a 46px field. The token has existed since
+     #1086 and the aria contract never read it. */
+  --mg-aria-control-block-size: var(--mg-form-input-block-size, 2.875rem);
   /* The focus ring has its own seam in 2.0 so a theme can retint it
      independently of the interactive colour. */
   --mg-aria-color-focus-ring: rgb(var(--mg-color-focus-ring));
@@ -155,8 +205,26 @@
       var(--mg-aria-color-focus-ring);
   --mg-aria-surface-shadow: var(--mg-shadow-raised);
   --mg-aria-surface-shadow-hover: var(--mg-shadow-raised-hover);
-  --mg-aria-overlay-shadow: 0 var(--mg-aria-space-1) var(--mg-aria-space-3)
-    rgb(var(--mg-color-neutral-900) / 0.2);
+  /* The elevation ladder: card (inset rule) -> popover -> modal.
+     The previous value, 0 5px 15px / 0.2, is a hand-rolled short hard drop
+     that belongs to no other surface in Mangrove. Every modern floating
+     surface here is long, soft and low-alpha: mega-menu.scss:194 is
+     0 18px 45px / 0.14 and --mg-hero-overlay-shadow is 0 18px 55px / 0.22.
+     15px/40px/0.12 sits in that family (space-3, and twice space-4) while
+     staying lighter than the mega-menu, which is a full-width panel. */
+  --mg-aria-overlay-shadow: 0 var(--mg-aria-space-3)
+    calc(var(--mg-aria-space-4) * 2) rgb(var(--mg-color-neutral-900) / 0.12);
+  /* The modal is the top of the ladder, so it has to out-elevate the popover
+     rather than match it: 30px/60px/0.18, deeper and darker than the popover
+     and in the same family as the hero overlay. */
+  --mg-aria-modal-shadow: 0 calc(var(--mg-aria-space-4) * 1.5)
+    calc(var(--mg-aria-space-4) * 3) rgb(var(--mg-color-neutral-900) / 0.18);
+  /* Lives here rather than in the brand-neutral constants because it is now
+     derived from the theme's own darkest neutral instead of the off-palette
+     navy (24 24 35) it used to hardcode. Alpha raised 0.2 -> 0.18 on a pure
+     black: composited over white both land on ~209, so the scrim is the same
+     darkness it has always been, now retintable by a theme. */
+  --mg-aria-color-overlay-backdrop: rgb(var(--mg-color-neutral-900) / 0.18);
   --mg-aria-overlay-z-index: var(--mg-z-index-modal);
   /* Tabs exist twice in Mangrove: the legacy .mg-tabs component and React
      Aria's Tabs. Rather than inventing a second tab vocabulary, both read the
@@ -195,6 +263,22 @@
     rgb(var(--mg-color-interactive-active))
   );
   --mg-aria-button-color: rgb(var(--mg-color-button, var(--mg-color-white)));
+  /* The contract could previously only say "primary", so the outline variant
+     every brand defines reached nothing. Both source tokens are channel
+     triplets, so they must be wrapped in rgb() here — dropped raw into a
+     colour position they are discarded silently, which is the value-type trap
+     in the architecture notes. */
+  --mg-aria-button-outline-color: rgb(
+    var(--mg-color-button-outline-primary, var(--mg-color-interactive))
+  );
+  --mg-aria-button-outline-color-hover: rgb(
+    var(
+      --mg-color-button-outline-primary--hover,
+      var(--mg-color-interactive-active)
+    )
+  );
+  /* MCR2030 draws a 2px button border where every other theme draws 1px. */
+  --mg-aria-button-border-width: var(--mg-border-width-button, 0);
   --mg-aria-button-padding: var(
     --mg-padding-button,
     var(--mg-aria-space-2) var(--mg-aria-space-3)
@@ -235,14 +319,27 @@
     var(--mg-aria-color-accent)
   );
   --mg-aria-motion-duration-fast: var(--mg-motion-duration-fast);
+  /* Overlay entry and exit: long enough to read as a transition, short enough
+     to stay interruptible. --mg-motion-duration-medium has existed in the base
+     tokens since 2.0 and nothing read it. */
+  --mg-aria-motion-duration-medium: var(--mg-motion-duration-medium);
   --mg-aria-motion-easing: var(--mg-motion-easing-standard);
   --mg-aria-font-family: "Roboto", sans-serif;
   --mg-aria-font-size: 1rem;
   --mg-aria-font-size-small: 0.875rem;
   --mg-aria-line-height: 1.5;
   --mg-aria-border-width: 1px;
-  --mg-aria-color-overlay-backdrop: rgb(24 24 35 / 0.2);
   --mg-aria-width-full: 100%;
+  /* --mg-aria-color-overlay-backdrop moved to the runtime theme aliases: it
+     was the one colour literal in this file (an off-palette navy) and it is
+     theme-dependent now that it derives from --mg-color-neutral-900. */
+  /* Constants a theme could not previously touch because they were literals
+     repeated in the stylesheet: opacity 0.55 appears twelve times, the press
+     scale twice, the strong weight five times. Naming them does not change any
+     rendered value; it makes them one decision instead of nineteen. */
+  --mg-aria-opacity-disabled: 0.55;
+  --mg-aria-press-scale: 0.96;
+  --mg-aria-font-weight-strong: 600;
   /* Shape and size constants shared by the range/toggle family. Brand-neutral,
      so they sit outside the runtime theme aliases. */
   --mg-aria-radius-pill: 9999px;
@@ -250,6 +347,11 @@
   /* 24px: WCAG 2.5.8 minimum target size. Also sets the switch track
      geometry, which derives from this value. */
   --mg-aria-thumb-size: 1.5rem;
+  /* 24px, matching the thumb and the WCAG 2.5.8 target minimum. Mangrove's own
+     checks grew to 24px with a 2px brand-coloured border in #1086
+     (_form-base.scss); the adapter's are still 20px with a 1px grey border,
+     which is the most visible size disagreement between the two surfaces. */
+  --mg-aria-check-size: 1.5rem;
   --mg-aria-dialog-width: 42rem;
   --mg-aria-dialog-available-width: calc(100% - var(--mg-aria-space-4) * 2);
   --mg-aria-dialog-available-height: calc(100% - var(--mg-aria-space-4) * 2);

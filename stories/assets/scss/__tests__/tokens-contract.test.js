@@ -37,6 +37,10 @@ const RUNTIME_ARIA_ALIASES = [
   'color-selected-surface',
   'color-border',
   'color-border-focus',
+  'color-rule',
+  'color-hover-surface',
+  'color-invalid-surface',
+  'color-overlay-backdrop',
   'color-track',
   'color-invalid',
   'space-1',
@@ -47,6 +51,9 @@ const RUNTIME_ARIA_ALIASES = [
   'radius-button',
   'radius-control',
   'radius-surface',
+  'radius-item',
+  'radius-check',
+  'control-block-size',
   'color-focus-ring',
   'focus-width',
   'focus-offset',
@@ -54,6 +61,7 @@ const RUNTIME_ARIA_ALIASES = [
   'surface-shadow',
   'surface-shadow-hover',
   'overlay-shadow',
+  'modal-shadow',
   'overlay-z-index',
   'tag-radius',
   'tag-background',
@@ -64,6 +72,9 @@ const RUNTIME_ARIA_ALIASES = [
   'button-background',
   'button-background-hover',
   'button-color',
+  'button-outline-color',
+  'button-outline-color-hover',
+  'button-border-width',
   'button-padding',
   'button-font-size',
   'tab-padding',
@@ -77,6 +88,7 @@ const RUNTIME_ARIA_ALIASES = [
   'tab-indicator-hover',
   'tab-indicator-active',
   'motion-duration-fast',
+  'motion-duration-medium',
   'motion-easing',
 ];
 
@@ -487,6 +499,9 @@ const themeVars = theme => {
 const ARIA_PAIRS = [
   ['color-text', 'color-surface', 4.5],
   ['color-muted-text', 'color-surface', 4.5],
+  // Muted text is painted on form surfaces too (help text under a field), and
+  // the field surface is tinted, so the surface pair alone does not cover it.
+  ['color-muted-text', 'color-field-surface', 4.5],
   ['color-on-accent', 'color-accent', 4.5],
   ['button-color', 'button-background', 4.5],
   ['color-invalid', 'color-surface', 4.5],
