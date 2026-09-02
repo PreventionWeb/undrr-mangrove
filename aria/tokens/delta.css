@@ -90,6 +90,12 @@
   /* DELTA has no legacy Mangrove tab component, so these carry the generic
      equivalents. The keys exist so the shared stylesheet stays identical
      across token files. */
+  --mg-aria-tag-radius: var(--mg-aria-radius-control);
+  --mg-aria-tag-background: var(--mg-aria-color-accent);
+  --mg-aria-tag-background-hover: var(--mg-aria-color-accent-active);
+  --mg-aria-check-color: var(--mg-aria-color-accent);
+  --mg-aria-check-color-hover: var(--mg-aria-color-accent-active);
+  --mg-aria-check-color-checked: var(--mg-aria-color-accent);
   --mg-aria-button-background: var(--mg-aria-color-accent);
   --mg-aria-button-background-hover: var(--mg-aria-color-accent-active);
   --mg-aria-button-color: var(--mg-aria-color-on-accent);

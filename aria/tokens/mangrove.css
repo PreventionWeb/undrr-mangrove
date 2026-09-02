@@ -70,6 +70,25 @@
      same v2 tab tokens, so a theme that restyles tabs restyles both surfaces
      from one definition. Fallbacks keep the contract usable for consumers that
      have no Mangrove component tokens at all. */
+  /* Tags and form checks also exist on both surfaces. MCR2030 rounds its tags
+     to 10px where the base theme squares them, and each theme owns its check
+     colour. */
+  --mg-aria-tag-radius: var(--mg-radius-tag, var(--mg-aria-radius-control));
+  --mg-aria-tag-background: rgb(
+    var(--mg-color-tag, var(--mg-color-interactive))
+  );
+  --mg-aria-tag-background-hover: rgb(
+    var(--mg-color-tag--hover, var(--mg-color-interactive-active))
+  );
+  --mg-aria-check-color: rgb(
+    var(--mg-color-form-check, var(--mg-color-interactive))
+  );
+  --mg-aria-check-color-hover: rgb(
+    var(--mg-color-form-check--hover, var(--mg-color-interactive-active))
+  );
+  --mg-aria-check-color-checked: rgb(
+    var(--mg-color-form-check--checked, var(--mg-color-interactive))
+  );
   /* Buttons exist on both surfaces and every theme restyles them: MCR2030
      enlarges the pill to 15px/30px with 18px type, DELTA retints nineteen
      button tokens. The adapter previously read only --mg-radius-button, so

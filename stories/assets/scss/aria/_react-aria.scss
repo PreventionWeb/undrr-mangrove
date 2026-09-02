@@ -141,8 +141,8 @@
   width: var(--mg-aria-space-4);
 }
 .react-aria-Checkbox[data-selected]::before {
-  background: var(--mg-aria-color-accent);
-  border-color: var(--mg-aria-color-accent);
+  background: var(--mg-aria-check-color-checked);
+  border-color: var(--mg-aria-check-color-checked);
   content: "\2713" / "";
 }
 .react-aria-Checkbox[data-focus-visible]::before {
@@ -528,10 +528,10 @@
   border-color: var(--mg-aria-color-border-focus);
 }
 .react-aria-Radio[data-selected]::before {
-  background: var(--mg-aria-color-accent);
+  background: var(--mg-aria-check-color-checked);
   border-color: var(--mg-aria-color-surface);
   border-width: calc(var(--mg-aria-space-1) / 2);
-  outline: var(--mg-aria-border-width) solid var(--mg-aria-color-accent);
+  outline: var(--mg-aria-border-width) solid var(--mg-aria-check-color-checked);
 }
 .react-aria-Radio[data-pressed]::before {
   background: var(--mg-aria-color-accent-active);
@@ -694,7 +694,7 @@
   align-items: center;
   background: var(--mg-aria-color-subtle-surface);
   border: var(--mg-aria-border-width) solid var(--mg-aria-color-border);
-  border-radius: var(--mg-aria-radius-pill);
+  border-radius: var(--mg-aria-tag-radius);
   color: var(--mg-aria-color-text);
   cursor: default;
   display: inline-flex;
@@ -715,9 +715,13 @@
   background: var(--mg-aria-color-selected-surface);
 }
 .react-aria-Tag[data-selected] {
-  background: var(--mg-aria-color-accent);
-  border-color: var(--mg-aria-color-accent);
+  background: var(--mg-aria-tag-background);
+  border-color: var(--mg-aria-tag-background);
   color: var(--mg-aria-color-on-accent);
+}
+.react-aria-Tag[data-selected][data-hovered] {
+  background: var(--mg-aria-tag-background-hover);
+  border-color: var(--mg-aria-tag-background-hover);
 }
 .react-aria-Tag[data-disabled] {
   cursor: not-allowed;
