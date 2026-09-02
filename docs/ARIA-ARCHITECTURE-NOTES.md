@@ -308,6 +308,132 @@ variant. Brand owners will notice.
 
 ---
 
+## 6a. What DELTA actually is
+
+Everything above section 6 was written before anyone read DELTA's production
+repository or its Figma file. Both have now been examined. Several premises this
+workstream ran on were wrong, and the corrected picture is more favourable to
+sharing, not less.
+
+Sources: `/Users/khawkins/Documents/git/delta-pw` (read-only) and the DLDTS
+design file, decoded losslessly from its binary format.
+
+### DELTA's brand colour is UNDRR blue
+
+`#132E48`, the navy Mangrove's entire DELTA theme was built on, appears **zero
+times** in DELTA's codebase. DELTA's brand blue is **`#004F91`** (54 uses in
+code; 1551 fills and 1645 strokes in Figma).
+
+`#004F91` is `rgb(0 79 145)` — Mangrove's `--mg-color-blue-900`, the UNDRR brand
+blue. And DELTA's own design file labels that swatch **"UNDRR Blue - Corporate
+blue"**, marked "Brand".
+
+Every comparison this workstream published between "DELTA navy" and "UNDRR blue"
+was comparing UNDRR blue against a colour that exists only in our guess. The
+values were internally consistent, which is why no test caught it.
+
+### DELTA already contains a broken fork of Mangrove
+
+`public/assets/css/style-dts.css` is a compiled Mangrove build, stamped
+`?asof=20250630` and frozen since. It carries 23 `.mg-*` selectors used at
+roughly 300 call sites (113 `mg-grid`, 82 `mg-button`, 37 `mg-button-primary`,
+32 `mg-container`).
+
+It is also demonstrably a copy-paste rather than a build: it contains 14
+references to `url(~/stories/assets/icons/...)`, a Mangrove **Sass source path**,
+which in DELTA resolve against `public/` and 404 because `public/stories/` does
+not exist. Those button arrow icons have never rendered.
+
+So the question was never "will DELTA adopt Mangrove". A degraded, drifted,
+partly-broken fork of Mangrove is already in DELTA. The conversation is about
+replacing a stale fork with a maintained dependency, which is a much easier
+argument and a more urgent one.
+
+### PrimeReact 10.9 cannot be themed with custom properties
+
+DELTA runs styled-mode PrimeReact 10.9.7 with `<PrimeReactProvider value={{ ripple: true }}>`
+as its entire configuration, and a vendored `lara-light-blue` theme that is
+byte-identical to upstream.
+
+That theme declares ~200 CSS custom properties on `:root` and then **consumes
+`var()` exactly 14 times in 224 KB, against 1518 hardcoded hex literals**
+(`#3b82f6` alone appears 97 times). The `:root` variables are a one-way export
+for consumer CSS, not a theming input. Overriding `--primary-color` repaints
+nothing.
+
+The design-token API (`definePreset`, `--p-*`) does not exist in 10.x at all; it
+arrives in PrimeReact 11, which is a rewrite-level migration across DELTA's 103
+PrimeReact files **and is no longer MIT** — it moves to a dual
+community/commercial licence requiring a key, with a non-profit carve-out UNDRR
+would have to assess legally. That should not be discovered mid-migration.
+
+Consequence: feeding Mangrove tokens into PrimeReact is not a config change. The
+only working path in 10.9 is a hand-authored unlayered override sheet
+enumerating every `.p-*` selector and state, re-verified on every patch bump.
+
+### DELTA already has the cascade problem, from its own stack
+
+`@layer primereact` is declared **after** `utilities`, so the PrimeReact theme
+outranks every Tailwind utility a DELTA developer writes. There are zero uses of
+Tailwind's `!` important modifier across 304 `.tsx` files, which suggests the
+team is absorbing this as "Tailwind classes sometimes don't stick" rather than
+diagnosing it. `style-dts.css` and four local CSS files are unlayered and
+outrank all of Tailwind including preflight.
+
+This matters for the chokehold argument: DELTA is not defending a clean cascade
+from Mangrove. They already have the problem, twice, from their own dependencies.
+
+### What DELTA genuinely decided, and what is vendor default
+
+Real, documented decisions worth respecting: `#004F91` and a teal secondary
+`#007B7A`/`#00AFAE`; a spacing scale of 2/4/8/12/16/24/32/40/48/64/72/80/88/96;
+6px corner radius (1134 uses); a full Roboto type scale; breakpoints
+1440/768/375; Sendai target colour ramps; and 77 `[dir="rtl"]` rules, which is
+real engineering.
+
+Not decided, inherited: stock PrimeReact `lara-light-blue` unmodified except four
+toast selectors; **no Tailwind `@theme` block at all**, so every Tailwind colour
+is a stock v4 default; `Inter var` as the effective body font, inherited from the
+vendor theme rather than chosen; slate and gray mixed roughly 50/50 as body text;
+three competing radius conventions; three different focus rings. Most of DELTA's
+235 PrimeReact buttons render generic Tailwind blue `#3b82f6`, not brand colour.
+
+The accurate framing is not "DELTA made no design decisions". It is that **the
+few real decisions mostly align with UNDRR already**, and most of what surrounds
+them is vendor default that nobody chose.
+
+### Wins available now
+
+1. **Root font size.** `style-dts.css` sets `html { font-size: 14px }`, scaling
+   every rem in the app — Tailwind's, PrimeReact's and Mangrove's — to 87.5%.
+   The Figma type scale is px-based and assumes a 16px body (Body 16/24), so the
+   design file contradicts the code. Mangrove removed non-16px roots in 2.0.
+2. **Arabic typography.** Three artifacts, three answers: Mangrove says Dubai,
+   DELTA's code has Cairo, the Figma says Noto Sans Arabic. The one actually
+   shipping is broken — the `@font-face` loads a static `Cairo-SemiBold.ttf`
+   while declaring `format("woff2")` and `font-weight: 200 1000`, so Arabic
+   users may be getting a fallback while still downloading 94 KB. Note that
+   choosing Dubai overrides DELTA's stated design system rather than filling a
+   vacuum; the argument for it is UN-family provenance, not absence of a
+   decision.
+3. **Brand alignment.** Correcting Mangrove's DELTA theme to `#004F91` makes it
+   match both the code and the Figma, and reveals that DELTA's brand is UNDRR's.
+
+### Corrections this forces on earlier sections
+
+- Mangrove's `_theme-delta.scss` has **primary and outline swapped**. DELTA's
+  primary button is filled `#004f91` with white text, 40px tall, 6px radius, per
+  both the code and the Figma button spec. The `background: transparent` our
+  guess copied is the unstyled base that every variant overrides. The standalone
+  token file was structurally right and the theme file wrong.
+- The MUI-versus-React-Aria framing was aimed at the wrong target. DELTA's
+  documented position is *"PrimeReact is the team's stated direction for
+  interactive widgets going forward"*, already executed across 103 files. React
+  Aria is not a live option for them.
+- DELTA has **no Figma Variables of its own**. All 26 collections and 664
+  variables are imported third-party kits. There is nothing to sync from Figma;
+  tokens would have to be authored.
+
 ## 7. Open questions
 
 - Do we invert the token hierarchy to palette → semantic → component, and drop
