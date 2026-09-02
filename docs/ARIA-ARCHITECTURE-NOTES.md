@@ -419,6 +419,28 @@ them is vendor default that nobody chose.
 3. **Brand alignment.** Correcting Mangrove's DELTA theme to `#004F91` makes it
    match both the code and the Figma, and reveals that DELTA's brand is UNDRR's.
 
+### Where the evidence lives
+
+Paths are in the DELTA repository, which was examined read-only and left
+untouched (clean tree, empty stash, no new refs).
+
+| Claim | File and lines |
+| --- | --- |
+| Three-stylesheet link order; dead `primereact.min.css` import; styled-mode provider | `app/root.tsx` 61-65, 30, 253-256 |
+| No Tailwind `@theme`; `@import "tailwindcss"` last | `app/styles/all.css` (5 lines) |
+| The copied `.mg-*` fork | `public/assets/css/style-dts.css` from line 539 |
+| 14px root | `public/assets/css/style-dts.css:18` |
+| Mangrove Sass paths that 404 | `public/assets/css/style-dts.css` 598, 611, 654, 660, 672, 677, 689, 695, 714, 719 |
+| Vendored theme, byte-identical to upstream; layer opens after Tailwind's | `public/assets/themes/lara-light-blue/theme.css` 292, 6997 |
+| The `--p-*` assumption that does not hold on 10.9 | `_docs/refactoring-plan/design-system-unification-roadmap.md` 43-48 |
+| Dev-only CSP; no production CSP in the repo | `vite.config.ts:54` |
+
+One consequence of that last row: the dev CSP allows styles from `unpkg`,
+`cdnjs` and `*.preventionweb.net` but not `assets.undrr.org`, so a `<link>` to a
+Mangrove stylesheet on that host would be blocked in development. Bundling
+locally avoids it. What production enforces is unknown, because no production
+CSP exists in the repository.
+
 ### Corrections this forces on earlier sections
 
 - Mangrove's `_theme-delta.scss` has **primary and outline swapped**. DELTA's
