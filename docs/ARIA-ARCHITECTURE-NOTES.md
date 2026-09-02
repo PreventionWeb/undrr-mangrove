@@ -409,10 +409,14 @@ them is vendor default that nobody chose.
    The Figma type scale is px-based and assumes a 16px body (Body 16/24), so the
    design file contradicts the code. Mangrove removed non-16px roots in 2.0.
 2. **Arabic typography.** Three artifacts, three answers: Mangrove says Dubai,
-   DELTA's code has Cairo, the Figma says Noto Sans Arabic. The one actually
-   shipping is broken — the `@font-face` loads a static `Cairo-SemiBold.ttf`
-   while declaring `format("woff2")` and `font-weight: 200 1000`, so Arabic
-   users may be getting a fallback while still downloading 94 KB. Note that
+   DELTA's code has Cairo, the Figma says Noto Sans Arabic. **Correction:** an
+   earlier version said Arabic users may be getting a fallback, because the
+   `@font-face` declares `format("woff2")` for a static `Cairo-SemiBold.ttf`.
+   That is wrong on the spec. A `format()` hint is only used to skip an
+   unsupported format, and woff2 is universally supported, so the file is
+   fetched, sniffed and rendered. The real defects are that one static SemiBold
+   face is declared across `font-weight: 200 1000`, flattening Arabic weight
+   hierarchy, and that the correct variable font ships uncited alongside it. Note that
    choosing Dubai overrides DELTA's stated design system rather than filling a
    vacuum; the argument for it is UN-family provenance, not absence of a
    decision.

@@ -37,5 +37,10 @@ $_delta-color-card-bg--raw: 242 242 242;
 $_delta-color-secondary--raw: 0 123 122;
 
 // delta.color.secondary-800 (srgb-channels)
-// Hover partner of UNDRR Teal. Also lighter than its base.
-$_delta-color-secondary-800--raw: 53 153 153;
+// Hover partner of UNDRR Teal, taken one step DOWN the teal ramp in DELTA's
+// design file (#002323 #004646 #006968 #007B7A #00AFAE). DELTA's stylesheet
+// uses #359999 here, a step UP, but white text on that is 3.40:1 and fails
+// WCAG 1.4.3. #006968 is 6.52:1 and comes from DELTA's own ramp, so this is
+// a deliberate, sourced divergence rather than an invented colour - the
+// same call already made for DELTA's field border.
+$_delta-color-secondary-800--raw: 0 105 104;
