@@ -60,8 +60,13 @@
   opacity: 0.55;
 }
 
+/* Text inputs key off data-focused, not data-focus-visible: React Aria
+   withholds the latter on a pointer click, whereas browsers do apply
+   :focus-visible to a text field that was clicked. Styling these on
+   data-focus-visible silently removed the focus ring for anyone focusing a
+   field with a mouse, which is exactly who needs it most. */
 .react-aria-Button[data-focus-visible],
-.react-aria-Input[data-focus-visible],
+.react-aria-Input[data-focused],
 .react-aria-DateInput[data-focus-within],
 .react-aria-CalendarCell[data-focus-visible],
 .react-aria-GridListItem[data-focus-visible],
@@ -74,7 +79,7 @@
 .react-aria-Tab[data-focus-visible],
 .react-aria-TabPanel[data-focus-visible],
 .react-aria-Tag[data-focus-visible],
-.react-aria-TextArea[data-focus-visible],
+.react-aria-TextArea[data-focused],
 .react-aria-ToggleButton[data-focus-visible],
 .react-aria-Row[data-focus-visible],
 .react-aria-Column[data-focus-visible],
@@ -84,10 +89,23 @@
   outline-offset: var(--mg-aria-focus-offset);
 }
 
-.react-aria-Input[data-focus-visible],
+.react-aria-Input[data-focused],
 .react-aria-DateInput[data-focus-within] {
   background: var(--mg-aria-color-field-surface-focus);
   border-color: var(--mg-aria-color-border-focus);
+}
+
+/* Filled. A control carrying a value computed identically to an empty one on
+   both surfaces, so a long form gave no sign of what had been completed.
+   :placeholder-shown is the only hook CSS has, and it needs a placeholder to
+   work at all - without one, :not(:placeholder-shown) matches unconditionally
+   and every field would render as filled. The [placeholder] guard makes the
+   rule inert on controls that have none, rather than wrong. Use
+   placeholder=" " to opt a field in without showing placeholder text. */
+.react-aria-Input[placeholder]:not(:placeholder-shown),
+.react-aria-TextArea[placeholder]:not(:placeholder-shown) {
+  background: var(--mg-aria-color-field-surface-focus);
+  border-color: var(--mg-aria-color-border);
 }
 
 .react-aria-TextField,
@@ -658,7 +676,7 @@
   border-color: var(--mg-aria-color-border-focus);
 }
 
-.react-aria-TextArea[data-focus-visible] {
+.react-aria-TextArea[data-focused] {
   background: var(--mg-aria-color-field-surface-focus);
   border-color: var(--mg-aria-color-border-focus);
 }
@@ -1173,7 +1191,7 @@
     border: var(--mg-aria-border-width) solid CanvasText;
   }
   .react-aria-Button[data-focus-visible],
-  .react-aria-Input[data-focus-visible],
+  .react-aria-Input[data-focused],
   .react-aria-DateInput[data-focus-within],
   .react-aria-DateSegment[data-focused],
   .react-aria-Checkbox[data-focus-visible]::before,
@@ -1188,7 +1206,7 @@
   .react-aria-Tab[data-focus-visible],
   .react-aria-TabPanel[data-focus-visible],
   .react-aria-Tag[data-focus-visible],
-  .react-aria-TextArea[data-focus-visible],
+  .react-aria-TextArea[data-focused],
   .react-aria-ToggleButton[data-focus-visible] {
     outline: var(--mg-aria-focus-width) solid CanvasText;
     outline-offset: var(--mg-aria-focus-offset);

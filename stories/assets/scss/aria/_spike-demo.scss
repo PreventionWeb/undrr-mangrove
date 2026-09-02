@@ -233,10 +233,10 @@
    indistinguishable from the description above it. This gives labels their own
    rung in the hierarchy: below the section title, clearly not running text.
 
-   No letter-spacing: these strings are English fixtures today, but spaced
-   letters break Arabic glyph joining and this file should not model a pattern
-   that fails in a language Mangrove ships. Size, weight, case and colour carry
-   it instead. */
+   No letter-spacing and no uppercasing: spaced letters break Arabic glyph
+   joining, and uppercasing is a Latin-script idiom that does nothing for Arabic
+   or Chinese while making English labels harder to scan. Size, weight and
+   colour carry it instead. */
 .aria-gallery-specimen-label,
 .aria-collection-specimen-label {
   color: rgb(var(--mg-color-neutral-600));
@@ -245,7 +245,6 @@
   font-weight: 700;
   line-height: 1.4;
   margin-block-end: var(--mg-spacing-50);
-  text-transform: uppercase;
 }
 .aria-gallery-specimen,
 .aria-collection-specimen {

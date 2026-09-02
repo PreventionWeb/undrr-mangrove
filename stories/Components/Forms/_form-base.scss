@@ -44,6 +44,13 @@
   padding: var(--mg-form-input-padding);
   width: 100%;
 
+  // Filled: see the note on the React Aria surface. The [placeholder] guard
+  // matters - without it the selector matches every field that has no
+  // placeholder, so everything would look filled.
+  &[placeholder]:not(:placeholder-shown) {
+    background-color: var(--mg-form-input-background--focus);
+  }
+
   &::placeholder {
     color: rgb(var(--mg-color-neutral-500));
   }
