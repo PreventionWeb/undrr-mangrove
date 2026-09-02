@@ -244,7 +244,53 @@
 :root {
   --mg-dataviz-surface: var(--mg-color-neutral-0); // 255 255 255
   --mg-dataviz-gridline: var(--mg-color-neutral-50); // 230 230 230, decorative
-  --mg-dataviz-axis: var(--mg-color-neutral-400); // 128 128 128, 3.95:1 on white
+  --mg-dataviz-axis: var(
+    --mg-color-neutral-400
+  ); // 128 128 128, 3.95:1 on white
+
   --mg-dataviz-label: var(--mg-color-neutral-700); // 51 51 51, 12.63:1 on white
   --mg-dataviz-muted-label: var(--mg-color-neutral-500); // 102 102 102, 5.74:1
+}
+
+/* ---------------------------------------------------------------------------
+ * Sendai Framework target colours
+ *
+ * These are FRAMEWORK SEMANTICS, not brand styling. Target D means "damage" in
+ * every UNDRR product that reports against the Sendai Framework, so the colour
+ * must not vary by sub-brand. They live here, outside the brand token sources,
+ * for that reason.
+ *
+ * Values and target labels are read from the DLDTS design system's own
+ * "Sendai target ramps" board.
+ *
+ * Not to be confused with the older --sendai-red|orange|purple|turquoise
+ * tokens, which are brand accent hues named by colour and carry no target
+ * meaning. Those are deprecated; see _deprecated-sendai-accents.scss.
+ * ------------------------------------------------------------------------- */
+:root {
+  /* Target A. Label contrast: white 21.00:1. */
+  --mg-sendai-target-a: 0 0 0;
+  /* Target B, Human Direct Effects. White 6.12:1. */
+  --mg-sendai-target-b: 152 64 137;
+  /* Target C, Loss. White is only 3.15:1 here, so a label on this fill must be
+     dark: black is 6.66:1. The only target in the set that inverts. */
+  --mg-sendai-target-c: 216 120 56;
+  /* Target D, Damage. White 4.83:1. */
+  --mg-sendai-target-d: 3 127 127;
+  /* Target E. White 4.63:1. */
+  --mg-sendai-target-e: 72 129 82;
+  /* Target F. White 5.50:1. */
+  --mg-sendai-target-f: 105 83 215;
+  /* Target G. White 8.18:1. */
+  --mg-sendai-target-g: 131 54 64;
+
+  /* Which label colour each target fill takes, so consumers do not have to
+     rediscover that Target C is the exception. */
+  --mg-sendai-on-target-a: var(--mg-color-neutral-0);
+  --mg-sendai-on-target-b: var(--mg-color-neutral-0);
+  --mg-sendai-on-target-c: var(--mg-color-neutral-900);
+  --mg-sendai-on-target-d: var(--mg-color-neutral-0);
+  --mg-sendai-on-target-e: var(--mg-color-neutral-0);
+  --mg-sendai-on-target-f: var(--mg-color-neutral-0);
+  --mg-sendai-on-target-g: var(--mg-color-neutral-0);
 }
