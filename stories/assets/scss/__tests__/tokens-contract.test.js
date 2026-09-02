@@ -327,15 +327,46 @@ describe('React Aria token contrast (WCAG 2.2 AA)', () => {
     return out;
   };
 
-  const deref = (vars, value, depth = 0) => {
-    if (depth > 15 || !value) return value;
-    const next = value.replace(
-      /var\(\s*(--[a-z0-9-]+)\s*(?:,([^)]*))?\)/g,
-      (_, name, fallback) =>
-        vars[name] !== undefined ? vars[name] : (fallback || '').trim()
-    );
-    return next === value ? next.trim() : deref(vars, next, depth + 1);
+  // var() fallbacks can themselves contain var() and rgb(), so the argument
+  // list has to be split on balanced parentheses rather than by regex.
+  const substitute = (vars, value, depth = 0) => {
+    if (depth > 20 || !value || !value.includes('var(')) return value;
+    let out = '';
+    let i = 0;
+    while (i < value.length) {
+      const at = value.indexOf('var(', i);
+      if (at === -1) {
+        out += value.slice(i);
+        break;
+      }
+      out += value.slice(i, at);
+      let level = 0;
+      let end = at + 3;
+      for (; end < value.length; end++) {
+        if (value[end] === '(') level++;
+        else if (value[end] === ')') {
+          level--;
+          if (level === 0) break;
+        }
+      }
+      const inner = value.slice(at + 4, end);
+      const comma = (() => {
+        let lvl = 0;
+        for (let k = 0; k < inner.length; k++) {
+          if (inner[k] === '(') lvl++;
+          else if (inner[k] === ')') lvl--;
+          else if (inner[k] === ',' && lvl === 0) return k;
+        }
+        return -1;
+      })();
+      const name = (comma === -1 ? inner : inner.slice(0, comma)).trim();
+      const fallback = comma === -1 ? '' : inner.slice(comma + 1).trim();
+      out += vars[name] !== undefined ? vars[name] : fallback;
+      i = end + 1;
+    }
+    return substitute(vars, out, depth + 1);
   };
+  const deref = (vars, value) => (substitute(vars, value) || '').trim();
 
   const WHITE = { r: 255, g: 255, b: 255, a: 1 };
 

@@ -31,11 +31,20 @@
   --mg-aria-color-surface: var(--mg-surface-raised);
   /* Form controls sit on the tinted field surface Mangrove's own inputs use,
      and lift to the plain surface on focus, matching _form-base.scss. */
-  --mg-aria-color-field-surface: rgb(var(--mg-color-neutral-50));
-  --mg-aria-color-field-surface-focus: rgb(var(--mg-color-neutral-0));
+  --mg-aria-color-field-surface: var(
+    --mg-form-input-background,
+    rgb(var(--mg-color-neutral-50))
+  );
+  --mg-aria-color-field-surface-focus: var(
+    --mg-form-input-background--focus,
+    rgb(var(--mg-color-neutral-0))
+  );
   --mg-aria-color-subtle-surface: rgb(var(--mg-color-neutral-25));
   --mg-aria-color-selected-surface: rgb(var(--mg-color-interactive) / 0.12);
-  --mg-aria-color-border: rgb(var(--mg-color-neutral-400));
+  --mg-aria-color-border: var(
+    --mg-form-input-border-color,
+    rgb(var(--mg-color-neutral-400))
+  );
   --mg-aria-color-border-focus: rgb(var(--mg-color-form-focus));
   /* Unfilled rails: slider track, progress/meter background, switch when off.
      Kept light so the filled portion clears 3:1 against it in every theme

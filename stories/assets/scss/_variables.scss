@@ -391,6 +391,19 @@ $mg-tabs-border-bottom: true !default;
   // Form
   --mg-radius-form-input: var(--mg-spacing-50);
 
+  // Form control surface, shared with the React Aria field tokens so both
+  // surfaces describe a field the same way. The border was
+  // rgb(neutral-600 / 0.22), which is 1.43:1 against the page and 1.14:1
+  // against the field's own fill, so a text input had no boundary meeting the
+  // 3:1 WCAG 1.4.11 needs. neutral-400 is 3.95:1.
+  --mg-form-input-background: rgb(var(--mg-color-neutral-50));
+  --mg-form-input-background--focus: rgb(var(--mg-color-neutral-0));
+  --mg-form-input-border-color: rgb(var(--mg-color-neutral-400));
+  --mg-form-input-border-width: 1px;
+  --mg-form-input-block-size: 46px;
+  --mg-form-input-padding: #{mg-rem(6.25)};
+  --mg-font-size-form-input: #{$mg-font-size-300};
+
   // Focus ring
   --mg-focus-ring-width: 2px;
   --mg-focus-ring-offset: 2px;
