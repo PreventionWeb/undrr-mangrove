@@ -1,0 +1,71 @@
+// Status label — a workflow status shown as a coloured indicator plus its name.
+// -
+// Sourced from the DELTA design system board "Status Labels for Records and
+// Events": a 14px dot, an 8px gap, and the status name at 16px. The four
+// statuses and their colours are DELTA's editorial workflow; the pattern
+// itself (a record has a state, and a list has to show it) is general to
+// UNDRR content products, so the base class is status-agnostic and the four
+// DELTA states are modifiers.
+// -
+// The name is always present, so the colour is never the only cue (SC 1.4.1).
+// -
+// Usage:
+//   <span class="mg-status-label mg-status-label--published">
+//     <span class="mg-status-label__indicator"></span>
+//     Published
+//   </span>
+
+.mg-status-label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--mg-status-label-gap);
+  font-family: $mg-font-family;
+  font-size: var(--mg-status-label-font-size);
+  line-height: 1.5;
+  color: var(--mg-status-label-color);
+
+  // The dot is decoration; the label text carries the meaning.
+  &__indicator {
+    flex: 0 0 auto;
+    inline-size: var(--mg-status-label-indicator-size);
+    block-size: var(--mg-status-label-indicator-size);
+    background-color: var(--mg-status-label-indicator);
+    border: var(--mg-status-label-indicator-border-width) solid
+      var(--mg-status-label-indicator-border-color);
+    border-radius: var(--mg-status-label-indicator-radius);
+  }
+}
+
+// DELTA record/event workflow states.
+.mg-status-label--draft .mg-status-label__indicator {
+  background-color: var(--mg-status-label-indicator--draft);
+}
+
+.mg-status-label--waiting-validation .mg-status-label__indicator {
+  background-color: var(--mg-status-label-indicator--waiting-validation);
+}
+
+.mg-status-label--waiting-information .mg-status-label__indicator {
+  background-color: var(--mg-status-label-indicator--waiting-information);
+}
+
+.mg-status-label--published .mg-status-label__indicator {
+  background-color: var(--mg-status-label-indicator--published);
+}
+
+// A list of statuses — a legend, or a filter summary.
+.mg-status-label-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mg-spacing-100) var(--mg-spacing-200);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+// Arabic body font, matching the treatment used elsewhere for compact UI text.
+:lang(ar) {
+  .mg-status-label {
+    font-family: $mg-font-family-arabic-body;
+  }
+}

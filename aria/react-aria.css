@@ -372,6 +372,15 @@
   font-size: var(--mg-aria-font-size-small);
 }
 
+/* Overlay surfaces need a real boundary. A translucent drop shadow is not a
+   3:1 edge, and it is not painted at all in forced-colours mode. */
+.react-aria-Popover,
+.react-aria-Menu,
+.react-aria-ListBox,
+.react-aria-Modal {
+  border: var(--mg-aria-border-width) solid var(--mg-aria-color-border);
+}
+
 .react-aria-Popover {
   background: var(--mg-aria-color-surface);
   border-radius: var(--mg-aria-radius-surface);
@@ -657,6 +666,15 @@
 .react-aria-TextArea[data-invalid],
 .react-aria-TextField[data-invalid] .react-aria-TextArea {
   border-color: var(--mg-aria-color-invalid);
+}
+
+/* Was expressed by nothing: a disabled Input computed identically to an enabled
+   one in every property, so the state was conveyed neither by colour nor by
+   anything else (WCAG 1.3.1, 1.4.1). Matches the TextArea treatment below. */
+.react-aria-Input[data-disabled],
+.react-aria-DateInput[data-disabled] {
+  cursor: not-allowed;
+  opacity: 0.55;
 }
 
 .react-aria-TextArea[data-disabled] {
@@ -1148,6 +1166,13 @@
   }
 }
 @media (forced-colors: active) {
+  .react-aria-Popover,
+  .react-aria-Menu,
+  .react-aria-ListBox,
+  .react-aria-Modal,
+  .react-aria-Tooltip {
+    border: var(--mg-aria-border-width) solid CanvasText;
+  }
   .react-aria-Button[data-focus-visible],
   .react-aria-Input[data-focus-visible],
   .react-aria-DateInput[data-focus-within],
