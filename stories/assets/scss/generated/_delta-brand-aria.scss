@@ -24,14 +24,20 @@ $_delta-font-family-stack: '"Dubai", sans-serif';
 
 @mixin mg-delta-brand-tokens {
   // delta.color.primary (srgb-channels)
-  --mg-color-interactive: 19 46 72;
+  --mg-color-interactive: 0 79 145;
 
   // delta.color.primary-800 (srgb-channels)
-  --mg-color-button--hover: 12 30 48;
+  --mg-color-button--hover: 16 108 184;
 
   // delta.color.ink (srgb-channels)
   --mg-color-text: 24 24 35;
 
   // delta.color.card-surface (srgb-rgb-function)
-  --mg-card-background: rgb(250 250 250);
+  --mg-card-background: rgb(242 242 242);
+
+  // delta.color.secondary (srgb-channels)
+  --mg-color-secondary: 0 123 122;
+
+  // delta.color.secondary-800 (srgb-channels)
+  --mg-color-secondary--hover: 53 153 153;
 }

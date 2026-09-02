@@ -8,17 +8,34 @@
 // `npx jest tokens-source` fails if the two disagree.
 
 // delta.color.primary (srgb-channels)
-// DELTA navy. Interactive colour: links, buttons, tabs, focus, tags.
-$_delta-color-primary--raw: 19 46 72;
+// UNDRR Blue. DELTA's own design system labels this swatch "UNDRR Blue -
+// Corporate blue" and marks it Brand. 54 uses in DELTA's code, 1551 fills
+// and 1645 strokes in its Figma file. It is rgb(0 79 145), identical to
+// Mangrove's --mg-color-blue-900: DELTA's brand blue is UNDRR's.
+// Interactive colour: links, buttons, tabs, focus, tags.
+$_delta-color-primary--raw: 0 79 145;
 
 // delta.color.primary-800 (srgb-channels)
-// Pressed/hover shade of DELTA navy.
-$_delta-color-primary-800--raw: 12 30 48;
+// Hover/active partner of the brand blue, 9 uses in DELTA. Note it is
+// LIGHTER than the base colour, unlike Mangrove's convention of darkening
+// on hover. That is DELTA's actual behaviour, not an error.
+$_delta-color-primary-800--raw: 16 108 184;
 
 // delta.color.ink (srgb-channels)
 // Body text and overlay/shadow base.
 $_delta-color-dark--raw: 24 24 35;
 
 // delta.color.card-surface (srgb-channels)
-// Card / subtle surface fill.
-$_delta-color-card-bg--raw: 250 250 250;
+// Card / subtle surface fill. #f2f2f2 appears 11 times in DELTA; #fafafa,
+// which Mangrove previously guessed, appears once.
+$_delta-color-card-bg--raw: 242 242 242;
+
+// delta.color.secondary (srgb-channels)
+// UNDRR Teal, DELTA's secondary brand colour. Mangrove previously mapped
+// the secondary button to the same blue as the primary, collapsing a
+// genuine two-colour brand into one.
+$_delta-color-secondary--raw: 0 123 122;
+
+// delta.color.secondary-800 (srgb-channels)
+// Hover partner of UNDRR Teal. Also lighter than its base.
+$_delta-color-secondary-800--raw: 53 153 153;

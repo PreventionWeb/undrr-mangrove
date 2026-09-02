@@ -5,8 +5,8 @@
     "color": {
       "$type": "color",
       "primary": {
-        "$value": "#132e48",
-        "$description": "DELTA navy. Interactive colour: links, buttons, tabs, focus, tags.",
+        "$value": "#004f91",
+        "$description": "UNDRR Blue. DELTA's own design system labels this swatch \"UNDRR Blue - Corporate blue\" and marks it Brand. 54 uses in DELTA's code, 1551 fills and 1645 strokes in its Figma file. It is rgb(0 79 145), identical to Mangrove's --mg-color-blue-900: DELTA's brand blue is UNDRR's. Interactive colour: links, buttons, tabs, focus, tags.",
         "$extensions": {
           "org.undrr.mangrove": {
             "outputs": [
@@ -25,8 +25,8 @@
         }
       },
       "primary-800": {
-        "$value": "#0c1e30",
-        "$description": "Pressed/hover shade of DELTA navy.",
+        "$value": "#106cb8",
+        "$description": "Hover/active partner of the brand blue, 9 uses in DELTA. Note it is LIGHTER than the base colour, unlike Mangrove's convention of darkening on hover. That is DELTA's actual behaviour, not an error.",
         "$extensions": {
           "org.undrr.mangrove": {
             "outputs": [
@@ -70,8 +70,8 @@
         }
       },
       "card-surface": {
-        "$value": "#fafafa",
-        "$description": "Card / subtle surface fill.",
+        "$value": "#f2f2f2",
+        "$description": "Card / subtle surface fill. #f2f2f2 appears 11 times in DELTA; #fafafa, which Mangrove previously guessed, appears once.",
         "$extensions": {
           "org.undrr.mangrove": {
             "outputs": [
@@ -88,12 +88,55 @@
             ]
           }
         }
+      },
+      "secondary": {
+        "$value": "#007b7a",
+        "$description": "UNDRR Teal, DELTA's secondary brand colour. Mangrove previously mapped the secondary button to the same blue as the primary, collapsing a genuine two-colour brand into one.",
+        "$extensions": {
+          "org.undrr.mangrove": {
+            "outputs": [
+              {
+                "target": "mangrove-sass",
+                "name": "$_delta-color-secondary--raw",
+                "format": "srgb-channels"
+              },
+              {
+                "target": "aria-tokens",
+                "name": "--mg-color-secondary",
+                "format": "srgb-channels"
+              }
+            ]
+          }
+        }
+      },
+      "secondary-800": {
+        "$value": "#359999",
+        "$description": "Hover partner of UNDRR Teal. Also lighter than its base.",
+        "$extensions": {
+          "org.undrr.mangrove": {
+            "outputs": [
+              {
+                "target": "mangrove-sass",
+                "name": "$_delta-color-secondary-800--raw",
+                "format": "srgb-channels"
+              },
+              {
+                "target": "aria-tokens",
+                "name": "--mg-color-secondary--hover",
+                "format": "srgb-channels"
+              }
+            ]
+          }
+        }
       }
     },
     "font": {
       "family-base": {
         "$type": "fontFamily",
-        "$value": ["Dubai", "sans-serif"],
+        "$value": [
+          "Dubai",
+          "sans-serif"
+        ],
         "$description": "DELTA body typeface. The @font-face src URLs are an asset declaration, not a token, and stay hand-written in aria/_tokens-delta.scss.",
         "$extensions": {
           "org.undrr.mangrove": {

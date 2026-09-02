@@ -12,26 +12,22 @@
   // (guards the sub-brand body-class trap). See docs/RELEASE-2.0.md.
   --mg-theme-loaded: delta;
   --mg-color-interactive: #{$_delta-color-primary--raw};
-  --mg-color-interactive-active: #{$_delta-color-primary--raw};
+  --mg-color-interactive-active: #{$_delta-color-primary-800--raw};
   --mg-color-tag: var(--mg-color-interactive);
   --mg-color-tag--hover: var(--mg-color-interactive-active);
   --mg-radius-tag: var(--mg-spacing-50);
-  --mg-color-button: #{$_delta-color-primary--raw};
-  --mg-color-button--hover: #{$_delta-color-primary-800--raw};
-  --mg-color-button-background: transparent;
-  --mg-color-button-background--hover: rgb(
-    #{$_delta-color-primary--raw} / 0.06
-  );
-  --mg-color-button-secondary-background: transparent;
-  --mg-color-button-secondary-background--hover: rgb(
-    #{$_delta-color-primary--raw} / 0.06
-  );
+  --mg-color-button: var(--mg-color-neutral-0);
+  --mg-color-button--hover: var(--mg-color-neutral-0);
+  --mg-color-button-background: rgb(#{$_delta-color-primary--raw});
+  --mg-color-button-background--hover: rgb(#{$_delta-color-primary-800--raw});
+  --mg-color-button-secondary-background: #{$_delta-color-secondary--raw};
+  --mg-color-button-secondary-background--hover: #{$_delta-color-secondary-800--raw};
   --mg-color-button-outline-primary: #{$_delta-color-primary--raw};
   --mg-color-button-outline-primary--hover: #{$_delta-color-primary-800--raw};
-  --mg-color-button-outline-secondary: #{$_delta-color-primary--raw};
-  --mg-color-button-outline-secondary--hover: #{$_delta-color-primary-800--raw};
-  --mg-color-text-button: #{$_delta-color-primary--raw};
-  --mg-border-color-button: rgb(#{$_delta-color-primary--raw});
+  --mg-color-button-outline-secondary: #{$_delta-color-secondary--raw};
+  --mg-color-button-outline-secondary--hover: #{$_delta-color-secondary-800--raw};
+  --mg-color-text-button: var(--mg-color-neutral-0);
+  --mg-border-color-button: transparent;
   --mg-radius-button: var(--mg-spacing-50);
   --mg-border-width-button: 1px;
   --mg-padding-button: var(--mg-spacing-100) var(--mg-spacing-200);
