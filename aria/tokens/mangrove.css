@@ -70,6 +70,25 @@
      same v2 tab tokens, so a theme that restyles tabs restyles both surfaces
      from one definition. Fallbacks keep the contract usable for consumers that
      have no Mangrove component tokens at all. */
+  /* Buttons exist on both surfaces and every theme restyles them: MCR2030
+     enlarges the pill to 15px/30px with 18px type, DELTA retints nineteen
+     button tokens. The adapter previously read only --mg-radius-button, so
+     colour and radius flowed and nothing else did. */
+  --mg-aria-button-background: rgb(
+    var(--mg-color-button-background, var(--mg-color-interactive))
+  );
+  --mg-aria-button-background-hover: rgb(
+    var(--mg-color-button-background--hover, var(--mg-color-interactive-active))
+  );
+  --mg-aria-button-color: rgb(var(--mg-color-button, var(--mg-color-white)));
+  --mg-aria-button-padding: var(
+    --mg-padding-button,
+    var(--mg-aria-space-2) var(--mg-aria-space-3)
+  );
+  --mg-aria-button-font-size: var(
+    --mg-font-size-button,
+    var(--mg-aria-font-size)
+  );
   --mg-aria-tab-padding: var(
     --mg-tab-padding,
     var(--mg-aria-space-2) var(--mg-aria-space-3)

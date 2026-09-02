@@ -10,7 +10,6 @@
  * Composition styles for the Storybook spike demos belong in _spike-demo.scss,
  * which is not part of the distributed CSS surface.
  */
-.react-aria-Button,
 .react-aria-Input,
 .react-aria-ListBox,
 .react-aria-ListBoxItem,
@@ -21,30 +20,42 @@
   line-height: var(--mg-aria-line-height);
 }
 
-:where(.react-aria-Button) {
+/* Selectors here are deliberately NOT wrapped in :where(). Zero specificity
+   would let a consumer's own `button {}` or `input {}` reset outrank this
+   stylesheet, which matters because the surface ships unlayered into pages
+   that have significant legacy CSS. A bare `button` reset was in fact
+   overriding the themed font size.
+   The filled button reads Mangrove's own button tokens, so a theme that
+   reshapes its buttons reshapes this surface too. min-block-size is a floor
+   rather than a token: it keeps the 40px target the v2 principles ask for even
+   where a theme's padding would produce a smaller control. */
+.react-aria-Button {
   align-items: center;
-  background: var(--mg-aria-color-accent);
-  border: var(--mg-aria-border-width) solid var(--mg-aria-color-accent);
+  font-family: var(--mg-aria-font-family);
+  line-height: var(--mg-aria-line-height);
+  background: var(--mg-aria-button-background);
+  border: 0;
   border-radius: var(--mg-aria-radius-button);
-  color: var(--mg-aria-color-on-accent);
+  color: var(--mg-aria-button-color);
   cursor: pointer;
   display: inline-flex;
+  font-size: var(--mg-aria-button-font-size);
   font-weight: 600;
   justify-content: center;
   min-block-size: calc(var(--mg-aria-space-4) * 2);
-  padding: var(--mg-aria-space-2) var(--mg-aria-space-3);
+  padding: var(--mg-aria-button-padding);
 }
 
-:where(.react-aria-Button[data-hovered]) {
-  background: var(--mg-aria-color-accent-active);
+.react-aria-Button[data-hovered] {
+  background: var(--mg-aria-button-background-hover);
 }
 
-:where(.react-aria-Button[data-pressed]) {
-  background: var(--mg-aria-color-accent-active);
+.react-aria-Button[data-pressed] {
+  background: var(--mg-aria-button-background-hover);
   scale: 0.96;
 }
 
-:where(.react-aria-Button[data-disabled]) {
+.react-aria-Button[data-disabled] {
   cursor: not-allowed;
   opacity: 0.55;
 }
@@ -320,7 +331,7 @@
   color: var(--mg-aria-color-text);
 }
 
-:where(.react-aria-Input) {
+.react-aria-Input {
   background: var(--mg-aria-color-field-surface);
   border: var(--mg-aria-border-width) solid var(--mg-aria-color-border);
   border-radius: var(--mg-aria-radius-control);
@@ -331,8 +342,8 @@
   width: var(--mg-aria-width-full);
 }
 
-:where(.react-aria-Input[data-invalid]),
-:where(.react-aria-TextField[data-invalid] .react-aria-Input) {
+.react-aria-Input[data-invalid],
+.react-aria-TextField[data-invalid] .react-aria-Input {
   border-color: var(--mg-aria-color-invalid);
 }
 
@@ -1107,7 +1118,7 @@
     animation: mg-aria-indeterminate 1s linear infinite;
     background-size: calc(var(--mg-aria-space-4) * 2) 100%;
   }
-  :where(.react-aria-Button) {
+  .react-aria-Button {
     transition: background-color var(--mg-aria-motion-duration-fast) var(--mg-aria-motion-easing), border-color var(--mg-aria-motion-duration-fast) var(--mg-aria-motion-easing), color var(--mg-aria-motion-duration-fast) var(--mg-aria-motion-easing), scale var(--mg-aria-motion-duration-fast) var(--mg-aria-motion-easing);
   }
   .react-aria-Cell {
