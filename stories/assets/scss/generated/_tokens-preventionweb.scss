@@ -73,22 +73,22 @@
   --mg-color-tab-background--hover: rgb(10 105 105 / 0.2);
 
   // color.tab-border
-  --mg-color-tab-border: var(--mg-color-interactive);
+  --mg-color-tab-border: rgb(var(--mg-color-interactive));
 
   // color.tab-border--hover
-  --mg-color-tab-border--hover: var(--mg-color-interactive);
+  --mg-color-tab-border--hover: rgb(var(--mg-color-interactive));
 
   // color.tab-border--active
   --mg-color-tab-border--active: var(--mg-color-tab-background);
 
   // color.text-tab
-  --mg-color-text-tab: var(--mg-color-neutral-700);
+  --mg-color-text-tab: rgb(var(--mg-color-neutral-700));
 
   // color.text-tab--hover
-  --mg-color-text-tab--hover: var(--mg-color-neutral-700);
+  --mg-color-text-tab--hover: rgb(var(--mg-color-neutral-700));
 
   // color.text-tab-active
-  --mg-color-text-tab-active: var(--mg-color-neutral-900);
+  --mg-color-text-tab-active: rgb(var(--mg-color-neutral-900));
 
   // radius.button
   --mg-radius-button: var(--mg-spacing-50);

@@ -68,7 +68,7 @@ color:
   tab-background--hover:
     $value: '{=brand.green}'
     $format: srgb-rgb-function
-  tab-border: { $value: '{color.neutral-300}' }
+  tab-border: { $value: '{color.neutral-300}', $format: srgb-rgb-function }
   tab-border--hover:
     $value: '{=brand.green}'
     $format: srgb-rgb-function
@@ -77,8 +77,8 @@ color:
     $value: '{=brand.green}'
     $format: srgb-rgb-function
     $alpha: 0.1
-  text-tab: { $value: '{color.neutral-500}' }
-  text-tab-active: { $value: '{color.neutral-700}' }
+  text-tab: { $value: '{color.neutral-500}', $format: srgb-rgb-function }
+  text-tab-active: { $value: '{color.neutral-700}', $format: srgb-rgb-function }
 
 radius:
   $type: dimension

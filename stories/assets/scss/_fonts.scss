@@ -9,8 +9,10 @@ $font-path-roboto-condensed: "https://assets.undrr.org/static/fonts/roboto-conde
 @import "../fonts/roboto-condensed/roboto-condensed";
 
 /* Arabic Fonts */
-/* Noto Kufi Arabic - for headings in Arabic */
-@import "../fonts/noto-kufi-arabic/noto-kufi-arabic";
+/* Noto Kufi Arabic was removed when Arabic consolidated onto Dubai for both
+   headings and body. Nothing references the family any more, and leaving a
+   dead @font-face in a design system invites accidental use. Consumers that
+   genuinely want it should declare it themselves. */
 
 /* Dubai - for body text in Arabic */
 @import "../fonts/dubai/dubai";

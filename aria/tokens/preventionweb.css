@@ -86,6 +86,20 @@
      override never reaches it. The legacy .mg-tabs component and React Aria's
      Tabs both read these, which is what keeps the two tab surfaces identical
      under every brand. */
+  /* Deliberately NOT wired to each brand's --mg-color-*-tab* tokens, though
+     those exist and currently reach nothing in the default variant.
+
+     They cannot be transferred mechanically. MCR2030, PreventionWeb and DELTA
+     designed a FILLED tab: white text on a solid brand background. alpha.2
+     replaced that with an underline treatment on a transparent tab. Piping the
+     brand text colour into it puts white text on a white page - measured 1.00:1,
+     the active tab literally invisible - and MCR's tab border, designed as a
+     pale edge on purple, is 1.49:1 as an underline on white. The same tokens
+     score 9.52:1 in the design they were drawn for.
+
+     Resolving this is a design decision, not a wiring change: either the brands
+     re-express their tab identity in the underline vocabulary, or the v2 tab
+     regains a filled variant. Recorded in the architecture notes. */
   --mg-tab-color: rgb(var(--mg-color-text));
   --mg-tab-color--hover: rgb(var(--mg-color-interactive-active));
   --mg-tab-color--active: rgb(var(--mg-color-interactive));

@@ -79,7 +79,7 @@
   --mg-color-tab-background--hover: rgb(140 198 63);
 
   // color.tab-border
-  --mg-color-tab-border: var(--mg-color-neutral-300);
+  --mg-color-tab-border: rgb(var(--mg-color-neutral-300));
 
   // color.tab-border--hover
   // IRP green, used only by the tab surface — the tabbar rail, the active tab
@@ -92,10 +92,10 @@
   --mg-color-tab-border--active: rgb(140 198 63 / 0.1);
 
   // color.text-tab
-  --mg-color-text-tab: var(--mg-color-neutral-500);
+  --mg-color-text-tab: rgb(var(--mg-color-neutral-500));
 
   // color.text-tab-active
-  --mg-color-text-tab-active: var(--mg-color-neutral-700);
+  --mg-color-text-tab-active: rgb(var(--mg-color-neutral-700));
 
   // radius.tag
   --mg-radius-tag: var(--mg-spacing-50);

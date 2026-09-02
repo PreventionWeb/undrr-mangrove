@@ -113,19 +113,19 @@ color:
   hero-button-secondary-color: { $value: '{color.white}', $format: literal }
   tabbar-background: { $value: 'none', $format: literal }
   tab-background: { $value: '{=brand.primary}', $format: srgb-rgb-function }
-  tab-background--inactive: { $value: '{color.white}', $format: literal }
+  tab-background--inactive: { $value: '{color.white}', $format: srgb-rgb-function }
   tab-background--hover:
     $value: '{=brand.primary}'
     $format: srgb-rgb-function
     $alpha: 0.7
-  tab-border: { $value: '{color.blue-200}' }
+  tab-border: { $value: '{color.blue-200}', $format: srgb-rgb-function }
   tab-border--hover:
     $value: '{=brand.primary-800}'
     $format: srgb-rgb-function
-  tab-border--active: { $value: '{color.blue-200}' }
-  text-tab: { $value: '{color.neutral-700}' }
-  text-tab--hover: { $value: '{color.white}', $format: literal }
-  text-tab-active: { $value: '{color.white}', $format: literal }
+  tab-border--active: { $value: '{color.blue-200}', $format: srgb-rgb-function }
+  text-tab: { $value: '{color.neutral-700}', $format: srgb-rgb-function }
+  text-tab--hover: { $value: '{color.white}', $format: srgb-rgb-function }
+  text-tab-active: { $value: '{color.white}', $format: srgb-rgb-function }
 
 border-color:
   $type: color

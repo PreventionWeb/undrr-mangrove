@@ -68,12 +68,12 @@ color:
     $value: '{=color.interactive}'
     $format: srgb-rgb-function
     $alpha: 0.2
-  tab-border: { $value: '{color.interactive}' }
-  tab-border--hover: { $value: '{color.interactive}' }
+  tab-border: { $value: '{color.interactive}', $format: srgb-rgb-function }
+  tab-border--hover: { $value: '{color.interactive}', $format: srgb-rgb-function }
   tab-border--active: { $value: '{color.tab-background}', $format: literal }
-  text-tab: { $value: '{color.neutral-700}' }
-  text-tab--hover: { $value: '{color.neutral-700}' }
-  text-tab-active: { $value: '{color.neutral-900}' }
+  text-tab: { $value: '{color.neutral-700}', $format: srgb-rgb-function }
+  text-tab--hover: { $value: '{color.neutral-700}', $format: srgb-rgb-function }
+  text-tab-active: { $value: '{color.neutral-900}', $format: srgb-rgb-function }
 
 radius:
   $type: dimension
