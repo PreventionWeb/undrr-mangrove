@@ -88,6 +88,30 @@ const REMOVABLE_HAZARD_TAGS = [
 
 // A fixed month keeps the specimens stable: the review window runs from the 6th
 // to the 26th, and the validation blackout falls on the 20th to the 22nd.
+/* DELTA's four record states, as implemented by mg-status-label. */
+const STATUS_MODIFIER = {
+  Draft: 'draft',
+  'Waiting for validation': 'waiting-validation',
+  'Waiting for information': 'waiting-information',
+  Published: 'published',
+};
+
+function StatusLabel({ status }) {
+  const modifier = STATUS_MODIFIER[status];
+  return (
+    <span
+      className={
+        modifier
+          ? `mg-status-label mg-status-label--${modifier}`
+          : 'mg-status-label'
+      }
+    >
+      <span className="mg-status-label__indicator" />
+      {status}
+    </span>
+  );
+}
+
 const VISIBLE_MONTH = new CalendarDate(2026, 5, 1);
 const SELECTED_DAY = new CalendarDate(2026, 5, 14);
 const REVIEW_WINDOW_START = new CalendarDate(2026, 5, 6);
@@ -188,8 +212,12 @@ function HazardEventTable() {
             </Cell>
             <Cell>Tropical cyclone</Cell>
             <Cell>Rapid onset</Cell>
-            <Cell>Validated</Cell>
-            <Cell>14 May 2026</Cell>
+            <Cell>
+              <StatusLabel status="Published" />
+            </Cell>
+            <Cell>
+              <time dateTime="2026-05-14">14 May 2026</time>
+            </Cell>
           </Row>
           <Row id="flood">
             <Cell>
@@ -197,8 +225,12 @@ function HazardEventTable() {
             </Cell>
             <Cell>Riverine flood</Cell>
             <Cell>Rapid onset</Cell>
-            <Cell>Waiting for validation</Cell>
-            <Cell>12 May 2026</Cell>
+            <Cell>
+              <StatusLabel status="Waiting for validation" />
+            </Cell>
+            <Cell>
+              <time dateTime="2026-05-12">12 May 2026</time>
+            </Cell>
           </Row>
           <Row id="drought">
             <Cell>
@@ -206,8 +238,12 @@ function HazardEventTable() {
             </Cell>
             <Cell>Drought</Cell>
             <Cell>Slow onset</Cell>
-            <Cell>Draft</Cell>
-            <Cell>02 May 2026</Cell>
+            <Cell>
+              <StatusLabel status="Draft" />
+            </Cell>
+            <Cell>
+              <time dateTime="2026-05-02">2 May 2026</time>
+            </Cell>
           </Row>
         </TableBody>
       </Table>
@@ -436,7 +472,9 @@ function RecordStatusSelect({ defaultOpen }) {
         <ListBox>
           <ListBoxItem id="draft">Draft</ListBoxItem>
           <ListBoxItem id="waiting">Waiting for validation</ListBoxItem>
-          <ListBoxItem id="validated">Validated</ListBoxItem>
+          <ListBoxItem id="waiting-information">
+            Waiting for information
+          </ListBoxItem>
           <ListBoxItem id="published">Published</ListBoxItem>
         </ListBox>
       </Popover>

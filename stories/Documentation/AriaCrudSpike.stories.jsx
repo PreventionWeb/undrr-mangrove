@@ -66,14 +66,14 @@ const initialEvents = [
   {
     id: 'cyclone',
     hazard: 'Tropical Cyclone',
-    status: 'Validated',
+    status: 'Waiting for information',
     cycle: 'Rapid onset',
     sunlight: 'High',
     watering: 'Average',
     favorite: false,
     image: 'icons/ocha/cyclone.svg',
     note: 'HIPS-001',
-    updated: '02-05-2026',
+    updated: '2026-05-02',
   },
   {
     id: 'cholera',
@@ -85,7 +85,7 @@ const initialEvents = [
     favorite: false,
     image: 'icons/ocha/epidemic.svg',
     note: 'HIPS-002',
-    updated: '02-05-2026',
+    updated: '2026-05-02',
   },
   {
     id: 'drought',
@@ -97,7 +97,7 @@ const initialEvents = [
     favorite: false,
     image: 'icons/ocha/drought.svg',
     note: 'HIPS-003',
-    updated: '02-05-2026',
+    updated: '2026-05-02',
   },
   {
     id: 'heatwave',
@@ -109,7 +109,7 @@ const initialEvents = [
     favorite: false,
     image: 'icons/ocha/heatwave.svg',
     note: 'HIPS-004',
-    updated: '02-05-2026',
+    updated: '2026-05-02',
   },
   {
     id: 'flood',
@@ -121,9 +121,51 @@ const initialEvents = [
     favorite: false,
     image: 'icons/ocha/flood.svg',
     note: 'HIPS-005',
-    updated: '01-05-2026',
+    updated: '2026-05-01',
   },
 ];
+/* The four states come from DELTA's "Status Labels for Records and Events"
+   board, which is what the mg-status-label component implements. Keeping the
+   demo on that vocabulary means the swatch on screen is the real one. */
+const STATUS_MODIFIER = {
+  Draft: 'draft',
+  'Waiting for validation': 'waiting-validation',
+  'Waiting for information': 'waiting-information',
+  Published: 'published',
+};
+
+function StatusLabel({ status }) {
+  const modifier = STATUS_MODIFIER[status];
+  return (
+    <span
+      className={
+        modifier
+          ? `mg-status-label mg-status-label--${modifier}`
+          : 'mg-status-label'
+      }
+    >
+      <span className="mg-status-label__indicator" />
+      {status}
+    </span>
+  );
+}
+
+/* UN Editorial Manual style: day, month name, year, no ordinal and no comma.
+   Dates are held as ISO 8601 so they sort, and so the value a DatePicker writes
+   back matches the seed data; the ISO form stays in the datetime attribute for
+   machines while people read the unambiguous spelled-out month. */
+const UN_DATE = new Intl.DateTimeFormat('en-GB', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+  timeZone: 'UTC',
+});
+
+function formatUnDate(iso) {
+  const parsed = new Date(`${iso}T00:00:00Z`);
+  return Number.isNaN(parsed.getTime()) ? iso : UN_DATE.format(parsed);
+}
+
 const allColumns = [
   { id: 'hazard', label: 'Hazard type', width: 220 },
   { id: 'cycle', label: 'Onset', width: 150 },
@@ -158,7 +200,7 @@ function EventEditor({ item, onClose, onSave }) {
       image: droppedImage,
       id: item?.id || crypto.randomUUID(),
       favorite: item?.favorite || false,
-      updated: draft.updated || '26-08-2026',
+      updated: draft.updated || '2026-08-26',
     });
   };
   return (
@@ -265,7 +307,7 @@ function EventEditor({ item, onClose, onSave }) {
                       items={[
                         'Draft',
                         'Waiting for validation',
-                        'Validated',
+                        'Waiting for information',
                         'Published',
                       ]}
                     >
@@ -603,7 +645,7 @@ function CrudDemo() {
                 items={[
                   'Draft',
                   'Waiting for validation',
-                  'Validated',
+                  'Waiting for information',
                   'Published',
                 ]}
                 selectedKeys={statuses}
@@ -770,6 +812,12 @@ function CrudDemo() {
                           {item.note && <small>{item.note}</small>}
                         </span>
                       </div>
+                    ) : column.id === 'status' ? (
+                      <StatusLabel status={item.status} />
+                    ) : column.id === 'updated' ? (
+                      <time dateTime={item.updated}>
+                        {formatUnDate(item.updated)}
+                      </time>
                     ) : (
                       item[column.id]
                     )}
