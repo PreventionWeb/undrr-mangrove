@@ -9,33 +9,37 @@ $_irp-color-green--raw: 140 198 63;
   // Runtime marker: lets JS/tooling detect that this brand theme is active
   // (guards the sub-brand body-class trap). See docs/RELEASE-2.0.md.
   --mg-theme-loaded: irp;
-  --mg-color-interactive:          #{$_irp-color-primary--raw};
-  --mg-color-interactive-active:   #{$_irp-color-primary--raw};
-  --mg-color-tag:                  var(--mg-color-interactive);
-  --mg-color-tag--hover:           var(--mg-color-interactive-active);
-  --mg-radius-tag:                 var(--mg-spacing-50);
-  --mg-color-button-background:    #{$_irp-color-primary--raw};
-  --mg-color-button-background--hover: var(--mg-color-orange-900);
+  --mg-color-interactive: #{$_irp-color-primary--raw};
+  --mg-color-interactive-active: #{$_irp-color-primary--raw};
+  --mg-color-tag: var(--mg-color-interactive);
+  --mg-color-tag--hover: var(--mg-color-interactive-active);
+  --mg-radius-tag: var(--mg-spacing-50);
+  --mg-color-button-background: rgb(#{$_irp-color-primary--raw});
+  --mg-color-button-background--hover: rgb(var(--mg-color-orange-900));
   --mg-color-button-outline-primary: #{$_irp-color-primary--raw};
   --mg-color-button-outline-primary--hover: var(--mg-color-orange-900);
-  --mg-color-button-outline-secondary: var(--mg-color-button-secondary-background);
-  --mg-color-button-outline-secondary--hover: var(--mg-color-button-secondary-background--hover);
-  --mg-radius-button:              var(--mg-spacing-50);
-  --mg-color-form-check:           var(--mg-color-interactive);
-  --mg-color-form-check--hover:    var(--mg-color-interactive-active);
-  --mg-color-form-check--checked:  var(--mg-color-interactive);
-  --mg-color-form-focus:           var(--mg-color-interactive);
-  --mg-radius-form-input:          var(--mg-spacing-50);
-  --mg-color-hero:                 var(--mg-color-interactive);
-  --mg-spacing-hero-overlay:       #{mg-rem(20)} 0;
-  --mg-color-tabbar-background:    rgb(#{$_irp-color-green--raw} / 0.1);
-  --mg-color-text-tab:             var(--mg-color-neutral-500);
-  --mg-color-text-tab-active:      var(--mg-color-neutral-700);
-  --mg-color-tab-background:       rgb(#{$_irp-color-green--raw} / 0.3);
+  --mg-color-button-outline-secondary: var(
+    --mg-color-button-secondary-background
+  );
+  --mg-color-button-outline-secondary--hover: var(
+    --mg-color-button-secondary-background--hover
+  );
+  --mg-radius-button: var(--mg-spacing-50);
+  --mg-color-form-check: var(--mg-color-interactive);
+  --mg-color-form-check--hover: var(--mg-color-interactive-active);
+  --mg-color-form-check--checked: var(--mg-color-interactive);
+  --mg-color-form-focus: var(--mg-color-interactive);
+  --mg-radius-form-input: var(--mg-spacing-50);
+  --mg-color-hero: var(--mg-color-interactive);
+  --mg-spacing-hero-overlay: #{mg-rem(20)} 0;
+  --mg-color-tabbar-background: rgb(#{$_irp-color-green--raw} / 0.1);
+  --mg-color-text-tab: var(--mg-color-neutral-500);
+  --mg-color-text-tab-active: var(--mg-color-neutral-700);
+  --mg-color-tab-background: rgb(#{$_irp-color-green--raw} / 0.3);
   --mg-color-tab-background--inactive: var(--mg-color-tabbar-background);
   --mg-color-tab-background--hover: rgb(#{$_irp-color-green--raw});
-  --mg-radius-tab:                 var(--mg-spacing-0) var(--mg-spacing-0) 0 0;
-  --mg-color-tab-border:           var(--mg-color-neutral-300);
-  --mg-color-tab-border--hover:    rgb(#{$_irp-color-green--raw} / 0.1);
-  --mg-color-tab-border--active:   rgb(#{$_irp-color-green--raw} / 0.1);
+  --mg-radius-tab: var(--mg-spacing-0) var(--mg-spacing-0) 0 0;
+  --mg-color-tab-border: var(--mg-color-neutral-300);
+  --mg-color-tab-border--hover: rgb(#{$_irp-color-green--raw} / 0.1);
+  --mg-color-tab-border--active: rgb(#{$_irp-color-green--raw} / 0.1);
 }

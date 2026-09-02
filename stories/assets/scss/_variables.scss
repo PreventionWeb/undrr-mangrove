@@ -286,8 +286,11 @@ $mg-tabs-border-bottom: true !default;
   // Buttons
   --mg-color-button: var(--mg-color-neutral-0);
   --mg-color-button--hover: var(--mg-color-neutral-0);
-  --mg-color-button-background: var(--mg-color-interactive);
-  --mg-color-button-background--hover: var(--mg-color-interactive-active);
+
+  // Colour-valued, not a channel triplet: DELTA needs `transparent` here and
+  // a triplet cannot express it. Consumers must not wrap these in rgb().
+  --mg-color-button-background: rgb(var(--mg-color-interactive));
+  --mg-color-button-background--hover: rgb(var(--mg-color-interactive-active));
   --mg-color-button-secondary-background: var(--mg-color-blue-800);
   --mg-color-button-secondary-background--hover: var(--mg-color-blue-700);
   --mg-color-button-outline-primary: var(--mg-color-interactive);

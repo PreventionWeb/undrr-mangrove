@@ -102,11 +102,13 @@
      enlarges the pill to 15px/30px with 18px type, DELTA retints nineteen
      button tokens. The adapter previously read only --mg-radius-button, so
      colour and radius flowed and nothing else did. */
-  --mg-aria-button-background: rgb(
-    var(--mg-color-button-background, var(--mg-color-interactive))
+  --mg-aria-button-background: var(
+    --mg-color-button-background,
+    rgb(var(--mg-color-interactive))
   );
-  --mg-aria-button-background-hover: rgb(
-    var(--mg-color-button-background--hover, var(--mg-color-interactive-active))
+  --mg-aria-button-background-hover: var(
+    --mg-color-button-background--hover,
+    rgb(var(--mg-color-interactive-active))
   );
   --mg-aria-button-color: rgb(var(--mg-color-button, var(--mg-color-white)));
   --mg-aria-button-padding: var(

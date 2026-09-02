@@ -66,17 +66,17 @@
 
 button {
   &:focus-visible {
-    box-shadow: 0 0 4px rgb(var(--mg-color-button-background));
+    box-shadow: 0 0 4px var(--mg-color-button-background);
     outline: 0;
   }
 }
 
 .mg-button-primary {
-  background-color: rgb(var(--mg-color-button-background));
+  background-color: var(--mg-color-button-background);
 
   &:hover {
     color: rgb(var(--mg-color-button));
-    background-color: rgb(var(--mg-color-button-background--hover));
+    background-color: var(--mg-color-button-background--hover);
   }
 }
 
