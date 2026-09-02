@@ -11,6 +11,10 @@
 const fs = require('fs');
 const path = require('path');
 const sass = require('sass');
+const {
+  perceptualContrast,
+  THRESHOLD,
+} = require('../../../../scripts/lib/perceptual-contrast.cjs');
 const { version } = require('../../../../package.json');
 
 const SCSS_DIR = path.resolve(__dirname, '..');
@@ -476,6 +480,204 @@ const themeVars = theme => {
 };
 
 /**
+ * Resting-state React Aria pairs, as [foreground, background, minimum].
+ * 3:1 is SC 1.4.11 non-text contrast; 4.5:1 is SC 1.4.3 for text.
+ *
+ * Module scope rather than describe scope so the perceptual measure and the
+ * disagreement report grade this exact list — one list, two measures.
+ */
+const ARIA_PAIRS = [
+  ['color-text', 'color-surface', 4.5],
+  ['color-muted-text', 'color-surface', 4.5],
+  ['color-on-accent', 'color-accent', 4.5],
+  ['button-color', 'button-background', 4.5],
+  ['color-invalid', 'color-surface', 4.5],
+  ['color-border', 'color-surface', 3],
+  ['color-border', 'color-field-surface', 3],
+  ['color-accent', 'color-surface', 3],
+  // The filled portion of a slider, progress bar or switch against its rail.
+  ['color-accent', 'color-track', 3],
+  ['color-focus-ring', 'color-surface', 3],
+  ['color-focus-ring', 'color-field-surface', 3],
+];
+
+const ARIA_THEMES = [['base', null], ...BRANDS.map(b => [b, `.mg-theme-${b}`])];
+
+/* -------------------------------------------------------------------------
+ * The second measure.
+ *
+ * WCAG 2's ratio compares relative luminance, which is not perceptually
+ * uniform, so it misjudges mid-tones, warm hues and light-on-dark. Every pair
+ * defined in this file is therefore graded TWICE — once with WCAG 2 (the
+ * assertions that were already here, unchanged) and once with the Oklab
+ * lightness measure in scripts/lib/perceptual-contrast.cjs.
+ *
+ * The two measures share one pair list and one resolved colour, so a
+ * disagreement between them can only ever be about the maths, never about
+ * measuring different things. `docs/COLOUR-CONTRAST-METHODOLOGY.md` explains
+ * the calibration and the limitations.
+ * ---------------------------------------------------------------------- */
+
+/**
+ * Which perceptual threshold a pair is graded against.
+ *
+ * Derived from the WCAG role the pair ALREADY declares, rather than restated:
+ * a 4.5 minimum is SC 1.4.3 normal text, and a 3 minimum is either SC 1.4.3
+ * large text or SC 1.4.11 non-text, which the `why` field distinguishes.
+ * BODY_TEXT and LARGE_TEXT/NON_TEXT are the two calibrated anchors (#767676
+ * and #949494 on white); LARGE_TEXT and NON_TEXT happen to share a value
+ * because WCAG 2's 3:1 boundary serves both, so they are kept apart by name
+ * only, to keep the reported role honest.
+ */
+const perceptualRole = (min, why = '') => {
+  if (min >= 4.5) return ['BODY_TEXT', THRESHOLD.BODY_TEXT];
+  return /large text/i.test(why)
+    ? ['LARGE_TEXT', THRESHOLD.LARGE_TEXT]
+    : ['NON_TEXT', THRESHOLD.NON_TEXT];
+};
+
+const triple = ({ r, g, b }) => [r, g, b];
+const perceptual = (fg, bg) =>
+  Number(perceptualContrast(triple(fg), triple(bg)).toFixed(1));
+
+/**
+ * Every measured pair in this file, graded by both measures, computed once.
+ *
+ * The two contrast suites and the disagreement report all read this table, so
+ * the WCAG verdict and the perceptual verdict are guaranteed to describe the
+ * same composited pixels. Memoised because compositing is cheap but the Sass
+ * compile behind `compile()` is not.
+ */
+let MEASUREMENTS = null;
+const measurements = () => {
+  if (MEASUREMENTS) return MEASUREMENTS;
+  const rows = [];
+
+  const grade = ({ suite, theme, name, min, why, foreground, backdrop }) => {
+    const row = {
+      suite,
+      theme,
+      name,
+      min,
+      why,
+      key: `${suite}|${theme}|${name}`,
+    };
+    const [role, floor] = perceptualRole(min, why);
+    row.role = role;
+    row.floor = floor;
+    if (!foreground || !backdrop) {
+      rows.push(row);
+      return row;
+    }
+    const solidBg = flatten(backdrop, WHITE);
+    const solidFg = flatten(foreground, solidBg);
+    row.ratio = Number(contrast(solidFg, solidBg).toFixed(2));
+    row.score = perceptual(solidFg, solidBg);
+    row.wcagPasses = row.ratio >= min;
+    row.perceptualPasses = row.score >= floor;
+    rows.push(row);
+    return row;
+  };
+
+  // Suite one: resting-state --mg-aria-* pairs, read out of each brand's own
+  // bundle exactly as the WCAG assertions below do.
+  for (const [theme, selector] of ARIA_THEMES) {
+    const css = theme === 'base' ? compile('style') : compile(`style-${theme}`);
+    const vars = declarations(css, selector);
+    const read = token => parseColor(deref(vars, vars[`--mg-aria-${token}`]));
+    for (const [fg, bg, min] of ARIA_PAIRS) {
+      grade({
+        suite: 'aria',
+        theme,
+        name: `${fg} on ${bg}`,
+        min,
+        // These eleven are borders, fills, focus rings and accent-on-surface;
+        // none is large text, so a 3 minimum here is always SC 1.4.11.
+        why: min >= 4.5 ? 'SC 1.4.3' : 'SC 1.4.11',
+        foreground: read(fg),
+        // A missing background token is a contract bug, not a silent pass;
+        // `grade` leaves the row ungraded and the assertion below reports it.
+        backdrop: read(bg),
+      });
+    }
+  }
+
+  // Suite two: component tokens including hover and active states, resolved
+  // out of the combined bundle with the theme block overlaid.
+  for (const theme of ALL_THEMES) {
+    const vars = themeVars(theme);
+    const resolve = token =>
+      token.startsWith('--') ? deref(vars, vars[token]) : token;
+    for (const pair of COMPONENT_PAIRS) {
+      let backdrop = WHITE;
+      let resolved = true;
+      for (const token of [...pair.bg].reverse()) {
+        const layer = parseColor(resolve(token));
+        if (!layer) {
+          resolved = false;
+          break;
+        }
+        backdrop = flatten(layer, backdrop);
+      }
+      grade({
+        suite: 'component',
+        theme,
+        name: pair.name,
+        min: pair.min,
+        why: pair.why,
+        foreground: parseColor(resolve(pair.fg)),
+        backdrop: resolved ? backdrop : null,
+      });
+    }
+  }
+
+  MEASUREMENTS = rows;
+  return rows;
+};
+
+const measurement = key => {
+  const row = measurements().find(candidate => candidate.key === key);
+  if (!row) throw new Error(`no measurement for ${key}`);
+  return row;
+};
+
+/**
+ * The perceptual half of a pair's verdict, asserted the same way the WCAG half
+ * is: a recorded exception must STILL fail and must not get worse, so a fix
+ * deletes the exception rather than hiding behind it.
+ */
+const assertPerceptual = (row, exception) => {
+  const label = `${row.score} — ${row.role} needs ${row.floor} — ${row.why}`;
+  if (!exception) {
+    expect(label).toBe(
+      row.perceptualPasses
+        ? label
+        : `at least ${row.floor} — ${row.role} — ${row.why}`
+    );
+    return;
+  }
+  const [recorded] = exception;
+  expect(`${row.score} vs the ${row.floor} this pair needs`).toBe(
+    row.perceptualPasses
+      ? `now passing, so remove this exception (${recorded} was recorded)`
+      : `${row.score} vs the ${row.floor} this pair needs`
+  );
+  // ...and no worse than when it was recorded. 0.1 is the rounding step.
+  expect(row.score).toBeGreaterThanOrEqual(recorded - 0.1);
+};
+
+/**
+ * Perceptual failures among the resting-state React Aria pairs.
+ *
+ * Empty, and that is a finding rather than an oversight: all 55 resting-state
+ * pairs clear both measures. The adapter's contrast problems are all in the
+ * hover and active states, which this suite does not reach and the component
+ * suite below does. Kept as an explicit table so a regression lands here with
+ * its measured score, on the same terms as every other exception in the file.
+ */
+const ARIA_PERCEPTUAL_EXCEPTIONS = {};
+
+/**
  * An accessibility audit found real failures in the React Aria adapter that
  * were invisible in source: DELTA's field borders sat at 2.10:1 and IRP's
  * slider fill at 2.93:1 against its track. These assertions turn that audit
@@ -486,24 +688,8 @@ const themeVars = theme => {
  * tokens are covered by the suite below this one.
  */
 describe('React Aria token contrast (WCAG 2.2 AA)', () => {
-  // [foreground, background, minimum]. 3:1 is SC 1.4.11 non-text contrast;
-  // 4.5:1 is SC 1.4.3 for text.
-  const PAIRS = [
-    ['color-text', 'color-surface', 4.5],
-    ['color-muted-text', 'color-surface', 4.5],
-    ['color-on-accent', 'color-accent', 4.5],
-    ['button-color', 'button-background', 4.5],
-    ['color-invalid', 'color-surface', 4.5],
-    ['color-border', 'color-surface', 3],
-    ['color-border', 'color-field-surface', 3],
-    ['color-accent', 'color-surface', 3],
-    // The filled portion of a slider, progress bar or switch against its rail.
-    ['color-accent', 'color-track', 3],
-    ['color-focus-ring', 'color-surface', 3],
-    ['color-focus-ring', 'color-field-surface', 3],
-  ];
-
-  const THEMES = [['base', null], ...BRANDS.map(b => [b, `.mg-theme-${b}`])];
+  const PAIRS = ARIA_PAIRS;
+  const THEMES = ARIA_THEMES;
 
   const themeCss = {};
   beforeAll(() => {
@@ -530,6 +716,23 @@ describe('React Aria token contrast (WCAG 2.2 AA)', () => {
 
       expect(Number(ratio.toFixed(2))).toBeGreaterThanOrEqual(minimum);
     });
+
+    // The same pair, the same resolved pixels, the second measure. Kept as a
+    // separate test so a perceptual failure names itself rather than hiding
+    // inside a WCAG failure.
+    test.each(PAIRS)(
+      '%s on %s is perceptually readable at the %s:1 role',
+      (fg, bg) => {
+        const row = measurement(`aria|${theme}|${fg} on ${bg}`);
+        // Guards the shared table against the resolution silently going null.
+        expect(
+          `${row.name}: ${row.score === undefined ? 'unresolved' : 'ok'}`
+        ).toBe(`${row.name}: ok`);
+
+        const exception = ARIA_PERCEPTUAL_EXCEPTIONS[`${theme}|${row.name}`];
+        assertPerceptual(row, exception);
+      }
+    );
   });
 });
 
@@ -757,6 +960,986 @@ describe('standalone React Aria token files resolve on their own', () => {
   });
 });
 
+// The page itself. Asserted rather than assumed, because every pair whose
+// lowest layer is translucent composites down onto it.
+const PAGE = '--mg-color-neutral-0';
+
+/**
+ * fg  — the painted foreground token, or a literal the component hardcodes.
+ * bg  — background layers, nearest first; the page is the implicit floor.
+ * min — 4.5 (SC 1.4.3 normal text) or 3 (SC 1.4.3 large text / SC 1.4.11).
+ */
+const COMPONENT_PAIRS = [
+  // --- Buttons: cta-button.scss ------------------------------------------
+  {
+    name: 'button label on primary background',
+    fg: '--mg-color-button',
+    bg: ['--mg-color-button-background'],
+    min: 4.5,
+    why: 'SC 1.4.3 — .mg-button-primary label text',
+  },
+  {
+    name: 'button label on primary background, hover',
+    fg: '--mg-color-button',
+    bg: ['--mg-color-button-background--hover'],
+    min: 4.5,
+    why: 'SC 1.4.3 — .mg-button-primary:hover label text',
+  },
+  {
+    name: 'button label on secondary background',
+    fg: '--mg-color-button',
+    bg: ['--mg-color-button-secondary-background'],
+    min: 4.5,
+    why: 'SC 1.4.3 — .mg-button-secondary label text',
+  },
+  {
+    name: 'button label on secondary background, hover',
+    fg: '--mg-color-button',
+    bg: ['--mg-color-button-secondary-background--hover'],
+    min: 4.5,
+    why: 'SC 1.4.3 — .mg-button-secondary:hover label text',
+  },
+  {
+    name: 'outline primary button label on the page',
+    fg: '--mg-color-button-outline-primary',
+    bg: [],
+    min: 4.5,
+    why: 'SC 1.4.3 — .mg-button-outline is transparent; label and border are the same token',
+  },
+  {
+    name: 'outline primary button label, hover fill',
+    fg: '--mg-color-button',
+    bg: ['--mg-color-button-outline-primary--hover'],
+    min: 4.5,
+    why: 'SC 1.4.3 — outline button fills on hover and the label flips to --mg-color-button',
+  },
+  {
+    name: 'outline secondary button label on the page',
+    fg: '--mg-color-button-outline-secondary',
+    bg: [],
+    min: 4.5,
+    why: 'SC 1.4.3 — .mg-button-secondary.mg-button-outline label text',
+  },
+  {
+    name: 'outline secondary button label, hover fill',
+    fg: '--mg-color-button',
+    bg: ['--mg-color-button-outline-secondary--hover'],
+    min: 4.5,
+    why: 'SC 1.4.3 — outline secondary fills on hover',
+  },
+  {
+    name: 'editorial CTA label on the page',
+    fg: '--mg-color-text',
+    bg: [],
+    min: 4.5,
+    why: 'SC 1.4.3 — .mg-button-cta is a transparent text button',
+  },
+  {
+    name: 'editorial CTA label on the page, hover',
+    fg: '--mg-color-interactive-active',
+    bg: [],
+    min: 4.5,
+    why: 'SC 1.4.3 — .mg-button-cta:hover recolours its label',
+  },
+  {
+    name: 'editorial CTA chevron badge, resting',
+    fg: PAGE,
+    bg: ['--mg-color-interactive'],
+    min: 3,
+    why: 'SC 1.4.11 — the ::after chevron is a graphical affordance, not the label',
+  },
+  {
+    name: 'editorial CTA chevron badge, hover',
+    fg: PAGE,
+    bg: ['--mg-color-interactive-active'],
+    min: 3,
+    why: 'SC 1.4.11 — .mg-button-cta:hover::after retints the badge',
+  },
+
+  // --- Tags: tag.scss ----------------------------------------------------
+  // tag.scss paints `color: #fff` literally, not through a token, so the
+  // literal is what gets measured. `tag.scss still paints its label #fff`
+  // below pins that so the pairing cannot go stale silently.
+  {
+    name: 'tag label',
+    fg: '#fff',
+    bg: ['--mg-color-tag'],
+    min: 4.5,
+    why: 'SC 1.4.3 — .mg-tag label text',
+  },
+  {
+    name: 'tag label, hover',
+    fg: '#fff',
+    bg: ['--mg-color-tag--hover'],
+    min: 4.5,
+    why: 'SC 1.4.3 — .mg-tag:hover',
+  },
+  {
+    name: 'secondary tag label',
+    fg: '#fff',
+    bg: ['--mg-color-tag-secondary'],
+    min: 4.5,
+    why: 'SC 1.4.3 — .mg-tag--secondary',
+  },
+  {
+    name: 'secondary tag label, hover',
+    fg: '#fff',
+    bg: ['--mg-color-tag-secondary--hover'],
+    min: 4.5,
+    why: 'SC 1.4.3 — .mg-tag--secondary:hover',
+  },
+  {
+    name: 'accent tag label',
+    fg: '#fff',
+    bg: ['--mg-color-tag-accent'],
+    min: 4.5,
+    why: 'SC 1.4.3 — .mg-tag--accent',
+  },
+  {
+    name: 'accent tag label, hover',
+    fg: '#fff',
+    bg: ['--mg-color-tag-accent--hover'],
+    min: 4.5,
+    why: 'SC 1.4.3 — .mg-tag--accent:hover',
+  },
+  {
+    name: 'outline tag label on the page',
+    fg: '--mg-color-tag',
+    bg: [],
+    min: 4.5,
+    why: 'SC 1.4.3 — .mg-tag--outline is transparent; label and border share the token',
+  },
+  {
+    name: 'outline tag label, hover fill',
+    fg: '--mg-color-tag',
+    bg: ['--mg-color-blue-50'],
+    min: 4.5,
+    why: 'SC 1.4.3 — .mg-tag--outline:hover keeps the label and tints the fill',
+  },
+
+  // --- Legacy tabs: tab.scss `.mg-tabs` ----------------------------------
+  {
+    name: 'legacy tab label, inactive',
+    fg: '--mg-color-text-tab',
+    bg: ['--mg-color-tab-background--inactive'],
+    min: 4.5,
+    why: 'SC 1.4.3 — .mg-tabs__link resting label',
+  },
+  {
+    name: 'legacy tab label, hover',
+    fg: '--mg-color-text-tab--hover',
+    bg: ['--mg-color-tab-background--hover'],
+    min: 4.5,
+    why: 'SC 1.4.3 — .mg-tabs__link:hover and :focus-visible share this rule',
+  },
+  {
+    name: 'legacy tab label, active',
+    fg: '--mg-color-text-tab-active',
+    bg: ['--mg-color-tab-background'],
+    min: 4.5,
+    why: 'SC 1.4.3 — .mg-tabs__link.is-active',
+  },
+  {
+    name: 'legacy tab empty-filter message',
+    fg: '--mg-color-text-tab-no-results',
+    bg: ['--mg-color-tab-section-background'],
+    min: 4.5,
+    why: 'SC 1.4.3 — .mg-tabs__no-results sits in the tab panel',
+  },
+
+  // --- v2 tabs: tab.scss `.mg-tabs--horizontal` --------------------------
+  // The v2 list background is `transparent`, so these resolve against the
+  // page, not against the legacy tab-bar tint.
+  {
+    name: 'v2 tab label, resting',
+    fg: '--mg-tab-color',
+    bg: [],
+    min: 4.5,
+    why: 'SC 1.4.3 — .mg-tabs--horizontal .mg-tabs__link on a transparent list',
+  },
+  {
+    name: 'v2 tab label, hover',
+    fg: '--mg-tab-color--hover',
+    bg: ['--mg-tab-background--hover'],
+    min: 4.5,
+    why: 'SC 1.4.3 — hover tints the tab and recolours the label',
+  },
+  {
+    name: 'v2 tab label, active',
+    fg: '--mg-tab-color--active',
+    bg: [],
+    min: 4.5,
+    why: 'SC 1.4.3 — the active v2 tab keeps a transparent background',
+  },
+  {
+    name: 'v2 tab indicator, active',
+    fg: '--mg-tab-indicator--active',
+    bg: [],
+    min: 3,
+    why: 'SC 1.4.11 — the inset underline is how the selected tab is identified',
+  },
+  {
+    name: 'v2 tab indicator, hover',
+    fg: '--mg-tab-indicator--hover',
+    bg: [],
+    min: 3,
+    why: 'SC 1.4.11 — hover state indicator on a transparent tab',
+  },
+
+  // --- Form controls: _form-base.scss ------------------------------------
+  {
+    name: 'input value text',
+    fg: '--mg-color-text',
+    bg: ['--mg-form-input-background'],
+    min: 4.5,
+    why: 'SC 1.4.3 — typed value on the resting field',
+  },
+  {
+    name: 'input value text, focused/filled field',
+    fg: '--mg-color-text',
+    bg: ['--mg-form-input-background--focus'],
+    min: 4.5,
+    why: 'SC 1.4.3 — the field lifts to a second surface on focus and when filled',
+  },
+  {
+    name: 'input placeholder',
+    fg: '--mg-color-neutral-500',
+    bg: ['--mg-form-input-background'],
+    min: 4.5,
+    why: 'SC 1.4.3 — ::placeholder is text',
+  },
+  {
+    name: 'input border',
+    fg: '--mg-form-input-border-color',
+    bg: [],
+    min: 3,
+    why: 'SC 1.4.11 — the border is the only thing defining the field boundary',
+  },
+  {
+    name: 'input border, focused',
+    fg: '--mg-color-form-focus',
+    bg: ['--mg-form-input-background--focus'],
+    min: 3,
+    why: 'SC 1.4.11 — focus recolours the border against the lifted surface',
+  },
+  {
+    name: 'checkbox/radio border, resting',
+    fg: '--mg-color-form-check',
+    bg: [],
+    min: 3,
+    why: 'SC 1.4.11 — an unchecked control is nothing but its 2px border',
+  },
+  {
+    name: 'checkbox/radio border, hover',
+    fg: '--mg-color-form-check--hover',
+    bg: [],
+    min: 3,
+    why: 'SC 1.4.11 — :hover recolours that border',
+  },
+  {
+    name: 'checkbox/radio fill, checked',
+    fg: '--mg-color-form-check--checked',
+    bg: [],
+    min: 3,
+    why: 'SC 1.4.11 — the fill is how checked is identified',
+  },
+  {
+    name: 'checkbox tick glyph on the checked fill',
+    fg: '#fff',
+    bg: ['--mg-color-form-check--checked'],
+    min: 3,
+    why: 'SC 1.4.11 — the tick is an inline SVG stroked #fff by _form-base.scss',
+  },
+  {
+    name: 'field error message',
+    fg: '--mg-color-red-900',
+    bg: [],
+    min: 4.5,
+    why: 'SC 1.4.3 — .mg-form-error, and .mg-form-label--required::after',
+  },
+  {
+    name: 'error summary text on its tinted panel',
+    fg: '--mg-color-red-900',
+    bg: ['--mg-color-red-50'],
+    min: 4.5,
+    why: 'SC 1.4.3 — .mg-form-error-summary__title and its links',
+  },
+  {
+    name: 'form help text',
+    fg: '--mg-color-neutral-500',
+    bg: [],
+    min: 4.5,
+    why: 'SC 1.4.3 — .mg-form-help',
+  },
+  {
+    name: 'focus ring against the page',
+    fg: '--mg-color-focus-ring',
+    bg: [],
+    min: 3,
+    why: 'SC 1.4.11 — buttons and fields draw the ring on the page, inside a --mg-color-neutral-0 separator',
+  },
+
+  // --- Card: card.scss ---------------------------------------------------
+  {
+    name: 'card body text',
+    fg: '--mg-color-text',
+    bg: ['--mg-card-background'],
+    min: 4.5,
+    why: 'SC 1.4.3 — the card is a raised surface, not always the page colour',
+  },
+  {
+    name: 'card title link',
+    fg: '--mg-color-interactive',
+    bg: ['--mg-card-background'],
+    min: 4.5,
+    why: 'SC 1.4.3 — .mg-card__title a, and .mg-card__text-link',
+  },
+  {
+    name: 'card label',
+    fg: '--mg-color-tag',
+    bg: ['--mg-card-background'],
+    min: 4.5,
+    why: 'SC 1.4.3 — .mg-card__label is small text',
+  },
+  {
+    name: 'card title, secondary variant',
+    fg: '--mg-color-secondary',
+    bg: ['--mg-card-background'],
+    min: 3,
+    why: 'SC 1.4.3 large text — .mg-card__title is 23px bold, over 18.66px bold',
+  },
+  {
+    name: 'card title, tertiary variant',
+    fg: '--mg-color-tertiary',
+    bg: ['--mg-card-background'],
+    min: 3,
+    why: 'SC 1.4.3 large text — .mg-card--tertiary title link',
+  },
+  {
+    name: 'card title, quaternary variant',
+    fg: '--mg-color-quaternary',
+    bg: ['--mg-card-background'],
+    min: 3,
+    why: 'SC 1.4.3 large text — .mg-card--quaternary title link',
+  },
+  {
+    name: 'card search-hit highlight',
+    fg: '--mg-color-neutral-800',
+    bg: ['--mg-color-neutral-50'],
+    min: 4.5,
+    why: 'SC 1.4.3 — .mg-card__title .active marks the matched term',
+  },
+
+  // --- Hero: hero.scss ---------------------------------------------------
+  {
+    name: 'hero body text on the split hero',
+    fg: PAGE,
+    bg: ['--mg-color-hero'],
+    min: 4.5,
+    why: 'SC 1.4.3 — .mg-hero--split has a flat token background, no photo',
+  },
+  {
+    name: 'hero title on the split hero',
+    fg: '--mg-color-hero-title',
+    bg: ['--mg-color-hero'],
+    min: 3,
+    why: 'SC 1.4.3 large text — .mg-hero__title clamps from 38px up',
+  },
+  {
+    name: 'hero primary CTA label',
+    fg: '--mg-color-hero',
+    bg: [PAGE],
+    min: 4.5,
+    why: 'SC 1.4.3 — the hero CTA inverts: white pill, hero-coloured label',
+  },
+  {
+    name: 'hero secondary CTA label',
+    fg: '--mg-color-hero-button-secondary-color',
+    bg: ['--mg-color-hero-button-secondary-background', '--mg-color-hero'],
+    min: 4.5,
+    why: 'SC 1.4.3 — the secondary pill is 90% white over the hero, so it composites',
+  },
+  {
+    name: 'hero secondary CTA border',
+    fg: '--mg-border-color-hero-button-secondary',
+    bg: ['--mg-color-hero'],
+    min: 3,
+    why: 'SC 1.4.11 — the border is the pill boundary against the hero',
+  },
+  {
+    name: 'hero body text, secondary variant',
+    fg: PAGE,
+    bg: ['--mg-color-orange-800'],
+    min: 4.5,
+    why: 'SC 1.4.3 — .mg-hero--split.mg-hero--secondary paints orange-800 flat',
+  },
+  {
+    name: 'hero CTA label, secondary variant',
+    fg: '--mg-color-orange-800',
+    bg: [PAGE],
+    min: 4.5,
+    why: 'SC 1.4.3 — the variant CTA is orange-800 on the white pill',
+  },
+  {
+    name: 'hero body text, tertiary variant',
+    fg: PAGE,
+    bg: ['--mg-color-neutral-900'],
+    min: 4.5,
+    why: 'SC 1.4.3 — .mg-hero--split.mg-hero--tertiary',
+  },
+  {
+    name: 'hero CTA label, tertiary variant',
+    fg: '--mg-color-neutral-900',
+    bg: [PAGE],
+    min: 4.5,
+    why: 'SC 1.4.3 — the variant CTA on the white pill',
+  },
+  {
+    name: 'hero body text, quaternary variant',
+    fg: PAGE,
+    bg: ['--mg-color-red-800'],
+    min: 4.5,
+    why: 'SC 1.4.3 — .mg-hero--split.mg-hero--quaternary',
+  },
+  {
+    name: 'hero CTA label, quaternary variant',
+    fg: '--mg-color-red-800',
+    bg: [PAGE],
+    min: 4.5,
+    why: 'SC 1.4.3 — the variant CTA on the white pill',
+  },
+
+  // --- Status label: _variables.scss + status-label.scss ------------------
+  {
+    name: 'status label text',
+    fg: '--mg-status-label-color',
+    bg: [],
+    min: 4.5,
+    why: 'SC 1.4.3 — the text, not the dot, is what names the status',
+  },
+  {
+    name: 'status indicator ring',
+    fg: '--mg-status-label-indicator-border-color',
+    bg: [],
+    min: 3,
+    why: 'SC 1.4.11 — the pale swatches sit at 1.3-2.2:1, so the ring is their boundary',
+  },
+
+  // --- React Aria interactive states: aria/_react-aria.scss ---------------
+  // The adapter's own hover/pressed rules, which the resting-state suite
+  // above does not reach.
+  {
+    name: 'aria button label on the hover background',
+    fg: '--mg-aria-button-color',
+    bg: ['--mg-aria-button-background-hover'],
+    min: 4.5,
+    why: 'SC 1.4.3 — .react-aria-Button[data-hovered] and [data-pressed]',
+  },
+  {
+    name: 'aria on-accent text on the active accent',
+    fg: '--mg-aria-color-on-accent',
+    bg: ['--mg-aria-color-accent-active'],
+    min: 4.5,
+    why: 'SC 1.4.3 — .react-aria-ToggleButton[data-selected][data-hovered]',
+  },
+  {
+    name: 'aria selected tag label',
+    fg: '--mg-aria-color-on-accent',
+    bg: ['--mg-aria-tag-background'],
+    min: 4.5,
+    why: 'SC 1.4.3 — .react-aria-Tag[data-selected]',
+  },
+  {
+    name: 'aria selected tag label, hover',
+    fg: '--mg-aria-color-on-accent',
+    bg: ['--mg-aria-tag-background-hover'],
+    min: 4.5,
+    why: 'SC 1.4.3 — .react-aria-Tag[data-selected][data-hovered]',
+  },
+  {
+    name: 'aria link text, hover and pressed',
+    fg: '--mg-aria-color-accent-active',
+    bg: ['--mg-aria-color-surface'],
+    min: 4.5,
+    why: 'SC 1.4.3 — .react-aria-Link[data-hovered] and [data-pressed]',
+  },
+  {
+    name: 'aria tab label, resting',
+    fg: '--mg-aria-tab-color',
+    bg: ['--mg-aria-color-surface'],
+    min: 4.5,
+    why: 'SC 1.4.3 — .react-aria-Tab',
+  },
+  {
+    name: 'aria tab label, hover',
+    fg: '--mg-aria-tab-color-hover',
+    bg: ['--mg-aria-tab-background-hover', '--mg-aria-color-surface'],
+    min: 4.5,
+    why: 'SC 1.4.3 — .react-aria-Tab[data-hovered] tints its background',
+  },
+  {
+    name: 'aria tab label, selected',
+    fg: '--mg-aria-tab-color-active',
+    bg: ['--mg-aria-color-surface'],
+    min: 4.5,
+    why: 'SC 1.4.3 — the selected tab keeps a transparent background',
+  },
+  {
+    name: 'aria tab indicator, selected',
+    fg: '--mg-aria-tab-indicator-active',
+    bg: ['--mg-aria-color-surface'],
+    min: 3,
+    why: 'SC 1.4.11 — the inset underline identifies the selected tab',
+  },
+  {
+    name: 'aria tab indicator, hover',
+    fg: '--mg-aria-tab-indicator-hover',
+    bg: ['--mg-aria-color-surface'],
+    min: 3,
+    why: 'SC 1.4.11 — .react-aria-Tab[data-hovered] state indicator',
+  },
+  {
+    name: 'aria check control, resting',
+    fg: '--mg-aria-check-color',
+    bg: ['--mg-aria-color-surface'],
+    min: 3,
+    why: 'SC 1.4.11 — an unchecked Checkbox/Radio is only its border',
+  },
+  {
+    name: 'aria check control, hover',
+    fg: '--mg-aria-check-color-hover',
+    bg: ['--mg-aria-color-surface'],
+    min: 3,
+    why: 'SC 1.4.11 — [data-hovered] recolours the control boundary',
+  },
+  {
+    name: 'aria check control, checked',
+    fg: '--mg-aria-check-color-checked',
+    bg: ['--mg-aria-color-surface'],
+    min: 3,
+    why: 'SC 1.4.11 — the checked fill and its outline',
+  },
+  {
+    name: 'aria text on a selected row',
+    fg: '--mg-aria-color-text',
+    bg: ['--mg-aria-color-selected-surface', '--mg-aria-color-surface'],
+    min: 4.5,
+    why: 'SC 1.4.3 — selection is a 12% accent wash the label sits on',
+  },
+  {
+    name: 'aria text on the subtle surface',
+    fg: '--mg-aria-color-text',
+    bg: ['--mg-aria-color-subtle-surface'],
+    min: 4.5,
+    why: 'SC 1.4.3 — table headers, popover sections',
+  },
+  {
+    name: 'aria muted text on a field',
+    fg: '--mg-aria-color-muted-text',
+    bg: ['--mg-aria-color-field-surface'],
+    min: 4.5,
+    why: 'SC 1.4.3 — descriptions and placeholders inside form controls',
+  },
+];
+
+/**
+ * Known, unfixed contrast failures — a to-do list, not a waiver.
+ *
+ * Keyed `theme|pair name`, each entry carries the measured ratio so the
+ * assertion still bites: the pair must STILL fail (a fix makes this test
+ * fail with "remove this exception") and must not get worse. Nothing here is
+ * an exemption from WCAG; every line is a brand-colour decision that belongs
+ * to a human, which is why no colour was changed to make a test pass.
+ */
+const WCAG_EXCEPTIONS = {
+  // orange-900 is 2.95:1 against white. Affects the primary button and the
+  // outline button's hover fill, which share the token chain.
+  'preventionweb|button label on primary background, hover': [
+    2.95,
+    'orange-900 hover fill; needs ~orange-1000 or a dark label',
+  ],
+  'irp|button label on primary background, hover': [
+    2.95,
+    'orange-900 hover fill; needs ~orange-1000 or a dark label',
+  ],
+  'preventionweb|outline primary button label, hover fill': [
+    2.95,
+    'same orange-900 chain as the primary hover',
+  ],
+  'irp|outline primary button label, hover fill': [
+    2.95,
+    'same orange-900 chain as the primary hover',
+  ],
+  'preventionweb|aria button label on the hover background': [
+    2.95,
+    'the adapter inherits --mg-color-button-background--hover',
+  ],
+  'irp|aria button label on the hover background': [
+    2.95,
+    'the adapter inherits --mg-color-button-background--hover',
+  ],
+
+  // The accent tag is white on orange in every theme, at rest and on hover.
+  'base|accent tag label': [
+    2.95,
+    'orange-900 fill under #fff; darken the fill or use --mg-color-text',
+  ],
+  'preventionweb|accent tag label': [2.95, 'orange-900 fill under #fff'],
+  'irp|accent tag label': [2.95, 'orange-900 fill under #fff'],
+  'mcr|accent tag label': [2.95, 'orange-900 fill under #fff'],
+  'delta|accent tag label': [2.95, 'orange-900 fill under #fff'],
+  'base|accent tag label, hover': [
+    2.65,
+    'hover LIGHTENS to orange-800, so hover is worse than rest',
+  ],
+  'preventionweb|accent tag label, hover': [
+    2.65,
+    'hover lightens to orange-800',
+  ],
+  'irp|accent tag label, hover': [2.65, 'hover lightens to orange-800'],
+  'mcr|accent tag label, hover': [2.65, 'hover lightens to orange-800'],
+  'delta|accent tag label, hover': [2.65, 'hover lightens to orange-800'],
+
+  // IRP's tag colour is its lighter interactive blue; the blue-50 hover wash
+  // takes it under 4.5.
+  'irp|outline tag label, hover fill': [
+    3.99,
+    'IRP tag blue on blue-50; a darker tag token or a white hover fill fixes it',
+  ],
+
+  // Legacy tabs: three brands tint the hover background without moving the
+  // hover label off white.
+  'irp|legacy tab label, hover': [
+    2.05,
+    'white label on IRP tab-background--hover',
+  ],
+  'mcr|legacy tab label, hover': [
+    3.39,
+    'white label on MCR tab-background--hover',
+  ],
+  'delta|legacy tab label, hover': [
+    4.0,
+    'white label on DELTA tab-background--hover; just short',
+  ],
+
+  // v2 tabs.
+  'irp|v2 tab label, hover': [
+    4.35,
+    'IRP interactive-active on its own 6% wash; marginal',
+  ],
+  'irp|aria tab label, hover': [4.35, 'same token chain as the v2 tab'],
+  'base|v2 tab indicator, hover': [
+    2.28,
+    '45% accent wash; raise the alpha or use the solid accent',
+  ],
+  'preventionweb|v2 tab indicator, hover': [2.09, '45% accent wash'],
+  'irp|v2 tab indicator, hover': [1.9, '45% accent wash'],
+  'mcr|v2 tab indicator, hover': [2.58, '45% accent wash'],
+  'delta|v2 tab indicator, hover': [2.28, '45% accent wash'],
+  'base|aria tab indicator, hover': [2.28, 'same 45% wash as the v2 tab'],
+  'preventionweb|aria tab indicator, hover': [
+    2.09,
+    'same 45% wash as the v2 tab',
+  ],
+  'irp|aria tab indicator, hover': [1.9, 'same 45% wash as the v2 tab'],
+  'mcr|aria tab indicator, hover': [2.58, 'same 45% wash as the v2 tab'],
+  'delta|aria tab indicator, hover': [2.28, 'same 45% wash as the v2 tab'],
+
+  // Card and hero share the orange secondary accent.
+  'base|card title, secondary variant': [
+    2.65,
+    'orange-800 title link; fails even the large-text 3:1',
+  ],
+  'preventionweb|card title, secondary variant': [
+    2.65,
+    'orange-800 title link',
+  ],
+  'irp|card title, secondary variant': [2.65, 'orange-800 title link'],
+  'mcr|card title, secondary variant': [2.65, 'orange-800 title link'],
+  'delta|card title, secondary variant': [
+    2.37,
+    "orange-800 on DELTA's tinted card surface",
+  ],
+  'base|hero body text, secondary variant': [
+    2.65,
+    'white body copy on orange-800',
+  ],
+  'preventionweb|hero body text, secondary variant': [
+    2.65,
+    'white body copy on orange-800',
+  ],
+  'irp|hero body text, secondary variant': [
+    2.65,
+    'white body copy on orange-800',
+  ],
+  'mcr|hero body text, secondary variant': [
+    2.65,
+    'white body copy on orange-800',
+  ],
+  'delta|hero body text, secondary variant': [
+    2.65,
+    'white body copy on orange-800',
+  ],
+  'base|hero CTA label, secondary variant': [
+    2.65,
+    'orange-800 label on the white pill',
+  ],
+  'preventionweb|hero CTA label, secondary variant': [
+    2.65,
+    'orange-800 label on the white pill',
+  ],
+  'irp|hero CTA label, secondary variant': [
+    2.65,
+    'orange-800 label on the white pill',
+  ],
+  'mcr|hero CTA label, secondary variant': [
+    2.65,
+    'orange-800 label on the white pill',
+  ],
+  'delta|hero CTA label, secondary variant': [
+    2.65,
+    'orange-800 label on the white pill',
+  ],
+
+  // IRP's hero blue under a 90% white pill.
+  'irp|hero secondary CTA label': [
+    4.13,
+    'IRP hero blue behind a 90%-white pill; marginal',
+  ],
+};
+
+/**
+ * Known perceptual failures, on the same terms as the WCAG table above: a
+ * to-do list, not a waiver. Keyed `theme|pair name`, carrying the measured
+ * Oklab score so the assertion still bites.
+ *
+ * A pair can appear here, in EXCEPTIONS, or in both. Where it appears in only
+ * one, the two measures disagree about it, and the disagreement report at the
+ * bottom of this file is the list of exactly those pairs.
+ */
+const PERCEPTUAL_EXCEPTIONS = {
+  'base|accent tag label': [46.7, 'orange-900 fill under #fff'],
+  'preventionweb|accent tag label': [46.7, 'orange-900 fill under #fff'],
+  'irp|accent tag label': [46.7, 'orange-900 fill under #fff'],
+  'mcr|accent tag label': [46.7, 'orange-900 fill under #fff'],
+  'delta|accent tag label': [46.7, 'orange-900 fill under #fff'],
+
+  'base|accent tag label, hover': [
+    42.5,
+    'hover lightens to orange-800, so hover is worse than rest',
+  ],
+  'preventionweb|accent tag label, hover': [
+    42.5,
+    'hover lightens to orange-800, so hover is worse than rest',
+  ],
+  'irp|accent tag label, hover': [
+    42.5,
+    'hover lightens to orange-800, so hover is worse than rest',
+  ],
+  'mcr|accent tag label, hover': [
+    42.5,
+    'hover lightens to orange-800, so hover is worse than rest',
+  ],
+  'delta|accent tag label, hover': [
+    42.5,
+    'hover lightens to orange-800, so hover is worse than rest',
+  ],
+
+  'base|legacy tab label, active': [
+    60.8,
+    'a mid-tone pair just short of body-text readable (WCAG 2 disagrees: 7.47:1 clears the 4.5:1 minimum)',
+  ],
+
+  'base|v2 tab label, hover': [
+    61.1,
+    'the interactive-active label on its own faint wash (WCAG 2 disagrees: 4.64:1 clears the 4.5:1 minimum)',
+  ],
+  'irp|v2 tab label, hover': [
+    59.8,
+    'the interactive-active label on its own faint wash',
+  ],
+  'delta|v2 tab label, hover': [
+    62.6,
+    'the interactive-active label on its own faint wash (WCAG 2 disagrees: 4.94:1 clears the 4.5:1 minimum)',
+  ],
+
+  'base|v2 tab indicator, hover': [
+    38.3,
+    '45% accent wash; raise the alpha or use the solid accent',
+  ],
+  'preventionweb|v2 tab indicator, hover': [
+    34.5,
+    '45% accent wash; raise the alpha or use the solid accent',
+  ],
+  'irp|v2 tab indicator, hover': [
+    29,
+    '45% accent wash; raise the alpha or use the solid accent',
+  ],
+  'mcr|v2 tab indicator, hover': [
+    42.5,
+    '45% accent wash; raise the alpha or use the solid accent',
+  ],
+  'delta|v2 tab indicator, hover': [
+    38.3,
+    '45% accent wash; raise the alpha or use the solid accent',
+  ],
+
+  'base|error summary text on its tinted panel': [
+    59.5,
+    'red-900 on red-50; a warm hue at this lightness is not body-readable (WCAG 2 disagrees: 5.27:1 clears the 4.5:1 minimum)',
+  ],
+  'preventionweb|error summary text on its tinted panel': [
+    59.5,
+    'red-900 on red-50; a warm hue at this lightness is not body-readable (WCAG 2 disagrees: 5.27:1 clears the 4.5:1 minimum)',
+  ],
+  'irp|error summary text on its tinted panel': [
+    59.5,
+    'red-900 on red-50; a warm hue at this lightness is not body-readable (WCAG 2 disagrees: 5.27:1 clears the 4.5:1 minimum)',
+  ],
+  'mcr|error summary text on its tinted panel': [
+    59.5,
+    'red-900 on red-50; a warm hue at this lightness is not body-readable (WCAG 2 disagrees: 5.27:1 clears the 4.5:1 minimum)',
+  ],
+  'delta|error summary text on its tinted panel': [
+    59.5,
+    'red-900 on red-50; a warm hue at this lightness is not body-readable (WCAG 2 disagrees: 5.27:1 clears the 4.5:1 minimum)',
+  ],
+
+  'base|card title, secondary variant': [42.5, 'orange-800 title link'],
+  'preventionweb|card title, secondary variant': [
+    42.5,
+    'orange-800 title link',
+  ],
+  'irp|card title, secondary variant': [42.5, 'orange-800 title link'],
+  'mcr|card title, secondary variant': [42.5, 'orange-800 title link'],
+  'delta|card title, secondary variant': [34.7, 'orange-800 title link'],
+
+  'base|hero body text, secondary variant': [
+    42.5,
+    'white body copy on orange-800',
+  ],
+  'preventionweb|hero body text, secondary variant': [
+    42.5,
+    'white body copy on orange-800',
+  ],
+  'irp|hero body text, secondary variant': [
+    42.5,
+    'white body copy on orange-800',
+  ],
+  'mcr|hero body text, secondary variant': [
+    42.5,
+    'white body copy on orange-800',
+  ],
+  'delta|hero body text, secondary variant': [
+    42.5,
+    'white body copy on orange-800',
+  ],
+
+  'base|hero CTA label, secondary variant': [
+    42.5,
+    'orange-800 label on the white pill',
+  ],
+  'preventionweb|hero CTA label, secondary variant': [
+    42.5,
+    'orange-800 label on the white pill',
+  ],
+  'irp|hero CTA label, secondary variant': [
+    42.5,
+    'orange-800 label on the white pill',
+  ],
+  'mcr|hero CTA label, secondary variant': [
+    42.5,
+    'orange-800 label on the white pill',
+  ],
+  'delta|hero CTA label, secondary variant': [
+    42.5,
+    'orange-800 label on the white pill',
+  ],
+
+  'base|aria tab label, hover': [
+    61.1,
+    'same token chain as the v2 tab (WCAG 2 disagrees: 4.64:1 clears the 4.5:1 minimum)',
+  ],
+  'irp|aria tab label, hover': [59.8, 'same token chain as the v2 tab'],
+  'delta|aria tab label, hover': [
+    62.6,
+    'same token chain as the v2 tab (WCAG 2 disagrees: 4.94:1 clears the 4.5:1 minimum)',
+  ],
+
+  'base|aria tab indicator, hover': [38.3, 'same 45% wash as the v2 tab'],
+  'preventionweb|aria tab indicator, hover': [
+    34.5,
+    'same 45% wash as the v2 tab',
+  ],
+  'irp|aria tab indicator, hover': [29, 'same 45% wash as the v2 tab'],
+  'mcr|aria tab indicator, hover': [42.5, 'same 45% wash as the v2 tab'],
+  'delta|aria tab indicator, hover': [38.3, 'same 45% wash as the v2 tab'],
+
+  'preventionweb|button label on primary background, hover': [
+    46.7,
+    'orange-900 hover fill under a white label',
+  ],
+  'irp|button label on primary background, hover': [
+    46.7,
+    'orange-900 hover fill under a white label',
+  ],
+
+  'preventionweb|outline primary button label, hover fill': [
+    46.7,
+    'same orange-900 chain as the primary hover',
+  ],
+  'irp|outline primary button label, hover fill': [
+    46.7,
+    'same orange-900 chain as the primary hover',
+  ],
+
+  'preventionweb|aria button label on the hover background': [
+    46.7,
+    'the adapter inherits --mg-color-button-background--hover',
+  ],
+  'irp|aria button label on the hover background': [
+    46.7,
+    'the adapter inherits --mg-color-button-background--hover',
+  ],
+
+  'irp|outline tag label, hover fill': [54.7, 'IRP tag blue on blue-50'],
+
+  'irp|legacy tab label, hover': [
+    34.9,
+    'white label on the tinted hover background',
+  ],
+  'mcr|legacy tab label, hover': [
+    52.6,
+    'white label on the tinted hover background',
+  ],
+  'delta|legacy tab label, hover': [
+    59.8,
+    'white label on the tinted hover background',
+  ],
+
+  'irp|hero secondary CTA label': [
+    56.6,
+    'IRP hero blue behind a 90%-white pill',
+  ],
+
+  // The widest disagreement in the file: WCAG 2 clears DELTA's hero title
+  // for large text at 3.07:1, the Oklab measure puts it at 27.2 out of 50.
+  'delta|hero title on the split hero': [
+    27.2,
+    'DELTA paints a mid-tone oklch sky blue on blue-900; the two blues are barely 27 apart (WCAG 2 disagrees: 3.07:1 clears the 3:1 minimum)',
+  ],
+};
+
+/**
+ * The union of both exception tables, keyed the same way. The disagreement
+ * report reads this to prove that whichever measure fails a disagreeing pair
+ * has actually recorded it, rather than the pair slipping between the two.
+ */
+const EXCEPTION_KEYS = new Set([
+  ...Object.keys(WCAG_EXCEPTIONS),
+  ...Object.keys(PERCEPTUAL_EXCEPTIONS),
+]);
+
 /**
  * Component-token contrast, including INTERACTIVE STATES.
  *
@@ -795,753 +1978,9 @@ describe('standalone React Aria token files resolve on their own', () => {
  *     it needs a rendered-pixel check, not a token check.
  */
 describe('component token contrast, including hover and active states', () => {
-  // The page itself. Asserted rather than assumed, because every pair whose
-  // lowest layer is translucent composites down onto it.
-  const PAGE = '--mg-color-neutral-0';
+  const PAIRS = COMPONENT_PAIRS;
 
-  /**
-   * fg  — the painted foreground token, or a literal the component hardcodes.
-   * bg  — background layers, nearest first; the page is the implicit floor.
-   * min — 4.5 (SC 1.4.3 normal text) or 3 (SC 1.4.3 large text / SC 1.4.11).
-   */
-  const PAIRS = [
-    // --- Buttons: cta-button.scss ------------------------------------------
-    {
-      name: 'button label on primary background',
-      fg: '--mg-color-button',
-      bg: ['--mg-color-button-background'],
-      min: 4.5,
-      why: 'SC 1.4.3 — .mg-button-primary label text',
-    },
-    {
-      name: 'button label on primary background, hover',
-      fg: '--mg-color-button',
-      bg: ['--mg-color-button-background--hover'],
-      min: 4.5,
-      why: 'SC 1.4.3 — .mg-button-primary:hover label text',
-    },
-    {
-      name: 'button label on secondary background',
-      fg: '--mg-color-button',
-      bg: ['--mg-color-button-secondary-background'],
-      min: 4.5,
-      why: 'SC 1.4.3 — .mg-button-secondary label text',
-    },
-    {
-      name: 'button label on secondary background, hover',
-      fg: '--mg-color-button',
-      bg: ['--mg-color-button-secondary-background--hover'],
-      min: 4.5,
-      why: 'SC 1.4.3 — .mg-button-secondary:hover label text',
-    },
-    {
-      name: 'outline primary button label on the page',
-      fg: '--mg-color-button-outline-primary',
-      bg: [],
-      min: 4.5,
-      why: 'SC 1.4.3 — .mg-button-outline is transparent; label and border are the same token',
-    },
-    {
-      name: 'outline primary button label, hover fill',
-      fg: '--mg-color-button',
-      bg: ['--mg-color-button-outline-primary--hover'],
-      min: 4.5,
-      why: 'SC 1.4.3 — outline button fills on hover and the label flips to --mg-color-button',
-    },
-    {
-      name: 'outline secondary button label on the page',
-      fg: '--mg-color-button-outline-secondary',
-      bg: [],
-      min: 4.5,
-      why: 'SC 1.4.3 — .mg-button-secondary.mg-button-outline label text',
-    },
-    {
-      name: 'outline secondary button label, hover fill',
-      fg: '--mg-color-button',
-      bg: ['--mg-color-button-outline-secondary--hover'],
-      min: 4.5,
-      why: 'SC 1.4.3 — outline secondary fills on hover',
-    },
-    {
-      name: 'editorial CTA label on the page',
-      fg: '--mg-color-text',
-      bg: [],
-      min: 4.5,
-      why: 'SC 1.4.3 — .mg-button-cta is a transparent text button',
-    },
-    {
-      name: 'editorial CTA label on the page, hover',
-      fg: '--mg-color-interactive-active',
-      bg: [],
-      min: 4.5,
-      why: 'SC 1.4.3 — .mg-button-cta:hover recolours its label',
-    },
-    {
-      name: 'editorial CTA chevron badge, resting',
-      fg: PAGE,
-      bg: ['--mg-color-interactive'],
-      min: 3,
-      why: 'SC 1.4.11 — the ::after chevron is a graphical affordance, not the label',
-    },
-    {
-      name: 'editorial CTA chevron badge, hover',
-      fg: PAGE,
-      bg: ['--mg-color-interactive-active'],
-      min: 3,
-      why: 'SC 1.4.11 — .mg-button-cta:hover::after retints the badge',
-    },
-
-    // --- Tags: tag.scss ----------------------------------------------------
-    // tag.scss paints `color: #fff` literally, not through a token, so the
-    // literal is what gets measured. `tag.scss still paints its label #fff`
-    // below pins that so the pairing cannot go stale silently.
-    {
-      name: 'tag label',
-      fg: '#fff',
-      bg: ['--mg-color-tag'],
-      min: 4.5,
-      why: 'SC 1.4.3 — .mg-tag label text',
-    },
-    {
-      name: 'tag label, hover',
-      fg: '#fff',
-      bg: ['--mg-color-tag--hover'],
-      min: 4.5,
-      why: 'SC 1.4.3 — .mg-tag:hover',
-    },
-    {
-      name: 'secondary tag label',
-      fg: '#fff',
-      bg: ['--mg-color-tag-secondary'],
-      min: 4.5,
-      why: 'SC 1.4.3 — .mg-tag--secondary',
-    },
-    {
-      name: 'secondary tag label, hover',
-      fg: '#fff',
-      bg: ['--mg-color-tag-secondary--hover'],
-      min: 4.5,
-      why: 'SC 1.4.3 — .mg-tag--secondary:hover',
-    },
-    {
-      name: 'accent tag label',
-      fg: '#fff',
-      bg: ['--mg-color-tag-accent'],
-      min: 4.5,
-      why: 'SC 1.4.3 — .mg-tag--accent',
-    },
-    {
-      name: 'accent tag label, hover',
-      fg: '#fff',
-      bg: ['--mg-color-tag-accent--hover'],
-      min: 4.5,
-      why: 'SC 1.4.3 — .mg-tag--accent:hover',
-    },
-    {
-      name: 'outline tag label on the page',
-      fg: '--mg-color-tag',
-      bg: [],
-      min: 4.5,
-      why: 'SC 1.4.3 — .mg-tag--outline is transparent; label and border share the token',
-    },
-    {
-      name: 'outline tag label, hover fill',
-      fg: '--mg-color-tag',
-      bg: ['--mg-color-blue-50'],
-      min: 4.5,
-      why: 'SC 1.4.3 — .mg-tag--outline:hover keeps the label and tints the fill',
-    },
-
-    // --- Legacy tabs: tab.scss `.mg-tabs` ----------------------------------
-    {
-      name: 'legacy tab label, inactive',
-      fg: '--mg-color-text-tab',
-      bg: ['--mg-color-tab-background--inactive'],
-      min: 4.5,
-      why: 'SC 1.4.3 — .mg-tabs__link resting label',
-    },
-    {
-      name: 'legacy tab label, hover',
-      fg: '--mg-color-text-tab--hover',
-      bg: ['--mg-color-tab-background--hover'],
-      min: 4.5,
-      why: 'SC 1.4.3 — .mg-tabs__link:hover and :focus-visible share this rule',
-    },
-    {
-      name: 'legacy tab label, active',
-      fg: '--mg-color-text-tab-active',
-      bg: ['--mg-color-tab-background'],
-      min: 4.5,
-      why: 'SC 1.4.3 — .mg-tabs__link.is-active',
-    },
-    {
-      name: 'legacy tab empty-filter message',
-      fg: '--mg-color-text-tab-no-results',
-      bg: ['--mg-color-tab-section-background'],
-      min: 4.5,
-      why: 'SC 1.4.3 — .mg-tabs__no-results sits in the tab panel',
-    },
-
-    // --- v2 tabs: tab.scss `.mg-tabs--horizontal` --------------------------
-    // The v2 list background is `transparent`, so these resolve against the
-    // page, not against the legacy tab-bar tint.
-    {
-      name: 'v2 tab label, resting',
-      fg: '--mg-tab-color',
-      bg: [],
-      min: 4.5,
-      why: 'SC 1.4.3 — .mg-tabs--horizontal .mg-tabs__link on a transparent list',
-    },
-    {
-      name: 'v2 tab label, hover',
-      fg: '--mg-tab-color--hover',
-      bg: ['--mg-tab-background--hover'],
-      min: 4.5,
-      why: 'SC 1.4.3 — hover tints the tab and recolours the label',
-    },
-    {
-      name: 'v2 tab label, active',
-      fg: '--mg-tab-color--active',
-      bg: [],
-      min: 4.5,
-      why: 'SC 1.4.3 — the active v2 tab keeps a transparent background',
-    },
-    {
-      name: 'v2 tab indicator, active',
-      fg: '--mg-tab-indicator--active',
-      bg: [],
-      min: 3,
-      why: 'SC 1.4.11 — the inset underline is how the selected tab is identified',
-    },
-    {
-      name: 'v2 tab indicator, hover',
-      fg: '--mg-tab-indicator--hover',
-      bg: [],
-      min: 3,
-      why: 'SC 1.4.11 — hover state indicator on a transparent tab',
-    },
-
-    // --- Form controls: _form-base.scss ------------------------------------
-    {
-      name: 'input value text',
-      fg: '--mg-color-text',
-      bg: ['--mg-form-input-background'],
-      min: 4.5,
-      why: 'SC 1.4.3 — typed value on the resting field',
-    },
-    {
-      name: 'input value text, focused/filled field',
-      fg: '--mg-color-text',
-      bg: ['--mg-form-input-background--focus'],
-      min: 4.5,
-      why: 'SC 1.4.3 — the field lifts to a second surface on focus and when filled',
-    },
-    {
-      name: 'input placeholder',
-      fg: '--mg-color-neutral-500',
-      bg: ['--mg-form-input-background'],
-      min: 4.5,
-      why: 'SC 1.4.3 — ::placeholder is text',
-    },
-    {
-      name: 'input border',
-      fg: '--mg-form-input-border-color',
-      bg: [],
-      min: 3,
-      why: 'SC 1.4.11 — the border is the only thing defining the field boundary',
-    },
-    {
-      name: 'input border, focused',
-      fg: '--mg-color-form-focus',
-      bg: ['--mg-form-input-background--focus'],
-      min: 3,
-      why: 'SC 1.4.11 — focus recolours the border against the lifted surface',
-    },
-    {
-      name: 'checkbox/radio border, resting',
-      fg: '--mg-color-form-check',
-      bg: [],
-      min: 3,
-      why: 'SC 1.4.11 — an unchecked control is nothing but its 2px border',
-    },
-    {
-      name: 'checkbox/radio border, hover',
-      fg: '--mg-color-form-check--hover',
-      bg: [],
-      min: 3,
-      why: 'SC 1.4.11 — :hover recolours that border',
-    },
-    {
-      name: 'checkbox/radio fill, checked',
-      fg: '--mg-color-form-check--checked',
-      bg: [],
-      min: 3,
-      why: 'SC 1.4.11 — the fill is how checked is identified',
-    },
-    {
-      name: 'checkbox tick glyph on the checked fill',
-      fg: '#fff',
-      bg: ['--mg-color-form-check--checked'],
-      min: 3,
-      why: 'SC 1.4.11 — the tick is an inline SVG stroked #fff by _form-base.scss',
-    },
-    {
-      name: 'field error message',
-      fg: '--mg-color-red-900',
-      bg: [],
-      min: 4.5,
-      why: 'SC 1.4.3 — .mg-form-error, and .mg-form-label--required::after',
-    },
-    {
-      name: 'error summary text on its tinted panel',
-      fg: '--mg-color-red-900',
-      bg: ['--mg-color-red-50'],
-      min: 4.5,
-      why: 'SC 1.4.3 — .mg-form-error-summary__title and its links',
-    },
-    {
-      name: 'form help text',
-      fg: '--mg-color-neutral-500',
-      bg: [],
-      min: 4.5,
-      why: 'SC 1.4.3 — .mg-form-help',
-    },
-    {
-      name: 'focus ring against the page',
-      fg: '--mg-color-focus-ring',
-      bg: [],
-      min: 3,
-      why: 'SC 1.4.11 — buttons and fields draw the ring on the page, inside a --mg-color-neutral-0 separator',
-    },
-
-    // --- Card: card.scss ---------------------------------------------------
-    {
-      name: 'card body text',
-      fg: '--mg-color-text',
-      bg: ['--mg-card-background'],
-      min: 4.5,
-      why: 'SC 1.4.3 — the card is a raised surface, not always the page colour',
-    },
-    {
-      name: 'card title link',
-      fg: '--mg-color-interactive',
-      bg: ['--mg-card-background'],
-      min: 4.5,
-      why: 'SC 1.4.3 — .mg-card__title a, and .mg-card__text-link',
-    },
-    {
-      name: 'card label',
-      fg: '--mg-color-tag',
-      bg: ['--mg-card-background'],
-      min: 4.5,
-      why: 'SC 1.4.3 — .mg-card__label is small text',
-    },
-    {
-      name: 'card title, secondary variant',
-      fg: '--mg-color-secondary',
-      bg: ['--mg-card-background'],
-      min: 3,
-      why: 'SC 1.4.3 large text — .mg-card__title is 23px bold, over 18.66px bold',
-    },
-    {
-      name: 'card title, tertiary variant',
-      fg: '--mg-color-tertiary',
-      bg: ['--mg-card-background'],
-      min: 3,
-      why: 'SC 1.4.3 large text — .mg-card--tertiary title link',
-    },
-    {
-      name: 'card title, quaternary variant',
-      fg: '--mg-color-quaternary',
-      bg: ['--mg-card-background'],
-      min: 3,
-      why: 'SC 1.4.3 large text — .mg-card--quaternary title link',
-    },
-    {
-      name: 'card search-hit highlight',
-      fg: '--mg-color-neutral-800',
-      bg: ['--mg-color-neutral-50'],
-      min: 4.5,
-      why: 'SC 1.4.3 — .mg-card__title .active marks the matched term',
-    },
-
-    // --- Hero: hero.scss ---------------------------------------------------
-    {
-      name: 'hero body text on the split hero',
-      fg: PAGE,
-      bg: ['--mg-color-hero'],
-      min: 4.5,
-      why: 'SC 1.4.3 — .mg-hero--split has a flat token background, no photo',
-    },
-    {
-      name: 'hero title on the split hero',
-      fg: '--mg-color-hero-title',
-      bg: ['--mg-color-hero'],
-      min: 3,
-      why: 'SC 1.4.3 large text — .mg-hero__title clamps from 38px up',
-    },
-    {
-      name: 'hero primary CTA label',
-      fg: '--mg-color-hero',
-      bg: [PAGE],
-      min: 4.5,
-      why: 'SC 1.4.3 — the hero CTA inverts: white pill, hero-coloured label',
-    },
-    {
-      name: 'hero secondary CTA label',
-      fg: '--mg-color-hero-button-secondary-color',
-      bg: ['--mg-color-hero-button-secondary-background', '--mg-color-hero'],
-      min: 4.5,
-      why: 'SC 1.4.3 — the secondary pill is 90% white over the hero, so it composites',
-    },
-    {
-      name: 'hero secondary CTA border',
-      fg: '--mg-border-color-hero-button-secondary',
-      bg: ['--mg-color-hero'],
-      min: 3,
-      why: 'SC 1.4.11 — the border is the pill boundary against the hero',
-    },
-    {
-      name: 'hero body text, secondary variant',
-      fg: PAGE,
-      bg: ['--mg-color-orange-800'],
-      min: 4.5,
-      why: 'SC 1.4.3 — .mg-hero--split.mg-hero--secondary paints orange-800 flat',
-    },
-    {
-      name: 'hero CTA label, secondary variant',
-      fg: '--mg-color-orange-800',
-      bg: [PAGE],
-      min: 4.5,
-      why: 'SC 1.4.3 — the variant CTA is orange-800 on the white pill',
-    },
-    {
-      name: 'hero body text, tertiary variant',
-      fg: PAGE,
-      bg: ['--mg-color-neutral-900'],
-      min: 4.5,
-      why: 'SC 1.4.3 — .mg-hero--split.mg-hero--tertiary',
-    },
-    {
-      name: 'hero CTA label, tertiary variant',
-      fg: '--mg-color-neutral-900',
-      bg: [PAGE],
-      min: 4.5,
-      why: 'SC 1.4.3 — the variant CTA on the white pill',
-    },
-    {
-      name: 'hero body text, quaternary variant',
-      fg: PAGE,
-      bg: ['--mg-color-red-800'],
-      min: 4.5,
-      why: 'SC 1.4.3 — .mg-hero--split.mg-hero--quaternary',
-    },
-    {
-      name: 'hero CTA label, quaternary variant',
-      fg: '--mg-color-red-800',
-      bg: [PAGE],
-      min: 4.5,
-      why: 'SC 1.4.3 — the variant CTA on the white pill',
-    },
-
-    // --- Status label: _variables.scss + status-label.scss ------------------
-    {
-      name: 'status label text',
-      fg: '--mg-status-label-color',
-      bg: [],
-      min: 4.5,
-      why: 'SC 1.4.3 — the text, not the dot, is what names the status',
-    },
-    {
-      name: 'status indicator ring',
-      fg: '--mg-status-label-indicator-border-color',
-      bg: [],
-      min: 3,
-      why: 'SC 1.4.11 — the pale swatches sit at 1.3-2.2:1, so the ring is their boundary',
-    },
-
-    // --- React Aria interactive states: aria/_react-aria.scss ---------------
-    // The adapter's own hover/pressed rules, which the resting-state suite
-    // above does not reach.
-    {
-      name: 'aria button label on the hover background',
-      fg: '--mg-aria-button-color',
-      bg: ['--mg-aria-button-background-hover'],
-      min: 4.5,
-      why: 'SC 1.4.3 — .react-aria-Button[data-hovered] and [data-pressed]',
-    },
-    {
-      name: 'aria on-accent text on the active accent',
-      fg: '--mg-aria-color-on-accent',
-      bg: ['--mg-aria-color-accent-active'],
-      min: 4.5,
-      why: 'SC 1.4.3 — .react-aria-ToggleButton[data-selected][data-hovered]',
-    },
-    {
-      name: 'aria selected tag label',
-      fg: '--mg-aria-color-on-accent',
-      bg: ['--mg-aria-tag-background'],
-      min: 4.5,
-      why: 'SC 1.4.3 — .react-aria-Tag[data-selected]',
-    },
-    {
-      name: 'aria selected tag label, hover',
-      fg: '--mg-aria-color-on-accent',
-      bg: ['--mg-aria-tag-background-hover'],
-      min: 4.5,
-      why: 'SC 1.4.3 — .react-aria-Tag[data-selected][data-hovered]',
-    },
-    {
-      name: 'aria link text, hover and pressed',
-      fg: '--mg-aria-color-accent-active',
-      bg: ['--mg-aria-color-surface'],
-      min: 4.5,
-      why: 'SC 1.4.3 — .react-aria-Link[data-hovered] and [data-pressed]',
-    },
-    {
-      name: 'aria tab label, resting',
-      fg: '--mg-aria-tab-color',
-      bg: ['--mg-aria-color-surface'],
-      min: 4.5,
-      why: 'SC 1.4.3 — .react-aria-Tab',
-    },
-    {
-      name: 'aria tab label, hover',
-      fg: '--mg-aria-tab-color-hover',
-      bg: ['--mg-aria-tab-background-hover', '--mg-aria-color-surface'],
-      min: 4.5,
-      why: 'SC 1.4.3 — .react-aria-Tab[data-hovered] tints its background',
-    },
-    {
-      name: 'aria tab label, selected',
-      fg: '--mg-aria-tab-color-active',
-      bg: ['--mg-aria-color-surface'],
-      min: 4.5,
-      why: 'SC 1.4.3 — the selected tab keeps a transparent background',
-    },
-    {
-      name: 'aria tab indicator, selected',
-      fg: '--mg-aria-tab-indicator-active',
-      bg: ['--mg-aria-color-surface'],
-      min: 3,
-      why: 'SC 1.4.11 — the inset underline identifies the selected tab',
-    },
-    {
-      name: 'aria tab indicator, hover',
-      fg: '--mg-aria-tab-indicator-hover',
-      bg: ['--mg-aria-color-surface'],
-      min: 3,
-      why: 'SC 1.4.11 — .react-aria-Tab[data-hovered] state indicator',
-    },
-    {
-      name: 'aria check control, resting',
-      fg: '--mg-aria-check-color',
-      bg: ['--mg-aria-color-surface'],
-      min: 3,
-      why: 'SC 1.4.11 — an unchecked Checkbox/Radio is only its border',
-    },
-    {
-      name: 'aria check control, hover',
-      fg: '--mg-aria-check-color-hover',
-      bg: ['--mg-aria-color-surface'],
-      min: 3,
-      why: 'SC 1.4.11 — [data-hovered] recolours the control boundary',
-    },
-    {
-      name: 'aria check control, checked',
-      fg: '--mg-aria-check-color-checked',
-      bg: ['--mg-aria-color-surface'],
-      min: 3,
-      why: 'SC 1.4.11 — the checked fill and its outline',
-    },
-    {
-      name: 'aria text on a selected row',
-      fg: '--mg-aria-color-text',
-      bg: ['--mg-aria-color-selected-surface', '--mg-aria-color-surface'],
-      min: 4.5,
-      why: 'SC 1.4.3 — selection is a 12% accent wash the label sits on',
-    },
-    {
-      name: 'aria text on the subtle surface',
-      fg: '--mg-aria-color-text',
-      bg: ['--mg-aria-color-subtle-surface'],
-      min: 4.5,
-      why: 'SC 1.4.3 — table headers, popover sections',
-    },
-    {
-      name: 'aria muted text on a field',
-      fg: '--mg-aria-color-muted-text',
-      bg: ['--mg-aria-color-field-surface'],
-      min: 4.5,
-      why: 'SC 1.4.3 — descriptions and placeholders inside form controls',
-    },
-  ];
-
-  /**
-   * Known, unfixed contrast failures — a to-do list, not a waiver.
-   *
-   * Keyed `theme|pair name`, each entry carries the measured ratio so the
-   * assertion still bites: the pair must STILL fail (a fix makes this test
-   * fail with "remove this exception") and must not get worse. Nothing here is
-   * an exemption from WCAG; every line is a brand-colour decision that belongs
-   * to a human, which is why no colour was changed to make a test pass.
-   */
-  const EXCEPTIONS = {
-    // orange-900 is 2.95:1 against white. Affects the primary button and the
-    // outline button's hover fill, which share the token chain.
-    'preventionweb|button label on primary background, hover': [
-      2.95,
-      'orange-900 hover fill; needs ~orange-1000 or a dark label',
-    ],
-    'irp|button label on primary background, hover': [
-      2.95,
-      'orange-900 hover fill; needs ~orange-1000 or a dark label',
-    ],
-    'preventionweb|outline primary button label, hover fill': [
-      2.95,
-      'same orange-900 chain as the primary hover',
-    ],
-    'irp|outline primary button label, hover fill': [
-      2.95,
-      'same orange-900 chain as the primary hover',
-    ],
-    'preventionweb|aria button label on the hover background': [
-      2.95,
-      'the adapter inherits --mg-color-button-background--hover',
-    ],
-    'irp|aria button label on the hover background': [
-      2.95,
-      'the adapter inherits --mg-color-button-background--hover',
-    ],
-
-    // The accent tag is white on orange in every theme, at rest and on hover.
-    'base|accent tag label': [
-      2.95,
-      'orange-900 fill under #fff; darken the fill or use --mg-color-text',
-    ],
-    'preventionweb|accent tag label': [2.95, 'orange-900 fill under #fff'],
-    'irp|accent tag label': [2.95, 'orange-900 fill under #fff'],
-    'mcr|accent tag label': [2.95, 'orange-900 fill under #fff'],
-    'delta|accent tag label': [2.95, 'orange-900 fill under #fff'],
-    'base|accent tag label, hover': [
-      2.65,
-      'hover LIGHTENS to orange-800, so hover is worse than rest',
-    ],
-    'preventionweb|accent tag label, hover': [
-      2.65,
-      'hover lightens to orange-800',
-    ],
-    'irp|accent tag label, hover': [2.65, 'hover lightens to orange-800'],
-    'mcr|accent tag label, hover': [2.65, 'hover lightens to orange-800'],
-    'delta|accent tag label, hover': [2.65, 'hover lightens to orange-800'],
-
-    // IRP's tag colour is its lighter interactive blue; the blue-50 hover wash
-    // takes it under 4.5.
-    'irp|outline tag label, hover fill': [
-      3.99,
-      'IRP tag blue on blue-50; a darker tag token or a white hover fill fixes it',
-    ],
-
-    // Legacy tabs: three brands tint the hover background without moving the
-    // hover label off white.
-    'irp|legacy tab label, hover': [
-      2.05,
-      'white label on IRP tab-background--hover',
-    ],
-    'mcr|legacy tab label, hover': [
-      3.39,
-      'white label on MCR tab-background--hover',
-    ],
-    'delta|legacy tab label, hover': [
-      4.0,
-      'white label on DELTA tab-background--hover; just short',
-    ],
-
-    // v2 tabs.
-    'irp|v2 tab label, hover': [
-      4.35,
-      'IRP interactive-active on its own 6% wash; marginal',
-    ],
-    'irp|aria tab label, hover': [4.35, 'same token chain as the v2 tab'],
-    'base|v2 tab indicator, hover': [
-      2.28,
-      '45% accent wash; raise the alpha or use the solid accent',
-    ],
-    'preventionweb|v2 tab indicator, hover': [2.09, '45% accent wash'],
-    'irp|v2 tab indicator, hover': [1.9, '45% accent wash'],
-    'mcr|v2 tab indicator, hover': [2.58, '45% accent wash'],
-    'delta|v2 tab indicator, hover': [2.28, '45% accent wash'],
-    'base|aria tab indicator, hover': [2.28, 'same 45% wash as the v2 tab'],
-    'preventionweb|aria tab indicator, hover': [
-      2.09,
-      'same 45% wash as the v2 tab',
-    ],
-    'irp|aria tab indicator, hover': [1.9, 'same 45% wash as the v2 tab'],
-    'mcr|aria tab indicator, hover': [2.58, 'same 45% wash as the v2 tab'],
-    'delta|aria tab indicator, hover': [2.28, 'same 45% wash as the v2 tab'],
-
-    // Card and hero share the orange secondary accent.
-    'base|card title, secondary variant': [
-      2.65,
-      'orange-800 title link; fails even the large-text 3:1',
-    ],
-    'preventionweb|card title, secondary variant': [
-      2.65,
-      'orange-800 title link',
-    ],
-    'irp|card title, secondary variant': [2.65, 'orange-800 title link'],
-    'mcr|card title, secondary variant': [2.65, 'orange-800 title link'],
-    'delta|card title, secondary variant': [
-      2.37,
-      "orange-800 on DELTA's tinted card surface",
-    ],
-    'base|hero body text, secondary variant': [
-      2.65,
-      'white body copy on orange-800',
-    ],
-    'preventionweb|hero body text, secondary variant': [
-      2.65,
-      'white body copy on orange-800',
-    ],
-    'irp|hero body text, secondary variant': [
-      2.65,
-      'white body copy on orange-800',
-    ],
-    'mcr|hero body text, secondary variant': [
-      2.65,
-      'white body copy on orange-800',
-    ],
-    'delta|hero body text, secondary variant': [
-      2.65,
-      'white body copy on orange-800',
-    ],
-    'base|hero CTA label, secondary variant': [
-      2.65,
-      'orange-800 label on the white pill',
-    ],
-    'preventionweb|hero CTA label, secondary variant': [
-      2.65,
-      'orange-800 label on the white pill',
-    ],
-    'irp|hero CTA label, secondary variant': [
-      2.65,
-      'orange-800 label on the white pill',
-    ],
-    'mcr|hero CTA label, secondary variant': [
-      2.65,
-      'orange-800 label on the white pill',
-    ],
-    'delta|hero CTA label, secondary variant': [
-      2.65,
-      'orange-800 label on the white pill',
-    ],
-
-    // IRP's hero blue under a 90% white pill.
-    'irp|hero secondary CTA label': [
-      4.13,
-      'IRP hero blue behind a 90%-white pill; marginal',
-    ],
-  };
+  const EXCEPTIONS = WCAG_EXCEPTIONS;
 
   test.each(ALL_THEMES)(
     '%s: the page floor --mg-color-neutral-0 really is white',
@@ -1607,5 +2046,99 @@ describe('component token contrast, including hover and active states', () => {
       // ...and no worse than when it was recorded.
       expect(ratio).toBeGreaterThanOrEqual(recorded - 0.01);
     });
+
+    // Same pair, same composited pixels, second measure.
+    test.each(PAIRS.map(pair => [pair.name, pair]))(
+      '%s, perceptually',
+      name => {
+        const row = measurement(`component|${theme}|${name}`);
+        // Guards the shared table against a token silently resolving to null.
+        expect(
+          `${name}: ${row.score === undefined ? 'unresolved' : 'ok'}`
+        ).toBe(`${name}: ok`);
+
+        assertPerceptual(row, PERCEPTUAL_EXCEPTIONS[`${theme}|${name}`]);
+      }
+    );
+  });
+});
+
+/* -------------------------------------------------------------------------
+ * The disagreements.
+ *
+ * This is the artefact the second measure exists to produce. Everywhere the
+ * two agree, nothing has been learned. The pairs below are the ones where
+ * WCAG 2's luminance ratio and the Oklab lightness measure reach OPPOSITE
+ * verdicts, and each is a place where one of the two is wrong about something
+ * a person has to read.
+ *
+ * The list is checked in rather than merely printed, so it cannot drift
+ * silently: adding a colour that WCAG 2 over-rates, or fixing one, fails this
+ * test with the full before/after table in the diff.
+ * ---------------------------------------------------------------------- */
+describe('where the two contrast measures disagree', () => {
+  const line = row =>
+    [
+      `${row.theme} | ${row.name}`,
+      row.wcagPasses
+        ? `WCAG 2 PASSES ${row.ratio}:1 (min ${row.min})`
+        : `WCAG 2 fails ${row.ratio}:1 (min ${row.min})`,
+      row.perceptualPasses
+        ? `perceptual PASSES ${row.score} (${row.role} needs ${row.floor})`
+        : `perceptual fails ${row.score} (${row.role} needs ${row.floor})`,
+    ].join(' | ');
+
+  /**
+   * Every disagreement, in measurement order.
+   *
+   * Direction matters. All eleven run the same way — WCAG 2 passes a pair the
+   * perceptual measure fails — which is WCAG 2 OVER-rating readability, the
+   * failure mode with a user behind it. Nothing here runs the other way: no
+   * pair that WCAG 2 rejects is perceptually fine, so adopting the second
+   * measure loosens nothing.
+   */
+  const DISAGREEMENTS = [
+    'base | legacy tab label, active | WCAG 2 PASSES 7.47:1 (min 4.5) | perceptual fails 60.8 (BODY_TEXT needs 63)',
+    'base | v2 tab label, hover | WCAG 2 PASSES 4.64:1 (min 4.5) | perceptual fails 61.1 (BODY_TEXT needs 63)',
+    'base | error summary text on its tinted panel | WCAG 2 PASSES 5.27:1 (min 4.5) | perceptual fails 59.5 (BODY_TEXT needs 63)',
+    'base | aria tab label, hover | WCAG 2 PASSES 4.64:1 (min 4.5) | perceptual fails 61.1 (BODY_TEXT needs 63)',
+    'preventionweb | error summary text on its tinted panel | WCAG 2 PASSES 5.27:1 (min 4.5) | perceptual fails 59.5 (BODY_TEXT needs 63)',
+    'irp | error summary text on its tinted panel | WCAG 2 PASSES 5.27:1 (min 4.5) | perceptual fails 59.5 (BODY_TEXT needs 63)',
+    'mcr | error summary text on its tinted panel | WCAG 2 PASSES 5.27:1 (min 4.5) | perceptual fails 59.5 (BODY_TEXT needs 63)',
+    'delta | v2 tab label, hover | WCAG 2 PASSES 4.94:1 (min 4.5) | perceptual fails 62.6 (BODY_TEXT needs 63)',
+    'delta | error summary text on its tinted panel | WCAG 2 PASSES 5.27:1 (min 4.5) | perceptual fails 59.5 (BODY_TEXT needs 63)',
+    'delta | hero title on the split hero | WCAG 2 PASSES 3.07:1 (min 3) | perceptual fails 27.2 (LARGE_TEXT needs 50)',
+    'delta | aria tab label, hover | WCAG 2 PASSES 4.94:1 (min 4.5) | perceptual fails 62.6 (BODY_TEXT needs 63)',
+  ];
+
+  test('the two measures disagree about exactly these pairs', () => {
+    const found = measurements()
+      .filter(row => row.wcagPasses !== row.perceptualPasses)
+      .map(line);
+
+    expect(found).toEqual(DISAGREEMENTS);
+  });
+
+  test('every disagreement is recorded as an exception on the failing side', () => {
+    // A disagreement is only honest if the failing measure still records it as
+    // an unfixed failure. This binds the report to the two exception tables:
+    // a pair cannot appear here and be silently unlisted there.
+    const unrecorded = measurements()
+      .filter(row => row.wcagPasses !== row.perceptualPasses)
+      .filter(row => !EXCEPTION_KEYS.has(`${row.theme}|${row.name}`))
+      .map(line);
+
+    expect(unrecorded).toEqual([]);
+  });
+
+  test('no pair is failed by WCAG 2 and passed perceptually', () => {
+    // Stated as its own guard because the day this stops being true is the day
+    // the perceptual measure starts WAIVING something the standard rejects,
+    // and that needs a human decision rather than a green suite.
+    const loosened = measurements()
+      .filter(row => !row.wcagPasses && row.perceptualPasses)
+      .map(line);
+
+    expect(loosened).toEqual([]);
   });
 });
