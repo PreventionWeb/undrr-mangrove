@@ -268,3 +268,26 @@
   max-width: 78ch;
   padding: 10px 12px;
 }
+
+.demo-footer code {
+  background: #1d2732;
+  border-radius: 3px;
+  color: #dfe8f3;
+  padding: 1px 5px;
+}
+
+/*
+ * Forced workaround, kept deliberately and documented by cascade specimen D.
+ *
+ * Mangrove styles bare <a> elements with the brand colour. In mode A that
+ * beats the Tailwind text-white utility on the app bar's own links, because
+ * Tailwind utilities are layered and Mangrove is not — so the app bar renders
+ * navy-on-navy. This unlayered rule is the only thing that fixes it without
+ * !important, and writing it is the friction this demo is measuring.
+ *
+ * The specimen D strip inside the cascade evidence section is deliberately
+ * NOT covered by this selector, so it can keep showing the untreated result.
+ */
+.demo-appbar nav a {
+  color: #fff;
+}

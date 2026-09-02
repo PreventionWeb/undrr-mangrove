@@ -121,6 +121,24 @@
       b2MangroveWins ? 'pass' : 'fail'
     );
 
+    /* ---- D: Mangrove's bare-element styles vs the app's own chrome ---- */
+    var dColor = computed('specimen-d', 'color');
+    var dAppWins = dColor === 'rgb(255, 255, 255)';
+    set('d-value', dColor || '?');
+    set(
+      'd-winner',
+      dAppWins ? 'Tailwind utility (the app)' : "Mangrove's global a rule"
+    );
+    set(
+      'd-verdict',
+      dAppWins
+        ? 'PASS — the app’s own navigation keeps its own colour.'
+        : 'FAIL — the link is brand navy on a brand navy bar, so it is ' +
+            'invisible. The app did nothing wrong: Mangrove’s bare-element ' +
+            'rule reached into UI that carries no Mangrove classes at all.',
+      dAppWins ? 'pass' : 'fail'
+    );
+
     /* ---- C: brand by token ---- */
     var swatch = document.querySelector('.demo-swatches');
     var token = swatch
@@ -172,6 +190,8 @@
     var previous = null;
     var attempts = 0;
 
+    var brandButton = document.querySelector('.demo-swatches .mg-button');
+
     function snapshot() {
       return [
         window
@@ -181,6 +201,10 @@
         computed('specimen-a', 'background-color'),
         computed('specimen-b1', 'font-size'),
         computed('specimen-b2', 'font-size'),
+        computed('specimen-d', 'color'),
+        /* Mangrove transitions button colours, so this keeps the poll running
+           until the transition has finished rather than reading a midpoint. */
+        brandButton ? window.getComputedStyle(brandButton).backgroundColor : '',
       ].join('|');
     }
 
@@ -239,24 +263,46 @@
 
   /* ------------------------------------------------------------------ tabs */
 
+  /*
+   * A cut-down copy of the show/hide half of stories/assets/js/tabs.js: the
+   * active link carries .is-active and the inactive panels carry the hidden
+   * attribute, which is what Mangrove's own runtime does. Kept local so this
+   * page stays a plain HTML file with no module loading.
+   */
   function wireTabs() {
     var groups = document.querySelectorAll('[data-demo-tabs]');
     Array.prototype.forEach.call(groups, function (group) {
       var tabs = group.querySelectorAll('.mg-tabs__link');
+      var panels = group.querySelectorAll('.mg-tabs__section');
+
+      function activate(tab) {
+        var targetId = tab.getAttribute('href').slice(1);
+        Array.prototype.forEach.call(tabs, function (other) {
+          var on = other === tab;
+          other.classList.toggle('is-active', on);
+          other.setAttribute('aria-selected', String(on));
+          other.setAttribute('tabindex', on ? '0' : '-1');
+        });
+        Array.prototype.forEach.call(panels, function (panel) {
+          panel.hidden = panel.id !== targetId;
+        });
+      }
+
       Array.prototype.forEach.call(tabs, function (tab) {
+        tab.setAttribute('role', 'tab');
+        tab.setAttribute('aria-controls', tab.getAttribute('href').slice(1));
         tab.addEventListener('click', function (event) {
           event.preventDefault();
-          Array.prototype.forEach.call(tabs, function (other) {
-            other.classList.toggle('is-active', other === tab);
-            other.setAttribute('aria-selected', String(other === tab));
-          });
+          activate(tab);
         });
-        tab.setAttribute('role', 'tab');
-        tab.setAttribute(
-          'aria-selected',
-          String(tab.classList.contains('is-active'))
-        );
       });
+
+      Array.prototype.forEach.call(panels, function (panel) {
+        panel.setAttribute('role', 'tabpanel');
+      });
+
+      var initial = group.querySelector('.mg-tabs__link.is-active') || tabs[0];
+      if (initial) activate(initial);
     });
   }
 

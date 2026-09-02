@@ -58,7 +58,7 @@
          Mangrove component CSS.
     ==================================================================== -->
     <header
-      class="bg-[rgb(var(--mg-color-interactive))] text-white px-6 py-3 flex items-center gap-4 flex-wrap"
+      class="demo-appbar bg-[rgb(var(--mg-color-interactive))] text-white px-6 py-3 flex items-center gap-4 flex-wrap"
     >
       <span class="font-semibold tracking-wide text-lg">DELTA</span>
       <span class="text-white/70 text-sm hidden sm:inline"
@@ -66,14 +66,14 @@
       >
       <nav class="ml-auto flex items-center gap-1 text-sm">
         <a
-          class="px-3 py-1.5 rounded bg-white/15 hover:bg-white/25"
+          class="px-3 py-1.5 rounded text-white no-underline bg-white/15 hover:bg-white/25"
           href="#event-records"
           >Event records</a
         >
-        <a class="px-3 py-1.5 rounded hover:bg-white/15" href="#guidance"
+        <a class="px-3 py-1.5 rounded text-white no-underline hover:bg-white/15" href="#guidance"
           >Guidance</a
         >
-        <a class="px-3 py-1.5 rounded hover:bg-white/15" href="#cascade"
+        <a class="px-3 py-1.5 rounded text-white no-underline hover:bg-white/15" href="#cascade"
           >Cascade evidence</a
         >
       </nav>
@@ -123,7 +123,7 @@
           <h3 class="text-xs font-bold uppercase tracking-wider text-neutral-500">
             Reporting workspace
           </h3>
-          <ul class="mt-3 space-y-1">
+          <ul class="mt-3 space-y-1 list-none pl-0">
             <li>
               <a
                 class="block rounded px-2 py-1.5 bg-[rgb(var(--mg-color-interactive)/0.1)] font-medium"
@@ -609,6 +609,52 @@
             </p>
           </article>
           </div>
+
+          <!-- ---------- Specimen D ---------- -->
+          <article class="demo-proof" data-proof="D">
+            <h3 class="demo-proof__title">
+              D · Mangrove's global element styles reaching into the app's own
+              chrome
+            </h3>
+            <p class="demo-proof__desc">
+              This one was not planned. It turned up while building the app bar
+              at the top of this page. Mangrove styles bare
+              <code>a</code> elements with
+              <code>color: rgb(var(--mg-color-interactive))</code>. The strip
+              below is the app's own navigation — no Mangrove classes anywhere
+              on it — with the Tailwind utility <code>text-white</code> on the
+              link. In mode A the link renders in brand navy on a brand navy
+              bar and disappears.
+            </p>
+            <div class="demo-proof__specimen">
+              <div
+                class="demo-specimen-bar bg-[rgb(var(--mg-color-interactive))] px-4 py-3 rounded"
+              >
+                <a
+                  class="px-3 py-1.5 rounded text-white no-underline bg-white/15"
+                  href="#cascade"
+                  id="specimen-d"
+                  >Event records</a
+                >
+              </div>
+            </div>
+            <dl class="demo-proof__readout">
+              <dt>Computed <code>color</code> of the app's own link</dt>
+              <dd data-readout="d-value">—</dd>
+              <dt>Winner</dt>
+              <dd data-readout="d-winner">—</dd>
+            </dl>
+            <p class="demo-proof__verdict" data-readout="d-verdict">—</p>
+            <p class="demo-proof__caveat">
+              <strong>What this costs today.</strong> The real app bar at the
+              top of this page needs an unlayered
+              <code>.demo-appbar nav a { color: #fff }</code> rule in
+              <code>demo-chrome.css</code> to stay readable in mode A. That is
+              the workaround an application is pushed into: hand-written CSS
+              outside its utility system, to undo a design system rule it never
+              asked for. It is exactly the friction the DELTA team describes.
+            </p>
+          </article>
 
           <!-- ---------- Brand proof ---------- -->
           <article class="demo-proof" data-proof="brand">
