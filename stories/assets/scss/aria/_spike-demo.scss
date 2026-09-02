@@ -261,3 +261,33 @@
   font-size: 0.875rem;
   margin-block-start: var(--mg-spacing-50);
 }
+
+/* Dialog action rows in the collection gallery. The CRUD spike styles its own
+   equivalent; this one was rendering with no gap, so the buttons touched. */
+.aria-collection-dialog-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mg-spacing-100);
+  justify-content: flex-end;
+  margin-block-start: var(--mg-spacing-150);
+}
+
+/* Stage for the always-open modal specimen. The distributed
+   .react-aria-ModalOverlay is position: fixed, which is correct for a real
+   modal and wrong for a specimen on a Docs page that renders every story
+   inline - it covered the page. The overlay is portalled in here and pinned to
+   the stage instead. Demo-only: this override never ships in the React Aria
+   surface. */
+.aria-collection-modal-stage {
+  border: 1px solid var(--mg-aria-color-border);
+  border-radius: var(--mg-aria-radius-surface);
+  /* Tall enough that the Modal's own max-block-size: calc(100% - 40px) does not
+     clip the dialog and add a scrollbar to the specimen. */
+  min-block-size: 22rem;
+  overflow: hidden;
+  position: relative;
+
+  .react-aria-ModalOverlay {
+    position: absolute;
+  }
+}

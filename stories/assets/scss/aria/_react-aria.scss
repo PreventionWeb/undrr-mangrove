@@ -249,6 +249,20 @@
   padding: var(--mg-aria-space-4);
   width: var(--mg-aria-dialog-width);
 }
+/* A dialog's dismissing action is not a second primary. React Aria gives it a
+   slot, so the quiet treatment keys off that rather than a class contract we
+   would have to impose on consumers. Without this, a confirm dialog renders two
+   identical filled buttons and the destructive one carries no more weight than
+   the escape hatch. */
+.react-aria-Dialog .react-aria-Button[slot="close"] {
+  background: transparent;
+  border: var(--mg-aria-border-width) solid var(--mg-aria-color-border);
+  color: var(--mg-aria-color-text);
+}
+.react-aria-Dialog .react-aria-Button[slot="close"][data-hovered] {
+  background: var(--mg-aria-color-subtle-surface);
+  border-color: var(--mg-aria-color-border-focus);
+}
 .react-aria-Dialog {
   display: grid;
   gap: var(--mg-aria-space-3);

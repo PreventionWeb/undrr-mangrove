@@ -744,6 +744,11 @@ function SelectPopoverSurface() {
 }
 
 function ModalSurface() {
+  /* The overlay renders into this element instead of document.body, so the
+     specimen stays inside its own frame on the Docs page. The stage is held in
+     state rather than a ref because UNSTABLE_portalContainer must be a real
+     node on the render that mounts the overlay. */
+  const [stage, setStage] = useState(null);
   return (
     <div className="aria-collection-gallery">
       <header className="aria-collection-intro">
@@ -751,25 +756,32 @@ function ModalSurface() {
         <p>
           The modal opens on mount and has no close control, so the overlay
           scrim, the modal surface and its shadow are visible without
-          interaction. It lives in its own story because an always-open modal
-          overlay covers the page and hides every other specimen.
+          interaction. It is portalled into the stage below rather than the
+          document body: .react-aria-ModalOverlay is position: fixed, so an
+          always-open specimen would otherwise cover the whole Docs page, which
+          renders every story inline.
         </p>
       </header>
-      <ModalOverlay isOpen>
-        <Modal>
-          <Dialog>
-            <Heading slot="title">Confirm event deletion</Heading>
-            <p>
-              Deleting the riverine flood record removes it from the national
-              loss database and from the Sendai Framework monitor return.
-            </p>
-            <div className="aria-collection-dialog-actions">
-              <Button>Cancel</Button>
-              <Button>Delete event</Button>
-            </div>
-          </Dialog>
-        </Modal>
-      </ModalOverlay>
+      <div className="aria-collection-modal-stage" ref={setStage}>
+        {stage ? (
+          <ModalOverlay isOpen UNSTABLE_portalContainer={stage}>
+            <Modal>
+              <Dialog>
+                <Heading slot="title">Confirm event deletion</Heading>
+                <p>
+                  Deleting the riverine flood record removes it from the
+                  national loss database and from the Sendai Framework monitor
+                  return.
+                </p>
+                <div className="aria-collection-dialog-actions">
+                  <Button slot="close">Cancel</Button>
+                  <Button>Delete event</Button>
+                </div>
+              </Dialog>
+            </Modal>
+          </ModalOverlay>
+        ) : null}
+      </div>
     </div>
   );
 }
