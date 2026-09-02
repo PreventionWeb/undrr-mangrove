@@ -21,6 +21,10 @@ import {
   TextField,
 } from 'react-aria-components';
 
+// Spike-demo composition styles. Imported here rather than in the theme
+// rollup so these fixtures are not shipped in every consumer's stylesheet.
+import '../assets/scss/aria/_spike-demo.scss';
+
 const options = ['Preparedness', 'Response', 'Recovery'];
 
 function AriaIntegrationDemo() {

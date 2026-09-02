@@ -192,6 +192,22 @@ describe('distributed React Aria surface', () => {
     });
   });
 
+  test('the shipped theme bundle carries no spike-demo selectors either', () => {
+    // The boundary was previously guarded only on aria/react-aria.css, while
+    // _components.scss still pulled the fixtures into every consumer's
+    // style.css. Guarding one artefact and not the other missed that entirely.
+    // Narrower than DEMO_SELECTOR: .mg-button and .mg-tag are legitimate in the
+    // theme bundle and only count as leaks in the distributed aria artefact.
+    const FIXTURE_ONLY =
+      /\.(aria-spike-|aria-crud-|aria-integration-demo|aria-calendar-header)/;
+    const leaked = compile('style')
+      .split('\n')
+      .filter(line => FIXTURE_ONLY.test(line))
+      .map(line => line.trim());
+
+    expect(leaked).toEqual([]);
+  });
+
   test('carries no spike-demo composition selectors', () => {
     const leaked = ariaCss
       .split('\n')
@@ -302,6 +318,7 @@ describe('React Aria token contrast (WCAG 2.2 AA)', () => {
 
   const parseColor = value => {
     if (!value) return null;
+    if (value.trim() === 'transparent') return { r: 0, g: 0, b: 0, a: 0 };
     const fn = value
       .trim()
       .match(/^rgb\(\s*(\d+)\s+(\d+)\s+(\d+)\s*(?:\/\s*([\d.]+))?\s*\)$/);
@@ -316,8 +333,10 @@ describe('React Aria token contrast (WCAG 2.2 AA)', () => {
   // theme block's declarations must override the :root ones.
   const declarations = (css, selector) => {
     const out = {};
+    // Last-wins: CSS applies the final declaration at equal specificity, so
+    // keeping the first would measure a value the browser never uses.
     for (const m of css.matchAll(/(--[a-z0-9-]+)\s*:\s*([^;}]+)[;}]/g))
-      if (!(m[1] in out)) out[m[1]] = m[2].trim();
+      out[m[1]] = m[2].trim();
     if (selector) {
       const block =
         css.match(new RegExp(`\\${selector}\\s*\\{([^}]*)\\}`))?.[1] ?? '';
@@ -376,6 +395,7 @@ describe('React Aria token contrast (WCAG 2.2 AA)', () => {
     ['color-text', 'color-surface', 4.5],
     ['color-muted-text', 'color-surface', 4.5],
     ['color-on-accent', 'color-accent', 4.5],
+    ['button-color', 'button-background', 4.5],
     ['color-invalid', 'color-surface', 4.5],
     ['color-border', 'color-surface', 3],
     ['color-border', 'color-field-surface', 3],
