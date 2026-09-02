@@ -177,8 +177,9 @@ describe('Mangrove 2.0 token contract (compiled CSS)', () => {
 });
 
 /**
- * The distributed React Aria surface is a *public package export*
- * (`@undrr/undrr-mangrove/aria.css`). Storybook's spike demos live in the same
+ * The React Aria surface is built as a standalone artifact
+ * (`aria/react-aria.css`) and is compiled into every theme stylesheet.
+ * Storybook's spike demos live in the same
  * Sass tree and are trivially easy to re-add to the shipped entry point by
  * accident, which would leak `.aria-crud-*` fixture styling into every
  * consumer's bundle. These assertions pin the boundary.

@@ -6,11 +6,16 @@
 
 ## Result
 
-This spike establishes a separate CSS distribution surface for React Aria Components:
+This spike builds a separate CSS surface for React Aria Components:
 
-- `@undrr/undrr-mangrove/tokens/mangrove.css`
-- `@undrr/undrr-mangrove/tokens/delta.css`
-- `@undrr/undrr-mangrove/aria.css`
+- `aria/tokens/mangrove.css`
+- `aria/tokens/delta.css`
+- `aria/react-aria.css`
+
+These are build artifacts, not package entry points. `aria/` is not copied into
+`dist/` or into the published package, and the release workflow regenerates
+`package.json` without an `exports` field, so subpath exports for them cannot
+work. Wiring them into a distribution channel is follow-up work.
 
 ## Draft PRs
 
