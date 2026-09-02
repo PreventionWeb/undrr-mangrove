@@ -15,6 +15,11 @@ const {
   perceptualContrast,
   THRESHOLD,
 } = require('../../../../scripts/lib/perceptual-contrast.cjs');
+const {
+  coverage: ariaCoverage,
+  summary,
+  listMissing,
+} = require('../../../../scripts/aria-coverage.cjs');
 const { version } = require('../../../../package.json');
 
 const SCSS_DIR = path.resolve(__dirname, '..');
@@ -265,34 +270,26 @@ describe('distributed React Aria surface', () => {
     // A consumer importing aria.css gets every unstyled component bare, so
     // coverage is a product fact rather than a metric. This is a floor, not a
     // target: it exists so a refactor cannot quietly drop components. Raise it
-    // when coverage genuinely improves. `node scripts/aria-coverage.cjs --list`
-    // prints what is still missing.
+    // when coverage genuinely improves.
+    //
+    // The measurement itself comes from `scripts/aria-coverage.cjs` rather than
+    // being repeated here, so the CLI a developer runs and the guard CI runs
+    // cannot disagree. The script defaults to the built `aria/react-aria.css`;
+    // this passes the freshly compiled Sass so the guard does not depend on a
+    // build artifact being current.
     const FLOOR = 65;
-    const pkgDir = path.resolve(
-      __dirname,
-      '../../../../node_modules/react-aria-components'
-    );
-    const stock = new Set();
-    const walk = dir => {
-      for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-        const full = path.join(dir, entry.name);
-        if (entry.isDirectory()) walk(full);
-        else if (/\.(js|mjs|cjs|d\.ts)$/.test(entry.name)) {
-          for (const m of fs
-            .readFileSync(full, 'utf8')
-            .matchAll(/react-aria-([A-Z][A-Za-z]+)/g))
-            stock.add(m[1]);
-        }
-      }
-    };
-    walk(pkgDir);
+    const result = ariaCoverage(ariaCss);
 
-    const styled = new Set(
-      [...ariaCss.matchAll(/\.react-aria-([A-Za-z]+)/g)].map(m => m[1])
-    );
-    const covered = [...stock].filter(name => styled.has(name));
-
-    expect(covered.length).toBeGreaterThanOrEqual(FLOOR);
+    // Jest's expect() carries no custom message, so name the components a
+    // consumer would get bare before asserting. Without this the failure says
+    // only that a number shrank.
+    if (result.covered.length < FLOOR) {
+      throw new Error(
+        `React Aria styling coverage ${summary(result)} is below the floor of ` +
+          `${FLOOR}.\n${listMissing(result)}`
+      );
+    }
+    expect(result.covered.length).toBeGreaterThanOrEqual(FLOOR);
   });
 
   test('declares no cascade layer', () => {

@@ -1,58 +1,33 @@
-# DELTA composition demo
+# DELTA composition demo — what it proved
 
-A standalone page that puts Mangrove, Tailwind 4 and a deliberately hostile
-legacy stylesheet on the same document, and measures which one wins.
+This is the write-up of a throwaway demo page that put Mangrove, Tailwind 4 and
+a deliberately hostile legacy stylesheet on the same document and measured which
+one won. **The page itself is no longer in the repository** — it was a
+measurement instrument, not a deliverable, and its verdicts were live computed
+values that only meant anything at the moment they were taken. This file is the
+record of what it showed.
 
-The question it exists to answer is the one the DELTA team has been asking for
+The question it existed to answer is the one the DELTA team has been asking for
 a year: **can a DELTA-shaped application use Mangrove as one part of its stack
 without Mangrove taking the whole stack over?**
 
-## Running it
+## How it was set up
 
-```
-yarn build                                   # at the repository root, once
-open demos/delta-composition/index.html      # no server needed
-```
+A plain HTML page, opened from the filesystem, loading Mangrove's compiled
+`dist/assets/css/style-all.css` through a relative path — the same file, at the
+same subpath, that an npm consumer imports from the published package. Alongside
+it: `aria/react-aria.css`, a real Tailwind 4.3.3 CLI build (theme and utilities,
+no preflight), and a simulated legacy stylesheet that was unlayered at source,
+id-scoped and aggressive. DELTA app chrome was built with Tailwind; Mangrove
+content patterns and the cascade specimens sat below it. Two controls switched
+the cascade wiring and the brand, and every specimen printed its own computed
+values and a pass/fail verdict.
 
-The page loads Mangrove's compiled CSS from `dist/assets/css/style-all.css`
-through a relative path — the same file, at the same subpath, that an npm
-consumer imports from the published package. `dist/` is gitignored, so if you
-have not built the repo the page shows a banner telling you so. Everything
-else the page needs is committed, including the generated Tailwind CSS.
-
-Two controls sit at the top:
-
-- **Cascade mode** — switches between the two wirings described below.
-- **Brand** — switches between DELTA-via-token-file, DELTA-via-theme-class, and
-  the four Mangrove brands.
-
-Every cascade specimen prints its own live computed values and a pass/fail
-verdict, so the result is readable without opening devtools.
-
-## Why this is not a Storybook story
-
-Storybook loads Mangrove's stylesheet into its own CSS context, on a page it
-controls, with no competing application CSS. That arrangement cannot tell you
-anything about how Mangrove behaves next to Tailwind and a decade of legacy
-rules, which is the only thing DELTA actually needs to know. This has to be a
-plain page that can be opened from the filesystem and handed over as-is.
-
-## Files
-
-| File | What it is |
-| --- | --- |
-| `index.html` | The page. DELTA app chrome (Tailwind) + Mangrove content patterns + cascade specimens. |
-| `css/legacy.css` | Simulated legacy application CSS. Unlayered at source, id-scoped, aggressive. |
-| `css/tailwind.in.css` | Tailwind 4 entry point. Theme + utilities, no preflight. |
-| `css/tailwind.built.css` | **Generated and committed.** Real Tailwind 4.3.3 CLI output. |
-| `css/cascade-source-order.css` | Mode A wiring: four unlayered `@import`s. |
-| `css/cascade-layered.css` | Mode B wiring: `@layer legacy, mangrove, tw` + three `@import … layer()`. |
-| `css/demo-chrome.css` | Demo scaffolding. Every selector is `.demo-`-prefixed so it cannot decide a specimen. |
-| `js/demo.js` | Mode/brand switching, tab behaviour, and the live measurements. |
-| `build-tailwind.sh` | Regenerates `tailwind.built.css`. |
-
-Tailwind is installed into a throwaway temp directory by `build-tailwind.sh`
-and is deliberately **not** added to the repository's `package.json`.
+It was deliberately not a Storybook story. Storybook loads Mangrove's stylesheet
+into its own CSS context, on a page it controls, with no competing application
+CSS. That arrangement cannot tell you anything about how Mangrove behaves next
+to Tailwind and a decade of legacy rules, which is the only thing DELTA actually
+needs to know.
 
 ## The two cascade modes
 
@@ -65,9 +40,9 @@ and is deliberately **not** added to the repository's `package.json`.
 @import url('tailwind.built.css');
 ```
 
-No custom layers anywhere. This matches the settled decision recorded in
-`SPIKE-FINDINGS.md` §6: Mangrove ships as ordinary author CSS, and consumers
-control the outcome by import position.
+No custom layers anywhere. This was the shape recorded in `SPIKE-FINDINGS.md`
+§6 at the time: Mangrove ships as ordinary author CSS, and consumers control the
+outcome by import position. Finding 1 below is what reopened that decision.
 
 ### Mode B — consumer-declared layers
 
@@ -87,16 +62,16 @@ is the part of the layers story that the earlier spike work did not use.
 
 ## What was observed
 
-Measured in Chromium via computed styles. Mode A is the current shape; mode B
-is the same page with the four lines above.
+Measured in Chromium via computed styles. Mode A was the shipped shape; mode B
+was the same page with the four lines above.
 
-| Specimen | What it tests | Mode A | Mode B |
-| --- | --- | --- | --- |
-| **A** | Tailwind utility `bg-[rgb(0_106_78)]` vs `.mg-button-primary` | `rgb(19, 46, 72)` — **Mangrove wins** | `rgb(0, 106, 78)` — **Tailwind wins** |
-| **B1** | `.mg-card__title` vs ordinary legacy `.event-card-title` | `23px / Roboto Condensed` — **Mangrove wins** | `23px / Roboto Condensed` — **Mangrove wins** |
-| **B2** | Mangrove `h2` vs legacy `#id .class h2.class` | `11px / 400` — **legacy wins** | `23px / 700` — **Mangrove wins** |
-| **D** | Tailwind `text-white` on the app's own nav link vs Mangrove's bare `a { color }` | `rgb(19, 46, 72)` — **Mangrove wins, link is invisible** | `rgb(255, 255, 255)` — **the app wins** |
-| **C** | Brand from `aria/tokens/delta.css` reaching both a Mangrove `.mg-tag` and a Tailwind chip | both `rgb(19, 46, 72)` | both `rgb(19, 46, 72)` |
+| Specimen | What it tests                                                                             | Mode A                                                   | Mode B                                        |
+| -------- | ----------------------------------------------------------------------------------------- | -------------------------------------------------------- | --------------------------------------------- |
+| **A**    | Tailwind utility `bg-[rgb(0_106_78)]` vs `.mg-button-primary`                             | `rgb(19, 46, 72)` — **Mangrove wins**                    | `rgb(0, 106, 78)` — **Tailwind wins**         |
+| **B1**   | `.mg-card__title` vs ordinary legacy `.event-card-title`                                  | `23px / Roboto Condensed` — **Mangrove wins**            | `23px / Roboto Condensed` — **Mangrove wins** |
+| **B2**   | Mangrove `h2` vs legacy `#id .class h2.class`                                             | `11px / 400` — **legacy wins**                           | `23px / 700` — **Mangrove wins**              |
+| **D**    | Tailwind `text-white` on the app's own nav link vs Mangrove's bare `a { color }`          | `rgb(19, 46, 72)` — **Mangrove wins, link is invisible** | `rgb(255, 255, 255)` — **the app wins**       |
+| **C**    | Brand from `aria/tokens/delta.css` reaching both a Mangrove `.mg-tag` and a Tailwind chip | both `rgb(19, 46, 72)`                                   | both `rgb(19, 46, 72)`                        |
 
 ### 1. Today, Tailwind utilities cannot override Mangrove. At all.
 
@@ -131,17 +106,16 @@ is finding 1.
 
 ### 3. Mangrove's bare-element rules reach into UI that has no Mangrove classes.
 
-Specimen D turned up while building the app bar at the top of this page, not
-while designing a test. Mangrove styles bare `a` elements with the brand
-colour. The DELTA nav strip carries no `mg-*` class at all, and Tailwind's
+Specimen D turned up while building the demo's app bar, not while designing a
+test. Mangrove styles bare `a` elements with the brand colour. The DELTA nav
+strip carries no `mg-*` class at all, and Tailwind's
 `text-white` on the link loses in mode A, so the app's own navigation renders
 navy on navy and disappears.
 
-The header of this demo page carries an unlayered
-`.demo-appbar nav a { color: #fff }` rule in `demo-chrome.css` purely to work
-around this. Writing that rule is the friction being measured: the application
-had to leave its own styling system to undo a design system rule it never opted
-into.
+The demo's own header needed an unlayered `.demo-appbar nav a { color: #fff }`
+rule purely to work around this. Having to write that rule _is_ the friction
+being measured: the application had to leave its own styling system to undo a
+design system rule it never opted into.
 
 ### 4. Layering fixes specificity fights. It does not fix inheritance.
 
@@ -154,9 +128,9 @@ the legacy rule. Layers are not a substitute for that cleanup.
 
 ### 5. Brand-by-token-file works, and works for the app's own UI too.
 
-Specimen C passes in both modes and for all six brand options. Nothing on this
-page redefines a Mangrove component. Switching the brand control re-skins
-Mangrove's tags, cards, tabs, buttons and form controls *and* the Tailwind app
+Specimen C passed in both modes and for all six brand options. Nothing on the
+page redefined a Mangrove component. Switching the brand control re-skinned
+Mangrove's tags, cards, tabs, buttons and form controls _and_ the Tailwind app
 chrome, because the app chrome reads `var(--mg-color-interactive)` through
 Tailwind arbitrary values. This is the part of the story that already works
 today, and it works whether the brand arrives as `aria/tokens/delta.css` on
@@ -167,33 +141,33 @@ today, and it works whether the brand arrives as `aria/tokens/delta.css` on
 `aria/tokens/delta.css` leaves the primary button filled navy.
 `_theme-delta.scss`, which compiles to the `.mg-theme-delta` class, sets
 `--mg-color-button-background: transparent`, making the primary button an
-outline button. Switch between the first two brand options on the page to see
-it. Whichever is intended, a consumer choosing one route rather than the other
-should not get a different button.
+outline button — visible on the page by switching between the first two brand
+options. Whichever is intended, a consumer choosing one route rather than the
+other should not get a different button.
 
 ## Relationship to `docs/CASCADE-LAYERS.md`
 
 That document and `aria/react-aria.layered.css` were produced in parallel with
-this demo and reached finding 1 independently, from the React Aria side. The
+the demo and reached finding 1 independently, from the React Aria side. The
 two pieces cover different halves of the same problem and agree on the cause:
 
 - `aria/react-aria.layered.css` is a pre-wrapped layered build of the **React
   Aria adapter stylesheet**. It is what a DELTA CRUD screen imports.
-- This demo exercises the **component stylesheet**, `style-all.css` — the cards,
+- The demo exercised the **component stylesheet**, `style-all.css` — the cards,
   tags, tabs, buttons, form controls and typography a DELTA-branded landing page
-  needs. No layered build of that file exists yet, which is why mode B here
-  wraps it with `@import … layer(mangrove)` on the consumer side.
+  needs. No layered build of that file exists yet, which is why mode B wrapped
+  it with `@import … layer(mangrove)` on the consumer side.
 
 `docs/CASCADE-LAYERS.md` also records two build-tool failures worth reading
 before copying mode B into a real app: webpack hoists an inlined `@import`
 block above the `@layer` order statement and inverts the order, and Drupal's
 `CssOptimizer` skips the import entirely. Both hit the consumer-side
-`@import … layer()` technique this demo uses, and neither hits a pre-wrapped
-layered file. A `<link>`-based page like this one is unaffected.
+`@import … layer()` technique mode B used, and neither hits a pre-wrapped
+layered file. A `<link>`-based page like the demo is unaffected.
 
 ## What ideal ordering would need
 
-The page proves the target arrangement is reachable today with four lines of
+The page proved the target arrangement is reachable today with four lines of
 consumer CSS and no changes to Mangrove. That is the cheapest available answer
 for a page that loads plain `<link>` tags, and DELTA can adopt it now.
 
@@ -223,8 +197,8 @@ is narrowing the global element rules or scoping them behind a container class.
 - **Runtime-injected CSS escapes it.** A `<style>` element or inline style
   added by application JavaScript is unlayered and beats every layer. Layering
   only covers stylesheets the app imports.
-- **Tailwind preflight is not loaded here.** `css/tailwind.in.css` imports
-  `theme.css` and `utilities.css` only. With preflight in the `tw` layer it
-  would sit *after* Mangrove and reset Mangrove's typography. An app that wants
+- **Tailwind preflight was not loaded.** The demo's Tailwind entry point
+  imported `theme.css` and `utilities.css` only. With preflight in the `tw` layer it
+  would sit _after_ Mangrove and reset Mangrove's typography. An app that wants
   preflight needs it in its own earlier layer:
   `@layer tw-base, legacy, mangrove, tw`.

@@ -30,18 +30,13 @@ different ones of these in the same conversation.
 
 ### The organisational context
 
-- Mangrove serves content websites (Drupal/Twig, plus non-Drupal sites and the
-  risk and resilience mapping platform). It already ships React and runs it in
-  Drupal through a hydration runtime, so React itself is not a new commitment.
-- DELTA is a data-heavy application in its own repository, currently sharing
-  nothing with Mangrove except hand-copied token values.
-- A programme has asked for a DELTA-branded landing page with editable content
-  for over a year. It cannot be built because DELTA's design lives inside the
-  application, so DELTA's publications, news and events sit on the UNDRR site
-  under UNDRR branding.
-- The duplication concern is concrete: if DELTA builds its own suite, the next
-  product likely commissions a second one, and we are back to the position MCR
-  left us in.
+Mangrove serves content websites (Drupal/Twig, plus non-Drupal sites and the
+risk and resilience mapping platform), and already ships React through a Drupal
+hydration runtime, so React is not a new commitment. DELTA is a data-heavy
+application in its own repository, currently sharing nothing with Mangrove
+except hand-copied token values. The duplication concern is concrete: if DELTA
+builds its own suite, the next product likely commissions a second one, and we
+are back to the position MCR left us in.
 
 ### The framing that works best
 
@@ -65,21 +60,14 @@ That reframing requires four things of us. Three already hold:
 This is the most important technical finding in the whole workstream, and it
 went the opposite way from where it started.
 
-### What was originally decided
+Layers were originally rejected. The reasoning: DELTA has significant unlayered
+legacy CSS, and unlayered styles beat layered ones for normal declarations, so a
+layered Mangrove would lose to exactly the rules it needed to beat. The spike
+shipped ordinary unlayered author CSS and this was recorded as settled.
 
-Layers were rejected. The reasoning: DELTA has significant unlayered legacy CSS,
-and unlayered styles beat layered ones for normal declarations, so a layered Mangrove
-would lose to exactly the rules it needed to beat. The spike therefore shipped
-ordinary unlayered author CSS, and this was recorded as settled.
-
-### What was never tested
-
-Tailwind 4 emits its utilities inside `@layer utilities`. Nobody checked what an
-unlayered Mangrove does to a layered Tailwind.
-
-### What the browser actually does
-
-Five cases, tested directly rather than reasoned about:
+What was never tested: Tailwind 4 emits its utilities inside `@layer utilities`.
+Nobody checked what an unlayered Mangrove does to a layered Tailwind. Five cases,
+measured in a browser rather than reasoned about:
 
 | Setup | Result |
 | --- | --- |
@@ -95,61 +83,27 @@ every Tailwind utility they write.** That is precisely the chokehold they are
 worried about, delivered by the cascade rather than by policy — and the PR
 comment told them the opposite, that their Tailwind would win by source order.
 
-### The resolution
+C is reachable, which is why the decision reversed. Mangrove now publishes a
+pre-wrapped `aria/react-aria.layered.css` alongside the unlayered file.
+**`docs/CASCADE-LAYERS.md` is the consumer-facing guidance** — which file to
+import, where the layer order statement has to go, why `@import … layer()` is
+the wrong tool (webpack hoists the inlined block above the order statement and
+Drupal's `CssOptimizer` skips the import outright), and what happens if you
+double-wrap. That document supersedes anything about layers written here; this
+section records only that the decision moved and what moved it.
 
-C is achievable and costs the consumer one line: they layer their own legacy CSS
-too, and declare the order explicitly.
+Two consequences worth carrying that are not consumer guidance:
 
-```css
-@layer legacy, mangrove, utilities;
-@import "legacy.css" layer(legacy);
-@import "@undrr/undrr-mangrove/aria.css" layer(mangrove);
-/* Tailwind's own @layer utilities */
-```
-
-This gives the consumer strictly more control than today, which is a far better
-conversation than asking them to trust our specificity.
-
-**The order statement must be parsed before any of those layer names is first
-used.** If a `@layer utilities { ... }` block appears above it, order is fixed by
-first appearance instead and Mangrove beats the utility again — silently. This
-was reproduced. It is one file-concatenation away, which is the same aggregator
-risk noted below.
-
-### Open risk
-
-Browser support for `@layer` is not the concern (Baseline since 2022). The
-concern is toolchain: bundlers that inline `@import` may drop `layer()`, and
-Drupal's CSS aggregator concatenates files, which plausibly breaks import-time
-layering altogether. The safer shipping shape is to emit a **pre-wrapped
-layered variant** alongside the unlayered file, so no consumer depends on
-`@import ... layer()` surviving their build. **This now exists**:
-`aria/react-aria.layered.css`, generated by `scripts/build-layered-css.js` and
-exported as `./aria.layered.css`. The unlayered file is unchanged.
-
-Measured toolchain behaviour, which is worse than anticipated and is the reason
-pre-wrapping is the recommendation rather than a nicety:
-
-| Toolchain | `@import ... layer()` |
-| --- | --- |
-| Sass | passes through untouched |
-| **webpack** (`css-loader`) | **inlines the import but hoists the resulting `@layer` block above the order statement**, so layer order inverts silently and a consumer's `legacy` layer ends up above `mangrove` |
-| **Drupal** `CssOptimizer` | regex does not accommodate a trailing `layer(...)`, so the import is skipped rather than inlined. Open core issue [#3470829](https://www.drupal.org/project/drupal/issues/3470829), unmerged |
-
-Every failure mode lives in `@import ... layer()`, which is precisely what
-pre-wrapping removes from the consumer's hands. Still unverified: whether
-Drupal's aggregator preserves a plain `@layer` block. Nothing in `CssOptimizer`
-is layer-aware, but nobody has run it.
-
-Also worth noting: layering Mangrove wholesale makes it *always the lesser of
-peers* for normal declarations. (Not unconditionally: for `!important` the
-order reverses and layered wins, so an `!important` inside a layered Mangrove
-becomes *harder* for a consumer to beat, not easier. Measured.) For a design
-system
-that is often desirable — site overrides become easy — but it inverts current
-behaviour for sites that fight specificity today. 2.0-alpha is the moment to
-make that call if we are going to, and Mangrove v1 is the escape hatch for
-consumers who need the old behaviour.
+- Layering Mangrove wholesale makes it *always the lesser of peers* for normal
+  declarations. Not unconditionally: for `!important` the order reverses and
+  layered wins, so an `!important` inside a layered Mangrove becomes *harder*
+  for a consumer to beat, not easier. Measured. For a design system that is
+  often desirable — site overrides become easy — but it inverts current
+  behaviour for sites that fight specificity today. 2.0-alpha is the moment to
+  make that call if we are going to, and Mangrove v1 is the escape hatch for
+  consumers who need the old behaviour.
+- Still unverified: whether Drupal's aggregator preserves a plain `@layer`
+  block. Nothing in `CssOptimizer` is layer-aware, but nobody has run it.
 
 ---
 
@@ -323,164 +277,127 @@ variant. Brand owners will notice.
 
 ---
 
-## 6a. What DELTA actually is
+## 6a. What we learned about DELTA
 
-Everything above section 6 was written before anyone read DELTA's production
-repository or its Figma file. Both have now been examined. Several premises this
-workstream ran on were wrong, and the corrected picture is more favourable to
-sharing, not less.
+The DELTA product's repository and design file were examined directly during
+this work, which corrected a significant error: Mangrove's DELTA theme had been
+built on `#132E48`, a navy that does not appear in DELTA at all. **DELTA's brand
+blue is `#004F91`** — which is `--mg-color-blue-900`, Mangrove's own UNDRR blue.
+DELTA's design file labels that swatch "UNDRR Blue". The theme also had its
+primary and outline buttons swapped, and collapsed a two-colour brand into one.
 
-Sources: `/Users/khawkins/Documents/git/delta-pw` (read-only) and the DLDTS
-design file, decoded losslessly from its binary format.
+All of that is corrected in the token sources, and the values there carry their
+own provenance notes. That is the part which belongs in this repository.
 
-### DELTA's brand colour is UNDRR blue
+The wider review — DELTA's stack, its styling architecture, and the specific
+defects found in its source — is deliberately **not recorded here**. This is a
+public repository, and a file-and-line critique of another team's private
+codebase does not belong in one, however useful the analysis. It has been kept
+separately for sharing with the DELTA team directly.
 
-`#132E48`, the navy Mangrove's entire DELTA theme was built on, appears **zero
-times** in DELTA's codebase. DELTA's brand blue is **`#004F91`** (54 uses in
-code; 1551 fills and 1645 strokes in Figma).
 
-`#004F91` is `rgb(0 79 145)` — Mangrove's `--mg-color-blue-900`, the UNDRR brand
-blue. And DELTA's own design file labels that swatch **"UNDRR Blue - Corporate
-blue"**, marked "Brand".
+## 6b. Form control states: what each surface expresses
 
-Every comparison this workstream published between "DELTA navy" and "UNDRR blue"
-was comparing UNDRR blue against a colour that exists only in our guess. The
-values were internally consistent, which is why no test caught it.
+DELTA's design file models every form control across seven states — default,
+hover, focus active, focus typing, filled, error, disabled. Mangrove has two
+form surfaces that are meant to agree: the legacy `.mg-form-*` controls and the
+React Aria surface in `aria/_react-aria.scss`. A specimen sheet was built that
+rendered both side by side, one live control per state, and each cell was
+verdicted with `getComputedStyle` in Chromium rather than by reading the
+stylesheet — hover driven with a real pointer, keyboard focus with a real Tab,
+pointer focus with a real click. It was checked in all five themes and both
+directions. The sheet itself is not kept: hardcoded computed-style snapshots
+that nothing re-runs rot the moment the CSS beneath them changes. The findings
+are kept, because they were expensive to obtain and nothing else records them.
 
-### DELTA already contains a broken fork of Mangrove
+### Which states each surface actually expresses
 
-`public/assets/css/style-dts.css` is a compiled Mangrove build, stamped
-`?asof=20250630` and frozen since. It carries 23 `.mg-*` selectors used at
-roughly 300 call sites (113 `mg-grid`, 82 `mg-button`, 37 `mg-button-primary`,
-32 `mg-container`).
+Measured at the UNDRR default, per control (legacy → aria):
 
-It is also demonstrably a copy-paste rather than a build: it contains 14
-references to `url(~/stories/assets/icons/...)`, a Mangrove **Sass source path**,
-which in DELTA resolve against `public/` and 404 because `public/stories/` does
-not exist. Those button arrow icons have never rendered.
+- **Text input** — hover: neither. Focus active: legacy draws the full ring;
+  aria draws it only for keyboard focus. Filled: neither. Error: both.
+  Disabled: legacy inverts to a *white* background, lighter than the enabled
+  grey, and leaves the border alone; aria is measurably identical to default —
+  no opacity, no colour, no border change, only the UA cursor differs.
+- **Textarea** — hover: aria moves the border to the focus colour, legacy does
+  nothing. Focus/filled/error as the text input. Disabled: aria uses opacity
+  0.55 and `cursor: not-allowed`; legacy repeats the white inversion.
+- **Date** — legacy is a native `input type="date"`, so segment-level focus is
+  drawn by the user agent and varies by browser. Aria is the only place in
+  either surface that distinguishes **focus typing**: `DateSegment[data-focused]`
+  highlights the segment being typed while the field keeps its focus-within
+  treatment. But aria's DateInput has no `[data-invalid]` and no `[data-disabled]`
+  rule, so an invalid or disabled date field looks ordinary — only the
+  `FieldError` text signals a problem. `DateSegment[data-placeholder]` is muted,
+  which marks the *unfilled* case rather than the filled one.
+- **Select** — aria hovers (`[data-hovered]` lightens the trigger), legacy does
+  not. Neither distinguishes a chosen option from a placeholder. Aria has no
+  `[data-invalid]` rule reaching the trigger, so an invalid select looks valid.
+  Disabled: legacy measures opacity 0.7 — different from the disabled input and
+  textarea beside it; aria inherits the base Button's 0.55, a CTA treatment
+  applied to a field.
+- **Stepper** — legacy is a native `input type="number"` with the browser's own
+  spinner, not a Mangrove control. On aria the increment/decrement buttons hover
+  and dim; the Input between them does neither, for the same reason the plain
+  text input does not.
 
-So the question was never "will DELTA adopt Mangrove". A degraded, drifted,
-partly-broken fork of Mangrove is already in DELTA. The conversation is about
-replacing a stale fork with a maintained dependency, which is a much easier
-argument and a more urgent one.
+### Controls that do not exist on either surface
 
-### PrimeReact 10.9 cannot be themed with custom properties
+- **Dropdown breadcrumb.** Mangrove has a Breadcrumb and a Select; nothing
+  composes them. React Aria offers `Breadcrumbs` plus a `Select` hand-composed,
+  with none of the seven states defined for the composition as a whole.
+- **Multiselect.** Legacy offers a checkbox group, which is a different
+  interaction with a different affordance. Aria styles `ListBox` with
+  `selectionMode="multiple"`, but `[data-selected]` shares the `[data-focused]`
+  background so a focused-unselected option and a selected one look the same,
+  and there is no multiselect trigger, token display or removal affordance.
 
-DELTA runs styled-mode PrimeReact 10.9.7 with `<PrimeReactProvider value={{ ripple: true }}>`
-as its entire configuration, and a vendored `lara-light-blue` theme that is
-byte-identical to upstream.
+### Where the two surfaces disagree
 
-That theme declares ~200 CSS custom properties on `:root` and then **consumes
-`var()` exactly 14 times in 224 KB, against 1518 hardcoded hex literals**
-(`#3b82f6` alone appears 97 times). The `:root` variables are a one-way export
-for consumer CSS, not a theming input. Overriding `--primary-color` repaints
-nothing.
+- **hover** — three behaviours for one state: aria TextArea hovers, aria Input
+  does not, neither legacy control does.
+- **disabled** — four treatments: legacy input/textarea white-plus-grey at
+  opacity 1, legacy select at 0.7, aria TextArea at 0.55, aria Input nothing at
+  all.
+- **error** — every legacy control turns its border red. On aria, Input and
+  TextArea do; DateInput and the Select trigger do not.
+- **focus from a pointer** — the sharpest one. Legacy uses the CSS
+  `:focus-visible` pseudo-class, which browsers *do* apply when a pointer user
+  clicks into a text field. The aria surface uses `[data-focus-visible]`, which
+  React Aria withholds on a pointer click. Measured: a clicked aria text input
+  has `data-focused` but not `data-focus-visible`, so it keeps its default
+  border, background and 1px UA outline while the legacy field in the same
+  situation shows the full ring. Keyboard focus is fine on both. The loser is
+  the sighted pointer user who needs to see where they are.
+- **focus indicator shape** — legacy draws a 2px white band inside a 2px blue
+  band with `box-shadow`; aria draws one 2px outline with an offset. Both settle
+  on `0 79 145`, but the legacy focus *border* re-themes per sub-brand (teal on
+  PreventionWeb, purple on MCR2030) while the ring around it stays UNDRR blue in
+  every theme — a themed border inside an unthemed ring.
+- **focus typing** — only the aria DateInput expresses it, and only because
+  React Aria gives each segment its own focus. Everywhere else it collapses into
+  focus active.
+- **filled** — neither surface expresses it on any control.
+- **reduced motion and forced colours** — aria gates every transition behind
+  `prefers-reduced-motion: no-preference` and repaints focus and selection under
+  `forced-colors: active`. `forced-colors` appears nowhere in the legacy
+  stylesheet and the legacy form controls carry no transitions at all. The two
+  surfaces will not match for a user who has asked their OS for either.
 
-The design-token API (`definePreset`, `--p-*`) does not exist in 10.x at all; it
-arrives in PrimeReact 11, which is a rewrite-level migration across DELTA's 103
-PrimeReact files **and is no longer MIT** — it moves to a dual
-community/commercial licence requiring a key, with a non-profit carve-out UNDRR
-would have to assess legally. That should not be discovered mid-migration.
+RTL was clean on both: layout and reading order mirror, the legacy select moves
+its chevron and the legacy date input its picker button, and the aria surface
+reflows on its own because it is written in logical properties. The error red is
+`193 9 32` in every theme.
 
-Consequence: feeding Mangrove tokens into PrimeReact is not a config change. The
-only working path in 10.9 is a hand-authored unlayered override sheet
-enumerating every `.p-*` selector and state, re-verified on every patch bump.
-
-### DELTA already has the cascade problem, from its own stack
-
-`@layer primereact` is declared **after** `utilities`, so the PrimeReact theme
-outranks every Tailwind utility a DELTA developer writes. There are zero uses of
-Tailwind's `!` important modifier across 304 `.tsx` files, which suggests the
-team is absorbing this as "Tailwind classes sometimes don't stick" rather than
-diagnosing it. `style-dts.css` and four local CSS files are unlayered and
-outrank all of Tailwind including preflight.
-
-This matters for the chokehold argument: DELTA is not defending a clean cascade
-from Mangrove. They already have the problem, twice, from their own dependencies.
-
-### What DELTA genuinely decided, and what is vendor default
-
-Real, documented decisions worth respecting: `#004F91` and a teal secondary
-`#007B7A`/`#00AFAE`; a spacing scale of 2/4/8/12/16/24/32/40/48/64/72/80/88/96;
-6px corner radius (1134 uses); a full Roboto type scale; breakpoints
-1440/768/375; Sendai target colour ramps; and 77 `[dir="rtl"]` rules, which is
-real engineering.
-
-Not decided, inherited: stock PrimeReact `lara-light-blue` unmodified except four
-toast selectors; **no Tailwind `@theme` block at all**, so every Tailwind colour
-is a stock v4 default; `Inter var` as the effective body font, inherited from the
-vendor theme rather than chosen; slate and gray mixed roughly 50/50 as body text;
-three competing radius conventions; three different focus rings. Most of DELTA's
-235 PrimeReact buttons render generic Tailwind blue `#3b82f6`, not brand colour.
-
-The accurate framing is not "DELTA made no design decisions". It is that **the
-few real decisions mostly align with UNDRR already**, and most of what surrounds
-them is vendor default that nobody chose.
-
-### Wins available now
-
-1. **Root font size.** `style-dts.css` sets `html { font-size: 14px }`, scaling
-   every rem in the app — Tailwind's, PrimeReact's and Mangrove's — to 87.5%.
-   The Figma type scale is px-based and assumes a 16px body (Body 16/24), so the
-   design file contradicts the code. Mangrove removed non-16px roots in 2.0.
-2. **Arabic typography.** Three artifacts, three answers: Mangrove says Dubai,
-   DELTA's code has Cairo, the Figma says Noto Sans Arabic. **Correction:** an
-   earlier version said Arabic users may be getting a fallback, because the
-   `@font-face` declares `format("woff2")` for a static `Cairo-SemiBold.ttf`.
-   That is wrong on the spec. A `format()` hint is only used to skip an
-   unsupported format, and woff2 is universally supported, so the file is
-   fetched, sniffed and rendered. The real defects are that one static SemiBold
-   face is declared across `font-weight: 200 1000`, flattening Arabic weight
-   hierarchy, and that the correct variable font ships uncited alongside it. Note that
-   choosing Dubai overrides DELTA's stated design system rather than filling a
-   vacuum; the argument for it is UN-family provenance, not absence of a
-   decision.
-3. **Brand alignment.** Correcting Mangrove's DELTA theme to `#004F91` makes it
-   match both the code and the Figma, and reveals that DELTA's brand is UNDRR's.
-
-### Where the evidence lives
-
-Paths are in the DELTA repository, which was examined read-only and left
-untouched (clean tree, empty stash, no new refs).
-
-| Claim | File and lines |
-| --- | --- |
-| Three-stylesheet link order; dead `primereact.min.css` import; styled-mode provider | `app/root.tsx` 61-65, 30, 253-256 |
-| No Tailwind `@theme`; `@import "tailwindcss"` last | `app/styles/all.css` (5 lines) |
-| The copied `.mg-*` fork | `public/assets/css/style-dts.css` from line 539 |
-| 14px root | `public/assets/css/style-dts.css:18` |
-| Mangrove Sass paths that 404 | `public/assets/css/style-dts.css` 598, 611, 654, 660, 672, 677, 689, 695, 714, 719 |
-| Vendored theme, byte-identical to upstream; layer opens after Tailwind's | `public/assets/themes/lara-light-blue/theme.css` 292, 6997 |
-| The `--p-*` assumption that does not hold on 10.9 | `_docs/refactoring-plan/design-system-unification-roadmap.md` 43-48 |
-| Dev-only CSP; no production CSP in the repo | `vite.config.ts:54` |
-
-One consequence of that last row: the dev CSP allows styles from `unpkg`,
-`cdnjs` and `*.preventionweb.net` but not `assets.undrr.org`, so a `<link>` to a
-Mangrove stylesheet on that host would be blocked in development. Bundling
-locally avoids it. What production enforces is unknown, because no production
-CSP exists in the repository.
-
-### Corrections this forces on earlier sections
-
-- Mangrove's `_theme-delta.scss` has **primary and outline swapped**. DELTA's
-  primary button is filled `#004f91` with white text, 40px tall, 6px radius, per
-  both the code and the Figma button spec. The `background: transparent` our
-  guess copied is the unstyled base that every variant overrides. The standalone
-  token file was structurally right and the theme file wrong.
-- The MUI-versus-React-Aria framing was aimed at the wrong target. DELTA's
-  documented position is *"PrimeReact is the team's stated direction for
-  interactive widgets going forward"*, already executed across 103 files. React
-  Aria is not a live option for them.
-- DELTA has **no Figma Variables of its own**. All 26 collections and 664
-  variables are imported third-party kits. There is nothing to sync from Figma;
-  tokens would have to be authored.
+---
 
 ## 7. Open questions
 
 - Do we invert the token hierarchy to palette → semantic → component, and drop
   the `aria` prefix?
-- Do we generate one token file per brand, and is Figma the upstream? Brand
-  values currently reach both repositories by hand and nothing syncs.
+- Is Figma the upstream for brand values? They currently reach both
+  repositories by hand and nothing syncs. (Per-brand token file generation is
+  no longer open — see §3.)
 - Do we adopt cascade layers in 2.0, given it is breaking and v1 is the escape
   hatch?
 - Where should font loading live? A token file currently carries an
@@ -488,9 +405,6 @@ CSP exists in the repository.
 - Portalled overlays render under `<body>`. Any site scoping `.mg-theme-*` to a
   wrapper gets unbranded popovers and menus.
 - Forced-colours rendering has never been verified in Windows High Contrast.
-- The distributed `aria/tokens/mangrove.css` is not standalone: it references
-  base values it does not define, so it only works alongside Mangrove's full
-  stylesheet — the one thing an external consumer wants to avoid.
 
 ---
 
@@ -512,8 +426,8 @@ is knowingly given up. A faster product-only path is a legitimate choice;
 discovering in a year that it cannot be reused should be an accepted consequence
 rather than a surprise.
 
-**And one thing that is not an architecture problem at all:** the year-old
-landing page is not blocked on any of this. `_theme-delta.scss` and
-`style-delta.scss` already exist and the theme switch already works. It is
-blocked because nobody owns keeping the DELTA brand file faithful to DELTA's
-design. That is governance.
+**And one thing that is not an architecture problem at all:** the DELTA-branded
+landing page a programme has been asking for over a year is not blocked on any
+of this. `_theme-delta.scss` and `style-delta.scss` already exist and the theme
+switch already works. It is blocked because nobody owns keeping the DELTA brand
+file faithful to DELTA's design. That is governance.

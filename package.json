@@ -11,12 +11,8 @@
     ".": "./src/index.js",
     "./aria": "./aria/react-aria.css",
     "./aria.css": "./aria/react-aria.css",
-    "./aria.layered.css": "./aria/react-aria.layered.css",
     "./tokens/mangrove.css": "./aria/tokens/mangrove.css",
-    "./tokens/delta.css": "./aria/tokens/delta.css",
-    "./tokens/preventionweb.css": "./aria/tokens/preventionweb.css",
-    "./tokens/irp.css": "./aria/tokens/irp.css",
-    "./tokens/mcr.css": "./aria/tokens/mcr.css"
+    "./tokens/delta.css": "./aria/tokens/delta.css"
   },
   "files": [
     "src",

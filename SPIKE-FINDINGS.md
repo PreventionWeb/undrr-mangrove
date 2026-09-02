@@ -17,13 +17,21 @@ This spike establishes a separate CSS distribution surface for React Aria Compon
 - [Mangrove provider spike #1080](https://github.com/unisdr/undrr-mangrove/pull/1080)
 - [DELTA consumer spike #686](https://github.com/PreventionWeb/delta/pull/686)
 
-The distribution deliberately uses no custom CSS layers, and this is now a
+The distribution originally used no custom CSS layers, recorded at the time as a
 settled decision rather than a spike expedient. DELTA has significant unlayered
 legacy CSS, which outranks ordinary declarations inside a named layer, so a
 layered Aria surface would lose to exactly the rules it needs to beat. The Aria
 stylesheet therefore ships as ordinary author CSS and follows DELTA's existing
 reset/global imports. A `@layer` regression test pins this in the compiled
 output.
+
+**Superseded.** That reasoning held only for unlayered legacy CSS and never
+considered Tailwind, which emits its utilities inside `@layer utilities` — an
+unlayered Mangrove silently outranks every utility a consumer writes. Mangrove
+now additionally ships a pre-wrapped `aria/react-aria.layered.css`; the
+unlayered file and its regression test are unchanged, so this section still
+describes what `aria/react-aria.css` is. See `docs/CASCADE-LAYERS.md` for the
+browser and toolchain measurements and for which file to import.
 
 ## Architecture proved by the spike
 
@@ -76,11 +84,13 @@ mechanism used by DELTA.
    package's explicit CSS exports resolved during `yarn build`.
 6. **Cascade determinism: yes, by ordinary source order.** DELTA uses Tailwind
    4.2 alongside unlayered legacy CSS. A dedicated Aria layer was overridden by
-   that legacy CSS, so the agreed shape is no custom layers at all: the Aria
-   surface is ordinary author CSS and wins or loses on normal specificity and
-   source order. Consumers control it by import position rather than by layer
-   name. This is deliberate — adopting `@layer` would require DELTA's legacy CSS
-   to be layered first, which is not planned.
+   that legacy CSS, so the shape agreed here is no custom layers at all: the
+   Aria surface is ordinary author CSS and wins or loses on normal specificity
+   and source order. Consumers control it by import position rather than by
+   layer name. **Since revised:** unlayered also means Mangrove outranks
+   Tailwind's layered utilities unconditionally, so a layered build is now
+   published alongside the unlayered one for consumers who can layer their
+   legacy CSS. `docs/CASCADE-LAYERS.md` has the details.
 7. **Overlay theming: yes.** The `Popover` targets the portalled React Aria
    overlay. Standalone adapter tokens are available on `:root`; Mangrove's
    runtime theme aliases are also emitted on the body theme classes so a
@@ -226,91 +236,6 @@ copy, screen-reader testing, visual regression coverage, and error/loading
 states. The spike-level browser checks reduce risk but are not a substitute for
 product-specific accessibility and internationalisation acceptance testing.
 
-## Coverage experiment: can the component gap be closed cheaply?
-
-The strongest objection to React Aria is that it ships behaviour and no
-appearance, so a team comparing it against a batteries-included library sees
-"components" against "scaffold". That objection is testable rather than
-arguable, so it was tested.
-
-Starting point: the distributed stylesheet covered **36 of the 124** stock
-class names `react-aria-components@1.20.0` renders (29%). Anything uncovered
-reaches a consumer unstyled. `scripts/aria-coverage.cjs` makes the figure
-reproducible; its denominator is grep-derived and approximate.
-
-After one session of parallel agent work: **70 of 124 (56%)**, adding Tabs,
-Switch, RadioGroup, NumberField, TextArea, Disclosure, ToggleButton, Tag,
-Slider, ProgressBar, Meter, Breadcrumbs, Link, Separator, Form and FieldError,
-with a Storybook gallery exercising them across default, selected, disabled and
-invalid states.
-
-So the gap is closeable far faster than the 10 to 16 week figure implies. That
-estimate assumed hand-building and should not be quoted as a prerequisite.
-
-### The finding that matters more than the coverage number
-
-The mechanical pass also shipped real accessibility defects, and a separate
-audit found them. This is the honest result of the experiment: **coverage
-scales cheaply, correctness does not.**
-
-Contrast is a property of the resolved token chain, so none of these were
-visible when reading the stylesheet:
-
-- DELTA's border token resolved to 2.10:1 against white, putting every field,
-  checkbox, radio, tag and drop-zone boundary in that theme below WCAG 1.4.11.
-- The rail token put IRP's filled slider at 2.93:1 against its own track, so a
-  slider's reported value was not reliably distinguishable.
-- The slider thumb was 20px, below the 24px minimum target size.
-
-Dead selectors, found by reading the installed package and confirmed against a
-live DOM rather than trusting documentation:
-
-- `.react-aria-Text[data-slot="description"]` never matched anything. React
-  Aria forwards `slot` as a plain HTML attribute and emits no `data-slot`, so
-  field descriptions and error messages had never been styled. This predates
-  the coverage work.
-- The current breadcrumb rendered as disabled, because React Aria sets
-  `data-disabled` when `isDisabled || isCurrent`.
-- The disclosure trigger's focus ring was clipped away entirely by an
-  ancestor's `overflow: hidden`.
-- Progress bars, meters and the switch knob would have disappeared in Windows
-  High Contrast.
-
-All are fixed. Ten token pairs are now asserted across all five themes, so
-these become build errors rather than audit findings; the guard was
-mutation-tested.
-
-### What this says about the method
-
-Agents closed a 27-point coverage gap in one session and separately found
-defects a human reviewer would have been unlikely to catch by reading, because
-several required resolving token chains to numbers or grepping a dependency's
-source. Neither half worked alone: the generating pass introduced defects, and
-the auditing pass had no way to fix them.
-
-The practical lesson for a production foundation is that coverage and specimen
-verification have to move together. Roughly 30 of the 70 styled classes are
-still not rendered anywhere, and every remaining focus-ring and target-size
-failure in the audit sits in that unrendered half.
-
-### Still open
-
-- **The distributed token file cannot theme.** `aria/tokens/mangrove.css`
-  declares the aliases only under `:root`, so a consumer importing the
-  published CSS without Mangrove's Sass gets no sub-brand theming at all.
-  Storybook works only because the Sass theme files re-include the mixin. This
-  is the same single-source problem recorded on the pull request, reached
-  independently from the consumer side, and fixing it properly means generating
-  a token file per brand rather than patching this one.
-- Forced-colours rendering is unverified; the rules are present and every
-  selector matches a live element, but nobody has opened this in Windows High
-  Contrast.
-- The selected tab is the weakest state treatment in the set. It passes
-  contrast but has no underline or bar, and the obvious fix collides with the
-  focus ring, so it wants a design decision rather than a mechanical one.
-- ~30 styled classes have no rendered specimen, and the theme story omits
-  PreventionWeb and IRP, which carry the tightest contrast numbers.
-
 ## Effort estimate
 
 - Production-ready foundation: 5–8 engineer days remaining (token contract,
@@ -323,7 +248,8 @@ failure in the audit sits in that unrendered half.
 ## Recommendation
 
 **Proceed with React Aria.** The team has accepted the unlayered styling
-surface, which was the one open condition. Distribution hygiene is now in
+surface, which was the one open condition at the time; a layered build has since
+been added alongside it rather than replacing it. Distribution hygiene is now in
 place: the shipped CSS carries only reusable primitives, and the tarball is
 allow-listed. What remains before a broad rollout is product-level hardening —
 visual regression coverage, screen-reader acceptance testing, translated copy,
