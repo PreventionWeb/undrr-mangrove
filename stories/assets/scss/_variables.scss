@@ -299,7 +299,11 @@ $mg-tabs-border-bottom: true !default;
     --mg-color-button-secondary-background--hover
   );
   --mg-color-text-button: var(--mg-color-neutral-0);
-  --mg-border-color-button: var(--mg-color-text-button);
+
+  // Must be a colour, not a channel triplet: it is consumed inside a `border:`
+  // shorthand, and a bare triplet makes the whole declaration invalid, which
+  // silently drops border-style to none.
+  --mg-border-color-button: rgb(var(--mg-color-text-button));
 
   // Form
   --mg-color-form-check: var(--mg-color-interactive);
