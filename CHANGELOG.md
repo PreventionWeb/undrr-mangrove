@@ -19,7 +19,7 @@ Development releases began with `2.0.0-alpha.1` under the npm `next` dist-tag. S
 
 ### `2.0.0-alpha.3` — unreleased
 
-Proposed in [PR #1080](https://github.com/unisdr/undrr-mangrove/pull/1080). A foundation release: no required integration change, and no visual change to any existing component. The token rewrite is value-identical — compiled output for all five themes is byte-unchanged.
+Proposed in [PR #1080](https://github.com/unisdr/undrr-mangrove/pull/1080). A foundation release: no required integration change. The token rewrite itself is value-identical — compiled output for all five themes is byte-unchanged apart from the one deliberate default change recorded under [Focus ring](#changed-default-the-focus-ring-is-no-longer-the-brand-colour) below.
 
 #### Design token pipeline
 
@@ -39,6 +39,30 @@ Proposed in [PR #1080](https://github.com/unisdr/undrr-mangrove/pull/1080). A fo
 - New `StatusLabel` (`.mg-status-label`) with `--draft`, `--published`, `--waiting-validation` and `--waiting-information` variants.
 - New `EmptyState` (`.mg-empty-state`) with `--compact`, `--panel` and `--start` variants.
 - New data-visualisation palette, including `--mg-sendai-target-a` through `--mg-sendai-target-g` for the seven Sendai Framework targets.
+
+#### Changed default: the focus ring is no longer the brand colour
+
+`--mg-color-focus-ring` was aliased to `--mg-color-interactive` in every theme, so the keyboard focus ring and the selection cue were the same signal: `--mg-aria-color-selected-surface` is the interactive colour at 12% and the ring was the same hue at full strength. A focused row in a selected state said one thing twice.
+
+It now resolves to a new base primitive, `--mg-color-gold-800` (`#866200`, emitted as `134 98 0`), shared by all five themes:
+
+| Token | Before | After |
+|---|---|---|
+| `--mg-color-focus-ring` | `var(--mg-color-interactive)` | `var(--mg-color-gold-800)` |
+| `--mg-color-gold-800` | — | `134 98 0` |
+
+Measured against both graded backgrounds, in all five themes (both backgrounds are theme-invariant today), as WCAG 2 ratio / Oklab perceptual score against a non-text floor of 3:1 and 50:
+
+| Pair | Before (UNDRR / PW / IRP / MCR / DELTA) | After (all five) |
+|---|---|---|
+| ring on `--mg-aria-color-surface` (`#ffffff`) | 8.31 / 78.3 · 6.49 / 73.7 · 4.71 / 64.6 · 12.03 / 84.7 · 8.31 / 78.3 | 5.58 / 68.7 |
+| ring on `--mg-aria-color-field-surface` (`#f2f2f2`) | 7.42 / 72.1 · 5.79 / 67.4 · 4.21 / 57.9 · 10.75 / 78.8 · 7.42 / 72.1 | 4.99 / 62.2 |
+
+A deliberately non-brand focus colour is near-universal in public-sector design systems (GOV.UK `#ffdd00`, NHS `#ffeb3b`, USWDS a `blue-40v` distinct from its link blue). Those systems' yellows cannot be used unaided here: `#ffdd00` is 1.35:1 on the raised surface and 1.20:1 on the field surface, scoring 5.3 and −6.6 perceptually. They work because their indicator is two bands — a yellow fill over a near-black bar — and the dark band carries the contrast. `gold-800` keeps the yellow register and takes it down the lightness ramp until a single band measures on its own.
+
+**Migration.** Nothing to do unless you depend on the ring being brand-coloured. If you do, set `--mg-color-focus-ring` on `:root` or on your theme selector; a theme that overrides it owns both graded pairs above. `--mg-color-form-focus`, which drives the focused field's *border* (`--mg-aria-color-border-focus`), is unchanged and stays brand-coloured on purpose: the border says "this field is active", the ring says "the keyboard is here". Forced-colours mode is unaffected — focus indicators are already repainted to `CanvasText`.
+
+**Not yet covered.** Twelve component stylesheets draw their own focus outline from `--mg-color-interactive`, `--mg-color-blue-800` or a local Sass variable instead of `--mg-color-focus-ring`, so they keep a brand-coloured ring: `Gallery` (4 rules), `Tab`, `Boilerplate`, `Forms/_form-base` (`blue-800`) and `SyndicationSearchWidget` (6 rules, `$search-primary`). Routing those through the token is follow-up work.
 
 #### Deprecated: `--sendai-*` accent colours
 

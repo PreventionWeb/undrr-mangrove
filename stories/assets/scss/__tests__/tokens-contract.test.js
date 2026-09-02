@@ -42,6 +42,7 @@ const RUNTIME_ARIA_ALIASES = [
   'color-invalid-surface',
   'color-overlay-backdrop',
   'color-track',
+  'color-fill',
   'color-invalid',
   'space-1',
   'space-2',
@@ -53,6 +54,7 @@ const RUNTIME_ARIA_ALIASES = [
   'radius-surface',
   'radius-item',
   'radius-check',
+  'radius-control-inner',
   'control-block-size',
   'color-focus-ring',
   'focus-width',
@@ -509,7 +511,14 @@ const ARIA_PAIRS = [
   ['color-border', 'color-field-surface', 3],
   ['color-accent', 'color-surface', 3],
   // The filled portion of a slider, progress bar or switch against its rail.
+  // Graded on the fill seam as well as the accent: a theme may repoint
+  // --mg-aria-color-fill away from the accent (see the rail note in
+  // _runtime-theme-aliases.scss), and the rail contract has to follow it.
   ['color-accent', 'color-track', 3],
+  ['color-fill', 'color-track', 3],
+  // The rail carries no border, so the fill's own edge against the page is
+  // what makes a part-full bar readable.
+  ['color-fill', 'color-surface', 3],
   ['color-focus-ring', 'color-surface', 3],
   ['color-focus-ring', 'color-field-surface', 3],
 ];

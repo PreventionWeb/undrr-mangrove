@@ -41,6 +41,7 @@
   --mg-color-neutral-800: 26 26 26;
   --mg-color-neutral-900: 0 0 0;
   --mg-color-red-900: 193 9 32;
+  --mg-color-gold-800: 134 98 0;
   --mg-color-interactive: 10 105 105;
   --mg-color-interactive-active: 10 105 105;
   --mg-color-text: var(--mg-color-neutral-800);
@@ -57,7 +58,7 @@
   --mg-color-form-check--hover: var(--mg-color-interactive-active);
   --mg-color-form-check--checked: var(--mg-color-interactive);
   --mg-color-form-focus: var(--mg-color-interactive);
-  --mg-color-focus-ring: var(--mg-color-interactive);
+  --mg-color-focus-ring: var(--mg-color-gold-800);
   --mg-spacing-0: 0;
   --mg-spacing-50: 0.3125rem;
   --mg-spacing-100: 0.625rem;
@@ -162,10 +163,34 @@
      the contrast carrier, per "never rely on tint alone". */
   --mg-aria-color-invalid-surface: rgb(var(--mg-color-red-900) / 0.04);
   /* Unfilled rails: slider track, progress/meter background, switch when off.
-     Kept light so the filled portion clears 3:1 against it in every theme
-     (neutral-100 put IRP at 2.93:1). The rail is defined against the page by a
-     1px --mg-aria-color-border, not by its own fill. */
+     Kept light so the filled portion clears 3:1 against it in every theme, and
+     it CANNOT be darkened while the fill stays the accent colour. Measured on
+     white in all five themes (WCAG 2 / Oklab, NON_TEXT threshold 50):
+
+       track          rail-vs-page      IRP fill-vs-rail   PW fill-vs-rail
+       neutral-50     1.25 / -2.1       3.77 / 51.6        5.20 / 61.4
+       neutral-100    1.61 / 18.3       2.93 / 37.2        4.04 / 48.0
+       neutral-200    2.10 / 33.8       2.25 / 22.1        3.09 / 34.3
+       neutral-300    2.85 / 47.6       1.65 /  4.4        2.28 / 18.8
+
+     There is no value that clears 3:1 against the page AND leaves the accent
+     3:1 against the rail: IRP's accent is itself only ~4.2:1 on white, which
+     algebraically requires a rail LIGHTER than the page to satisfy both. The
+     rail therefore stays in the register every surveyed system ships it in
+     (Adobe neutral-300, Spectrum 2 gray-300, Jolly zinc-200 = 1.19:1 on
+     white) and carries no border of its own — see the rail group in
+     _react-aria.scss. A theme that wants a mid-tone rail must repoint
+     --mg-aria-color-fill to something darker FIRST and then darken this; the
+     two move together, which is why the fill has its own seam below. */
   --mg-aria-color-track: rgb(var(--mg-color-neutral-50));
+  /* The filled portion of a slider, progress bar or meter. Defaults to the
+     accent, which is what every brand wants and what the contract grades
+     against --mg-aria-color-track. It is a separate seam from
+     --mg-aria-color-accent because Spectrum 2's answer to the rail problem
+     above is a neutral default fill with accent as an emphasised opt-in: a
+     theme whose accent is too light to sit on a darker rail can repoint this
+     one property instead of restyling four components. */
+  --mg-aria-color-fill: var(--mg-aria-color-accent);
   --mg-aria-color-invalid: rgb(var(--mg-color-red-900));
   --mg-aria-space-1: var(--mg-spacing-50);
   --mg-aria-space-2: var(--mg-spacing-100);
@@ -189,6 +214,19 @@
      one. Capped at 4px, and still a theme's own radius wherever that is
      smaller. */
   --mg-aria-radius-check: min(var(--mg-aria-radius-control), 0.25rem);
+  /* The radius a child nested INSIDE a control's own 1px border needs so its
+     corner follows the parent's rather than cutting across it. Concentric
+     corners share a centre, so the inner radius is the outer radius minus the
+     border between them — the `calc(radius - 1px)` every RAC starter uses for
+     a button joined into a field group (Marigold, Intent UI). max() with 0
+     keeps it legal where a theme squares its fields: DELTA, IRP and
+     PreventionWeb are all 5px so this is 4px, MCR2030's 10px gives 9px, and a
+     hypothetical 0 radius theme gets 0 rather than a negative length, which
+     would invalidate the whole declaration. */
+  --mg-aria-radius-control-inner: max(
+    0px,
+    calc(var(--mg-aria-radius-control) - var(--mg-aria-border-width))
+  );
   /* Field height, so a NumberField stepper, a ComboBox trigger and a
      DatePicker button end up the same height as the input they belong to.
      They are currently 41px against a 46px field. The token has existed since

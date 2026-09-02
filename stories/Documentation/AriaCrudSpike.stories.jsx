@@ -206,7 +206,11 @@ function EventEditor({ item, onClose, onSave }) {
   return (
     <ModalOverlay isOpen onOpenChange={open => !open && onClose()}>
       <Modal>
-        <Dialog className="aria-crud-editor">
+        {/* The default class is re-added by hand: React Aria replaces
+            `react-aria-Dialog` when a className is supplied, and the
+            stylesheet keys the outline treatment for slot="close" off
+            it. Same pattern as the Column and Cell overrides below. */}
+        <Dialog className="react-aria-Dialog aria-crud-editor">
           {() => (
             <Form noValidate onSubmit={submit} className="aria-crud-editor">
               <Heading slot="title" className="aria-crud-editor__title">
@@ -415,17 +419,15 @@ function EventEditor({ item, onClose, onSave }) {
                 </Select>
               </div>
               <div className="aria-crud-actions">
-                <Button
-                  className="mg-button mg-button-primary mg-button-outline"
-                  onPress={onClose}
-                  type="button"
-                >
+                {/* slot="close" now gets Mangrove's real outline button from
+                    the React Aria stylesheet, so the legacy .mg-button classes
+                    that used to stand in for a missing quiet variant are gone.
+                    onPress is kept because this dialog owns the editing state
+                    and has to discard the draft, not just close. */}
+                <Button slot="close" onPress={onClose} type="button">
                   Cancel
                 </Button>
-                <Button className="mg-button mg-button-primary" type="submit">
-                  {' '}
-                  {item ? 'Save' : 'Add'}{' '}
-                </Button>
+                <Button type="submit">{item ? 'Save' : 'Add'}</Button>
               </div>
             </Form>
           )}
@@ -448,18 +450,10 @@ function DeleteDialog({ item, onClose, onDelete }) {
                 data.
               </p>
               <div className="aria-crud-actions">
-                <Button
-                  className="mg-button mg-button-primary mg-button-outline"
-                  onPress={onClose}
-                >
+                <Button slot="close" onPress={onClose}>
                   Cancel
                 </Button>
-                <Button
-                  className="mg-button mg-button-primary"
-                  onPress={() => onDelete(item.id)}
-                >
-                  Delete
-                </Button>
+                <Button onPress={() => onDelete(item.id)}>Delete</Button>
               </div>
             </>
           )}
@@ -589,9 +583,23 @@ function CrudDemo() {
   };
   return (
     <div className="aria-crud-demo">
+      {/* The toolbar deliberately keeps Mangrove's legacy .mg-button classes on
+          React Aria triggers: the point of the spike is that the two surfaces
+          coexist in one page, and a Drupal site adopting React Aria will have
+          exactly this mix for a while. The dialog action rows below do not -
+          there the React Aria stylesheet now supplies both the primary and the
+          outline treatment, so reaching for .mg-button would only be a
+          leftover. */}
       <div className="aria-crud-toolbar">
+        {/* SearchField provides GroupContext, so the Group inherits the
+            field's invalid and disabled state and the input plus its clear
+            button read as one joined control - the same shape as the
+            ComboBox and DatePicker below. The legacy mg-search__* wrapper
+            classes were a workaround for the React Aria surface having no
+            joined-field treatment; it has one now, so the demo shows the
+            React Aria field as it actually ships. */}
         <SearchField
-          className="mg-search__input-wrapper aria-crud-search"
+          className="react-aria-SearchField aria-crud-search"
           aria-label="Search events"
           value={search}
           onChange={value => {
@@ -599,19 +607,14 @@ function CrudDemo() {
             setPage(1);
           }}
         >
-          <Input
-            className="mg-search__input"
-            placeholder="Search hazardous events"
-          />
-          {search && (
-            <Button
-              slot="clear"
-              className="mg-button mg-button-primary mg-button-outline"
-              aria-label="Clear search"
-            >
-              ×
-            </Button>
-          )}
+          <Group>
+            <Input placeholder="Search hazardous events" />
+            {search && (
+              <Button slot="clear" aria-label="Clear search">
+                ×
+              </Button>
+            )}
+          </Group>
         </SearchField>
         <DialogTrigger>
           <TooltipTrigger>

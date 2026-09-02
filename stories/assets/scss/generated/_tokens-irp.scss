@@ -146,6 +146,9 @@
   // color.red-900
   --mg-color-red-900: 193 9 32;
 
+  // color.gold-800
+  --mg-color-gold-800: 134 98 0;
+
   // color.interactive
   // IRP blue. The interactive colour.
   --mg-color-interactive: 15 120 191;
@@ -197,7 +200,7 @@
   --mg-color-form-focus: var(--mg-color-interactive);
 
   // color.focus-ring
-  --mg-color-focus-ring: var(--mg-color-interactive);
+  --mg-color-focus-ring: var(--mg-color-gold-800);
 
   // spacing.50
   --mg-spacing-50: 0.3125rem;

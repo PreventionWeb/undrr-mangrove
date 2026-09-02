@@ -13,17 +13,29 @@
   box-shadow: var(--mg-aria-surface-shadow);
   overflow: auto;
 }
-.aria-spike-column-header {
+/* Column header rows. The CRUD spike names these `aria-spike-`; the collection
+   gallery names them `aria-collection-`. Both are listed because the gallery's
+   headers were previously matching nothing and rendered with no flex layout at
+   all - the resizer sat under the label instead of beside it.
+
+   The label deliberately wraps rather than truncating. Under
+   `table-layout: fixed` an ellipsis drops content outright at 400% zoom
+   (WCAG 2.1 SC 1.4.4 and 1.4.10) and clips translated or expanded strings that
+   are simply longer than the English source; no institutional peer truncates
+   header text. `align-items: center` keeps the resizer centred against a label
+   that is now one or two lines tall. */
+.aria-spike-column-header,
+.aria-collection-column-header {
   align-items: center;
   display: flex;
+  gap: var(--mg-aria-space-1);
+  inline-size: var(--mg-aria-width-full);
   justify-content: space-between;
-  width: var(--mg-aria-width-full);
 }
-.aria-spike-column-header > span {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.aria-spike-column-header > span,
+.aria-collection-column-header > span {
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
 }
 .aria-crud-selection-column,
 .aria-crud-favorite-column,
@@ -41,12 +53,6 @@
 }
 .aria-spike-row-selected .react-aria-Cell {
   background: var(--mg-aria-color-selected-surface);
-}
-.aria-calendar-header {
-  align-items: center;
-  display: flex;
-  justify-content: space-between;
-  margin-block-end: var(--mg-aria-space-2);
 }
 .aria-crud-demo {
   display: grid;
@@ -289,6 +295,24 @@
 
   .react-aria-ModalOverlay {
     position: absolute;
+  }
+
+  /* This specimen is open on mount, so the distributed overlay entry motion
+     would run on every story load and a screenshot runner would catch the
+     intermediate frame. Popover takes React Aria's own `shouldSkipAnimation`
+     prop for exactly this; Modal and ModalOverlay do not expose it (and
+     `isEntering` is OR-ed with the measured value, so it cannot force false),
+     so the motion is cancelled here instead. Scoped to the stage, so it only
+     affects the always-open specimen and never a real modal. */
+  .react-aria-Modal,
+  .react-aria-ModalOverlay {
+    &[data-entering],
+    &[data-exiting] {
+      opacity: 1;
+      scale: 1;
+      transition: none;
+      translate: none;
+    }
   }
 }
 

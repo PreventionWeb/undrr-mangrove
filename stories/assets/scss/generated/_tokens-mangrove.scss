@@ -112,6 +112,9 @@ $mg-font-size-1100: 4rem;
   // color.red-900
   --mg-color-red-900: 193 9 32;
 
+  // color.gold-800
+  --mg-color-gold-800: 134 98 0;
+
   // color.accent-100
   --mg-color-accent-100: 244 228 150;
 
@@ -220,7 +223,7 @@ $mg-font-size-1100: 4rem;
   --mg-color-form-focus: var(--mg-color-interactive);
 
   // color.focus-ring
-  --mg-color-focus-ring: var(--mg-color-interactive);
+  --mg-color-focus-ring: var(--mg-color-gold-800);
 
   // color.hero
   --mg-color-hero: var(--mg-color-interactive);
@@ -633,6 +636,9 @@ $mg-font-size-1100: 4rem;
   // color.red-900
   --mg-color-red-900: 193 9 32;
 
+  // color.gold-800
+  --mg-color-gold-800: 134 98 0;
+
   // color.blue-900
   // UNDRR corporate blue. Also DELTA's brand blue: DELTA's own design file
   // labels this swatch "UNDRR Blue - Corporate blue" and marks it Brand.
@@ -689,7 +695,7 @@ $mg-font-size-1100: 4rem;
   --mg-color-form-focus: var(--mg-color-interactive);
 
   // color.focus-ring
-  --mg-color-focus-ring: var(--mg-color-interactive);
+  --mg-color-focus-ring: var(--mg-color-gold-800);
 
   // spacing.0
   --mg-spacing-0: 0;

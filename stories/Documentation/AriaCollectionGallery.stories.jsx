@@ -322,7 +322,11 @@ function AlertActionsMenu() {
   return (
     <MenuTrigger defaultOpen>
       <Button>Alert actions</Button>
-      <Popover placement="bottom start">
+      {/* Open on mount, so React Aria's overlay entry motion would replay on
+          every story load and a screenshot runner would catch a mid-transition
+          frame. shouldSkipAnimation is React Aria's own opt-out for overlays
+          that are open before the user does anything. */}
+      <Popover placement="bottom start" shouldSkipAnimation>
         <Menu aria-label="Alert actions">
           <MenuSection>
             <Header>Dissemination</Header>
@@ -468,7 +472,10 @@ function RecordStatusSelect({ defaultOpen }) {
         <SelectValue />
         <span aria-hidden="true">▾</span>
       </Button>
-      <Popover placement="bottom start">
+      {/* Only the open-on-mount specimen skips the entry motion; the closed
+          Select in the main gallery keeps it, so opening it by hand still
+          shows the real transition. */}
+      <Popover placement="bottom start" shouldSkipAnimation={defaultOpen}>
         <ListBox>
           <ListBoxItem id="draft">Draft</ListBoxItem>
           <ListBoxItem id="waiting">Waiting for validation</ListBoxItem>
@@ -506,10 +513,17 @@ function EventSearchField({ defaultValue }) {
   return (
     <SearchField defaultValue={defaultValue}>
       <Label>Search hazardous events</Label>
-      <Input placeholder="Search hazardous events" />
-      <Button slot="clear" aria-label="Clear search">
-        ×
-      </Button>
+      {/* SearchField provides GroupContext, so the Group inherits the field's
+          invalid and disabled state. Grouping the input with its clear button
+          matches NumberField, ComboBox, DatePicker and DateRangePicker, and
+          lets the field and its button read as one joined control rather than
+          two adjacent boxes. */}
+      <Group>
+        <Input placeholder="Search hazardous events" />
+        <Button slot="clear" aria-label="Clear search">
+          ×
+        </Button>
+      </Group>
     </SearchField>
   );
 }

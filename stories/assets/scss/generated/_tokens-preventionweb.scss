@@ -133,6 +133,9 @@
   // color.red-900
   --mg-color-red-900: 193 9 32;
 
+  // color.gold-800
+  --mg-color-gold-800: 134 98 0;
+
   // color.interactive
   // PreventionWeb teal. The one primitive this brand states.
   --mg-color-interactive: 10 105 105;
@@ -184,7 +187,7 @@
   --mg-color-form-focus: var(--mg-color-interactive);
 
   // color.focus-ring
-  --mg-color-focus-ring: var(--mg-color-interactive);
+  --mg-color-focus-ring: var(--mg-color-gold-800);
 
   // spacing.0
   --mg-spacing-0: 0;

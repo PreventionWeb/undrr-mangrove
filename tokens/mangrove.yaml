@@ -75,6 +75,14 @@ color:
   red-800: { $value: '#c72236' }
   red-900: { $value: '#c10920' }
 
+  # Focus ramp. One entry, and deliberately not a brand hue: the focus ring
+  # is the only colour in Mangrove that must never be mistaken for anything
+  # else, in any theme. Derived from accent-500 (#fec124), the amber this
+  # system already ships, held at its Oklch hue (84 deg) and taken down to
+  # L 52% at the sRGB gamut edge — the lightest value that still clears the
+  # contract on the tinted field surface. See color.focus-ring below.
+  gold-800: { $value: '#866200' }
+
   # Record-workflow status swatches, from the DELTA design system board
   # "Status Labels for Records and Events". Not brand identity — a
   # functional palette the status-label component reads.
@@ -141,8 +149,44 @@ color:
   form-focus: { $value: '{color.interactive}' }
 
   # Focus ring — its own seam in 2.0 so a theme can retint it independently
-  # of the interactive colour.
-  focus-ring: { $value: '{color.interactive}' }
+  # of the interactive colour, and from 2.0.0-alpha.3 the seam is finally
+  # used. It is NOT the interactive colour, in any theme.
+  #
+  # WHY NOT THE BRAND COLOUR
+  #   Aliased to `interactive`, focus and selection were the same signal:
+  #   --mg-aria-color-selected-surface is the interactive colour at 12% and
+  #   the ring was the same hue at full strength, so a focused row in a
+  #   selected state said one thing twice. A deliberately non-brand focus
+  #   colour is near-universal in public-sector systems — GOV.UK #ffdd00,
+  #   NHS #ffeb3b, USWDS a blue-40v distinct from its link blue.
+  #
+  # WHY NOT A LOUD YELLOW
+  #   Because a single-colour ring has to carry its own 3:1 boundary here,
+  #   and GOV.UK's yellow does not: #ffdd00 is 1.35:1 on --mg-surface-raised
+  #   and 1.20:1 on the field surface, scoring 5.3 and -6.6 on the Oklab
+  #   measure against a floor of 50. GOV.UK and NHS get away with it because
+  #   their indicator is two bands — a yellow fill with a 4px near-black bar
+  #   underneath — and the dark band, not the yellow, carries the contrast.
+  #   Mangrove has the structure for that (--mg-aria-shadow already composes
+  #   a surface band inside a ring) but nothing reads it yet, so the two-band
+  #   treatment is a follow-up and this is the shippable single-colour step.
+  #
+  # WHY THIS VALUE
+  #   gold-800 keeps the yellow register users already read as "the keyboard
+  #   is here" and takes it down the ramp until it measures: 5.58:1 / 68.7 on
+  #   the raised surface and 4.99:1 / 62.2 on the tinted field surface, in
+  #   every theme (both backgrounds are theme-invariant today). Its Oklch hue
+  #   is 111-169 degrees from every brand's interactive colour — UNDRR and
+  #   DELTA blue 252, IRP blue 246, PreventionWeb teal 195, MCR2030 purple
+  #   323 — and 58 degrees from red-900, so an invalid field that is also
+  #   focused shows two separable colours.
+  #
+  #   Shared across all five brands on purpose. A ring that changes with the
+  #   brand is a ring people have to relearn per property, and the value that
+  #   is far from five accents at once is far from each of them individually.
+  #   A theme may still override this token; it then owns both pairs the
+  #   contract grades.
+  focus-ring: { $value: '{color.gold-800}' }
 
   # Hero
   hero: { $value: '{color.interactive}' }
