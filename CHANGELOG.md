@@ -15,7 +15,40 @@ _Notable cross-cutting changes between releases land here. Per-component changes
 
 ## 2.0.0 — unreleased
 
-Development releases began with `2.0.0-alpha.1` under the npm `next` dist-tag. See [PR #1061](https://github.com/unisdr/undrr-mangrove/pull/1061) for the first alpha and [PR #1086](https://github.com/unisdr/undrr-mangrove/pull/1086) for alpha.2. The [Storybook release notes](https://unisdr.github.io/undrr-mangrove/?path=/docs/getting-started-release-notes-v2-0--docs) cover the complete 2.0 line; the tagged stable GitHub Release link lands with 2.0.0.
+Development releases began with `2.0.0-alpha.1` under the npm `next` dist-tag. See [PR #1061](https://github.com/unisdr/undrr-mangrove/pull/1061) for the first alpha, [PR #1086](https://github.com/unisdr/undrr-mangrove/pull/1086) for alpha.2 and [PR #1080](https://github.com/unisdr/undrr-mangrove/pull/1080) for alpha.3. The [Storybook release notes](https://unisdr.github.io/undrr-mangrove/?path=/docs/getting-started-release-notes-v2-0--docs) cover the complete 2.0 line; the tagged stable GitHub Release link lands with 2.0.0.
+
+### `2.0.0-alpha.3` — unreleased
+
+Proposed in [PR #1080](https://github.com/unisdr/undrr-mangrove/pull/1080). A foundation release: no required integration change, and no visual change to any existing component. The token rewrite is value-identical — compiled output for all five themes is byte-unchanged.
+
+#### Design token pipeline
+
+- Brand palettes move from hand-maintained SCSS to [W3C DTCG](https://tr.designtokens.org/) YAML sources under `tokens/`, compiled by `scripts/build-tokens.cjs` into the theme CSS and Sass the library already consumed.
+- `tokens/mangrove.yaml` is a brand-neutral base; UNDRR becomes a sub-brand alongside PreventionWeb, IRP, MCR and DELTA rather than the base itself.
+- The generator fails the build on an unknown or circular reference, a duplicate output name, a wrong token shape or a dangling adapter reference, so a malformed source cannot silently emit a stylesheet with missing colours.
+
+#### React Aria Components surface
+
+- Stock `.react-aria-*` classes from [React Aria Components](https://react-spectrum.adobe.com/react-aria/) 1.20 are styled from Mangrove tokens, so React Aria components adopt the active `mg-theme-*` brand with no `className`, wrapper or configuration.
+- `aria/react-aria.css` and per-brand `aria/tokens/{brand}.css` are emitted standalone for consumers who do not load Mangrove's full stylesheet. Token files are wrapped in `:where(:root)` so Mangrove's own palette wins when both are present, regardless of load order.
+- `aria/react-aria.layered.css` provides the same surface inside a `@layer mangrove` block. See `docs/CASCADE-LAYERS.md`.
+- **Known:** the surface also compiles into `style.css`, so it currently reaches every consumer — roughly 42 KB of a 313 KB stylesheet. Making it opt-in is unresolved.
+
+#### Components and tokens
+
+- New `StatusLabel` (`.mg-status-label`) with `--draft`, `--published`, `--waiting-validation` and `--waiting-information` variants.
+- New `EmptyState` (`.mg-empty-state`) with `--compact`, `--panel` and `--start` variants.
+- New data-visualisation palette, including `--mg-sendai-target-a` through `--mg-sendai-target-g` for the seven Sendai Framework targets.
+
+#### Deprecated: `--sendai-*` accent colours
+
+`--sendai-red`, `--sendai-orange`, `--sendai-purple` and `--sendai-turquoise`, and the matching `.mg-u-background-color--sendai-*` and `.mg-u-color--sendai-*` utility classes, are deprecated. They are brand accent hues named by colour and carry no Sendai Framework meaning. Use `--mg-sendai-target-a` through `-g` for target semantics. They continue to work unchanged; SCSS consumers see a Sass `@warn` on compile. Scheduled for removal in 2.1.
+
+#### Colour contrast methodology
+
+- Token pairs are now graded with an [Oklab](https://www.w3.org/TR/css-color-4/#ok-lab)-based perceptual measure alongside WCAG 2's relative-luminance figure, calibrated so its thresholds align with the familiar 4.5:1 and 3:1 boundaries.
+- The suite makes 896 graded contrast assertions across the two measures, covering every theme, hover and active states and the legacy `.mg-*` components, and fails if any pair passes perceptually while WCAG 2 fails it. Pairs that cannot yet meet the target are recorded as explicit exceptions — 48 against WCAG 2, 59 against the perceptual measure.
+- APCA was evaluated and rejected on licensing grounds. Reasoning in `docs/COLOUR-CONTRAST-METHODOLOGY.md`.
 
 ### `2.0.0-alpha.2` — 2026-09-01
 
