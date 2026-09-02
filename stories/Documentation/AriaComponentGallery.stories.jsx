@@ -50,6 +50,9 @@ import {
   ToggleButtonGroup,
 } from 'react-aria-components';
 
+// Storybook-only specimen scaffolding. Not part of the distributed CSS.
+import '../assets/scss/aria/_spike-demo.scss';
+
 // Hoisted so identity is stable across renders.
 const DEFAULT_EXPANDED_KEYS = ['early-warning'];
 const DEFAULT_VIEW_KEYS = ['map'];
@@ -682,53 +685,6 @@ function StatesMatrix() {
   );
 }
 
-function ThemeColumn({ label, themeClass }) {
-  return (
-    <div className={`aria-gallery-theme-column ${themeClass}`.trim()}>
-      <h3 className="aria-gallery-section-title">{label}</h3>
-      <div className="aria-gallery-stack">
-        <MapViewToggles />
-        <Switch defaultSelected>Send anticipatory action alerts</Switch>
-        <AlertLevelRadioGroup defaultValue="watch" />
-        <ExposureSlider defaultValue={62} />
-        <ProgressBar value={COVERAGE_PERCENTAGE}>
-          <Label>Early warning coverage</Label>
-          <span className="aria-gallery-value">{COVERAGE_PERCENTAGE}%</span>
-          <Bar percentage={COVERAGE_PERCENTAGE} />
-        </ProgressBar>
-        <HazardTagGroup
-          selectionMode="multiple"
-          defaultSelectedKeys={DEFAULT_HAZARD_TAGS}
-        />
-        <Link href="https://www.undrr.org/">
-          Read the country resilience profile
-        </Link>
-      </div>
-    </div>
-  );
-}
-
-function ThemesGallery() {
-  return (
-    <div className="aria-gallery">
-      <header className="aria-gallery-intro">
-        <h2>Sub-brand comparison</h2>
-        <p>
-          A representative subset rendered inside Global UNDRR, MCR2030 and
-          DELTA Resilience theme classes. Mangrove ships one sub-brand
-          stylesheet at a time, so select the matching theme in the Storybook
-          toolbar to see that column resolve its brand tokens.
-        </p>
-      </header>
-      <div className="aria-gallery-theme-grid">
-        <ThemeColumn label="Global UNDRR" themeClass="" />
-        <ThemeColumn label="MCR2030" themeClass="mg-theme-mcr" />
-        <ThemeColumn label="DELTA Resilience" themeClass="mg-theme-delta" />
-      </div>
-    </div>
-  );
-}
-
 export default {
   title: 'Spike/React Aria gallery',
   component: AllComponentsGallery,
@@ -750,9 +706,4 @@ export const AllComponents = {
 export const States = {
   name: 'States matrix',
   render: () => <StatesMatrix />,
-};
-
-export const Themes = {
-  name: 'Sub-brand themes',
-  render: () => <ThemesGallery />,
 };

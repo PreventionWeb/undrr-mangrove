@@ -1,7 +1,8 @@
 /*
  * Storybook-only composition styles for the React Aria integration spike.
  * These selectors dress the demo stories (`.aria-crud-*`,
- * `.aria-integration-demo*`, `.aria-spike-*`) and are deliberately excluded
+ * `.aria-integration-demo*`, `.aria-spike-*`, `.aria-gallery-*`,
+ * `.aria-collection-*`) and are deliberately excluded
  * from the distributed `aria/react-aria.css` surface, which carries only
  * reusable React Aria primitive and state styles.
  * This file is compiled through Mangrove's normal theme rollup, not by
@@ -225,4 +226,39 @@
     outline: var(--mg-aria-focus-width) solid CanvasText;
     outline-offset: var(--mg-aria-focus-offset);
   }
+}
+
+/* Gallery specimen scaffolding. Both React Aria galleries label each specimen
+   with a bare span, which inherits body type and reads as prose, so a label is
+   indistinguishable from the description above it. This gives labels their own
+   rung in the hierarchy: below the section title, clearly not running text.
+
+   No letter-spacing: these strings are English fixtures today, but spaced
+   letters break Arabic glyph joining and this file should not model a pattern
+   that fails in a language Mangrove ships. Size, weight, case and colour carry
+   it instead. */
+.aria-gallery-specimen-label,
+.aria-collection-specimen-label {
+  color: rgb(var(--mg-color-neutral-600));
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.4;
+  margin-block-end: var(--mg-spacing-50);
+  text-transform: uppercase;
+}
+.aria-gallery-specimen,
+.aria-collection-specimen {
+  border-block-start: 1px solid rgb(var(--mg-color-neutral-100));
+  padding-block-start: var(--mg-spacing-100);
+}
+.aria-gallery-specimen-body,
+.aria-collection-specimen-body {
+  display: grid;
+  gap: var(--mg-spacing-100);
+}
+.aria-collection-specimen-caption {
+  color: rgb(var(--mg-color-neutral-600));
+  font-size: 0.875rem;
+  margin-block-start: var(--mg-spacing-50);
 }

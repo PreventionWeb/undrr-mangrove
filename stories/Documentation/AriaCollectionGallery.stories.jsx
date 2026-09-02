@@ -67,6 +67,9 @@ import {
   Tooltip,
   TooltipTrigger,
 } from 'react-aria-components';
+
+// Storybook-only specimen scaffolding. Not part of the distributed CSS.
+import '../assets/scss/aria/_spike-demo.scss';
 import { CalendarDate } from '@internationalized/date';
 
 // Hoisted so identity is stable across renders.
@@ -771,49 +774,6 @@ function ModalSurface() {
   );
 }
 
-function ThemeColumn({ label, themeClass }) {
-  return (
-    <div className={`aria-collection-theme-column ${themeClass}`.trim()}>
-      <h3 className="aria-collection-section-title">{label}</h3>
-      <div className="aria-collection-stack">
-        <HazardEventTable />
-        <HazardListBox />
-        <ReviewCalendar />
-        <RecordedDateField defaultValue={RECORDED_DATE} isInvalid />
-        <RemovableHazardTags />
-      </div>
-    </div>
-  );
-}
-
-function ThemesGallery() {
-  return (
-    <div className="aria-collection-gallery">
-      <header className="aria-collection-intro">
-        <h2>Sub-brand comparison</h2>
-        <p>
-          A representative subset rendered inside all five brand contexts.
-          Mangrove lazy-loads one sub-brand stylesheet at a time, so only the
-          brand selected in the Storybook theme toolbar will fully resolve its
-          tokens. Check PreventionWeb and IRP first: IRP carries the tightest
-          contrast numbers in the accessibility audit, and it is not shown
-          anywhere else in Storybook.
-        </p>
-      </header>
-      <div className="aria-collection-theme-grid">
-        <ThemeColumn label="Global UNDRR" themeClass="" />
-        <ThemeColumn
-          label="PreventionWeb"
-          themeClass="mg-theme-preventionweb"
-        />
-        <ThemeColumn label="IRP" themeClass="mg-theme-irp" />
-        <ThemeColumn label="MCR2030" themeClass="mg-theme-mcr" />
-        <ThemeColumn label="DELTA Resilience" themeClass="mg-theme-delta" />
-      </div>
-    </div>
-  );
-}
-
 export default {
   title: 'Spike/React Aria collection states',
   component: CollectionGallery,
@@ -845,9 +805,4 @@ export const OpenSelectPopover = {
 export const ModalOverlaySurface = {
   name: 'Modal surface',
   render: () => <ModalSurface />,
-};
-
-export const Themes = {
-  name: 'Sub-brand themes',
-  render: () => <ThemesGallery />,
 };

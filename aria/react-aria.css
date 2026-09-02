@@ -1139,7 +1139,6 @@
 @media (prefers-reduced-motion: no-preference) {
   .react-aria-ProgressBar:not([aria-valuenow]) .fill {
     animation: mg-aria-indeterminate 1s linear infinite;
-    background-size: calc(var(--mg-aria-space-4) * 2) 100%;
   }
   .react-aria-Button {
     transition: background-color var(--mg-aria-motion-duration-fast) var(--mg-aria-motion-easing), border-color var(--mg-aria-motion-duration-fast) var(--mg-aria-motion-easing), color var(--mg-aria-motion-duration-fast) var(--mg-aria-motion-easing), scale var(--mg-aria-motion-duration-fast) var(--mg-aria-motion-easing);
@@ -1256,9 +1255,12 @@
     box-sizing: border-box;
   }
 }
+/* A 135deg repeating gradient repeats horizontally every stop-period * sqrt(2),
+   so the animation must travel exactly that far to loop without a seam. Sizing
+   the background to any other value tiles the image and bands the stripes. */
 @keyframes mg-aria-indeterminate {
   to {
-    background-position: calc(var(--mg-aria-space-4) * 2) 0;
+    background-position: calc(var(--mg-aria-space-4) * 1.41421) 0;
   }
 }
 /* Buttons that are field affordances rather than calls to action. The base
