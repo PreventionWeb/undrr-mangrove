@@ -1092,3 +1092,91 @@
     background-position: calc(var(--mg-aria-space-4) * 2) 0;
   }
 }
+
+/* Buttons that are field affordances rather than calls to action. The base
+   Button rule fills with the accent colour, which is right for a submit button
+   and wrong for a select trigger, a search clear button or calendar
+   navigation: those read as primary actions and, inside a grid field, stretch
+   to the full container width. */
+.react-aria-Select > .react-aria-Button {
+  background: var(--mg-aria-color-field-surface);
+  border-color: var(--mg-aria-color-border);
+  color: var(--mg-aria-color-text);
+  font-weight: 400;
+  justify-content: space-between;
+  text-align: start;
+}
+.react-aria-Select > .react-aria-Button[data-hovered] {
+  background: var(--mg-aria-color-field-surface-focus);
+}
+/* SearchField stacks Label, Input and the clear Button in a grid, so the
+   button spans the field unless the input and button share a row. */
+.react-aria-SearchField {
+  grid-template-columns: 1fr auto;
+}
+.react-aria-SearchField > .react-aria-Label,
+.react-aria-SearchField > .react-aria-Text,
+.react-aria-SearchField > .react-aria-FieldError {
+  grid-column: 1 / -1;
+}
+.react-aria-SearchField > .react-aria-Button,
+.react-aria-Calendar .react-aria-Button[slot="previous"],
+.react-aria-Calendar .react-aria-Button[slot="next"],
+.react-aria-RangeCalendar .react-aria-Button[slot="previous"],
+.react-aria-RangeCalendar .react-aria-Button[slot="next"] {
+  background: none;
+  border-color: transparent;
+  color: var(--mg-aria-color-text);
+  min-inline-size: calc(var(--mg-aria-space-4) * 2);
+  padding-inline: var(--mg-aria-space-2);
+}
+.react-aria-SearchField > .react-aria-Button[data-hovered],
+.react-aria-Calendar .react-aria-Button[slot="previous"][data-hovered],
+.react-aria-Calendar .react-aria-Button[slot="next"][data-hovered],
+.react-aria-RangeCalendar .react-aria-Button[slot="previous"][data-hovered],
+.react-aria-RangeCalendar .react-aria-Button[slot="next"][data-hovered] {
+  background: var(--mg-aria-color-subtle-surface);
+}
+/* React Aria renders no calendar header; the previous/heading/next row is
+   author markup under a class we cannot know. Selecting on the slot buttons it
+   contains lays it out without dictating a class name. */
+.react-aria-Calendar > *:has(> .react-aria-Button[slot="previous"]),
+.react-aria-RangeCalendar > *:has(> .react-aria-Button[slot="previous"]) {
+  align-items: center;
+  display: flex;
+  gap: var(--mg-aria-space-2);
+  justify-content: space-between;
+  margin-block-end: var(--mg-aria-space-2);
+}
+
+/* A calendar sizes to its grid; without this the author-supplied header row
+   stretches to the container and pushes the next-month button out of view. */
+.react-aria-Calendar,
+.react-aria-RangeCalendar {
+  inline-size: fit-content;
+}
+/* Disabled, unavailable and outside-month cells rendered identically to
+   selectable ones, so the user could not tell which dates were choosable.
+   Unavailable dates stay focusable, so they keep a 4.5:1 text colour and carry
+   a line through as a non-colour signal. */
+.react-aria-CalendarCell[data-disabled],
+.react-aria-CalendarCell[data-outside-month] {
+  color: var(--mg-aria-color-muted-text);
+}
+.react-aria-CalendarCell[data-unavailable] {
+  color: var(--mg-aria-color-muted-text);
+  text-decoration: line-through;
+}
+.react-aria-CalendarCell[data-selection-start],
+.react-aria-CalendarCell[data-selection-end] {
+  background: var(--mg-aria-color-accent);
+  color: var(--mg-aria-color-on-accent);
+}
+.react-aria-RangeCalendar
+  .react-aria-CalendarCell[data-selected]:not(
+    [data-selection-start],
+    [data-selection-end]
+  ) {
+  background: var(--mg-aria-color-selected-surface);
+  color: var(--mg-aria-color-text);
+}
