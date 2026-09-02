@@ -735,6 +735,14 @@
   color: var(--mg-aria-color-muted-text);
   font-size: var(--mg-aria-font-size-small);
 }
+.react-aria-SliderTrack,
+.react-aria-ProgressBar .bar,
+.react-aria-Meter .bar {
+  /* The rail is kept light so the fill clears 3:1 against it, which leaves the
+     rail itself at 1.25:1 on the page. The border is what makes it visible. */
+  border: var(--mg-aria-border-width) solid var(--mg-aria-color-border);
+  box-sizing: border-box;
+}
 .react-aria-SliderTrack {
   background: var(--mg-aria-color-track);
   border-radius: var(--mg-aria-radius-pill);
@@ -815,6 +823,19 @@
   background: var(--mg-aria-color-accent);
   block-size: var(--mg-aria-width-full);
   border-radius: var(--mg-aria-radius-pill);
+}
+/* An indeterminate bar has no aria-valuenow, and React Aria leaves the fill
+   width to the author, so it otherwise renders identically to 100% complete.
+   Stripes read as "in progress, value unknown" rather than "finished", and
+   survive as a solid Highlight in forced colours where background-image is
+   dropped. */
+.react-aria-ProgressBar:not([aria-valuenow]) .fill {
+  background-image: repeating-linear-gradient(
+    135deg,
+    var(--mg-aria-color-accent) 0 var(--mg-aria-space-2),
+    var(--mg-aria-color-accent-active) var(--mg-aria-space-2)
+      var(--mg-aria-space-4)
+  );
 }
 .react-aria-Breadcrumbs {
   align-items: center;
@@ -931,6 +952,10 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
+  .react-aria-ProgressBar:not([aria-valuenow]) .fill {
+    animation: mg-aria-indeterminate 1s linear infinite;
+    background-size: calc(var(--mg-aria-space-4) * 2) 100%;
+  }
   :where(.react-aria-Button) {
     transition:
       background-color var(--mg-aria-motion-duration-fast)
@@ -1059,5 +1084,11 @@
     background: Canvas;
     border: var(--mg-aria-border-width) solid CanvasText;
     box-sizing: border-box;
+  }
+}
+
+@keyframes mg-aria-indeterminate {
+  to {
+    background-position: calc(var(--mg-aria-space-4) * 2) 0;
   }
 }
