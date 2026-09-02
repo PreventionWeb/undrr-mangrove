@@ -1,0 +1,30 @@
+/*
+ * Cascade mode B — "consumer-declared layers".
+ *
+ * The consuming application declares the layer order once, then assigns each
+ * stylesheet to a layer at import time with @import ... layer(name). This
+ * requires no change to Mangrove, no change to Tailwind, and no change to the
+ * legacy stylesheet: a consumer can layer CSS it does not own and cannot edit.
+ *
+ * The declared order below is the intent DELTA actually wants:
+ *   legacy   — old application CSS, always loses
+ *   mangrove — the design system, beats legacy at any specificity
+ *   tw       — Tailwind utilities, the app's final say
+ *
+ * Layer order beats specificity, so the #id rules in legacy.css lose to
+ * Mangrove's bare element selectors, and a single Tailwind utility class
+ * overrides a Mangrove component rule.
+ *
+ * Two caveats, both real:
+ *  - !important reverses layer order. An !important declaration in the legacy
+ *    layer still beats a normal declaration in the mangrove layer.
+ *  - CSS injected into the document as an unlayered <style> or inline style
+ *    at runtime is outside every layer and beats all of it. Layering only
+ *    covers stylesheets the app imports.
+ */
+@layer legacy, mangrove, tw;
+
+@import url('legacy.css') layer(legacy);
+@import url('../../../dist/assets/css/style-all.css') layer(mangrove);
+@import url('../../../aria/react-aria.css') layer(mangrove);
+@import url('tailwind.built.css') layer(tw);

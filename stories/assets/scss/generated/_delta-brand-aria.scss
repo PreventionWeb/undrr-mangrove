@@ -1,0 +1,37 @@
+// GENERATED FILE — DO NOT EDIT.
+// Brand primitives for DELTA's standalone React Aria token file.
+// Consumed by stories/assets/scss/aria/_tokens-delta.scss, which is
+// published to external consumers as aria/tokens/delta.css.
+// Source: tokens/delta.tokens.json
+// Regenerate: node scripts/build-tokens.cjs
+// Edit the JSON source, never this file.
+// `npx jest tokens-source` fails if the two disagree.
+
+// delta.color.ink (srgb-channels)
+// Body text and overlay/shadow base.
+$_delta-color-ink--raw: 24 24 35;
+
+// delta.font.family-base (font-family-name)
+// DELTA body typeface. The @font-face src URLs are an asset declaration,
+// not a token, and stay hand-written in aria/_tokens-delta.scss.
+// stylelint-disable-next-line value-keyword-case
+$_delta-font-family-name: Dubai;
+
+// delta.font.family-base (font-family-stack)
+// DELTA body typeface. The @font-face src URLs are an asset declaration,
+// not a token, and stay hand-written in aria/_tokens-delta.scss.
+$_delta-font-family-stack: '"Dubai", sans-serif';
+
+@mixin mg-delta-brand-tokens {
+  // delta.color.primary (srgb-channels)
+  --mg-color-interactive: 19 46 72;
+
+  // delta.color.primary-800 (srgb-channels)
+  --mg-color-button--hover: 12 30 48;
+
+  // delta.color.ink (srgb-channels)
+  --mg-color-text: 24 24 35;
+
+  // delta.color.card-surface (srgb-rgb-function)
+  --mg-card-background: rgb(250 250 250);
+}

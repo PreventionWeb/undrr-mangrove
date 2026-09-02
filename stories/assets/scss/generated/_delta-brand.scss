@@ -1,0 +1,24 @@
+// GENERATED FILE — DO NOT EDIT.
+// Brand primitives for the .mg-theme-delta runtime theme.
+// Consumed by stories/assets/scss/_theme-delta.scss, which Mangrove
+// compiles into stories/assets/css/style-delta.css.
+// Source: tokens/delta.tokens.json
+// Regenerate: node scripts/build-tokens.cjs
+// Edit the JSON source, never this file.
+// `npx jest tokens-source` fails if the two disagree.
+
+// delta.color.primary (srgb-channels)
+// DELTA navy. Interactive colour: links, buttons, tabs, focus, tags.
+$_delta-color-primary--raw: 19 46 72;
+
+// delta.color.primary-800 (srgb-channels)
+// Pressed/hover shade of DELTA navy.
+$_delta-color-primary-800--raw: 12 30 48;
+
+// delta.color.ink (srgb-channels)
+// Body text and overlay/shadow base.
+$_delta-color-dark--raw: 24 24 35;
+
+// delta.color.card-surface (srgb-channels)
+// Card / subtle surface fill.
+$_delta-color-card-bg--raw: 250 250 250;

@@ -1,0 +1,27 @@
+/*
+ * Tailwind 4 entry point for the DELTA composition demo.
+ *
+ * Preflight is deliberately NOT imported. A DELTA-shaped app that also loads a
+ * design system does not want Tailwind's global element reset rewriting that
+ * design system's typography. Importing theme + utilities only is the
+ * supported Tailwind 4 way to opt out, and it keeps this demo honest: the
+ * cascade specimens measure Mangrove against Tailwind *utilities*, not against
+ * Tailwind's reset.
+ *
+ * The committed artifact is css/tailwind.built.css. Regenerate it with:
+ *
+ *   ./build-tailwind.sh
+ *
+ * from demos/delta-composition/. That script installs Tailwind into a
+ * throwaway temp directory on purpose — this demo must not add a dependency
+ * to the repository's package.json.
+ *
+ * This file is the source of record for what the script builds; the script
+ * rewrites the @source paths to absolute ones because it compiles from the
+ * temp directory.
+ */
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);
+
+@source '../index.html';
+@source '../js/demo.js';

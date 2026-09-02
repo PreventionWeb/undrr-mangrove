@@ -13,17 +13,19 @@
   font-weight: 400;
 }
 :root {
-  /* DELTA's minimal Mangrove token subset, kept as raw RGB channels. */
+  /* DELTA's minimal Mangrove token subset, kept as raw RGB channels.
+     The brand-owned values are generated from tokens/delta.tokens.json; the
+     rest are Mangrove defaults DELTA does not restyle. */
   --mg-color-interactive: 19 46 72;
   --mg-color-button--hover: 12 30 48;
-  --mg-color-white: 255 255 255;
   --mg-color-text: 24 24 35;
+  --mg-card-background: rgb(250 250 250);
+  --mg-color-white: 255 255 255;
   --mg-color-neutral-600: 77 77 77;
   --mg-color-neutral-200: 179 179 179;
   --mg-color-neutral-400: 128 128 128;
   --mg-color-neutral-50: 230 230 230;
   --mg-color-red-900: 193 9 32;
-  --mg-card-background: rgb(250 250 250);
   --mg-surface-raised: rgb(var(--mg-color-white));
   --mg-color-focus-ring: var(--mg-color-interactive);
   --mg-color-form-focus: var(--mg-color-interactive);

@@ -1,0 +1,1334 @@
+@charset "UTF-8";
+@layer mangrove {
+/*
+ * Sass source for the React Aria Components styling surface.
+ * The public aria/react-aria.css artifact is generated from this file by
+ * `yarn build:aria`; do not edit that generated CSS directly.
+ * This intentionally targets React Aria's stock classes and consumes only
+ * --mg-aria-* tokens, so consumers can import it without Mangrove components.
+ *
+ * Keep this file limited to reusable React Aria primitive and state styles.
+ * Composition styles for the Storybook spike demos belong in _spike-demo.scss,
+ * which is not part of the distributed CSS surface.
+ */
+.react-aria-Input,
+.react-aria-ListBox,
+.react-aria-ListBoxItem,
+.react-aria-Label,
+.react-aria-Text {
+  font-family: var(--mg-aria-font-family);
+  font-size: var(--mg-aria-font-size);
+  line-height: var(--mg-aria-line-height);
+}
+
+/* Selectors here are deliberately NOT wrapped in :where(). Zero specificity
+   would let a consumer's own `button {}` or `input {}` reset outrank this
+   stylesheet, which matters because the surface ships unlayered into pages
+   that have significant legacy CSS. A bare `button` reset was in fact
+   overriding the themed font size.
+   The filled button reads Mangrove's own button tokens, so a theme that
+   reshapes its buttons reshapes this surface too. min-block-size is a floor
+   rather than a token: it keeps the 40px target the v2 principles ask for even
+   where a theme's padding would produce a smaller control. */
+.react-aria-Button {
+  align-items: center;
+  font-family: var(--mg-aria-font-family);
+  line-height: var(--mg-aria-line-height);
+  background: var(--mg-aria-button-background);
+  border: 0;
+  border-radius: var(--mg-aria-radius-button);
+  color: var(--mg-aria-button-color);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: var(--mg-aria-button-font-size);
+  font-weight: 600;
+  justify-content: center;
+  min-block-size: calc(var(--mg-aria-space-4) * 2);
+  padding: var(--mg-aria-button-padding);
+}
+
+.react-aria-Button[data-hovered] {
+  background: var(--mg-aria-button-background-hover);
+}
+
+.react-aria-Button[data-pressed] {
+  background: var(--mg-aria-button-background-hover);
+  scale: 0.96;
+}
+
+.react-aria-Button[data-disabled] {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.react-aria-Button[data-focus-visible],
+.react-aria-Input[data-focus-visible],
+.react-aria-DateInput[data-focus-within],
+.react-aria-CalendarCell[data-focus-visible],
+.react-aria-GridListItem[data-focus-visible],
+.react-aria-ListBoxItem[data-focus-visible],
+.react-aria-MenuItem[data-focus-visible],
+.react-aria-Link[data-focus-visible],
+.react-aria-Radio[data-focus-visible]::before,
+.react-aria-SliderThumb[data-focus-visible],
+.react-aria-Switch[data-focus-visible]::before,
+.react-aria-Tab[data-focus-visible],
+.react-aria-TabPanel[data-focus-visible],
+.react-aria-Tag[data-focus-visible],
+.react-aria-TextArea[data-focus-visible],
+.react-aria-ToggleButton[data-focus-visible],
+.react-aria-Row[data-focus-visible],
+.react-aria-Column[data-focus-visible],
+.react-aria-ColumnResizer[data-focus-visible],
+.react-aria-DropZone[data-focus-visible] {
+  outline: var(--mg-aria-focus-width) solid var(--mg-aria-color-focus-ring);
+  outline-offset: var(--mg-aria-focus-offset);
+}
+
+.react-aria-Input[data-focus-visible],
+.react-aria-DateInput[data-focus-within] {
+  background: var(--mg-aria-color-field-surface-focus);
+  border-color: var(--mg-aria-color-border-focus);
+}
+
+.react-aria-TextField,
+.react-aria-NumberField,
+.react-aria-SearchField,
+.react-aria-Select,
+.react-aria-DateField,
+.react-aria-DatePicker,
+.react-aria-ComboBox {
+  display: grid;
+  gap: var(--mg-aria-space-1);
+}
+
+.react-aria-Group {
+  align-items: center;
+  display: flex;
+  gap: var(--mg-aria-space-1);
+}
+
+.react-aria-Group > .react-aria-DateInput {
+  flex: 1;
+  min-width: 0;
+}
+
+.react-aria-DateInput {
+  background: var(--mg-aria-color-field-surface);
+  border: var(--mg-aria-border-width) solid var(--mg-aria-color-border);
+  border-radius: var(--mg-aria-radius-control);
+  color: var(--mg-aria-color-text);
+  min-block-size: calc(var(--mg-aria-space-4) * 2);
+  padding: var(--mg-aria-space-2);
+}
+
+.react-aria-DateSegment[data-placeholder] {
+  color: var(--mg-aria-color-muted-text);
+}
+
+.react-aria-DateSegment[data-focused] {
+  background: var(--mg-aria-color-subtle-surface);
+  outline: var(--mg-aria-focus-width) solid var(--mg-aria-color-focus-ring);
+  outline-offset: var(--mg-aria-focus-offset);
+}
+
+.react-aria-Checkbox {
+  align-items: center;
+  color: var(--mg-aria-color-text);
+  display: inline-flex;
+  font-family: var(--mg-aria-font-family);
+  font-size: var(--mg-aria-font-size);
+  gap: var(--mg-aria-space-2);
+  min-block-size: calc(var(--mg-aria-space-4) * 2);
+}
+
+.react-aria-Checkbox::before {
+  align-items: center;
+  background: var(--mg-aria-color-surface);
+  border: var(--mg-aria-border-width) solid var(--mg-aria-color-border);
+  border-radius: var(--mg-aria-radius-control);
+  color: var(--mg-aria-color-on-accent);
+  content: "";
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-weight: 700;
+  height: var(--mg-aria-space-4);
+  justify-content: center;
+  width: var(--mg-aria-space-4);
+}
+
+.react-aria-Checkbox[data-selected]::before {
+  background: var(--mg-aria-check-color-checked);
+  border-color: var(--mg-aria-check-color-checked);
+  content: "✓"/"";
+}
+
+.react-aria-Checkbox[data-focus-visible]::before {
+  outline: var(--mg-aria-focus-width) solid var(--mg-aria-color-focus-ring);
+  outline-offset: var(--mg-aria-focus-offset);
+}
+
+.react-aria-Table {
+  border-collapse: collapse;
+  color: var(--mg-aria-color-text);
+  font-family: var(--mg-aria-font-family);
+  font-size: var(--mg-aria-font-size);
+  min-width: var(--mg-aria-width-full);
+  table-layout: fixed;
+  width: var(--mg-aria-width-full);
+}
+
+.react-aria-Column {
+  background: var(--mg-aria-color-subtle-surface);
+  color: var(--mg-aria-color-text);
+  padding: var(--mg-aria-space-2);
+  text-align: start;
+}
+
+.react-aria-ColumnResizer {
+  background: var(--mg-aria-color-border);
+  background-clip: content-box;
+  box-sizing: content-box;
+  cursor: col-resize;
+  display: inline-block;
+  /* The visible rule stays 1px, but the hit area must clear the 24px
+     WCAG 2.5.8 minimum, so the target comes from height plus inline padding. */
+  height: calc(var(--mg-aria-space-4) * 2);
+  padding-inline: var(--mg-aria-space-3);
+  width: var(--mg-aria-border-width);
+}
+
+.react-aria-ColumnResizer[data-resizing] {
+  background: var(--mg-aria-color-accent);
+}
+
+.react-aria-Cell {
+  border-block-end: var(--mg-aria-border-width) solid var(--mg-aria-color-border);
+  overflow: hidden;
+  padding: var(--mg-aria-space-2);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.react-aria-Row[data-hovered] .react-aria-Cell {
+  background: var(--mg-aria-color-subtle-surface);
+}
+
+.react-aria-Row[data-selected] .react-aria-Cell {
+  background: var(--mg-aria-color-selected-surface);
+}
+
+.react-aria-Menu {
+  background: var(--mg-aria-color-surface);
+  color: var(--mg-aria-color-text);
+  font-family: var(--mg-aria-font-family);
+  margin: 0;
+  padding: var(--mg-aria-space-1);
+}
+
+.react-aria-MenuItem {
+  align-items: center;
+  border-radius: var(--mg-aria-radius-control);
+  display: flex;
+  min-block-size: calc(var(--mg-aria-space-4) * 2);
+  padding: var(--mg-aria-space-2) var(--mg-aria-space-3);
+}
+
+.react-aria-MenuItem[data-focused] {
+  background: var(--mg-aria-color-subtle-surface);
+}
+
+.react-aria-ModalOverlay {
+  align-items: center;
+  background: var(--mg-aria-color-overlay-backdrop);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  position: fixed;
+  z-index: var(--mg-aria-overlay-z-index);
+}
+
+.react-aria-Modal {
+  background: var(--mg-aria-color-surface);
+  border-radius: var(--mg-aria-radius-surface);
+  box-sizing: border-box;
+  box-shadow: var(--mg-aria-overlay-shadow);
+  color: var(--mg-aria-color-text);
+  max-height: var(--mg-aria-dialog-available-height);
+  max-width: var(--mg-aria-dialog-available-width);
+  overflow: auto;
+  padding: var(--mg-aria-space-4);
+  width: var(--mg-aria-dialog-width);
+}
+
+.react-aria-Dialog {
+  display: grid;
+  gap: var(--mg-aria-space-3);
+  font-family: var(--mg-aria-font-family);
+}
+
+.react-aria-DropZone {
+  align-items: center;
+  background: var(--mg-aria-color-subtle-surface);
+  border: var(--mg-aria-border-width) solid var(--mg-aria-color-border);
+  border-radius: var(--mg-aria-radius-surface);
+  color: var(--mg-aria-color-muted-text);
+  display: grid;
+  gap: var(--mg-aria-space-1);
+  justify-items: center;
+  min-height: calc(var(--mg-aria-space-4) * 5);
+  padding: var(--mg-aria-space-3);
+  text-align: center;
+}
+
+.react-aria-DropZone[data-drop-target] {
+  background: var(--mg-aria-color-subtle-surface);
+  border-color: var(--mg-aria-color-accent);
+  color: var(--mg-aria-color-accent);
+}
+
+.react-aria-DropZone img {
+  border-radius: var(--mg-aria-radius-control);
+  max-inline-size: var(--mg-aria-width-full);
+}
+
+.react-aria-Calendar {
+  color: var(--mg-aria-color-text);
+  font-family: var(--mg-aria-font-family);
+}
+
+.react-aria-CalendarGrid {
+  border-collapse: collapse;
+}
+
+.react-aria-CalendarHeaderCell,
+.react-aria-CalendarCell {
+  padding: var(--mg-aria-space-1);
+  text-align: center;
+}
+
+.react-aria-CalendarCell {
+  /* A single-digit date was about 19px wide; calendar cells are contiguous, so
+     no WCAG 2.5.8 spacing exception applies. */
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  min-block-size: calc(var(--mg-aria-space-4) * 1.5);
+  min-inline-size: calc(var(--mg-aria-space-4) * 1.5);
+}
+
+.react-aria-CalendarCell[data-selected] {
+  border-radius: var(--mg-aria-radius-control);
+  background: var(--mg-aria-color-accent);
+  color: var(--mg-aria-color-on-accent);
+}
+
+.react-aria-CalendarCell[data-focused] {
+  outline: var(--mg-aria-focus-width) solid var(--mg-aria-color-focus-ring);
+  outline-offset: var(--mg-aria-focus-offset);
+}
+
+.react-aria-Label {
+  color: var(--mg-aria-color-text);
+}
+
+.react-aria-Input {
+  background: var(--mg-aria-color-field-surface);
+  border: var(--mg-aria-border-width) solid var(--mg-aria-color-border);
+  border-radius: var(--mg-aria-radius-control);
+  box-sizing: border-box;
+  color: var(--mg-aria-color-text);
+  min-block-size: calc(var(--mg-aria-space-4) * 2);
+  padding: var(--mg-aria-space-2);
+  width: var(--mg-aria-width-full);
+}
+
+.react-aria-Input[data-invalid],
+.react-aria-TextField[data-invalid] .react-aria-Input {
+  border-color: var(--mg-aria-color-invalid);
+}
+
+/* React Aria forwards `slot` to the DOM as a plain HTML attribute; it never
+   emits `data-slot`. Matching on `[slot]` is what actually hits the helper and
+   error text React Aria renders inside a field. */
+.react-aria-Text[slot=description] {
+  color: var(--mg-aria-color-muted-text);
+  display: block;
+  font-size: var(--mg-aria-font-size-small);
+}
+
+.react-aria-Tooltip {
+  background: var(--mg-aria-color-text);
+  border-radius: var(--mg-aria-radius-control);
+  color: var(--mg-aria-color-on-accent);
+  font-family: var(--mg-aria-font-family);
+  font-size: var(--mg-aria-font-size-small);
+  padding: var(--mg-aria-space-1) var(--mg-aria-space-2);
+}
+
+.react-aria-Text[slot=errorMessage],
+.react-aria-FieldError {
+  color: var(--mg-aria-color-invalid);
+  display: block;
+  font-size: var(--mg-aria-font-size-small);
+}
+
+.react-aria-Popover {
+  background: var(--mg-aria-color-surface);
+  border-radius: var(--mg-aria-radius-surface);
+  box-shadow: var(--mg-aria-overlay-shadow);
+  padding: var(--mg-aria-space-1);
+  z-index: var(--mg-aria-overlay-z-index);
+}
+
+.react-aria-ListBox {
+  background: var(--mg-aria-color-surface);
+  color: var(--mg-aria-color-text);
+}
+
+.react-aria-ListBoxItem {
+  align-items: center;
+  border-radius: var(--mg-aria-radius-control);
+  display: flex;
+  min-block-size: calc(var(--mg-aria-space-4) * 2);
+  padding: var(--mg-aria-space-2);
+}
+
+.react-aria-ListBoxItem[data-focused],
+.react-aria-ListBoxItem[data-selected] {
+  background: var(--mg-aria-color-subtle-surface);
+}
+
+.react-aria-GridList {
+  border-radius: var(--mg-aria-radius-surface);
+  color: var(--mg-aria-color-text);
+  font-family: var(--mg-aria-font-family);
+}
+
+.react-aria-GridListItem {
+  border-block-end: var(--mg-aria-border-width) solid var(--mg-aria-color-border);
+  padding: var(--mg-aria-space-2);
+}
+
+.react-aria-GridListItem[data-focused] {
+  outline: var(--mg-aria-focus-width) solid var(--mg-aria-color-focus-ring);
+  outline-offset: var(--mg-aria-focus-offset);
+}
+
+.react-aria-Tabs {
+  color: var(--mg-aria-color-text);
+  display: flex;
+  font-family: var(--mg-aria-font-family);
+  font-size: var(--mg-aria-font-size);
+  gap: var(--mg-aria-space-3);
+  line-height: var(--mg-aria-line-height);
+}
+
+.react-aria-Tabs[data-orientation=horizontal] {
+  flex-direction: column;
+}
+
+.react-aria-Tabs[data-orientation=vertical] {
+  flex-direction: row;
+}
+
+.react-aria-TabList {
+  display: flex;
+  gap: var(--mg-aria-space-1);
+}
+
+.react-aria-TabList[data-orientation=horizontal] {
+  border-block-end: var(--mg-aria-border-width) solid var(--mg-aria-color-border);
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.react-aria-TabList[data-orientation=vertical] {
+  border-inline-end: var(--mg-aria-border-width) solid var(--mg-aria-color-border);
+  flex-direction: column;
+}
+
+/* Tabs are a v2 underline indicator, not a filled pill. Both this surface and
+   the legacy .mg-tabs component read the same tab tokens, so a theme restyles
+   both at once. See _runtime-theme-aliases.scss. */
+.react-aria-Tab {
+  align-items: center;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: inset 0 calc(var(--mg-aria-tab-indicator-size) * -1) 0 transparent;
+  color: var(--mg-aria-tab-color);
+  cursor: pointer;
+  display: flex;
+  font-size: var(--mg-aria-tab-font-size);
+  font-weight: 600;
+  justify-content: center;
+  min-block-size: var(--mg-aria-tab-min-block-size);
+  padding: var(--mg-aria-tab-padding);
+}
+
+.react-aria-Tab[data-hovered] {
+  background: var(--mg-aria-tab-background-hover);
+  box-shadow: inset 0 calc(var(--mg-aria-tab-indicator-size) * -1) 0 var(--mg-aria-tab-indicator-hover);
+  color: var(--mg-aria-tab-color-hover);
+}
+
+.react-aria-Tab[data-pressed] {
+  background: var(--mg-aria-tab-background-hover);
+}
+
+.react-aria-Tab[data-selected] {
+  background: transparent;
+  box-shadow: inset 0 calc(var(--mg-aria-tab-indicator-size) * -1) 0 var(--mg-aria-tab-indicator-active);
+  color: var(--mg-aria-tab-color-active);
+}
+
+.react-aria-Tab[data-disabled] {
+  color: var(--mg-aria-color-muted-text);
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.react-aria-TabPanel {
+  color: var(--mg-aria-color-text);
+  font-family: var(--mg-aria-font-family);
+  font-size: var(--mg-aria-font-size);
+  line-height: var(--mg-aria-line-height);
+  padding-block-start: var(--mg-aria-space-1);
+}
+
+.react-aria-Switch {
+  align-items: center;
+  color: var(--mg-aria-color-text);
+  cursor: pointer;
+  display: inline-flex;
+  font-family: var(--mg-aria-font-family);
+  font-size: var(--mg-aria-font-size);
+  gap: var(--mg-aria-space-2);
+  min-block-size: calc(var(--mg-aria-space-4) * 2);
+  position: relative;
+}
+
+.react-aria-Switch::before {
+  background: var(--mg-aria-color-track);
+  block-size: var(--mg-aria-thumb-size);
+  border: var(--mg-aria-border-width) solid var(--mg-aria-color-border);
+  border-radius: var(--mg-aria-radius-pill);
+  box-sizing: border-box;
+  content: "";
+  flex: 0 0 auto;
+  inline-size: calc(var(--mg-aria-thumb-size) * 2);
+}
+
+.react-aria-Switch::after {
+  background: var(--mg-aria-color-surface);
+  block-size: calc(var(--mg-aria-thumb-size) - var(--mg-aria-space-1));
+  border-radius: var(--mg-aria-radius-pill);
+  content: "";
+  inline-size: calc(var(--mg-aria-thumb-size) - var(--mg-aria-space-1));
+  inset-block-start: 50%;
+  inset-inline-start: calc(var(--mg-aria-space-1) / 2);
+  position: absolute;
+  translate: 0 -50%;
+}
+
+.react-aria-Switch[data-hovered]::before {
+  border-color: var(--mg-aria-color-border-focus);
+}
+
+.react-aria-Switch[data-selected]::before {
+  background: var(--mg-aria-color-accent);
+  border-color: var(--mg-aria-color-accent);
+}
+
+.react-aria-Switch[data-selected]::after {
+  inset-inline-start: calc(var(--mg-aria-thumb-size) + var(--mg-aria-space-1) / 2);
+}
+
+.react-aria-Switch[data-pressed]::after {
+  background: var(--mg-aria-color-field-surface);
+}
+
+.react-aria-Switch[data-invalid]::before {
+  border-color: var(--mg-aria-color-invalid);
+}
+
+.react-aria-Switch[data-disabled] {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.react-aria-RadioGroup {
+  color: var(--mg-aria-color-text);
+  display: flex;
+  font-family: var(--mg-aria-font-family);
+  font-size: var(--mg-aria-font-size);
+  gap: var(--mg-aria-space-2);
+}
+
+.react-aria-RadioGroup[data-orientation=vertical] {
+  flex-direction: column;
+}
+
+.react-aria-RadioGroup[data-orientation=horizontal] {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: var(--mg-aria-space-3);
+}
+
+.react-aria-Radio {
+  align-items: center;
+  color: var(--mg-aria-color-text);
+  cursor: pointer;
+  display: inline-flex;
+  gap: var(--mg-aria-space-2);
+  min-block-size: calc(var(--mg-aria-space-4) * 2);
+}
+
+.react-aria-Radio::before {
+  background: var(--mg-aria-color-surface);
+  block-size: var(--mg-aria-space-4);
+  border: var(--mg-aria-border-width) solid var(--mg-aria-color-border);
+  border-radius: var(--mg-aria-radius-pill);
+  box-sizing: border-box;
+  content: "";
+  flex: 0 0 auto;
+  inline-size: var(--mg-aria-space-4);
+}
+
+.react-aria-Radio[data-hovered]::before {
+  border-color: var(--mg-aria-color-border-focus);
+}
+
+.react-aria-Radio[data-selected]::before {
+  background: var(--mg-aria-check-color-checked);
+  border-color: var(--mg-aria-color-surface);
+  border-width: calc(var(--mg-aria-space-1) / 2);
+  outline: var(--mg-aria-border-width) solid var(--mg-aria-check-color-checked);
+}
+
+.react-aria-Radio[data-pressed]::before {
+  background: var(--mg-aria-color-accent-active);
+}
+
+.react-aria-Radio[data-invalid]::before,
+.react-aria-RadioGroup[data-invalid] .react-aria-Radio::before {
+  border-color: var(--mg-aria-color-invalid);
+}
+
+.react-aria-Radio[data-disabled],
+.react-aria-RadioGroup[data-disabled] {
+  cursor: not-allowed;
+}
+
+.react-aria-NumberField .react-aria-Input {
+  text-align: end;
+}
+
+.react-aria-Button[slot=increment],
+.react-aria-Button[slot=decrement] {
+  flex: 0 0 auto;
+  min-inline-size: calc(var(--mg-aria-space-4) * 2);
+  padding-inline: var(--mg-aria-space-2);
+}
+
+.react-aria-TextArea {
+  background: var(--mg-aria-color-field-surface);
+  border: var(--mg-aria-border-width) solid var(--mg-aria-color-border);
+  border-radius: var(--mg-aria-radius-control);
+  box-sizing: border-box;
+  color: var(--mg-aria-color-text);
+  font-family: var(--mg-aria-font-family);
+  font-size: var(--mg-aria-font-size);
+  inline-size: var(--mg-aria-width-full);
+  line-height: var(--mg-aria-line-height);
+  min-block-size: calc(var(--mg-aria-space-4) * 4);
+  padding: var(--mg-aria-space-2);
+  resize: block;
+}
+
+.react-aria-TextArea[data-hovered] {
+  border-color: var(--mg-aria-color-border-focus);
+}
+
+.react-aria-TextArea[data-focus-visible] {
+  background: var(--mg-aria-color-field-surface-focus);
+  border-color: var(--mg-aria-color-border-focus);
+}
+
+.react-aria-TextArea[data-invalid],
+.react-aria-TextField[data-invalid] .react-aria-TextArea {
+  border-color: var(--mg-aria-color-invalid);
+}
+
+.react-aria-TextArea[data-disabled] {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.react-aria-DisclosureGroup {
+  border: var(--mg-aria-border-width) solid var(--mg-aria-color-border);
+  border-radius: var(--mg-aria-radius-surface);
+  color: var(--mg-aria-color-text);
+  font-family: var(--mg-aria-font-family);
+  /* The trigger button is inset only by the group border, so a plain
+     `overflow: hidden` clips its focus ring away entirely. `clip` plus a margin
+     the size of the ring lets the ring escape. overflow-clip-margin takes a
+     bare length only; calc() is silently dropped. */
+  overflow: clip;
+  overflow-clip-margin: var(--mg-aria-space-1);
+}
+
+.react-aria-Disclosure {
+  color: var(--mg-aria-color-text);
+  font-family: var(--mg-aria-font-family);
+}
+
+.react-aria-DisclosureGroup .react-aria-Disclosure + .react-aria-Disclosure {
+  border-block-start: var(--mg-aria-border-width) solid var(--mg-aria-color-border);
+}
+
+.react-aria-Disclosure .react-aria-Button[slot=trigger] {
+  background: var(--mg-aria-color-subtle-surface);
+  border-color: var(--mg-aria-color-border);
+  border-radius: var(--mg-aria-radius-control);
+  color: var(--mg-aria-color-text);
+  inline-size: var(--mg-aria-width-full);
+  justify-content: space-between;
+  text-align: start;
+}
+
+.react-aria-Disclosure .react-aria-Button[slot=trigger][data-hovered] {
+  background: var(--mg-aria-color-selected-surface);
+}
+
+.react-aria-Disclosure[data-expanded] .react-aria-Button[slot=trigger] {
+  color: var(--mg-aria-color-accent);
+}
+
+.react-aria-Disclosure[data-disabled] {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.react-aria-DisclosurePanel {
+  color: var(--mg-aria-color-text);
+  font-size: var(--mg-aria-font-size);
+  line-height: var(--mg-aria-line-height);
+  padding-block: var(--mg-aria-space-2);
+  padding-inline: var(--mg-aria-space-3);
+}
+
+.react-aria-ToggleButtonGroup {
+  display: inline-flex;
+  gap: var(--mg-aria-space-1);
+}
+
+.react-aria-ToggleButtonGroup[data-orientation=vertical] {
+  flex-direction: column;
+}
+
+.react-aria-ToggleButton {
+  align-items: center;
+  background: var(--mg-aria-color-surface);
+  border: var(--mg-aria-border-width) solid var(--mg-aria-color-border);
+  border-radius: var(--mg-aria-radius-button);
+  color: var(--mg-aria-color-text);
+  cursor: pointer;
+  display: inline-flex;
+  font-family: var(--mg-aria-font-family);
+  font-size: var(--mg-aria-font-size);
+  font-weight: 600;
+  justify-content: center;
+  min-block-size: calc(var(--mg-aria-space-4) * 2);
+  padding-block: var(--mg-aria-space-2);
+  padding-inline: var(--mg-aria-space-3);
+}
+
+.react-aria-ToggleButton[data-hovered] {
+  background: var(--mg-aria-color-subtle-surface);
+  border-color: var(--mg-aria-color-border-focus);
+}
+
+.react-aria-ToggleButton[data-pressed] {
+  background: var(--mg-aria-color-selected-surface);
+  scale: 0.96;
+}
+
+.react-aria-ToggleButton[data-selected] {
+  background: var(--mg-aria-color-accent);
+  border-color: var(--mg-aria-color-accent);
+  color: var(--mg-aria-color-on-accent);
+}
+
+.react-aria-ToggleButton[data-selected][data-hovered] {
+  background: var(--mg-aria-color-accent-active);
+  border-color: var(--mg-aria-color-accent-active);
+}
+
+.react-aria-ToggleButton[data-disabled] {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.react-aria-TagGroup {
+  color: var(--mg-aria-color-text);
+  display: grid;
+  font-family: var(--mg-aria-font-family);
+  gap: var(--mg-aria-space-1);
+}
+
+.react-aria-TagList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mg-aria-space-2);
+  list-style: none;
+  margin-block: 0;
+  padding-inline-start: 0;
+}
+
+.react-aria-TagList[data-empty] {
+  color: var(--mg-aria-color-muted-text);
+  font-size: var(--mg-aria-font-size-small);
+}
+
+.react-aria-Tag {
+  align-items: center;
+  background: var(--mg-aria-color-subtle-surface);
+  border: var(--mg-aria-border-width) solid var(--mg-aria-color-border);
+  border-radius: var(--mg-aria-tag-radius);
+  color: var(--mg-aria-color-text);
+  cursor: default;
+  display: inline-flex;
+  font-size: var(--mg-aria-font-size-small);
+  gap: var(--mg-aria-space-1);
+  min-block-size: calc(var(--mg-aria-space-4) * 2);
+  padding-block: var(--mg-aria-space-1);
+  padding-inline: var(--mg-aria-space-3);
+}
+
+.react-aria-TagList[data-selection-mode] .react-aria-Tag {
+  cursor: pointer;
+}
+
+.react-aria-Tag[data-hovered] {
+  background: var(--mg-aria-color-selected-surface);
+  border-color: var(--mg-aria-color-border-focus);
+}
+
+.react-aria-Tag[data-pressed] {
+  background: var(--mg-aria-color-selected-surface);
+}
+
+.react-aria-Tag[data-selected] {
+  background: var(--mg-aria-tag-background);
+  border-color: var(--mg-aria-tag-background);
+  color: var(--mg-aria-color-on-accent);
+}
+
+.react-aria-Tag[data-selected][data-hovered] {
+  background: var(--mg-aria-tag-background-hover);
+  border-color: var(--mg-aria-tag-background-hover);
+}
+
+.react-aria-Tag[data-disabled] {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.react-aria-Tag[data-allows-removing] {
+  padding-inline-end: var(--mg-aria-space-1);
+}
+
+.react-aria-Tag .react-aria-Button[slot=remove] {
+  background: none;
+  border-radius: var(--mg-aria-radius-pill);
+  border-width: 0;
+  color: currentColor;
+  padding-block: 0;
+  padding-inline: var(--mg-aria-space-2);
+}
+
+.react-aria-Tag .react-aria-Button[slot=remove][data-hovered] {
+  background: var(--mg-aria-color-selected-surface);
+}
+
+.react-aria-Slider {
+  color: var(--mg-aria-color-text);
+  display: grid;
+  font-family: var(--mg-aria-font-family);
+  font-size: var(--mg-aria-font-size);
+  gap: var(--mg-aria-space-1);
+}
+
+.react-aria-Slider[data-orientation=vertical] {
+  justify-items: center;
+}
+
+.react-aria-Slider[data-disabled] {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.react-aria-SliderOutput {
+  color: var(--mg-aria-color-muted-text);
+  font-size: var(--mg-aria-font-size-small);
+}
+
+.react-aria-SliderTrack,
+.react-aria-ProgressBar .bar,
+.react-aria-Meter .bar {
+  /* The rail is kept light so the fill clears 3:1 against it, which leaves the
+     rail itself at 1.25:1 on the page. The border is what makes it visible. */
+  border: var(--mg-aria-border-width) solid var(--mg-aria-color-border);
+  box-sizing: border-box;
+}
+
+.react-aria-SliderTrack {
+  background: var(--mg-aria-color-track);
+  border-radius: var(--mg-aria-radius-pill);
+  position: relative;
+}
+
+.react-aria-SliderTrack[data-orientation=horizontal] {
+  block-size: var(--mg-aria-track-thickness);
+  inline-size: var(--mg-aria-width-full);
+  margin-block: var(--mg-aria-space-3);
+}
+
+.react-aria-SliderTrack[data-orientation=vertical] {
+  block-size: calc(var(--mg-aria-space-4) * 8);
+  inline-size: var(--mg-aria-track-thickness);
+  margin-inline: var(--mg-aria-space-3);
+}
+
+.react-aria-SliderTrack[data-hovered] {
+  background: var(--mg-aria-color-selected-surface);
+}
+
+.react-aria-SliderFill {
+  background: var(--mg-aria-color-accent);
+  border-radius: var(--mg-aria-radius-pill);
+}
+
+.react-aria-SliderFill[data-disabled] {
+  background: var(--mg-aria-color-border);
+}
+
+.react-aria-SliderThumb {
+  background: var(--mg-aria-color-accent);
+  block-size: var(--mg-aria-thumb-size);
+  border: var(--mg-aria-border-width) solid var(--mg-aria-color-surface);
+  border-radius: var(--mg-aria-radius-pill);
+  box-sizing: border-box;
+  cursor: grab;
+  inline-size: var(--mg-aria-thumb-size);
+}
+
+.react-aria-SliderThumb[data-hovered] {
+  background: var(--mg-aria-color-accent-active);
+}
+
+.react-aria-SliderThumb[data-dragging] {
+  background: var(--mg-aria-color-accent-active);
+  cursor: grabbing;
+  scale: 1.1;
+}
+
+.react-aria-SliderThumb[data-disabled] {
+  background: var(--mg-aria-color-border);
+  cursor: not-allowed;
+}
+
+.react-aria-ProgressBar,
+.react-aria-Meter {
+  color: var(--mg-aria-color-text);
+  display: grid;
+  font-family: var(--mg-aria-font-family);
+  font-size: var(--mg-aria-font-size);
+  gap: var(--mg-aria-space-1);
+  inline-size: var(--mg-aria-width-full);
+}
+
+/* React Aria renders these labels as a <span>; without an explicit block they
+   only lay out correctly by accident of the grid parent. */
+.react-aria-ProgressBar .react-aria-Label,
+.react-aria-Meter .react-aria-Label {
+  display: block;
+  font-size: var(--mg-aria-font-size-small);
+}
+
+/* React Aria renders only the outer element for these two; the bar and fill
+   are author-supplied markup following Adobe's documented anatomy
+   (`<div class="bar"><div class="fill" /></div>`). Both helper classes are
+   scoped to the React Aria parent so the distributed stylesheet never claims
+   a bare `.bar` or `.fill` in a consumer's application. */
+.react-aria-ProgressBar .bar,
+.react-aria-Meter .bar {
+  background: var(--mg-aria-color-track);
+  block-size: var(--mg-aria-track-thickness);
+  border-radius: var(--mg-aria-radius-pill);
+  inline-size: var(--mg-aria-width-full);
+  overflow: hidden;
+}
+
+.react-aria-ProgressBar .fill,
+.react-aria-Meter .fill {
+  background: var(--mg-aria-color-accent);
+  block-size: var(--mg-aria-width-full);
+  border-radius: var(--mg-aria-radius-pill);
+}
+
+/* An indeterminate bar has no aria-valuenow, and React Aria leaves the fill
+   width to the author, so it otherwise renders identically to 100% complete.
+   Stripes read as "in progress, value unknown" rather than "finished", and
+   survive as a solid Highlight in forced colours where background-image is
+   dropped. */
+.react-aria-ProgressBar:not([aria-valuenow]) .fill {
+  background-image: repeating-linear-gradient(135deg, var(--mg-aria-color-accent) 0 var(--mg-aria-space-2), var(--mg-aria-color-accent-active) var(--mg-aria-space-2) var(--mg-aria-space-4));
+}
+
+.react-aria-Breadcrumbs {
+  align-items: center;
+  color: var(--mg-aria-color-text);
+  display: flex;
+  flex-wrap: wrap;
+  font-family: var(--mg-aria-font-family);
+  font-size: var(--mg-aria-font-size-small);
+  gap: var(--mg-aria-space-2);
+  list-style: none;
+  margin-block: 0;
+  padding-inline-start: 0;
+}
+
+.react-aria-Breadcrumb {
+  align-items: center;
+  color: var(--mg-aria-color-muted-text);
+  display: inline-flex;
+  gap: var(--mg-aria-space-2);
+}
+
+.react-aria-Breadcrumb:not(:last-child)::after {
+  color: var(--mg-aria-color-muted-text);
+  content: "›"/"";
+}
+
+[dir=rtl] .react-aria-Breadcrumb:not(:last-child)::after {
+  content: "‹"/"";
+}
+
+.react-aria-Breadcrumb[data-current] {
+  color: var(--mg-aria-color-text);
+  font-weight: 600;
+}
+
+/* React Aria sets data-disabled when `isDisabled || isCurrent`, so the current
+   crumb carries both attributes. Without the :not() guard the current page
+   renders dimmed and not-allowed, as if it were unavailable. */
+.react-aria-Breadcrumb[data-disabled]:not([data-current]) {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.react-aria-Link {
+  border-radius: var(--mg-aria-radius-control);
+  color: var(--mg-aria-color-accent);
+  cursor: pointer;
+  font-family: var(--mg-aria-font-family);
+  text-decoration: underline;
+}
+
+.react-aria-Link[data-hovered] {
+  color: var(--mg-aria-color-accent-active);
+}
+
+.react-aria-Link[data-pressed] {
+  color: var(--mg-aria-color-accent-active);
+}
+
+.react-aria-Link[data-current] {
+  color: var(--mg-aria-color-text);
+  text-decoration: none;
+}
+
+/* Same data-disabled/data-current overlap as Breadcrumb: a Link rendered as the
+   current crumb must not be dimmed. */
+.react-aria-Link[data-disabled]:not([data-current]) {
+  color: var(--mg-aria-color-muted-text);
+  cursor: not-allowed;
+  opacity: 0.55;
+  text-decoration: none;
+}
+
+.react-aria-Separator {
+  background: var(--mg-aria-color-border);
+  border: 0;
+  margin-block: var(--mg-aria-space-2);
+}
+
+.react-aria-Separator:not([aria-orientation=vertical]) {
+  block-size: var(--mg-aria-border-width);
+  inline-size: var(--mg-aria-width-full);
+}
+
+.react-aria-Separator[aria-orientation=vertical] {
+  align-self: stretch;
+  inline-size: var(--mg-aria-border-width);
+  margin-block: 0;
+  margin-inline: var(--mg-aria-space-2);
+}
+
+.react-aria-Form {
+  color: var(--mg-aria-color-text);
+  display: grid;
+  font-family: var(--mg-aria-font-family);
+  gap: var(--mg-aria-space-3);
+}
+
+.react-aria-FieldError {
+  font-family: var(--mg-aria-font-family);
+  line-height: var(--mg-aria-line-height);
+}
+
+.react-aria-Header {
+  color: var(--mg-aria-color-muted-text);
+  font-family: var(--mg-aria-font-family);
+  font-size: var(--mg-aria-font-size-small);
+  font-weight: 600;
+  padding-block: var(--mg-aria-space-1);
+  padding-inline: var(--mg-aria-space-2);
+}
+
+.react-aria-Heading {
+  color: var(--mg-aria-color-text);
+  font-family: var(--mg-aria-font-family);
+  line-height: var(--mg-aria-line-height);
+  margin-block: 0;
+}
+
+.react-aria-Section,
+.react-aria-ListBoxSection,
+.react-aria-MenuSection {
+  display: block;
+  padding-block: var(--mg-aria-space-1);
+}
+
+.react-aria-Section + .react-aria-Section,
+.react-aria-ListBoxSection + .react-aria-ListBoxSection,
+.react-aria-MenuSection + .react-aria-MenuSection {
+  border-block-start: var(--mg-aria-border-width) solid var(--mg-aria-color-border);
+  margin-block-start: var(--mg-aria-space-1);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .react-aria-ProgressBar:not([aria-valuenow]) .fill {
+    animation: mg-aria-indeterminate 1s linear infinite;
+    background-size: calc(var(--mg-aria-space-4) * 2) 100%;
+  }
+  .react-aria-Button {
+    transition: background-color var(--mg-aria-motion-duration-fast) var(--mg-aria-motion-easing), border-color var(--mg-aria-motion-duration-fast) var(--mg-aria-motion-easing), color var(--mg-aria-motion-duration-fast) var(--mg-aria-motion-easing), scale var(--mg-aria-motion-duration-fast) var(--mg-aria-motion-easing);
+  }
+  .react-aria-Cell {
+    transition: background-color var(--mg-aria-motion-duration-fast) var(--mg-aria-motion-easing);
+  }
+  .react-aria-Link,
+  .react-aria-Tab,
+  .react-aria-Tag,
+  .react-aria-TextArea,
+  .react-aria-ToggleButton {
+    transition: background-color var(--mg-aria-motion-duration-fast) var(--mg-aria-motion-easing), border-color var(--mg-aria-motion-duration-fast) var(--mg-aria-motion-easing), color var(--mg-aria-motion-duration-fast) var(--mg-aria-motion-easing), scale var(--mg-aria-motion-duration-fast) var(--mg-aria-motion-easing);
+  }
+  .react-aria-Switch::before,
+  .react-aria-Radio::before {
+    transition: background-color var(--mg-aria-motion-duration-fast) var(--mg-aria-motion-easing), border-color var(--mg-aria-motion-duration-fast) var(--mg-aria-motion-easing);
+  }
+  .react-aria-Switch::after {
+    transition: inset-inline-start var(--mg-aria-motion-duration-fast) var(--mg-aria-motion-easing);
+  }
+  .react-aria-SliderThumb {
+    transition: background-color var(--mg-aria-motion-duration-fast) var(--mg-aria-motion-easing), scale var(--mg-aria-motion-duration-fast) var(--mg-aria-motion-easing);
+  }
+}
+@media (forced-colors: active) {
+  .react-aria-Button[data-focus-visible],
+  .react-aria-Input[data-focus-visible],
+  .react-aria-DateInput[data-focus-within],
+  .react-aria-DateSegment[data-focused],
+  .react-aria-Checkbox[data-focus-visible]::before,
+  .react-aria-CalendarCell[data-focus-visible],
+  .react-aria-GridListItem[data-focus-visible],
+  .react-aria-ListBoxItem[data-focus-visible],
+  .react-aria-MenuItem[data-focus-visible],
+  .react-aria-Link[data-focus-visible],
+  .react-aria-Radio[data-focus-visible]::before,
+  .react-aria-SliderThumb[data-focus-visible],
+  .react-aria-Switch[data-focus-visible]::before,
+  .react-aria-Tab[data-focus-visible],
+  .react-aria-TabPanel[data-focus-visible],
+  .react-aria-Tag[data-focus-visible],
+  .react-aria-TextArea[data-focus-visible],
+  .react-aria-ToggleButton[data-focus-visible] {
+    outline: var(--mg-aria-focus-width) solid CanvasText;
+    outline-offset: var(--mg-aria-focus-offset);
+  }
+  /* Every forced-color-adjust opt-out below is paired with a system-colour
+     repaint. An unpaired opt-out keeps the brand colour, which a High Contrast
+     user has explicitly asked not to see; no opt-out at all flattens the
+     indicator into the forced canvas so the control reads as empty. */
+  .react-aria-Switch::before,
+  .react-aria-Switch::after,
+  .react-aria-Radio[data-selected]::before,
+  .react-aria-Tab[data-selected],
+  .react-aria-Tag[data-selected],
+  .react-aria-ToggleButton[data-selected],
+  .react-aria-SliderFill,
+  .react-aria-SliderThumb,
+  .react-aria-ProgressBar .bar,
+  .react-aria-ProgressBar .fill,
+  .react-aria-Meter .bar,
+  .react-aria-Meter .fill {
+    forced-color-adjust: none;
+  }
+  .react-aria-Switch::before {
+    background: Canvas;
+    border-color: CanvasText;
+  }
+  .react-aria-Switch::after {
+    background: CanvasText;
+  }
+  .react-aria-Switch[data-selected]::before {
+    background: Highlight;
+    border-color: Highlight;
+  }
+  .react-aria-Switch[data-selected]::after {
+    background: HighlightText;
+  }
+  .react-aria-Radio[data-selected]::before {
+    background: Highlight;
+    border-color: Canvas;
+    outline-color: Highlight;
+  }
+  .react-aria-Tab[data-selected],
+  .react-aria-Tag[data-selected],
+  .react-aria-ToggleButton[data-selected] {
+    background: Highlight;
+    border-color: Highlight;
+    color: HighlightText;
+  }
+  .react-aria-SliderFill,
+  .react-aria-SliderThumb,
+  .react-aria-ProgressBar .fill,
+  .react-aria-Meter .fill {
+    background: Highlight;
+  }
+  .react-aria-SliderThumb {
+    border-color: CanvasText;
+  }
+  /* Without a rail outline the unfilled remainder is indistinguishable from the
+     page, so a part-full bar reads as a short floating block. */
+  .react-aria-ProgressBar .bar,
+  .react-aria-Meter .bar {
+    background: Canvas;
+    border: var(--mg-aria-border-width) solid CanvasText;
+    box-sizing: border-box;
+  }
+}
+@keyframes mg-aria-indeterminate {
+  to {
+    background-position: calc(var(--mg-aria-space-4) * 2) 0;
+  }
+}
+/* Buttons that are field affordances rather than calls to action. The base
+   Button rule fills with the accent colour, which is right for a submit button
+   and wrong for a select trigger, a search clear button or calendar
+   navigation: those read as primary actions and, inside a grid field, stretch
+   to the full container width. */
+.react-aria-Select > .react-aria-Button {
+  background: var(--mg-aria-color-field-surface);
+  border-color: var(--mg-aria-color-border);
+  color: var(--mg-aria-color-text);
+  font-weight: 400;
+  justify-content: space-between;
+  text-align: start;
+}
+
+.react-aria-Select > .react-aria-Button[data-hovered] {
+  background: var(--mg-aria-color-field-surface-focus);
+}
+
+/* SearchField stacks Label, Input and the clear Button in a grid, so the
+   button spans the field unless the input and button share a row. */
+.react-aria-SearchField {
+  grid-template-columns: 1fr auto;
+}
+
+.react-aria-SearchField > .react-aria-Label,
+.react-aria-SearchField > .react-aria-Text,
+.react-aria-SearchField > .react-aria-FieldError {
+  grid-column: 1/-1;
+}
+
+.react-aria-SearchField > .react-aria-Button,
+.react-aria-Calendar .react-aria-Button[slot=previous],
+.react-aria-Calendar .react-aria-Button[slot=next],
+.react-aria-RangeCalendar .react-aria-Button[slot=previous],
+.react-aria-RangeCalendar .react-aria-Button[slot=next] {
+  background: none;
+  border-color: transparent;
+  color: var(--mg-aria-color-text);
+  min-inline-size: calc(var(--mg-aria-space-4) * 2);
+  padding-inline: var(--mg-aria-space-2);
+}
+
+.react-aria-SearchField > .react-aria-Button[data-hovered],
+.react-aria-Calendar .react-aria-Button[slot=previous][data-hovered],
+.react-aria-Calendar .react-aria-Button[slot=next][data-hovered],
+.react-aria-RangeCalendar .react-aria-Button[slot=previous][data-hovered],
+.react-aria-RangeCalendar .react-aria-Button[slot=next][data-hovered] {
+  background: var(--mg-aria-color-subtle-surface);
+}
+
+/* React Aria renders no calendar header; the previous/heading/next row is
+   author markup under a class we cannot know. Selecting on the slot buttons it
+   contains lays it out without dictating a class name. */
+.react-aria-Calendar > *:has(> .react-aria-Button[slot=previous]),
+.react-aria-RangeCalendar > *:has(> .react-aria-Button[slot=previous]) {
+  align-items: center;
+  display: flex;
+  gap: var(--mg-aria-space-2);
+  justify-content: space-between;
+  margin-block-end: var(--mg-aria-space-2);
+}
+
+/* A calendar sizes to its grid; without this the author-supplied header row
+   stretches to the container and pushes the next-month button out of view. */
+.react-aria-Calendar,
+.react-aria-RangeCalendar {
+  inline-size: fit-content;
+}
+
+/* Disabled, unavailable and outside-month cells rendered identically to
+   selectable ones, so the user could not tell which dates were choosable.
+   Unavailable dates stay focusable, so they keep a 4.5:1 text colour and carry
+   a line through as a non-colour signal. */
+.react-aria-CalendarCell[data-disabled],
+.react-aria-CalendarCell[data-outside-month] {
+  color: var(--mg-aria-color-muted-text);
+}
+
+.react-aria-CalendarCell[data-unavailable] {
+  color: var(--mg-aria-color-muted-text);
+  text-decoration: line-through;
+}
+
+.react-aria-CalendarCell[data-selection-start],
+.react-aria-CalendarCell[data-selection-end] {
+  background: var(--mg-aria-color-accent);
+  color: var(--mg-aria-color-on-accent);
+}
+
+.react-aria-RangeCalendar .react-aria-CalendarCell[data-selected]:not([data-selection-start],
+[data-selection-end]) {
+  background: var(--mg-aria-color-selected-surface);
+  color: var(--mg-aria-color-text);
+}
+}
