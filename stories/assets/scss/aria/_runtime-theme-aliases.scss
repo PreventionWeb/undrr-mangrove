@@ -4,6 +4,18 @@
  * resolve where the active theme owns their underlying values.
  */
 @mixin mg-aria-runtime-theme-aliases {
+  /* Mangrove's own v2 tab colours live here, not at :root, for the reason this
+     mixin exists: a custom property declared at :root resolves its inner var()
+     against :root and then inherits the already-resolved value, so a theme
+     override never reaches it. The legacy .mg-tabs component and React Aria's
+     Tabs both read these, which is what keeps the two tab surfaces identical
+     under every brand. */
+  --mg-tab-color: rgb(var(--mg-color-text));
+  --mg-tab-color--hover: rgb(var(--mg-color-interactive-active));
+  --mg-tab-color--active: rgb(var(--mg-color-interactive));
+  --mg-tab-background--hover: rgb(var(--mg-color-interactive) / 0.06);
+  --mg-tab-indicator--hover: rgb(var(--mg-color-interactive) / 0.45);
+  --mg-tab-indicator--active: rgb(var(--mg-color-interactive));
   --mg-aria-color-accent: rgb(var(--mg-color-interactive));
   --mg-aria-color-accent-active: rgb(var(--mg-color-interactive-active));
   --mg-aria-color-on-accent: rgb(var(--mg-color-white));
@@ -46,6 +58,42 @@
   --mg-aria-overlay-shadow: 0 var(--mg-aria-space-1) var(--mg-aria-space-3)
     rgb(var(--mg-color-neutral-900) / 0.2);
   --mg-aria-overlay-z-index: var(--mg-z-index-modal);
+  /* Tabs exist twice in Mangrove: the legacy .mg-tabs component and React
+     Aria's Tabs. Rather than inventing a second tab vocabulary, both read the
+     same v2 tab tokens, so a theme that restyles tabs restyles both surfaces
+     from one definition. Fallbacks keep the contract usable for consumers that
+     have no Mangrove component tokens at all. */
+  --mg-aria-tab-padding: var(
+    --mg-tab-padding,
+    var(--mg-aria-space-2) var(--mg-aria-space-3)
+  );
+  --mg-aria-tab-min-block-size: var(
+    --mg-tab-min-block-size,
+    calc(var(--mg-aria-space-4) * 2)
+  );
+  --mg-aria-tab-font-size: var(--mg-font-size-tab, var(--mg-aria-font-size));
+  --mg-aria-tab-color: var(--mg-tab-color, var(--mg-aria-color-text));
+  --mg-aria-tab-color-hover: var(
+    --mg-tab-color--hover,
+    var(--mg-aria-color-accent-active)
+  );
+  --mg-aria-tab-color-active: var(
+    --mg-tab-color--active,
+    var(--mg-aria-color-accent)
+  );
+  --mg-aria-tab-background-hover: var(
+    --mg-tab-background--hover,
+    var(--mg-aria-color-subtle-surface)
+  );
+  --mg-aria-tab-indicator-size: var(--mg-tab-indicator-size, 3px);
+  --mg-aria-tab-indicator-hover: var(
+    --mg-tab-indicator--hover,
+    var(--mg-aria-color-accent)
+  );
+  --mg-aria-tab-indicator-active: var(
+    --mg-tab-indicator--active,
+    var(--mg-aria-color-accent)
+  );
   --mg-aria-motion-duration-fast: var(--mg-motion-duration-fast);
   --mg-aria-motion-easing: var(--mg-motion-easing-standard);
 }

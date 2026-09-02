@@ -436,31 +436,38 @@
   flex-direction: column;
 }
 
+/* Tabs are a v2 underline indicator, not a filled pill. Both this surface and
+   the legacy .mg-tabs component read the same tab tokens, so a theme restyles
+   both at once. See _runtime-theme-aliases.scss. */
 .react-aria-Tab {
   align-items: center;
-  border-radius: var(--mg-aria-radius-control);
-  color: var(--mg-aria-color-muted-text);
+  background: transparent;
+  border-radius: 0;
+  box-shadow: inset 0 calc(var(--mg-aria-tab-indicator-size) * -1) 0 transparent;
+  color: var(--mg-aria-tab-color);
   cursor: pointer;
   display: flex;
+  font-size: var(--mg-aria-tab-font-size);
   font-weight: 600;
   justify-content: center;
-  min-block-size: calc(var(--mg-aria-space-4) * 2);
-  padding-block: var(--mg-aria-space-2);
-  padding-inline: var(--mg-aria-space-3);
+  min-block-size: var(--mg-aria-tab-min-block-size);
+  padding: var(--mg-aria-tab-padding);
 }
 
 .react-aria-Tab[data-hovered] {
-  background: var(--mg-aria-color-subtle-surface);
-  color: var(--mg-aria-color-text);
+  background: var(--mg-aria-tab-background-hover);
+  box-shadow: inset 0 calc(var(--mg-aria-tab-indicator-size) * -1) 0 var(--mg-aria-tab-indicator-hover);
+  color: var(--mg-aria-tab-color-hover);
 }
 
 .react-aria-Tab[data-pressed] {
-  background: var(--mg-aria-color-selected-surface);
+  background: var(--mg-aria-tab-background-hover);
 }
 
 .react-aria-Tab[data-selected] {
-  background: var(--mg-aria-color-selected-surface);
-  color: var(--mg-aria-color-accent);
+  background: transparent;
+  box-shadow: inset 0 calc(var(--mg-aria-tab-indicator-size) * -1) 0 var(--mg-aria-tab-indicator-active);
+  color: var(--mg-aria-tab-color-active);
 }
 
 .react-aria-Tab[data-disabled] {
