@@ -58,9 +58,13 @@
 .react-aria-TabPanel[data-focus-visible],
 .react-aria-Tag[data-focus-visible],
 .react-aria-TextArea[data-focus-visible],
-.react-aria-ToggleButton[data-focus-visible] {
-  box-shadow: var(--mg-aria-shadow);
-  outline: none;
+.react-aria-ToggleButton[data-focus-visible],
+.react-aria-Row[data-focus-visible],
+.react-aria-Column[data-focus-visible],
+.react-aria-ColumnResizer[data-focus-visible],
+.react-aria-DropZone[data-focus-visible] {
+  outline: var(--mg-aria-focus-width) solid var(--mg-aria-color-focus-ring);
+  outline-offset: var(--mg-aria-focus-offset);
 }
 .react-aria-Input[data-focus-visible],
 .react-aria-DateInput[data-focus-within] {
@@ -99,7 +103,8 @@
 }
 .react-aria-DateSegment[data-focused] {
   background: var(--mg-aria-color-subtle-surface);
-  box-shadow: var(--mg-aria-shadow);
+  outline: var(--mg-aria-focus-width) solid var(--mg-aria-color-focus-ring);
+  outline-offset: var(--mg-aria-focus-offset);
 }
 .react-aria-Checkbox {
   align-items: center;
@@ -130,7 +135,8 @@
   content: "\2713" / "";
 }
 .react-aria-Checkbox[data-focus-visible]::before {
-  box-shadow: var(--mg-aria-shadow);
+  outline: var(--mg-aria-focus-width) solid var(--mg-aria-color-focus-ring);
+  outline-offset: var(--mg-aria-focus-offset);
 }
 .react-aria-Table {
   border-collapse: collapse;
@@ -153,8 +159,10 @@
   box-sizing: content-box;
   cursor: col-resize;
   display: inline-block;
-  height: var(--mg-aria-space-4);
-  padding: 0 var(--mg-aria-space-2);
+  /* The visible rule stays 1px, but the hit area must clear the 24px
+     WCAG 2.5.8 minimum, so the target comes from height plus inline padding. */
+  height: calc(var(--mg-aria-space-4) * 2);
+  padding-inline: var(--mg-aria-space-3);
   width: var(--mg-aria-border-width);
 }
 .react-aria-ColumnResizer[data-resizing] {
@@ -251,13 +259,23 @@
   padding: var(--mg-aria-space-1);
   text-align: center;
 }
+.react-aria-CalendarCell {
+  /* A single-digit date was about 19px wide; calendar cells are contiguous, so
+     no WCAG 2.5.8 spacing exception applies. */
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  min-block-size: calc(var(--mg-aria-space-4) * 1.5);
+  min-inline-size: calc(var(--mg-aria-space-4) * 1.5);
+}
 .react-aria-CalendarCell[data-selected] {
   border-radius: var(--mg-aria-radius-control);
   background: var(--mg-aria-color-accent);
   color: var(--mg-aria-color-on-accent);
 }
 .react-aria-CalendarCell[data-focused] {
-  box-shadow: var(--mg-aria-shadow);
+  outline: var(--mg-aria-focus-width) solid var(--mg-aria-color-focus-ring);
+  outline-offset: var(--mg-aria-focus-offset);
 }
 .react-aria-Label {
   color: var(--mg-aria-color-text);
@@ -331,7 +349,8 @@
   padding: var(--mg-aria-space-2);
 }
 .react-aria-GridListItem[data-focused] {
-  box-shadow: var(--mg-aria-shadow);
+  outline: var(--mg-aria-focus-width) solid var(--mg-aria-color-focus-ring);
+  outline-offset: var(--mg-aria-focus-offset);
 }
 
 .react-aria-Tabs {
@@ -504,7 +523,6 @@
 .react-aria-Radio[data-disabled],
 .react-aria-RadioGroup[data-disabled] {
   cursor: not-allowed;
-  opacity: 0.55;
 }
 .react-aria-NumberField .react-aria-Input {
   text-align: end;
@@ -596,9 +614,6 @@
 }
 .react-aria-ToggleButtonGroup[data-orientation="vertical"] {
   flex-direction: column;
-}
-.react-aria-ToggleButtonGroup[data-disabled] {
-  opacity: 0.55;
 }
 .react-aria-ToggleButton {
   align-items: center;
@@ -822,6 +837,9 @@
 .react-aria-Breadcrumb:not(:last-child)::after {
   color: var(--mg-aria-color-muted-text);
   content: "\203A" / "";
+}
+[dir="rtl"] .react-aria-Breadcrumb:not(:last-child)::after {
+  content: "\2039" / "";
 }
 .react-aria-Breadcrumb[data-current] {
   color: var(--mg-aria-color-text);
