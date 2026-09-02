@@ -384,3 +384,67 @@ describe('React Aria token contrast (WCAG 2.2 AA)', () => {
     });
   });
 });
+
+/**
+ * Mangrove stores colours as channel triplets ("0 79 145") so they can be used
+ * with an alpha via `rgb(var(--x) / 0.5)`. A triplet is only valid inside
+ * rgb(); dropped raw into a colour position it makes the whole declaration
+ * invalid, and CSS discards it silently.
+ *
+ * That is not theoretical. `--mg-border-color-button` was a triplet consumed
+ * inside a `border:` shorthand, so border-style fell back to none and
+ * .mg-button-outline, which relies on that border for its entire shape,
+ * rendered as bare coloured text. The variant was broken from the day it
+ * shipped and no test caught it.
+ */
+describe('channel triplets are never used raw in a colour position', () => {
+  const TRIPLET = /^\d{1,3}\s+\d{1,3}\s+\d{1,3}$/;
+  const COLOUR_PROP =
+    /(^|[{;\s])(border|border-top|border-right|border-bottom|border-left|border-block|border-block-end|border-block-start|border-inline|border-inline-end|border-inline-start|border-color|border-[a-z-]+-color|background|background-color|color|outline|outline-color|box-shadow|fill|stroke|text-decoration-color)\s*:/;
+
+  test('no Sass source drops a triplet token into a colour declaration', () => {
+    const compiled = compile('style');
+    const declared = {};
+    for (const m of compiled.matchAll(/(--mg-[a-z0-9-]+)\s*:\s*([^;}]+)[;}]/g))
+      if (!(m[1] in declared)) declared[m[1]] = m[2].trim();
+
+    const isTriplet = (name, depth = 0) => {
+      if (depth > 10) return false;
+      const value = declared[name];
+      if (!value) return false;
+      if (TRIPLET.test(value)) return true;
+      const alias = value.match(/^var\(\s*(--mg-[a-z0-9-]+)\s*\)$/);
+      return alias ? isTriplet(alias[1], depth + 1) : false;
+    };
+    const triplets = new Set(
+      Object.keys(declared).filter(name => isTriplet(name))
+    );
+
+    const offenders = [];
+    const walk = dir => {
+      for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+        const full = path.join(dir, entry.name);
+        if (entry.isDirectory()) {
+          if (!/node_modules|__tests__/.test(full)) walk(full);
+        } else if (entry.name.endsWith('.scss')) {
+          fs.readFileSync(full, 'utf8')
+            .split('\n')
+            .forEach((line, index) => {
+              if (!COLOUR_PROP.test(line)) return;
+              for (const m of line.matchAll(/var\(\s*(--mg-[a-z0-9-]+)/g)) {
+                if (!triplets.has(m[1])) continue;
+                // Already inside rgb()/rgba()? then it is correct.
+                if (/rgba?\([^)]*$/.test(line.slice(0, m.index))) continue;
+                offenders.push(
+                  `${path.relative(process.cwd(), full)}:${index + 1} ${m[1]}`
+                );
+              }
+            });
+        }
+      }
+    };
+    walk(path.resolve(__dirname, '../../../../stories'));
+
+    expect(offenders).toEqual([]);
+  });
+});
