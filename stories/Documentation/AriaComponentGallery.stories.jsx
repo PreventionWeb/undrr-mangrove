@@ -215,7 +215,7 @@ function LeadTimeField({ isDisabled, isInvalid }) {
     >
       <Label>Warning lead time (hours)</Label>
       <Group>
-        <Button slot="decrement">-</Button>
+        <Button slot="decrement">−</Button>
         <Input />
         <Button slot="increment">+</Button>
       </Group>

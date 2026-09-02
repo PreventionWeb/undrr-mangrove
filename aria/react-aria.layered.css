@@ -1136,6 +1136,13 @@
   gap: var(--mg-aria-space-3);
 }
 
+/* Grid items stretch to the column by default, which is right for fields and
+   wrong for buttons: a submit button rendered full-bleed across the form. Only
+   the button opts out, so inputs keep filling the column. */
+.react-aria-Form > .react-aria-Button {
+  justify-self: start;
+}
+
 .react-aria-FieldError {
   font-family: var(--mg-aria-font-family);
   line-height: var(--mg-aria-line-height);
