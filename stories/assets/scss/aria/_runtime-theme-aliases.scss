@@ -123,19 +123,26 @@
   --mg-aria-surface-shadow: var(--mg-shadow-raised);
   --mg-aria-surface-shadow-hover: var(--mg-shadow-raised-hover);
   /* The elevation ladder: card (inset rule) -> popover -> modal.
-     The previous value, 0 5px 15px / 0.2, is a hand-rolled short hard drop
-     that belongs to no other surface in Mangrove. Every modern floating
-     surface here is long, soft and low-alpha: mega-menu.scss:194 is
-     0 18px 45px / 0.14 and --mg-hero-overlay-shadow is 0 18px 55px / 0.22.
-     15px/40px/0.12 sits in that family (space-3, and twice space-4) while
-     staying lighter than the mega-menu, which is a full-width panel. */
-  --mg-aria-overlay-shadow: 0 var(--mg-aria-space-3)
-    calc(var(--mg-aria-space-4) * 2) rgb(var(--mg-color-neutral-900) / 0.12);
+     Two earlier values were both wrong for different reasons. 0 5px 15px/0.2
+     was a hand-rolled short HARD drop belonging to no other surface here.
+     0 15px 40px/0.12 was derived from the mega-menu (mega-menu.scss:194,
+     0 18px 45px/0.14) — correct for a full-width panel, but on a 200px-wide
+     popover a 40px blur reads as a SaaS floating panel rather than a menu.
+     10px/20px/0.12 is the popover register the institutional survey found
+     (GOV.UK, USWDS, NHS, OCHA, Primer, Atlassian, Carbon) and the RAC
+     ecosystem confirms (Adobe 0 8px 20px/0.12). It is deliberately paired
+     with a QUIET edge rather than the opaque form-field border: drawing an
+     opaque boundary AND a long shadow was doing the same job twice, which
+     was the finding. See --mg-aria-color-rule and the overlay border group
+     in _react-aria.scss. */
+  --mg-aria-overlay-shadow: 0 var(--mg-aria-space-2) var(--mg-aria-space-4)
+    rgb(var(--mg-color-neutral-900) / 0.12);
   /* The modal is the top of the ladder, so it has to out-elevate the popover
-     rather than match it: 30px/60px/0.18, deeper and darker than the popover
-     and in the same family as the hero overlay. */
-  --mg-aria-modal-shadow: 0 calc(var(--mg-aria-space-4) * 1.5)
-    calc(var(--mg-aria-space-4) * 3) rgb(var(--mg-color-neutral-900) / 0.18);
+     rather than match it: 15px/30px/0.16, a deeper offset, a wider blur and a
+     darker alpha than the popover, in the peer modal register (Adobe
+     0 8px 32px/0.2, the survey's 0 12px 32px/0.14). */
+  --mg-aria-modal-shadow: 0 var(--mg-aria-space-3)
+    calc(var(--mg-aria-space-4) * 1.5) rgb(var(--mg-color-neutral-900) / 0.16);
   /* Lives here rather than in the brand-neutral constants because it is now
      derived from the theme's own darkest neutral instead of the off-palette
      navy (24 24 35) it used to hardcode. Alpha raised 0.2 -> 0.18 on a pure
