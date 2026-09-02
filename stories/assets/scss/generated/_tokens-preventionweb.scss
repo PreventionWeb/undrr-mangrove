@@ -1,0 +1,260 @@
+// GENERATED FILE — DO NOT EDIT.
+// Brand: PreventionWeb
+// Selector: .mg-theme-preventionweb
+// Source: tokens/mangrove.yaml + tokens/undrr.yaml + tokens/preventionweb.yaml
+// Regenerate: yarn build:tokens
+// Edit the YAML source, never this file.
+// `npx jest tokens-source` fails if the two disagree.
+
+// The .mg-theme-preventionweb token block.
+@mixin mg-tokens-preventionweb {
+  // theme.loaded
+  // Runtime marker: lets JS and tooling detect that this brand theme is
+  // active, guarding the sub-brand body-class trap. See docs/RELEASE-2.0.md.
+  --mg-theme-loaded: preventionweb;
+
+  // color.interactive
+  // PreventionWeb teal. The one primitive this brand states.
+  --mg-color-interactive: 10 105 105;
+
+  // color.interactive-active
+  // PreventionWeb teal. The one primitive this brand states.
+  --mg-color-interactive-active: 10 105 105;
+
+  // color.tag
+  --mg-color-tag: var(--mg-color-interactive);
+
+  // color.tag--hover
+  --mg-color-tag--hover: var(--mg-color-interactive-active);
+
+  // color.button-background
+  --mg-color-button-background: rgb(10 105 105);
+
+  // color.button-background--hover
+  --mg-color-button-background--hover: rgb(var(--mg-color-orange-900));
+
+  // color.button-outline-primary
+  --mg-color-button-outline-primary: 10 105 105;
+
+  // color.button-outline-primary--hover
+  --mg-color-button-outline-primary--hover: var(--mg-color-orange-900);
+
+  // color.button-outline-secondary
+  --mg-color-button-outline-secondary: var(--mg-color-button-secondary-background);
+
+  // color.button-outline-secondary--hover
+  --mg-color-button-outline-secondary--hover: var(--mg-color-button-secondary-background--hover);
+
+  // color.form-check
+  --mg-color-form-check: var(--mg-color-interactive);
+
+  // color.form-check--hover
+  --mg-color-form-check--hover: var(--mg-color-interactive-active);
+
+  // color.form-check--checked
+  --mg-color-form-check--checked: var(--mg-color-interactive);
+
+  // color.form-focus
+  --mg-color-form-focus: var(--mg-color-interactive);
+
+  // color.hero
+  --mg-color-hero: var(--mg-color-interactive);
+
+  // color.tabbar-background
+  --mg-color-tabbar-background: rgb(10 105 105 / 0.1);
+
+  // color.tab-background
+  --mg-color-tab-background: rgb(10 105 105 / 0.1);
+
+  // color.tab-background--inactive
+  --mg-color-tab-background--inactive: var(--mg-color-tabbar-background);
+
+  // color.tab-background--hover
+  --mg-color-tab-background--hover: rgb(10 105 105 / 0.2);
+
+  // color.tab-border
+  --mg-color-tab-border: var(--mg-color-interactive);
+
+  // color.tab-border--hover
+  --mg-color-tab-border--hover: var(--mg-color-interactive);
+
+  // color.tab-border--active
+  --mg-color-tab-border--active: var(--mg-color-tab-background);
+
+  // color.text-tab
+  --mg-color-text-tab: var(--mg-color-neutral-700);
+
+  // color.text-tab--hover
+  --mg-color-text-tab--hover: var(--mg-color-neutral-700);
+
+  // color.text-tab-active
+  --mg-color-text-tab-active: var(--mg-color-neutral-900);
+
+  // radius.button
+  --mg-radius-button: var(--mg-spacing-50);
+
+  // radius.tab
+  --mg-radius-tab: var(--mg-spacing-50) var(--mg-spacing-50) 0 0;
+
+  // spacing.hero-overlay
+  --mg-spacing-hero-overlay: 1.25rem 0;
+}
+
+// Standalone React Aria closure: every Mangrove token the
+// --mg-aria-* adapter reads, transitively, resolved for this
+// brand. Emitted at zero specificity by the aria token entry so
+// the published file works alone and still loses to Mangrove's
+// own stylesheet whenever both are present.
+@mixin mg-tokens-preventionweb-aria {
+  // color.neutral-0
+  --mg-color-neutral-0: 255 255 255;
+
+  // color.neutral-25
+  --mg-color-neutral-25: 242 242 242;
+
+  // color.neutral-50
+  --mg-color-neutral-50: 230 230 230;
+
+  // color.neutral-400
+  --mg-color-neutral-400: 128 128 128;
+
+  // color.neutral-600
+  --mg-color-neutral-600: 77 77 77;
+
+  // color.neutral-800
+  --mg-color-neutral-800: 26 26 26;
+
+  // color.neutral-900
+  --mg-color-neutral-900: 0 0 0;
+
+  // color.red-900
+  --mg-color-red-900: 193 9 32;
+
+  // color.interactive
+  // PreventionWeb teal. The one primitive this brand states.
+  --mg-color-interactive: 10 105 105;
+
+  // color.interactive-active
+  // PreventionWeb teal. The one primitive this brand states.
+  --mg-color-interactive-active: 10 105 105;
+
+  // color.text
+  --mg-color-text: var(--mg-color-neutral-800);
+
+  // color.white
+  --mg-color-white: var(--mg-color-neutral-0);
+
+  // color.tag
+  --mg-color-tag: var(--mg-color-interactive);
+
+  // color.tag--hover
+  --mg-color-tag--hover: var(--mg-color-interactive-active);
+
+  // color.orange-900
+  --mg-color-orange-900: 235 117 42;
+
+  // color.button
+  --mg-color-button: var(--mg-color-neutral-0);
+
+  // color.button-background
+  --mg-color-button-background: rgb(10 105 105);
+
+  // color.button-background--hover
+  --mg-color-button-background--hover: rgb(var(--mg-color-orange-900));
+
+  // color.form-check
+  --mg-color-form-check: var(--mg-color-interactive);
+
+  // color.form-check--hover
+  --mg-color-form-check--hover: var(--mg-color-interactive-active);
+
+  // color.form-check--checked
+  --mg-color-form-check--checked: var(--mg-color-interactive);
+
+  // color.form-focus
+  --mg-color-form-focus: var(--mg-color-interactive);
+
+  // color.focus-ring
+  --mg-color-focus-ring: var(--mg-color-interactive);
+
+  // spacing.0
+  --mg-spacing-0: 0;
+
+  // spacing.50
+  --mg-spacing-50: 0.3125rem;
+
+  // spacing.100
+  --mg-spacing-100: 0.625rem;
+
+  // spacing.150
+  --mg-spacing-150: 0.9375rem;
+
+  // spacing.200
+  --mg-spacing-200: 1.25rem;
+
+  // font-size.button
+  --mg-font-size-button: 0.875rem;
+
+  // font-size.tab
+  --mg-font-size-tab: 1.125rem;
+
+  // radius.tag
+  --mg-radius-tag: var(--mg-spacing-0);
+
+  // radius.button
+  --mg-radius-button: var(--mg-spacing-50);
+
+  // radius.form-input
+  --mg-radius-form-input: var(--mg-spacing-50);
+
+  // padding.button
+  --mg-padding-button: var(--mg-spacing-100) var(--mg-spacing-150);
+
+  // tab.padding
+  --mg-tab-padding: var(--mg-spacing-150) var(--mg-spacing-200);
+
+  // tab.min-block-size
+  --mg-tab-min-block-size: 2.75rem;
+
+  // tab.indicator-size
+  --mg-tab-indicator-size: 3px;
+
+  // form-input.background
+  --mg-form-input-background: rgb(var(--mg-color-neutral-25));
+
+  // form-input.background--focus
+  --mg-form-input-background--focus: rgb(var(--mg-color-neutral-0));
+
+  // form-input.border-color
+  // The border was rgb(neutral-600 / 0.22), which is 1.43:1 against the page
+  // and 1.39:1 against the field's own fill, so every input, textarea and
+  // select in the system failed WCAG 1.4.11. neutral-400 is 3.95:1.
+  --mg-form-input-border-color: rgb(var(--mg-color-neutral-400));
+
+  // focus-ring.width
+  --mg-focus-ring-width: 2px;
+
+  // focus-ring.offset
+  --mg-focus-ring-offset: 2px;
+
+  // surface.raised
+  --mg-surface-raised: rgb(var(--mg-color-neutral-0));
+
+  // shadow.raised
+  --mg-shadow-raised: inset 0 0 0 1px rgb(var(--mg-color-neutral-600) / 0.24);
+
+  // shadow.raised-hover
+  --mg-shadow-raised-hover: inset 0 0 0 2px rgb(var(--mg-color-interactive));
+
+  // motion.duration-fast
+  --mg-motion-duration-fast: 160ms;
+
+  // motion.easing-standard
+  --mg-motion-easing-standard: cubic-bezier(0.2, 0, 0, 1);
+
+  // card.border-radius
+  --mg-card-border-radius: var(--mg-spacing-50);
+
+  // z-index.modal
+  --mg-z-index-modal: 5000;
+}

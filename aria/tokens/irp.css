@@ -1,7 +1,7 @@
 @charset "UTF-8";
 /*
- * Standalone React Aria token file for DELTA Resilience.
- * Compiled to aria/tokens/delta.css by `yarn build:aria`; do not edit that
+ * Standalone React Aria token file for the irp theme.
+ * Compiled to aria/tokens/irp.css by `yarn build:aria`; do not edit that
  * generated CSS directly.
  *
  * Everything sits inside :where(:root), which has ZERO specificity. That is
@@ -28,19 +28,9 @@
  * $font-family is passed as a Sass *string* and interpolated: assigning a
  * comma list here would drop the quotes and change the compiled CSS.
  */
-/* An asset declaration, not a token: the family NAME is generated from
-   tokens/delta.yaml, the src URLs are not expressible as design tokens and
-   stay here. */
-@font-face {
-  font-family: Dubai;
-  src: url("https://assets.undrr.org/static/fonts/dubai/v1.0.0/Regular/Dubai-Regular.woff2") format("woff2"), url("https://assets.undrr.org/static/fonts/dubai/v1.0.0/Regular/Dubai-Regular.woff") format("woff");
-  font-display: swap;
-  font-style: normal;
-  font-weight: 400;
-}
 :where(:root) {
   /* The transitive closure of Mangrove tokens the --mg-aria-* contract reads,
-     resolved for DELTA. Generated: see tokens/delta.yaml. */
+     resolved for this brand. Generated: see tokens/*.yaml. */
   --mg-color-neutral-0: 255 255 255;
   --mg-color-neutral-25: 242 242 242;
   --mg-color-neutral-50: 230 230 230;
@@ -49,15 +39,16 @@
   --mg-color-neutral-800: 26 26 26;
   --mg-color-neutral-900: 0 0 0;
   --mg-color-red-900: 193 9 32;
-  --mg-color-interactive: 0 79 145;
-  --mg-color-interactive-active: 16 108 184;
+  --mg-color-interactive: 15 120 191;
+  --mg-color-interactive-active: 15 120 191;
   --mg-color-text: var(--mg-color-neutral-800);
   --mg-color-white: var(--mg-color-neutral-0);
   --mg-color-tag: var(--mg-color-interactive);
   --mg-color-tag--hover: var(--mg-color-interactive-active);
+  --mg-color-orange-900: 235 117 42;
   --mg-color-button: var(--mg-color-neutral-0);
-  --mg-color-button-background: rgb(0 79 145);
-  --mg-color-button-background--hover: rgb(16 108 184);
+  --mg-color-button-background: rgb(15 120 191);
+  --mg-color-button-background--hover: rgb(var(--mg-color-orange-900));
   --mg-color-form-check: var(--mg-color-interactive);
   --mg-color-form-check--hover: var(--mg-color-interactive-active);
   --mg-color-form-check--checked: var(--mg-color-interactive);
@@ -72,7 +63,7 @@
   --mg-radius-tag: var(--mg-spacing-50);
   --mg-radius-button: var(--mg-spacing-50);
   --mg-radius-form-input: var(--mg-spacing-50);
-  --mg-padding-button: var(--mg-spacing-100) var(--mg-spacing-200);
+  --mg-padding-button: var(--mg-spacing-100) var(--mg-spacing-150);
   --mg-tab-padding: var(--mg-spacing-150) var(--mg-spacing-200);
   --mg-tab-min-block-size: 2.75rem;
   --mg-tab-indicator-size: 3px;
@@ -229,7 +220,7 @@
   );
   --mg-aria-motion-duration-fast: var(--mg-motion-duration-fast);
   --mg-aria-motion-easing: var(--mg-motion-easing-standard);
-  --mg-aria-font-family: "Dubai", sans-serif;
+  --mg-aria-font-family: "Roboto", sans-serif;
   --mg-aria-font-size: 1rem;
   --mg-aria-font-size-small: 0.875rem;
   --mg-aria-line-height: 1.5;

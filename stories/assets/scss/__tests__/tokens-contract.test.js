@@ -226,6 +226,9 @@ describe('distributed React Aria surface', () => {
 
   test.each([
     ['mangrove', 'aria/_tokens-mangrove'],
+    ['preventionweb', 'aria/_tokens-preventionweb'],
+    ['irp', 'aria/_tokens-irp'],
+    ['mcr', 'aria/_tokens-mcr'],
     ['delta', 'aria/_tokens-delta'],
   ])(
     'every --mg-aria-* it consumes is defined by the %s token file',
@@ -497,5 +500,165 @@ describe('channel triplets are never used raw in a colour position', () => {
     walk(path.resolve(__dirname, '../../../../stories'));
 
     expect(offenders).toEqual([]);
+  });
+});
+
+/**
+ * The standalone React Aria token files must RESOLVE, not merely define.
+ *
+ * The existing "every --mg-aria-* it consumes is defined by the token file"
+ * assertion checks that a key exists. It does not check that the key's value
+ * bottoms out in anything. aria/tokens/mangrove.css passed 929 green tests
+ * while carrying 28 var() references to --mg-* properties it never defined,
+ * so a consumer importing it without Mangrove's stylesheet got no accent, no
+ * surface, no spacing and no focus indicator — and, in forced colours, no
+ * focus ring at all. Nothing failed, because "defined" and "resolves" are
+ * different questions.
+ *
+ * Each file is therefore compiled and evaluated ALONE here, exactly as an
+ * external consumer would load it.
+ */
+describe('standalone React Aria token files resolve on their own', () => {
+  const BRAND_FILES = [
+    ['mangrove', 'aria/_tokens-mangrove'],
+    ['preventionweb', 'aria/_tokens-preventionweb'],
+    ['irp', 'aria/_tokens-irp'],
+    ['mcr', 'aria/_tokens-mcr'],
+    ['delta', 'aria/_tokens-delta'],
+  ];
+
+  // A single flat table: the file declares one block, so nothing shadows.
+  const declarationsOf = css => {
+    const table = {};
+    for (const match of css.matchAll(/(--[a-z0-9-]+)\s*:\s*([^;}]+)[;}]/g)) {
+      table[match[1]] = match[2].replace(/\s+/g, ' ').trim();
+    }
+    return table;
+  };
+
+  // Substitution over balanced parentheses: a var() fallback may itself hold
+  // var() and rgb(), so this cannot be a regex. An unresolvable reference
+  // with no fallback is reported rather than silently dropped, which is the
+  // whole point of the test.
+  const resolveValue = (table, value, missing, depth = 0) => {
+    if (depth > 25) {
+      missing.push('depth limit — probable reference cycle');
+      return value;
+    }
+    if (!value || !value.includes('var(')) return value;
+    let out = '';
+    let index = 0;
+    while (index < value.length) {
+      const at = value.indexOf('var(', index);
+      if (at === -1) {
+        out += value.slice(index);
+        break;
+      }
+      out += value.slice(index, at);
+      let level = 0;
+      let end = at + 3;
+      for (; end < value.length; end++) {
+        if (value[end] === '(') level++;
+        else if (value[end] === ')' && --level === 0) break;
+      }
+      const inner = value.slice(at + 4, end);
+      let lvl = 0;
+      let comma = -1;
+      for (let k = 0; k < inner.length; k++) {
+        if (inner[k] === '(') lvl++;
+        else if (inner[k] === ')') lvl--;
+        else if (inner[k] === ',' && lvl === 0) {
+          comma = k;
+          break;
+        }
+      }
+      const name = (comma === -1 ? inner : inner.slice(0, comma)).trim();
+      const fallback = comma === -1 ? null : inner.slice(comma + 1).trim();
+      if (table[name] !== undefined) out += table[name];
+      else if (fallback !== null) out += fallback;
+      else missing.push(name);
+      index = end + 1;
+    }
+    return resolveValue(table, out, missing, depth + 1);
+  };
+
+  let ariaCss;
+  beforeAll(() => {
+    ariaCss = compile('aria/_react-aria');
+  });
+
+  describe.each(BRAND_FILES)('%s', (brand, entry) => {
+    let table;
+    let css;
+    beforeAll(() => {
+      css = compile(entry);
+      table = declarationsOf(css);
+    });
+
+    test('is emitted at zero specificity, not at :root', () => {
+      // :where(:root) means the published file works alone AND still loses to
+      // Mangrove's own stylesheet whenever both are loaded, regardless of load
+      // order. A plain :root block would let a stale package win.
+      const rules = css.replace(/\/\*[\s\S]*?\*\//g, '');
+      expect(rules).toContain(':where(:root)');
+      expect(rules).not.toMatch(/(^|[\s,}])\:root\s*[,{]/m);
+    });
+
+    test('every --mg-aria-* it declares bottoms out in a real value', () => {
+      const unresolved = [];
+      for (const [property, value] of Object.entries(table)) {
+        if (!property.startsWith('--mg-aria-')) continue;
+        const missing = [];
+        const resolved = resolveValue(table, value, missing);
+        if (missing.length > 0) {
+          unresolved.push(`${property} -> ${[...new Set(missing)].join(', ')}`);
+        } else if (!resolved.trim() || resolved.includes('var(')) {
+          unresolved.push(`${property} -> "${resolved}"`);
+        }
+      }
+      expect(unresolved).toEqual([]);
+    });
+
+    test('every --mg-aria-* the shared stylesheet reads resolves here', () => {
+      // The other direction: the token file may resolve everything it happens
+      // to declare while still missing something aria/react-aria.css uses.
+      const used = new Set(
+        [...ariaCss.matchAll(/var\(\s*(--mg-aria-[a-z0-9-]+)/g)].map(m => m[1])
+      );
+      const unresolved = [];
+      for (const property of used) {
+        if (table[property] === undefined) {
+          unresolved.push(`${property} (not declared)`);
+          continue;
+        }
+        const missing = [];
+        const resolved = resolveValue(table, table[property], missing);
+        if (
+          missing.length > 0 ||
+          !resolved.trim() ||
+          resolved.includes('var(')
+        ) {
+          unresolved.push(`${property} -> ${missing.join(', ') || resolved}`);
+        }
+      }
+      expect(unresolved).toEqual([]);
+    });
+
+    test('carries no unresolved --mg-* reference at all', () => {
+      // The 28-reference defect stated directly: nothing in the file may point
+      // at a Mangrove property the file does not itself define.
+      const declared = new Set(Object.keys(table));
+      const dangling = new Set();
+      for (const value of Object.values(table)) {
+        for (const match of value.matchAll(/var\(\s*(--mg-[a-z0-9-]+)/g)) {
+          if (!declared.has(match[1])) dangling.add(match[1]);
+        }
+      }
+      expect([...dangling]).toEqual([]);
+    });
+
+    test(`names ${brand} as its source and forbids hand-editing`, () => {
+      expect(css).toContain('do not edit that');
+    });
   });
 });

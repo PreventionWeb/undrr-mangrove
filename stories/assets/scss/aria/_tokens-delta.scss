@@ -1,12 +1,22 @@
 /*
- * Sass source for DELTA's React Aria token adapter.
- * The public aria/tokens/delta.css artifact is generated from this file by
- * `yarn build:aria`; do not edit that generated CSS directly.
- * It provides DELTA values through the same --mg-aria-* contract, proving the
- * shared Aria CSS can be themed by swapping this file alone.
+ * Standalone React Aria token file for DELTA Resilience.
+ * Compiled to aria/tokens/delta.css by `yarn build:aria`; do not edit that
+ * generated CSS directly.
+ *
+ * Everything sits inside :where(:root), which has ZERO specificity. That is
+ * what makes the file work on its own — a consumer importing it without
+ * Mangrove's stylesheet still gets an accent, a surface, spacing and a focus
+ * indicator — while Mangrove's own :root palette still wins whenever both are
+ * loaded, regardless of load order. A plain :root block would let a stale
+ * published package override a newer stylesheet.
  */
-@import "../generated/delta-brand-aria";
+@import "../generated/tokens-delta";
+@import "./runtime-theme-aliases";
+@import "./tokens-shared";
 
+/* An asset declaration, not a token: the family NAME is generated from
+   tokens/delta.yaml, the src URLs are not expressible as design tokens and
+   stay here. */
 @font-face {
   font-family: $_delta-font-family-name;
   src:
@@ -19,112 +29,10 @@
   font-weight: 400;
 }
 
-:root {
-  /* DELTA's minimal Mangrove token subset, kept as raw RGB channels.
-     The brand-owned values are generated from tokens/delta.tokens.json; the
-     rest are Mangrove defaults DELTA does not restyle. */
-  @include mg-delta-brand-tokens;
-
-  --mg-color-white: 255 255 255;
-  --mg-color-neutral-600: 77 77 77;
-  --mg-color-neutral-200: 179 179 179;
-  --mg-color-neutral-400: 128 128 128;
-  --mg-color-neutral-50: 230 230 230;
-  --mg-color-red-900: 193 9 32;
-  --mg-surface-raised: rgb(var(--mg-color-white));
-  --mg-color-focus-ring: var(--mg-color-interactive);
-  --mg-color-form-focus: var(--mg-color-interactive);
-  --mg-spacing-50: 0.3125rem;
-  --mg-spacing-100: 0.625rem;
-  --mg-spacing-150: 0.9375rem;
-  --mg-spacing-200: 1.25rem;
-  --mg-radius-form-input: 0.3125rem;
-  --mg-radius-button: 0.3125rem;
-  --mg-card-border-radius: 0.3125rem;
-  --mg-focus-ring-width: 2px;
-  --mg-focus-ring-offset: 2px;
-  --mg-shadow-raised: inset 0 0 0 1px rgb(#{$_delta-color-ink--raw} / 0.18);
-  --mg-shadow-raised-hover: inset 0 0 0 2px rgb(var(--mg-color-interactive));
-  --mg-motion-duration-fast: 160ms;
-  --mg-motion-easing-standard: cubic-bezier(0.2, 0, 0, 1);
-  --mg-z-index-modal: 5000;
-  --mg-aria-color-accent: rgb(var(--mg-color-interactive));
-  --mg-aria-color-accent-active: rgb(var(--mg-color-button--hover));
-  --mg-aria-color-on-accent: rgb(var(--mg-color-white));
-  --mg-aria-color-text: rgb(var(--mg-color-text));
-  --mg-aria-color-muted-text: rgb(var(--mg-color-neutral-600));
-  --mg-aria-color-surface: var(--mg-surface-raised);
-  /* DELTA's fields are flat on the raised surface rather than tinted, so both
-     field states resolve to the same value here. The contract key still exists
-     so the shared stylesheet stays identical across token files. */
-  --mg-aria-color-field-surface: var(--mg-surface-raised);
-  --mg-aria-color-field-surface-focus: var(--mg-surface-raised);
-  --mg-aria-color-subtle-surface: var(--mg-card-background);
-  --mg-aria-color-selected-surface: rgb(var(--mg-color-interactive) / 0.12);
-  /* neutral-200 is 2.10:1 on white, which fails WCAG 1.4.11 for every field
-     boundary. neutral-400 is 3.95:1 and matches the base theme. neutral-200
-     stays available for decorative dividers. */
-  --mg-aria-color-border: rgb(var(--mg-color-neutral-400));
-  --mg-aria-color-border-focus: rgb(var(--mg-color-form-focus));
-  --mg-aria-color-track: rgb(var(--mg-color-neutral-50));
-  --mg-aria-color-invalid: rgb(var(--mg-color-red-900));
-  --mg-aria-font-family: #{$_delta-font-family-stack};
-  --mg-aria-font-size: 1rem;
-  --mg-aria-font-size-small: 0.875rem;
-  --mg-aria-line-height: 1.5;
-  --mg-aria-space-1: var(--mg-spacing-50);
-  --mg-aria-space-2: var(--mg-spacing-100);
-  --mg-aria-space-3: var(--mg-spacing-150);
-  --mg-aria-space-4: var(--mg-spacing-200);
-  --mg-aria-radius: var(--mg-radius-form-input);
-  --mg-aria-radius-button: var(--mg-radius-button);
-  --mg-aria-radius-control: var(--mg-radius-form-input);
-  --mg-aria-radius-surface: var(--mg-card-border-radius);
-  --mg-aria-border-width: 1px;
-  --mg-aria-color-focus-ring: rgb(var(--mg-color-focus-ring));
-  --mg-aria-focus-width: var(--mg-focus-ring-width);
-  --mg-aria-focus-offset: var(--mg-focus-ring-offset);
-  --mg-aria-shadow:
-    0 0 0 var(--mg-aria-focus-offset) var(--mg-aria-color-surface),
-    0 0 0 calc(var(--mg-aria-focus-offset) + var(--mg-aria-focus-width))
-      var(--mg-aria-color-focus-ring);
-  --mg-aria-surface-shadow: var(--mg-shadow-raised);
-  --mg-aria-surface-shadow-hover: var(--mg-shadow-raised-hover);
-  --mg-aria-overlay-shadow: 0 var(--mg-aria-space-1) var(--mg-aria-space-3)
-    rgb(#{$_delta-color-ink--raw} / 0.2);
-  --mg-aria-overlay-z-index: var(--mg-z-index-modal);
-  --mg-aria-color-overlay-backdrop: rgb(#{$_delta-color-ink--raw} / 0.2);
-  /* DELTA has no legacy Mangrove tab component, so these carry the generic
-     equivalents. The keys exist so the shared stylesheet stays identical
-     across token files. */
-  --mg-aria-tag-radius: var(--mg-aria-radius-control);
-  --mg-aria-tag-background: var(--mg-aria-color-accent);
-  --mg-aria-tag-background-hover: var(--mg-aria-color-accent-active);
-  --mg-aria-check-color: var(--mg-aria-color-accent);
-  --mg-aria-check-color-hover: var(--mg-aria-color-accent-active);
-  --mg-aria-check-color-checked: var(--mg-aria-color-accent);
-  --mg-aria-button-background: var(--mg-aria-color-accent);
-  --mg-aria-button-background-hover: var(--mg-aria-color-accent-active);
-  --mg-aria-button-color: var(--mg-aria-color-on-accent);
-  --mg-aria-button-padding: var(--mg-aria-space-2) var(--mg-aria-space-3);
-  --mg-aria-button-font-size: var(--mg-aria-font-size);
-  --mg-aria-tab-padding: var(--mg-aria-space-2) var(--mg-aria-space-3);
-  --mg-aria-tab-min-block-size: calc(var(--mg-aria-space-4) * 2);
-  --mg-aria-tab-font-size: var(--mg-aria-font-size);
-  --mg-aria-tab-color: var(--mg-aria-color-text);
-  --mg-aria-tab-color-hover: var(--mg-aria-color-accent-active);
-  --mg-aria-tab-color-active: var(--mg-aria-color-accent);
-  --mg-aria-tab-background-hover: var(--mg-aria-color-subtle-surface);
-  --mg-aria-tab-indicator-size: 3px;
-  --mg-aria-tab-indicator-hover: var(--mg-aria-color-accent);
-  --mg-aria-tab-indicator-active: var(--mg-aria-color-accent);
-  --mg-aria-motion-duration-fast: var(--mg-motion-duration-fast);
-  --mg-aria-motion-easing: var(--mg-motion-easing-standard);
-  --mg-aria-width-full: 100%;
-  --mg-aria-radius-pill: 9999px;
-  --mg-aria-track-thickness: 0.5rem;
-  --mg-aria-thumb-size: 1.5rem;
-  --mg-aria-dialog-width: 42rem;
-  --mg-aria-dialog-available-width: calc(100% - var(--mg-aria-space-4) * 2);
-  --mg-aria-dialog-available-height: calc(100% - var(--mg-aria-space-4) * 2);
+:where(:root) {
+  /* The transitive closure of Mangrove tokens the --mg-aria-* contract reads,
+     resolved for DELTA. Generated: see tokens/delta.yaml. */
+  @include mg-tokens-delta-aria;
+  @include mg-aria-runtime-theme-aliases;
+  @include mg-aria-token-constants($_delta-font-family-stack);
 }

@@ -1,16 +1,86 @@
+@charset "UTF-8";
 /*
- * Sass source for Mangrove's React Aria token adapter.
- * The public aria/tokens/mangrove.css artifact is generated from this file by
- * `yarn build:aria`; do not edit that generated CSS directly.
- * It maps Mangrove runtime custom properties to the small, stable --mg-aria-*
- * contract without importing Mangrove component CSS.
+ * Standalone React Aria token file for the mangrove theme.
+ * Compiled to aria/tokens/mangrove.css by `yarn build:aria`; do not edit that
+ * generated CSS directly.
+ *
+ * Everything sits inside :where(:root), which has ZERO specificity. That is
+ * what makes the file work on its own — a consumer importing it without
+ * Mangrove's stylesheet still gets an accent, a surface, spacing and a focus
+ * indicator — while Mangrove's own :root palette still wins whenever both are
+ * loaded, regardless of load order. A plain :root block would let a stale
+ * published package override a newer stylesheet.
  */
 /*
  * React Aria aliases whose values depend on Mangrove runtime tokens.
  * Include this at :root and inside each runtime theme block so var() chains
  * resolve where the active theme owns their underlying values.
  */
-:root {
+/*
+ * Brand-neutral React Aria adapter constants.
+ *
+ * These are the --mg-aria-* values no brand overrides: type metrics, the
+ * shape and size constants shared by the range/toggle family, and the
+ * dialog geometry. They are a mixin rather than a :root block so the same
+ * declarations can be emitted at :root inside Mangrove's own bundle and at
+ * zero specificity inside each standalone aria/tokens/*.css.
+ *
+ * $font-family is passed as a Sass *string* and interpolated: assigning a
+ * comma list here would drop the quotes and change the compiled CSS.
+ */
+:where(:root) {
+  /* The transitive closure of Mangrove tokens the --mg-aria-* contract reads,
+     resolved for this brand. Generated: see tokens/*.yaml. */
+  --mg-color-neutral-0: 255 255 255;
+  --mg-color-neutral-25: 242 242 242;
+  --mg-color-neutral-50: 230 230 230;
+  --mg-color-neutral-400: 128 128 128;
+  --mg-color-neutral-600: 77 77 77;
+  --mg-color-neutral-800: 26 26 26;
+  --mg-color-neutral-900: 0 0 0;
+  --mg-color-red-900: 193 9 32;
+  --mg-color-blue-900: 0 79 145;
+  --mg-color-interactive: var(--mg-color-blue-900);
+  --mg-color-blue-700: 51 114 167;
+  --mg-color-interactive-active: var(--mg-color-blue-700);
+  --mg-color-text: var(--mg-color-neutral-800);
+  --mg-color-white: var(--mg-color-neutral-0);
+  --mg-color-tag: var(--mg-color-interactive);
+  --mg-color-tag--hover: var(--mg-color-interactive-active);
+  --mg-color-button: var(--mg-color-neutral-0);
+  --mg-color-button-background: rgb(var(--mg-color-interactive));
+  --mg-color-button-background--hover: rgb(var(--mg-color-interactive-active));
+  --mg-color-form-check: var(--mg-color-interactive);
+  --mg-color-form-check--hover: var(--mg-color-interactive-active);
+  --mg-color-form-check--checked: var(--mg-color-interactive);
+  --mg-color-form-focus: var(--mg-color-interactive);
+  --mg-color-focus-ring: var(--mg-color-interactive);
+  --mg-spacing-0: 0;
+  --mg-spacing-50: 0.3125rem;
+  --mg-spacing-100: 0.625rem;
+  --mg-spacing-150: 0.9375rem;
+  --mg-spacing-200: 1.25rem;
+  --mg-font-size-button: 0.875rem;
+  --mg-font-size-tab: 1.125rem;
+  --mg-radius-tag: var(--mg-spacing-0);
+  --mg-radius-button: var(--mg-spacing-50);
+  --mg-radius-form-input: var(--mg-spacing-50);
+  --mg-padding-button: var(--mg-spacing-100) var(--mg-spacing-150);
+  --mg-tab-padding: var(--mg-spacing-150) var(--mg-spacing-200);
+  --mg-tab-min-block-size: 2.75rem;
+  --mg-tab-indicator-size: 3px;
+  --mg-form-input-background: rgb(var(--mg-color-neutral-25));
+  --mg-form-input-background--focus: rgb(var(--mg-color-neutral-0));
+  --mg-form-input-border-color: rgb(var(--mg-color-neutral-400));
+  --mg-focus-ring-width: 2px;
+  --mg-focus-ring-offset: 2px;
+  --mg-surface-raised: rgb(var(--mg-color-neutral-0));
+  --mg-shadow-raised: inset 0 0 0 1px rgb(var(--mg-color-neutral-600) / 0.24);
+  --mg-shadow-raised-hover: inset 0 0 0 2px rgb(var(--mg-color-interactive));
+  --mg-motion-duration-fast: 160ms;
+  --mg-motion-easing-standard: cubic-bezier(0.2, 0, 0, 1);
+  --mg-card-border-radius: var(--mg-spacing-50);
+  --mg-z-index-modal: 5000;
   /* Mangrove's own v2 tab colours live here, not at :root, for the reason this
      mixin exists: a custom property declared at :root resolves its inner var()
      against :root and then inherits the already-resolved value, so a theme

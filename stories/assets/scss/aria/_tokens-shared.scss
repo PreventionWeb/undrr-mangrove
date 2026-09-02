@@ -1,0 +1,31 @@
+/*
+ * Brand-neutral React Aria adapter constants.
+ *
+ * These are the --mg-aria-* values no brand overrides: type metrics, the
+ * shape and size constants shared by the range/toggle family, and the
+ * dialog geometry. They are a mixin rather than a :root block so the same
+ * declarations can be emitted at :root inside Mangrove's own bundle and at
+ * zero specificity inside each standalone aria/tokens/*.css.
+ *
+ * $font-family is passed as a Sass *string* and interpolated: assigning a
+ * comma list here would drop the quotes and change the compiled CSS.
+ */
+@mixin mg-aria-token-constants($font-family) {
+  --mg-aria-font-family: #{$font-family};
+  --mg-aria-font-size: 1rem;
+  --mg-aria-font-size-small: 0.875rem;
+  --mg-aria-line-height: 1.5;
+  --mg-aria-border-width: 1px;
+  --mg-aria-color-overlay-backdrop: rgb(24 24 35 / 0.2);
+  --mg-aria-width-full: 100%;
+  /* Shape and size constants shared by the range/toggle family. Brand-neutral,
+     so they sit outside the runtime theme aliases. */
+  --mg-aria-radius-pill: 9999px;
+  --mg-aria-track-thickness: 0.5rem;
+  /* 24px: WCAG 2.5.8 minimum target size. Also sets the switch track
+     geometry, which derives from this value. */
+  --mg-aria-thumb-size: 1.5rem;
+  --mg-aria-dialog-width: 42rem;
+  --mg-aria-dialog-available-width: calc(100% - var(--mg-aria-space-4) * 2);
+  --mg-aria-dialog-available-height: calc(100% - var(--mg-aria-space-4) * 2);
+}

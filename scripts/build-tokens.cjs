@@ -1,72 +1,70 @@
 #!/usr/bin/env node
 /**
- * Design-token generator.
+ * Mangrove design-token generator.
  *
- * Reads the W3C DTCG token sources in `tokens/` and emits the Sass partials
- * that Mangrove itself compiles. The point is that the token artifact is the
- * SOURCE, not a side-export: `stories/assets/scss/_theme-delta.scss` (the CSS
- * Mangrove ships) and `stories/assets/scss/aria/_tokens-delta.scss` (the
- * standalone --mg-aria-* file for external consumers) both read the generated
- * partials, so one edit in the JSON reaches both surfaces and the two cannot
- * drift apart.
+ * ONE source per brand, ONE generator, every downstream form emitted from it.
+ *
+ *   tokens/mangrove.yaml       brand-neutral base (system defaults only)
+ *   tokens/undrr.yaml          UNDRR identity — a sub-brand like any other
+ *   tokens/preventionweb.yaml
+ *   tokens/irp.yaml
+ *   tokens/mcr.yaml
+ *   tokens/delta.yaml
+ *
+ * A brand layer is merged OVER the base and only then are references
+ * resolved, so a brand that overrides one primitive cascades to everything
+ * derived from it. That is the property the previous generator could not
+ * express and the reason the hand-written theme files were sixty lines of
+ * near-duplicates.
+ *
+ * Emitted per brand:
+ *   stories/assets/scss/generated/_tokens-<brand>.scss
+ *       @mixin mg-tokens-<brand>       the theme block (:root / .mg-theme-*)
+ *       @mixin mg-tokens-<brand>-aria  the standalone React Aria closure
+ *       plus any Sass variables the build still needs
+ *   aria/tokens/<brand>.css            (compiled from the above by `yarn build:aria`)
  *
  * Usage:
- *   node scripts/build-tokens.cjs           # write the generated partials
- *   node scripts/build-tokens.cjs --check    # exit 1 if they are stale
+ *   node scripts/build-tokens.cjs            write the generated partials
+ *   node scripts/build-tokens.cjs --check    exit 1 if any are stale
  *
- * BUILD WIRING (not yet applied — package.json is owned elsewhere this
- * session). Add to package.json "scripts":
- *   "build:tokens": "node scripts/build-tokens.cjs",
- * and prefix the two Sass entry points:
- *   "scss":       "yarn build:tokens && yarn build:icons && ...",
- *   "scss-watch": "yarn build:tokens && yarn build:icons && ...",
- *   "build:aria": "yarn build:tokens && sass stories/assets/scss/aria/...",
- * Until that lands, `stories/assets/scss/__tests__/tokens-source.test.js`
- * fails the suite whenever the generated partials are stale, so the artifact
- * still cannot silently diverge from its source.
+ * Wired into package.json as `yarn build:tokens`, which `yarn scss`,
+ * `yarn scss-watch` and `yarn build:aria` all run first.
  */
 'use strict';
 
 const fs = require('fs');
 const path = require('path');
+const YAML = require('yaml');
 
 const ROOT = path.resolve(__dirname, '..');
 const TOKENS_DIR = path.join(ROOT, 'tokens');
-const NS = 'org.undrr.mangrove';
+const SCSS_DIR = path.join(ROOT, 'stories/assets/scss');
+const GENERATED_DIR = path.join(SCSS_DIR, 'generated');
 
 /**
- * Output targets. Each generated file is a Sass partial: `$` outputs become
- * Sass variables, `--` outputs become custom properties inside the target's
- * mixin (so the consuming file decides which selector they land in).
+ * Sass sources that make up the React Aria adapter. The standalone token
+ * files must carry the transitive closure of every Mangrove token these
+ * reference, or a consumer importing one on its own gets an unresolved
+ * var() chain and no accent, no surface and no focus indicator. Scanning
+ * them is what makes that closure self-maintaining.
  */
-const TARGETS = {
-  'mangrove-sass': {
-    file: 'stories/assets/scss/generated/_delta-brand.scss',
-    mixin: 'mg-delta-brand-sass-tokens',
-    banner:
-      'Brand primitives for the .mg-theme-delta runtime theme.\n' +
-      'Consumed by stories/assets/scss/_theme-delta.scss, which Mangrove\n' +
-      'compiles into stories/assets/css/style-delta.css.',
-  },
-  'aria-tokens': {
-    file: 'stories/assets/scss/generated/_delta-brand-aria.scss',
-    mixin: 'mg-delta-brand-tokens',
-    banner:
-      "Brand primitives for DELTA's standalone React Aria token file.\n" +
-      'Consumed by stories/assets/scss/aria/_tokens-delta.scss, which is\n' +
-      'published to external consumers as aria/tokens/delta.css.',
-  },
-};
+const ARIA_ADAPTER_SOURCES = [
+  'aria/_runtime-theme-aliases.scss',
+  'aria/_tokens-shared.scss',
+];
+
+class TokenError extends Error {}
 
 /* ------------------------------------------------------------------ *
- * Value formatting.
+ * Value formats.
  *
- * `format` is mandatory on every output and is the whole reason this file
- * exists: Mangrove stores colours BOTH as bare sRGB channel triplets
- * ("19 46 72", composable with rgb(... / alpha)) and as finished colour
- * values ("rgb(19 46 72)"). A reader that guesses wrong produces CSS that
- * silently does nothing. The source holds one unambiguous colour; each
- * consumer states the shape it needs.
+ * `format` is the whole reason this generator exists. Mangrove writes a
+ * colour BOTH as bare sRGB channels ("0 79 145", composable via
+ * `rgb(var(--x) / 0.5)`) and as a finished colour value ("rgb(0 79 145)").
+ * A triplet dropped into a colour position is invalid CSS and is discarded
+ * silently — a bug this repository has shipped three times. The source
+ * states the colour once; each output declares the shape it needs.
  * ------------------------------------------------------------------ */
 const GENERIC_FAMILIES = new Set([
   'serif',
@@ -84,222 +82,661 @@ const GENERIC_FAMILIES = new Set([
   'fangsong',
 ]);
 
+const FORMATS = new Set([
+  'srgb-channels',
+  'srgb-rgb-function',
+  'literal',
+  'rem',
+  'font-family-name',
+  'font-family-stack',
+]);
+
 /**
- * Formats whose value is CSS syntax rather than a bare token, and so must be
- * carried as a Sass *string* and interpolated (`#{$var}`) at the use site.
- * Assigning `"Dubai", sans-serif` to a Sass variable makes a list whose
- * interpolation drops the quotes, silently changing the compiled CSS.
+ * Formats whose Sass value is CSS syntax rather than a bare token, so it has
+ * to travel as a Sass *string* and be interpolated at the use site. Assigning
+ * `"Dubai", sans-serif` to a Sass variable makes a list whose interpolation
+ * drops the quotes, silently changing the compiled CSS.
  */
 const SASS_STRING_FORMATS = new Set(['font-family-stack']);
 
 /**
- * stylelint runs with --fix over stories/**​/*.scss and would rewrite some
- * generated values, putting the linter and the generator in a loop. Font
- * family names are the live case: `value-keyword-case` lowercases `Dubai` to
- * `dubai` when it appears as a Sass variable value.
+ * stylelint runs with --fix over stories/**\/*.scss and would rewrite some
+ * generated values, putting the linter and the generator in a loop.
+ * `value-keyword-case` lowercases `Dubai` to `dubai` in a Sass variable value.
  */
 const FORMAT_STYLELINT_DISABLE = {
   'font-family-name': 'value-keyword-case',
 };
 
-const FORMATTERS = {
-  'srgb-channels': (value, type) => `${srgb(value, type).join(' ')}`,
-  'srgb-rgb-function': (value, type) => `rgb(${srgb(value, type).join(' ')})`,
-  'font-family-name': (value, type) => {
-    assertType(type, 'fontFamily');
-    return toArray(value)[0];
-  },
-  'font-family-stack': (value, type) => {
-    assertType(type, 'fontFamily');
-    // CSS generic families must stay unquoted; every real family name is
-    // quoted so a name with a space or a digit cannot change meaning.
-    return toArray(value)
-      .map(family => (GENERIC_FAMILIES.has(family) ? family : `"${family}"`))
-      .join(', ');
-  },
-  literal: value => String(value),
-};
+/**
+ * Some rem conversions are exact only at six decimal places: 11.25px / 16 is
+ * 0.703125rem, and stylelint's number-max-precision would round it to
+ * 0.70313rem — a different value. The rule is suppressed for those
+ * declarations rather than letting the linter silently retune the type scale.
+ */
+const HIGH_PRECISION = /\d*\.\d{6,}/;
 
-function assertType(actual, expected) {
-  if (actual !== expected) {
-    throw new Error(`expected $type "${expected}", got "${actual}"`);
+function stylelintDisableFor(format, value) {
+  if (FORMAT_STYLELINT_DISABLE[format]) return FORMAT_STYLELINT_DISABLE[format];
+  if (HIGH_PRECISION.test(String(value))) return 'number-max-precision';
+  return null;
+}
+
+// Build-time rem conversion, mirroring mg-rem() in _variables.scss. The 10px
+// root was removed in 2.0; consumers use the browser-standard 16px document
+// root and this is the only place the number appears in the token pipeline.
+const HTML_FONT_SIZE = 16;
+
+function toRem(px) {
+  const value = Number(px);
+  if (!Number.isFinite(value)) {
+    throw new TokenError(`format "rem" needs a number, got "${px}"`);
   }
+  const rem = value / HTML_FONT_SIZE;
+  return `${Number(rem.toFixed(6))}rem`;
 }
 
-function toArray(value) {
-  return Array.isArray(value) ? value : [value];
-}
-
-function srgb(value, type) {
-  assertType(type, 'color');
-  const hex = String(value).trim();
-  const match = /^#([0-9a-f]{6})$/i.exec(hex);
+function channels(hex) {
+  const text = String(hex).trim();
+  const match = /^#([0-9a-f]{6})$/i.exec(text);
   if (!match) {
-    throw new Error(
-      `colour "${hex}" must be 6-digit hex; the generator emits 8-bit sRGB ` +
+    throw new TokenError(
+      `colour "${text}" must be 6-digit hex; the generator emits 8-bit sRGB ` +
         'channels and will not guess at other colour spaces'
     );
   }
-  return [0, 2, 4].map(i => parseInt(match[1].slice(i, i + 2), 16));
+  return [0, 2, 4].map(i => parseInt(match[1].slice(i, i + 2), 16)).join(' ');
+}
+
+/**
+ * A value emitted in a channel shape must actually BE channels — either a
+ * literal triplet or a link to a token that is one. Anything else (a named
+ * CSS colour, an oklch() value, a finished rgb()) would produce a
+ * declaration that is invalid the moment it is wrapped in rgb(), and CSS
+ * discards those silently. Such a value has to declare $format: literal.
+ */
+const CHANNEL_SHAPE = /^(?:\d{1,3} \d{1,3} \d{1,3}|var\(--[a-z0-9-]+\))$/;
+
+function assertChannels(token, value, brandLabel) {
+  if (!CHANNEL_SHAPE.test(String(value).trim())) {
+    throw new TokenError(
+      `${brandLabel}: ${token.id} is emitted in a channel shape but its ` +
+        `value "${value}" is not sRGB channels. A colour that cannot be ` +
+        'expressed as channels must declare $format: literal.'
+    );
+  }
+  return value;
+}
+
+function fontFamilyStack(value) {
+  return (Array.isArray(value) ? value : [value])
+    .map(family => (GENERIC_FAMILIES.has(family) ? family : `"${family}"`))
+    .join(', ');
 }
 
 /* ------------------------------------------------------------------ *
- * DTCG traversal
+ * Source loading
  * ------------------------------------------------------------------ */
-function* walk(node, pathParts, inheritedType) {
-  const type = node.$type || inheritedType;
+const INHERITED = ['$type', '$format', '$private', '$sass'];
+
+function flatten(node, trail, inherited, tokens, file) {
+  const context = { ...inherited };
+  for (const key of INHERITED) {
+    if (Object.prototype.hasOwnProperty.call(node, key))
+      context[key] = node[key];
+  }
+
   if (Object.prototype.hasOwnProperty.call(node, '$value')) {
-    yield { path: pathParts, token: node, type };
+    const id = trail.join('.');
+    tokens.set(id, {
+      id,
+      file,
+      value: node.$value,
+      type: context.$type,
+      format: node.$format ?? context.$format,
+      private: node.$private ?? context.$private ?? false,
+      sass: node.$sass ?? context.$sass,
+      name: node.$name,
+      alpha: node.$alpha,
+      description: node.$description,
+    });
     return;
   }
+
   for (const [key, child] of Object.entries(node)) {
-    if (key.startsWith('$') || child === null || typeof child !== 'object') {
-      continue;
+    if (key.startsWith('$')) continue;
+    if (child === null || typeof child !== 'object') {
+      throw new TokenError(
+        `${[...trail, key].join('.')} in ${file}: expected a token object ` +
+          '(a group or a { $value: ... } node)'
+      );
     }
-    yield* walk(child, [...pathParts, key], type);
+    flatten(child, [...trail, key], context, tokens, file);
   }
 }
 
-function collect(source, sourceFile) {
-  const byTarget = new Map(Object.keys(TARGETS).map(name => [name, []]));
+function loadSource(dir, fileName) {
+  const absolute = path.join(dir, fileName);
+  let document;
+  try {
+    document = YAML.parse(fs.readFileSync(absolute, 'utf8'));
+  } catch (error) {
+    throw new TokenError(`tokens/${fileName}: ${error.message}`);
+  }
+  if (!document || typeof document !== 'object') {
+    throw new TokenError(`tokens/${fileName}: not a YAML mapping`);
+  }
+  const meta = document.$brand;
+  if (!meta || !meta.id) {
+    throw new TokenError(
+      `tokens/${fileName}: missing $brand.id (every source names the brand it carries)`
+    );
+  }
+  const tokens = new Map();
+  flatten(document, [], {}, tokens, `tokens/${fileName}`);
+  return { meta, tokens, file: `tokens/${fileName}` };
+}
 
-  for (const { path: tokenPath, token, type } of walk(source, [], undefined)) {
-    const id = tokenPath.join('.');
-    if (!type) throw new Error(`${id}: token has no $type`);
-    const outputs = ((token.$extensions || {})[NS] || {}).outputs || [];
-    for (const output of outputs) {
-      if (!byTarget.has(output.target)) {
-        throw new Error(`${id}: unknown output target "${output.target}"`);
-      }
-      const formatter = FORMATTERS[output.format];
-      if (!formatter) {
-        throw new Error(
-          `${id}: unknown format "${output.format}" (expected one of ` +
-            `${Object.keys(FORMATTERS).join(', ')})`
-        );
-      }
-      let value;
-      try {
-        value = formatter(token.$value, type);
-      } catch (error) {
-        throw new Error(`${id} -> ${output.name}: ${error.message}`);
-      }
-      byTarget.get(output.target).push({
-        id,
-        name: output.name,
-        value,
-        format: output.format,
-        description: token.$description,
-        sourceFile,
-      });
+function loadSources(dir) {
+  const names = fs
+    .readdirSync(dir)
+    .filter(name => name.endsWith('.yaml'))
+    .sort();
+  if (names.length === 0) {
+    throw new TokenError(`no *.yaml token sources found in ${dir}`);
+  }
+
+  const sources = names.map(name => loadSource(dir, name));
+  const base = sources.find(source => source.meta.base);
+  if (!base) {
+    throw new TokenError(
+      'no base source: exactly one tokens/*.yaml must set `$brand.base: true`'
+    );
+  }
+  if (sources.filter(source => source.meta.base).length > 1) {
+    throw new TokenError(
+      'more than one tokens/*.yaml sets `$brand.base: true`'
+    );
+  }
+
+  const brands = sources.filter(source => !source.meta.base);
+  const seenId = new Map();
+  const seenOutput = new Map();
+  for (const brand of brands) {
+    if (seenId.has(brand.meta.id)) {
+      throw new TokenError(
+        `duplicate $brand.id "${brand.meta.id}" in ${brand.file} and ` +
+          `${seenId.get(brand.meta.id)}`
+      );
+    }
+    seenId.set(brand.meta.id, brand.file);
+    const output = brand.meta.output || brand.meta.id;
+    if (seenOutput.has(output)) {
+      throw new TokenError(
+        `two brands write the same output name "${output}": ${brand.file} and ` +
+          `${seenOutput.get(output)}. Set a distinct $brand.output.`
+      );
+    }
+    seenOutput.set(output, brand.file);
+  }
+
+  return { base, brands };
+}
+
+/* ------------------------------------------------------------------ *
+ * Merge + resolution
+ *
+ * The brand layer is merged over the base FIRST; references resolve
+ * afterwards, against the merged table. That ordering is the point: a brand
+ * that redefines one primitive moves every token derived from it.
+ * ------------------------------------------------------------------ */
+function mergeLayers(layers) {
+  const merged = new Map();
+  for (const layer of layers) {
+    for (const [id, token] of layer.tokens) {
+      const inherited = merged.get(id);
+      merged.set(id, inherited ? { ...inherited, ...token } : token);
     }
   }
-  return byTarget;
+  return merged;
+}
+
+/**
+ * The layer stack for a brand: the base, then its `extends` chain, then the
+ * brand itself. Sub-brands default to extending the default brand because
+ * that is the runtime truth — a `.mg-theme-*` block is a delta applied on
+ * top of Mangrove's `:root`, and IRP's theme really does link to UNDRR's
+ * --mg-color-orange-900. A brand that wants none of that sets
+ * `$brand.extends: mangrove`.
+ */
+function layersFor(brand, base, byId, seen = new Set()) {
+  if (seen.has(brand.meta.id)) {
+    throw new TokenError(
+      `circular $brand.extends chain through "${brand.meta.id}"`
+    );
+  }
+  seen.add(brand.meta.id);
+  const parentId = brand.meta.extends;
+  if (!parentId || parentId === base.meta.id) return [base, brand];
+  const parent = byId.get(parentId);
+  if (!parent) {
+    throw new TokenError(
+      `${brand.file}: $brand.extends "${parentId}" is not a known brand`
+    );
+  }
+  return [...layersFor(parent, base, byId, seen), brand];
+}
+
+function propertyName(token) {
+  if (token.name) return token.name;
+  return `--mg-${token.id.split('.').join('-')}`;
+}
+
+function sassOutputs(token) {
+  if (!token.sass) return [];
+  if (token.sass === true) {
+    return [
+      { name: `$mg-${token.id.split('.').join('-')}`, format: token.format },
+    ];
+  }
+  const list = Array.isArray(token.sass) ? token.sass : [token.sass];
+  return list.map(entry =>
+    typeof entry === 'string'
+      ? { name: entry, format: token.format }
+      : { name: entry.name, format: entry.format || token.format }
+  );
+}
+
+const REFERENCE = /\{([^{}]+)\}/g;
+// {path} {=path} {rgb(path)} {rgb(=path)} {rgb(path / 0.24)}
+const CAST = /^(?:(rgb)\(\s*(.+?)\s*\))$/;
+
+function parseReference(body) {
+  const cast = CAST.exec(body.trim());
+  let spec = body.trim();
+  let wrap = null;
+  let alpha = null;
+  if (cast) {
+    wrap = cast[1];
+    spec = cast[2];
+    const slash = spec.lastIndexOf('/');
+    if (slash !== -1) {
+      alpha = spec.slice(slash + 1).trim();
+      spec = spec.slice(0, slash).trim();
+    }
+  }
+  const flat = spec.startsWith('=');
+  return {
+    wrap,
+    alpha,
+    flat,
+    target: flat ? spec.slice(1).trim() : spec.trim(),
+  };
+}
+
+/**
+ * Resolves one brand's merged token table into emitted values.
+ *
+ * Every failure here is loud: an unknown reference, a reference to a token
+ * with no custom property to link to, a cycle, or an unknown format. Silent
+ * wrong output is the failure mode this whole architecture exists to prevent.
+ */
+function resolve(tokens, brandLabel) {
+  const emitted = new Map(); // id -> { name, value, literal, token }
+  const visiting = new Set();
+
+  const get = (id, from) => {
+    const token = tokens.get(id);
+    if (!token) {
+      throw new TokenError(
+        `${brandLabel}: ${from} references unknown token "{${id}}"`
+      );
+    }
+    return token;
+  };
+
+  // The literal (brand-resolved, link-free) form of a token, used by `{=ref}`
+  // and by every standalone artifact that cannot rely on a var() chain.
+  const literalOf = id => build(id).literal;
+
+  const linkOf = (id, from) => {
+    const token = get(id, from);
+    if (token.private) {
+      throw new TokenError(
+        `${brandLabel}: ${from} links to "{${id}}", which is $private and has ` +
+          'no custom property to point at. Use {=' +
+          id +
+          '} to resolve it at build time.'
+      );
+    }
+    return `var(${propertyName(token)})`;
+  };
+
+  const substitute = (template, from, { flattenAll = false } = {}) =>
+    String(template).replace(REFERENCE, (_match, body) => {
+      const ref = parseReference(body);
+      const inner =
+        ref.flat || flattenAll
+          ? literalOf(ref.target)
+          : linkOf(ref.target, from);
+      if (!ref.wrap) return inner;
+      const token = get(ref.target, from);
+      if (token.type !== 'color') {
+        throw new TokenError(
+          `${brandLabel}: ${from} casts "{${ref.target}}" to rgb() but its ` +
+            `$type is "${token.type}", not "color"`
+        );
+      }
+      return ref.alpha ? `rgb(${inner} / ${ref.alpha})` : `rgb(${inner})`;
+    });
+
+  const shape = (token, base) => {
+    const format =
+      token.format || (token.type === 'color' ? 'srgb-channels' : 'literal');
+    if (!FORMATS.has(format)) {
+      throw new TokenError(
+        `${brandLabel}: ${token.id} declares unknown format "${format}" ` +
+          `(expected one of ${[...FORMATS].join(', ')})`
+      );
+    }
+    switch (format) {
+      case 'srgb-channels':
+        return assertChannels(token, base, brandLabel);
+      case 'srgb-rgb-function':
+        assertChannels(token, base, brandLabel);
+        return token.alpha != null
+          ? `rgb(${base} / ${token.alpha})`
+          : `rgb(${base})`;
+      case 'rem':
+        return toRem(base);
+      case 'font-family-name':
+        return (Array.isArray(token.value) ? token.value : [token.value])[0];
+      case 'font-family-stack':
+        return fontFamilyStack(token.value);
+      case 'literal':
+      default:
+        return base;
+    }
+  };
+
+  const build = id => {
+    if (emitted.has(id)) return emitted.get(id);
+    if (visiting.has(id)) {
+      throw new TokenError(
+        `${brandLabel}: circular reference — ${[...visiting, id].join(' -> ')}`
+      );
+    }
+    visiting.add(id);
+    const token = get(id, id);
+
+    let base;
+    if (
+      token.type === 'color' &&
+      typeof token.value === 'string' &&
+      token.value.startsWith('#')
+    ) {
+      base = channels(token.value);
+    } else if (Array.isArray(token.value)) {
+      base = token.value;
+    } else {
+      base = substitute(token.value, token.id);
+    }
+
+    let literalBase;
+    if (
+      token.type === 'color' &&
+      typeof token.value === 'string' &&
+      token.value.startsWith('#')
+    ) {
+      literalBase = channels(token.value);
+    } else if (Array.isArray(token.value)) {
+      literalBase = token.value;
+    } else {
+      literalBase = substitute(token.value, token.id, { flattenAll: true });
+    }
+
+    // A token whose whole value is one build-time reference inherits the
+    // referenced token's reasoning. Brand primitives are $private, so
+    // without this the "DELTA's hover is deliberately lighter" and "this
+    // WCAG divergence is sourced" notes would never reach a generated file.
+    const lone = /^\{=([^{}|/]+)\}$/.exec(String(token.value).trim());
+    const inherited =
+      token.description ??
+      (lone && tokens.has(lone[1].trim())
+        ? tokens.get(lone[1].trim()).description
+        : undefined);
+
+    const record = {
+      id,
+      token: { ...token, description: inherited },
+      name: token.private ? null : propertyName(token),
+      value: shape(token, base),
+      literal: shape(token, literalBase),
+      sass: sassOutputs(token).map(output => ({
+        name: output.name,
+        format: output.format,
+        value: shape({ ...token, format: output.format }, literalBase),
+      })),
+    };
+    visiting.delete(id);
+    emitted.set(id, record);
+    return record;
+  };
+
+  for (const id of tokens.keys()) build(id);
+
+  const byProperty = new Map();
+  for (const record of emitted.values()) {
+    if (!record.name) continue;
+    if (byProperty.has(record.name)) {
+      throw new TokenError(
+        `${brandLabel}: "${record.name}" is emitted by both ` +
+          `${byProperty.get(record.name).id} and ${record.id}`
+      );
+    }
+    byProperty.set(record.name, record);
+  }
+
+  return { emitted, byProperty };
+}
+
+/* ------------------------------------------------------------------ *
+ * Standalone React Aria closure
+ * ------------------------------------------------------------------ */
+function ariaSeeds() {
+  const seeds = new Set();
+  for (const relative of ARIA_ADAPTER_SOURCES) {
+    const absolute = path.join(SCSS_DIR, relative);
+    if (!fs.existsSync(absolute)) {
+      throw new TokenError(
+        `aria adapter source ${relative} is missing; the standalone token ` +
+          'closure cannot be computed from it'
+      );
+    }
+    const source = fs.readFileSync(absolute, 'utf8');
+    for (const match of source.matchAll(/var\(\s*(--mg-[a-z0-9-]+)/g)) {
+      if (match[1].startsWith('--mg-aria-')) continue;
+      seeds.add(match[1]);
+    }
+    // Properties the adapter declares itself (the shared v2 tab tokens) are
+    // supplied by the mixin, not by the closure.
+    for (const match of source.matchAll(/^\s*(--mg-[a-z0-9-]+)\s*:/gm)) {
+      seeds.delete(match[1]);
+    }
+  }
+  return seeds;
+}
+
+function ariaClosure(resolved, seeds, brandLabel) {
+  const wanted = new Set();
+  const visit = property => {
+    if (wanted.has(property)) return;
+    const record = resolved.byProperty.get(property);
+    if (!record) {
+      throw new TokenError(
+        `${brandLabel}: the React Aria adapter reads ${property}, which no ` +
+          'token source defines. A standalone aria/tokens/*.css would ship an ' +
+          'unresolvable var() chain.'
+      );
+    }
+    wanted.add(property);
+    for (const match of String(record.value).matchAll(
+      /var\(\s*(--mg-[a-z0-9-]+)/g
+    )) {
+      visit(match[1]);
+    }
+  };
+  for (const seed of [...seeds].sort()) visit(seed);
+  return [...resolved.emitted.values()].filter(
+    record => record.name && wanted.has(record.name)
+  );
 }
 
 /* ------------------------------------------------------------------ *
  * Rendering
  * ------------------------------------------------------------------ */
-function render(targetName, entries, sourceFiles) {
-  const target = TARGETS[targetName];
-  const sassVars = entries.filter(entry => entry.name.startsWith('$'));
-  const customProps = entries.filter(entry => entry.name.startsWith('--'));
-
-  const lines = [];
-  // Silent (`//`) comments throughout: this partial is @import-ed into the
-  // published CSS artifacts, and generator bookkeeping does not belong in a
-  // file consumers download.
-  lines.push('// GENERATED FILE — DO NOT EDIT.');
-  for (const line of target.banner.split('\n')) {
-    lines.push(`// ${line}`);
+function comment(text, prefix, indent = '') {
+  const out = [];
+  for (const paragraph of String(text).split('\n')) {
+    const words = paragraph.split(/\s+/).filter(Boolean);
+    if (words.length === 0) continue;
+    let line = '';
+    for (const word of words) {
+      if (line && `${indent}${prefix}${line} ${word}`.length > 78) {
+        out.push(`${indent}${prefix}${line}`);
+        line = word;
+      } else {
+        line = line ? `${line} ${word}` : word;
+      }
+    }
+    if (line) out.push(`${indent}${prefix}${line}`);
   }
-  lines.push(`// Source: ${sourceFiles.join(', ')}`);
-  lines.push('// Regenerate: node scripts/build-tokens.cjs');
-  lines.push('// Edit the JSON source, never this file.');
+  return out;
+}
+
+function declarations(records, indent) {
+  const lines = [];
+  for (const [index, record] of records.entries()) {
+    if (index > 0) lines.push('');
+    lines.push(`${indent}// ${record.id}`);
+    if (record.token.description) {
+      lines.push(...comment(record.token.description, '// ', indent));
+    }
+    const disable = stylelintDisableFor(record.token.format, record.value);
+    if (disable)
+      lines.push(`${indent}// stylelint-disable-next-line ${disable}`);
+    lines.push(`${indent}${record.name}: ${record.value};`);
+  }
+  return lines;
+}
+
+function renderBrand(brand, resolved, ownIds, aria, label) {
+  const lines = [];
+  lines.push('// GENERATED FILE — DO NOT EDIT.');
+  lines.push(`// Brand: ${brand.meta.title || label}`);
+  lines.push(`// Selector: ${brand.meta.selector}`);
+  lines.push(...comment(brand.meta.description || '', '// '));
+  lines.push(`// Source: ${brand.file}`);
+  lines.push('// Regenerate: yarn build:tokens');
+  lines.push('// Edit the YAML source, never this file.');
   lines.push('// `npx jest tokens-source` fails if the two disagree.');
 
-  for (const entry of sassVars) {
+  const own = ownIds
+    .map(id => resolved.emitted.get(id))
+    .filter(record => record.name);
+  const sassVars = ownIds
+    .map(id => resolved.emitted.get(id))
+    .flatMap(record => record.sass.map(entry => ({ record, entry })));
+
+  for (const { record, entry } of sassVars) {
     lines.push('');
-    lines.push(`// ${entry.id} (${entry.format})`);
-    if (entry.description) lines.push(...comment(entry.description, '// '));
-    const disable = FORMAT_STYLELINT_DISABLE[entry.format];
-    if (disable) {
-      lines.push(`// stylelint-disable-next-line ${disable}`);
+    lines.push(`// ${record.id} (${entry.format})`);
+    if (record.token.description) {
+      lines.push(...comment(record.token.description, '// '));
     }
-    if (SASS_STRING_FORMATS.has(entry.format)) {
-      // Interpolate at the use site: `--prop: #{$var};`
-      lines.push(`${entry.name}: '${entry.value}';`);
-    } else {
-      lines.push(`${entry.name}: ${entry.value};`);
-    }
+    const disable = stylelintDisableFor(entry.format, entry.value);
+    if (disable) lines.push(`// stylelint-disable-next-line ${disable}`);
+    lines.push(
+      SASS_STRING_FORMATS.has(entry.format)
+        ? `${entry.name}: '${entry.value}';`
+        : `${entry.name}: ${entry.value};`
+    );
   }
 
-  if (customProps.length > 0) {
-    lines.push('');
-    lines.push(`@mixin ${target.mixin} {`);
-    for (const [index, entry] of customProps.entries()) {
-      if (index > 0) lines.push('');
-      lines.push(`  // ${entry.id} (${entry.format})`);
-      lines.push(`  ${entry.name}: ${entry.value};`);
-    }
-    lines.push('}');
-  }
+  lines.push('');
+  lines.push(`// The ${brand.meta.selector} token block.`);
+  lines.push(`@mixin mg-tokens-${label} {`);
+  lines.push(...declarations(own, '  '));
+  lines.push('}');
+
+  lines.push('');
+  lines.push('// Standalone React Aria closure: every Mangrove token the');
+  lines.push('// --mg-aria-* adapter reads, transitively, resolved for this');
+  lines.push(
+    '// brand. Emitted at zero specificity by the aria token entry so'
+  );
+  lines.push("// the published file works alone and still loses to Mangrove's");
+  lines.push('// own stylesheet whenever both are present.');
+  lines.push(`@mixin mg-tokens-${label}-aria {`);
+  lines.push(...declarations(aria, '  '));
+  lines.push('}');
   lines.push('');
 
   return lines.join('\n');
 }
 
-function comment(text, prefix) {
-  const words = String(text).split(/\s+/);
-  const out = [];
-  let line = prefix;
-  for (const word of words) {
-    if (line.length + word.length + 1 > 76 && line !== prefix) {
-      out.push(line);
-      line = prefix;
-    }
-    line += (line === prefix ? '' : ' ') + word;
+/* ------------------------------------------------------------------ *
+ * Build
+ * ------------------------------------------------------------------ */
+function build({ tokensDir = TOKENS_DIR, ariaSeedNames } = {}) {
+  const { base, brands } = loadSources(tokensDir);
+  // `ariaSeedNames` exists so the guard tests can drive the closure with a
+  // fixture-sized set; production always scans the real adapter sources.
+  const seeds = ariaSeedNames ? new Set(ariaSeedNames) : ariaSeeds();
+  const files = new Map();
+
+  // The default brand is merged into the base's own :root block, because
+  // that is what Mangrove's :root has always been. Keeping UNDRR in its own
+  // source is what makes "adopt Mangrove without adopting UNDRR branding" an
+  // expressible position rather than a rewrite.
+  const defaultBrand = brands.find(brand => brand.meta.default);
+  if (!defaultBrand) {
+    throw new TokenError(
+      'no default brand: exactly one tokens/*.yaml must set `$brand.default: true`'
+    );
   }
-  if (line !== prefix) out.push(line);
-  return out;
+  const byId = new Map(brands.map(brand => [brand.meta.id, brand]));
+
+  const targets = brands.map(brand => {
+    const layers = layersFor(brand, base, byId);
+    const tokens = mergeLayers(layers);
+    const isDefault = brand === defaultBrand;
+    return {
+      meta: brand.meta,
+      file: layers.map(layer => layer.file).join(' + '),
+      tokens,
+      // The default brand owns Mangrove's whole :root; a sub-brand emits
+      // only what its own source declares, which is what a theme block is.
+      ownIds: isDefault ? [...tokens.keys()] : [...brand.tokens.keys()],
+    };
+  });
+
+  for (const target of targets) {
+    const output = target.meta.output || target.meta.id;
+    const resolved = resolve(target.tokens, output);
+    const aria = ariaClosure(resolved, seeds, output);
+    files.set(
+      path.relative(ROOT, path.join(GENERATED_DIR, `_tokens-${output}.scss`)),
+      renderBrand(target, resolved, target.ownIds, aria, output)
+    );
+  }
+
+  return files;
 }
 
 /* ------------------------------------------------------------------ *
  * Entry point
  * ------------------------------------------------------------------ */
-function build() {
-  const sourceFiles = fs
-    .readdirSync(TOKENS_DIR)
-    .filter(name => name.endsWith('.tokens.json'))
-    .sort();
-  if (sourceFiles.length === 0) {
-    throw new Error(`no *.tokens.json files found in ${TOKENS_DIR}`);
-  }
-
-  const merged = new Map(Object.keys(TARGETS).map(name => [name, []]));
-  for (const name of sourceFiles) {
-    const source = JSON.parse(
-      fs.readFileSync(path.join(TOKENS_DIR, name), 'utf8')
-    );
-    for (const [target, entries] of collect(source, `tokens/${name}`)) {
-      merged.get(target).push(...entries);
-    }
-  }
-
-  const files = new Map();
-  for (const [targetName, entries] of merged) {
-    files.set(
-      TARGETS[targetName].file,
-      render(
-        targetName,
-        entries,
-        sourceFiles.map(name => `tokens/${name}`)
-      )
-    );
-  }
-  return files;
-}
-
 function main(argv) {
   const check = argv.includes('--check');
   const files = build();
@@ -310,22 +747,15 @@ function main(argv) {
     const current = fs.existsSync(absolute)
       ? fs.readFileSync(absolute, 'utf8')
       : null;
+    // Only write when the content actually changed. Rewriting identical bytes
+    // still bumps mtime, which makes webpack rebuild and invalidates the chunk
+    // hash held by any open Storybook tab, producing a ChunkLoadError loop.
     if (current === contents) continue;
     if (check) {
       stale.push(relative);
       continue;
     }
     fs.mkdirSync(path.dirname(absolute), { recursive: true });
-    // Only write when the content actually changed. Rewriting identical bytes
-    // still bumps mtime, which makes webpack rebuild and invalidates the chunk
-    // hash held by any open Storybook tab, producing a ChunkLoadError loop.
-    const previous = fs.existsSync(absolute)
-      ? fs.readFileSync(absolute, 'utf8')
-      : null;
-    if (previous === contents) {
-      console.log(`build-tokens: ${target.output} unchanged`);
-      return;
-    }
     fs.writeFileSync(absolute, contents);
     process.stdout.write(`build-tokens: wrote ${relative}\n`);
   }
@@ -333,8 +763,8 @@ function main(argv) {
   if (check && stale.length > 0) {
     process.stderr.write(
       'build-tokens: generated files are stale:\n' +
-        stale.map(f => `  ${f}\n`).join('') +
-        'Run `node scripts/build-tokens.cjs`.\n'
+        stale.map(file => `  ${file}\n`).join('') +
+        'Run `yarn build:tokens`.\n'
     );
     process.exitCode = 1;
   }
@@ -349,4 +779,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { build, TARGETS };
+module.exports = { build, TokenError };

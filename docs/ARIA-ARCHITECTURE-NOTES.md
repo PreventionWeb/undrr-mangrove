@@ -206,10 +206,25 @@ because Mangrove's theme class goes on `<body>` or a wrapper. This is why `mg-ar
 inside every `.mg-theme-*` block rather than declared once.
 
 The cost is real: each brand block carries a copy of the alias table, and the
-*distributed* `aria/tokens/mangrove.css` has no theme blocks at all, so an
-external consumer importing the published CSS gets **no sub-brand theming**.
-Generating one token file per brand with everything at `:root` would remove the
-resolution problem, the duplication, and that gap in one move.
+*distributed* `aria/tokens/mangrove.css` had no theme blocks at all, so an
+external consumer importing the published CSS got **no sub-brand theming**.
+Generating one token file per brand with everything in one flat block removes
+the resolution problem, the duplication, and that gap in one move.
+
+**Done.** `scripts/build-tokens.cjs` now emits one standalone file per brand —
+`aria/tokens/{mangrove,preventionweb,irp,mcr,delta}.css` — each carrying the
+transitive closure of the ~55 Mangrove tokens the `--mg-aria-*` adapter reads,
+resolved for that brand. Two corrections to the sketch above:
+
+- The block is `:where(:root)`, not `:root`. Zero specificity is what lets the
+  file work standalone *and* still lose to Mangrove's own stylesheet whenever
+  both are loaded, in either load order. A plain `:root` block would let a
+  stale published package outrank a newer stylesheet.
+- The closure is computed, not curated: the generator scans the adapter Sass
+  for `var(--mg-*)` and refuses to build if any of it names a token no source
+  defines. `aria/tokens/mangrove.css` previously carried 28 references to
+  properties it never defined; the contract test now resolves each file in
+  isolation rather than only checking that keys exist.
 
 ---
 

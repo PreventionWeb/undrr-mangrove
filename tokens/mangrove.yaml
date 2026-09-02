@@ -1,0 +1,415 @@
+# Mangrove — the brand-neutral base layer.
+#
+# System defaults only: spacing, radii, the type scale, the neutral ramp,
+# motion, focus geometry, z-index and the semantic defaults every brand
+# either inherits or overrides. There is deliberately NO UNDRR identity in
+# this file. UNDRR is a sub-brand like PreventionWeb, IRP, MCR2030 and
+# DELTA, and lives in tokens/undrr.yaml, so that "adopt Mangrove without
+# adopting UNDRR branding" is a position the source can express.
+#
+# FORMAT
+#   Shaped compatibly with W3C DTCG (https://tr.designtokens.org/format/) so
+#   this can emit DTCG JSON later. $type, $format, $private and $sass are
+#   inherited by descendants and overridable per token.
+#
+#   $value      the value. `{path}` links to another token and emits a live
+#               var() chain; `{=path}` resolves it at build time; a cast
+#               `{rgb(path / 0.24)}` states the shape at the point of use.
+#   $format     the SHAPE this token is emitted in — the answer to the bug
+#               class that has bitten three times here. A colour is written
+#               once as hex; `srgb-channels` emits `0 79 145`,
+#               `srgb-rgb-function` emits `rgb(0 79 145)`. A channel triplet
+#               in a colour position is invalid CSS and is discarded
+#               silently, so the shape is never guessed.
+#   $private    not emitted as a custom property; referenced with {=path} or
+#               exported as a Sass variable.
+#   $sass       emit a Sass variable. `true` uses the naming convention
+#               ($mg- + the token path); a name or list of names overrides it.
+#   $name       an explicit custom-property name, for the few tokens whose
+#               name predates the convention.
+#
+# NAMING
+#   Token path `color.interactive` -> `--mg-color-interactive`. Only declare
+#   $name where that does not hold.
+#
+# Regenerate with `yarn build:tokens`.
+
+$brand:
+  id: mangrove
+  base: true
+  title: Mangrove
+  selector: ':root'
+
+color:
+  $type: color
+
+  # Neutral ramp. The only colour ramp that carries no brand identity, so it
+  # is what a brand-free Mangrove falls back to for text, interaction and
+  # surfaces.
+  neutral-0: { $value: '#ffffff' }
+  neutral-25: { $value: '#f2f2f2' }
+  neutral-50: { $value: '#e6e6e6' }
+  neutral-100: { $value: '#cccccc' }
+  neutral-200: { $value: '#b3b3b3' }
+  neutral-300: { $value: '#999999' }
+  neutral-400: { $value: '#808080' }
+  neutral-500: { $value: '#666666' }
+  neutral-600: { $value: '#4d4d4d' }
+  neutral-700: { $value: '#333333' }
+  neutral-800: { $value: '#1a1a1a' }
+  neutral-900: { $value: '#000000' }
+
+  # Danger ramp. Kept in the base rather than in a brand layer because the
+  # base has to be able to express "invalid" on its own: the React Aria
+  # adapter's --mg-aria-color-invalid reads red-900, and a brand-free build
+  # with no error colour is not a usable design system. UNDRR's Sendai red
+  # happens to be the same value.
+  red-50: { $value: '#f9e6e9' }
+  red-100: { $value: '#f3ced2' }
+  red-200: { $value: '#ecb5bc' }
+  red-300: { $value: '#e69da6' }
+  red-400: { $value: '#e08490' }
+  red-500: { $value: '#da6b79' }
+  red-600: { $value: '#d45363' }
+  red-700: { $value: '#cd3a4d' }
+  red-800: { $value: '#c72236' }
+  red-900: { $value: '#c10920' }
+
+  # Record-workflow status swatches, from the DELTA design system board
+  # "Status Labels for Records and Events". Not brand identity — a
+  # functional palette the status-label component reads.
+  accent-100: { $value: '#f4e496' }
+  accent-200: { $value: '#d3cea9' }
+  accent-300: { $value: '#fdf6d9' }
+  accent-400: { $value: '#0a6969' }
+  accent-500: { $value: '#fec124' }
+  accent-600: { $value: '#bcae67' }
+
+  # --- Semantic defaults -------------------------------------------------
+  # Brand-free values. Every sub-brand overrides `interactive`, and because
+  # resolution happens after the brand is merged over this file, one
+  # override moves tag, button, form-check, focus and hero with it.
+  interactive:
+    $value: '{color.neutral-800}'
+    $description: >-
+      The one colour a brand must state. Links, buttons, tabs, focus rings,
+      tags and form checks all derive from it.
+  interactive-active: { $value: '{color.neutral-700}' }
+
+  text: { $value: '{color.neutral-800}' }
+  black: { $value: '{color.neutral-800}' }
+  white: { $value: '{color.neutral-0}' }
+
+  # Brand hierarchy
+  secondary: { $value: '{color.neutral-700}' }
+  tertiary: { $value: '{color.neutral-900}' }
+  quaternary: { $value: '{color.red-800}' }
+
+  # Tags
+  tag: { $value: '{color.interactive}' }
+  tag--hover: { $value: '{color.interactive-active}' }
+  tag-secondary: { $value: '{color.neutral-500}' }
+  tag-secondary--hover: { $value: '{color.neutral-600}' }
+  tag-accent: { $value: '{color.neutral-700}' }
+  tag-accent--hover: { $value: '{color.neutral-800}' }
+
+  # Buttons
+  button: { $value: '{color.neutral-0}' }
+  button--hover: { $value: '{color.neutral-0}' }
+  button-background:
+    $value: '{color.interactive}'
+    $format: srgb-rgb-function
+    $description: >-
+      Colour-valued, not a channel triplet: DELTA needs `transparent` here
+      and a triplet cannot express it. Consumers must not wrap this in rgb().
+  button-background--hover:
+    $value: '{color.interactive-active}'
+    $format: srgb-rgb-function
+  button-secondary-background: { $value: '{color.neutral-700}' }
+  button-secondary-background--hover: { $value: '{color.neutral-600}' }
+  button-outline-primary: { $value: '{color.interactive}' }
+  button-outline-primary--hover: { $value: '{color.interactive-active}' }
+  button-outline-secondary: { $value: '{color.button-secondary-background}' }
+  button-outline-secondary--hover:
+    $value: '{color.button-secondary-background--hover}'
+  text-button: { $value: '{color.neutral-0}' }
+
+  # Form
+  form-check: { $value: '{color.interactive}' }
+  form-check--hover: { $value: '{color.interactive-active}' }
+  form-check--checked: { $value: '{color.interactive}' }
+  form-focus: { $value: '{color.interactive}' }
+
+  # Focus ring — its own seam in 2.0 so a theme can retint it independently
+  # of the interactive colour.
+  focus-ring: { $value: '{color.interactive}' }
+
+  # Hero
+  hero: { $value: '{color.interactive}' }
+  hero--secondary: { $value: '{color.secondary}' }
+  hero--tertiary: { $value: '{color.tertiary}' }
+  hero--quaternary: { $value: '{color.quaternary}' }
+  hero-title: { $value: '{color.neutral-0}' }
+  hero-button-secondary-background:
+    $value: '{color.neutral-0}'
+    $format: srgb-rgb-function
+    $alpha: 0.9
+  hero-button-secondary-color: { $value: '{color.hero}' }
+
+  # Mega menu
+  mega-content-bg: { $value: '{color.button}' }
+
+  # Modal
+  modal-scrim:
+    $value: '{color.neutral-900}'
+    $format: srgb-rgb-function
+    $alpha: 0.85
+
+  # Tabs
+  tabbar-background:
+    $value: '{color.neutral-50}'
+    $format: srgb-rgb-function
+  tab-background:
+    $value: '{color.neutral-100}'
+    $format: srgb-rgb-function
+  tab-background--inactive:
+    $value: '{color.neutral-50}'
+    $format: srgb-rgb-function
+  tab-background--hover:
+    $value: '{color.neutral-700}'
+    $format: srgb-rgb-function
+  tab-border:
+    $value: '{color.neutral-700}'
+    $format: srgb-rgb-function
+  tab-border--hover:
+    $value: '{color.neutral-900}'
+    $format: srgb-rgb-function
+  tab-border--active:
+    $value: '{color.neutral-800}'
+    $format: srgb-rgb-function
+  text-tab:
+    $value: '{color.neutral-700}'
+    $format: srgb-rgb-function
+  text-tab--hover:
+    $value: '{color.neutral-0}'
+    $format: srgb-rgb-function
+  text-tab-active:
+    $value: '{color.neutral-700}'
+    $format: srgb-rgb-function
+  text-tab-no-results:
+    $value: '{color.neutral-500}'
+    $format: srgb-rgb-function
+  tab-section-background:
+    $value: '{color.neutral-0}'
+    $format: srgb-rgb-function
+
+border-color:
+  $type: color
+  button:
+    $value: '{color.text-button}'
+    $format: srgb-rgb-function
+    $description: >-
+      Must be a colour, not a channel triplet: it is consumed inside a
+      `border:` shorthand, and a bare triplet makes the whole declaration
+      invalid, which silently drops border-style to none. .mg-button-outline
+      rendered as bare text for the entire time this was a triplet.
+  hero-button-secondary: { $value: '{color.neutral-0}' }
+
+# Spacing scale. The px numbers are converted to rem against a 16px document
+# root at build time; the legacy 10px root was removed in 2.0.
+spacing:
+  $type: dimension
+  $format: rem
+  '0': { $value: '0', $format: literal }
+  '25': { $value: 2.5 }
+  '50': { $value: 5 }
+  '75': { $value: 7.5 }
+  '100': { $value: 10 }
+  '150': { $value: 15 }
+  '175': { $value: 18 }
+  '200': { $value: 20 }
+  '250': { $value: 24 }
+  '300': { $value: 30 }
+  '350': { $value: 35 }
+  '400': { $value: 50 }
+  '500': { $value: 60 }
+  '600': { $value: 80 }
+  '800': { $value: 100 }
+  '1000': { $value: 400 }
+  hero-overlay: { $value: '0', $format: literal }
+
+width:
+  $type: dimension
+  $format: rem
+  '150': { $value: 150 }
+  '300': { $value: 300 }
+  '400': { $value: 400 }
+  '600': { $value: 600 }
+
+# Type scale. Private: the scale itself is a build-time vocabulary exported
+# as Sass variables ($mg-font-size-300 and friends, still read across the
+# component Sass). Component font sizes below resolve against it at build
+# time, which is exactly what `#{$mg-font-size-250}` did by hand.
+font-size:
+  $type: dimension
+  $format: rem
+  $private: true
+  $sass: true
+  '100': { $value: 10 }
+  '150': { $value: 11.25 }
+  '200': { $value: 12.5 }
+  '250': { $value: 14 }
+  '300': { $value: 16, $description: 'Regular body text.' }
+  '400': { $value: 18 }
+  '500': { $value: 23 }
+  '600': { $value: 32 }
+  '800': { $value: 36 }
+  '900': { $value: 40 }
+  '1000': { $value: 48 }
+  '1100': { $value: 64 }
+  button:
+    $value: '{=font-size.250}'
+    $format: literal
+    $private: false
+    $sass: false
+  tab:
+    $value: '{=font-size.400}'
+    $format: literal
+    $private: false
+    $sass: false
+  form-input:
+    $value: '{=font-size.300}'
+    $format: literal
+    $private: false
+    $sass: false
+
+radius:
+  $type: dimension
+  tag: { $value: '{spacing.0}' }
+  button: { $value: '{spacing.50}' }
+  form-input: { $value: '{spacing.50}' }
+  tab: { $value: '0' }
+  tab-section: { $value: '0' }
+
+padding:
+  $type: dimension
+  button: { $value: '{spacing.100} {spacing.150}' }
+  tab: { $value: '{spacing.75} {spacing.150}' }
+  tab-section: { $value: '{spacing.100} {spacing.0}' }
+
+border-width:
+  $type: dimension
+  button: { $value: '1px' }
+
+box-shadow:
+  $type: shadow
+  tab-section: { $value: 'none' }
+
+container:
+  $type: dimension
+  spacer: { $value: '{spacing.150}' }
+
+cta:
+  $type: dimension
+  padding: { $value: '{spacing.400}' }
+
+author-image:
+  $type: dimension
+  radius: { $value: '50%' }
+
+opacity:
+  $type: number
+  hero: { $value: '0.85' }
+
+# v2 horizontal tab: an underline indicator rather than a filled pill.
+# Shared with the React Aria Tabs surface so both express a tab the same
+# way, and a theme restyles both from one definition.
+tab:
+  $type: dimension
+  padding: { $value: '{spacing.150} {spacing.200}' }
+  min-block-size: { $value: 44, $format: rem }
+  indicator-size: { $value: '3px' }
+
+# Form control surface, shared with the React Aria field tokens so both
+# surfaces describe a field the same way.
+form-input:
+  background:
+    $type: color
+    $value: '{color.neutral-25}'
+    $format: srgb-rgb-function
+  background--focus:
+    $type: color
+    $value: '{color.neutral-0}'
+    $format: srgb-rgb-function
+  border-color:
+    $type: color
+    $value: '{color.neutral-400}'
+    $format: srgb-rgb-function
+    $description: >-
+      The border was rgb(neutral-600 / 0.22), which is 1.43:1 against the
+      page and 1.39:1 against the field's own fill, so every input, textarea
+      and select in the system failed WCAG 1.4.11. neutral-400 is 3.95:1.
+  border-width: { $type: dimension, $value: '1px' }
+  block-size: { $type: dimension, $value: '46px' }
+  padding: { $type: dimension, $value: 6.25, $format: rem }
+
+focus-ring:
+  $type: dimension
+  width: { $value: '2px' }
+  offset: { $value: '2px' }
+  radius: { $value: '2px' }
+
+surface:
+  raised:
+    $type: color
+    $value: '{color.neutral-0}'
+    $format: srgb-rgb-function
+
+shadow:
+  $type: shadow
+  raised: { $value: 'inset 0 0 0 1px {rgb(color.neutral-600 / 0.24)}' }
+  raised-hover: { $value: 'inset 0 0 0 2px {rgb(color.interactive)}' }
+
+motion:
+  duration-fast: { $type: duration, $value: '160ms' }
+  duration-medium: { $type: duration, $value: '300ms' }
+  easing-standard: { $type: cubicBezier, $value: 'cubic-bezier(0.2, 0, 0, 1)' }
+
+card:
+  background: { $type: color, $value: '{surface.raised}', $format: literal }
+  padding: { $type: dimension, $value: '{spacing.150}' }
+  border-radius: { $type: dimension, $value: '{spacing.50}' }
+  shadow: { $type: shadow, $value: '{shadow.raised}' }
+  shadow-hover: { $type: shadow, $value: '{shadow.raised-hover}' }
+  icon-badge-radius: { $type: dimension, $value: '20%' }
+
+hero-overlay:
+  max-width: { $type: dimension, $value: 600, $format: rem }
+  padding: { $type: dimension, $value: '{spacing.300}' }
+  radius: { $type: dimension, $value: '{spacing.50}' }
+  shadow:
+    $type: shadow
+    $value: '0 18px 55px {rgb(color.neutral-900 / 0.22)}'
+
+hero-gradient:
+  $type: number
+  start-opacity: { $value: '0.98' }
+  middle-opacity: { $value: '0.82' }
+  end-opacity: { $value: '0.08' }
+
+# Named stacking contexts. One token per UI concept; a component's own
+# sub-layers use `$token - 1` / `$token + 1` arithmetic in its Sass rather
+# than a token each. Kept here rather than in Sass because the React Aria
+# adapter's --mg-aria-overlay-z-index reads --mg-z-index-modal, and a
+# standalone token file that omitted it would ship a dead var() chain.
+z-index:
+  $type: number
+  behind: { $value: '-1' }
+  nav: { $value: '10' }
+  sticky: { $value: '11' }
+  nav-toggle: { $value: '14' }
+  header: { $value: '22' }
+  drawer: { $value: '2000' }
+  dropdown: { $value: '2500' }
+  modal: { $value: '5000' }
+  toast: { $value: '5500' }
