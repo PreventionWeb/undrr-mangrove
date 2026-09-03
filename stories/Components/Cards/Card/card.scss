@@ -29,6 +29,11 @@
       aspect-ratio: 16/9;
       border-radius: calc(var(--mg-card-border-radius) / 2);
       overflow: hidden;
+
+      // Not a focus indicator: a decorative hairline that keeps a pale image
+      // from bleeding into the card surface. Deliberately does NOT read
+      // --mg-color-focus-ring; it is painted on the visual at rest, on every
+      // card, whether or not anything is focused.
       outline: 1px solid rgb(var(--mg-color-neutral-900) / 0.1);
     }
 
@@ -82,6 +87,11 @@
     .mg-card__visual {
       border-radius: calc(var(--mg-card-border-radius) / 2);
       overflow: hidden;
+
+      // Not a focus indicator: a decorative hairline that keeps a pale image
+      // from bleeding into the card surface. Deliberately does NOT read
+      // --mg-color-focus-ring; it is painted on the visual at rest, on every
+      // card, whether or not anything is focused.
       outline: 1px solid rgb(var(--mg-color-neutral-900) / 0.1);
     }
 
@@ -570,7 +580,7 @@ $card-variant-colours: (
       color: rgb(var(--mg-color-white));
 
       &:focus-visible {
-        outline-color: rgb(var(--mg-color-white));
+        outline-color: rgb(var(--mg-color-focus-ring-inverse));
       }
     }
   }

@@ -833,6 +833,13 @@ const COMPONENT_PAIRS = [
 
   // --- Card: card.scss ---------------------------------------------------
   {
+    name: 'inverse focus ring on the hero banner',
+    fg: '--mg-color-focus-ring-inverse',
+    bg: ['--mg-color-hero'],
+    min: 3,
+    why: 'SC 1.4.11 — Hero, TextCta and Snackbar draw the ring on a filled brand surface, where --mg-color-focus-ring cannot reach 3:1',
+  },
+  {
     name: 'card body text',
     fg: '--mg-color-text',
     bg: ['--mg-card-background'],

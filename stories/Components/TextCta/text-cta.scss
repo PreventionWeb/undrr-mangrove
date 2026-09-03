@@ -177,7 +177,7 @@
 
   a.mg-button:focus-visible {
     box-shadow: 0 0 0 2px rgb(var(--mg-color-neutral-0));
-    outline: 2px solid rgb(var(--mg-color-neutral-0));
+    outline: 2px solid rgb(var(--mg-color-focus-ring-inverse));
     outline-offset: 2px;
   }
 }

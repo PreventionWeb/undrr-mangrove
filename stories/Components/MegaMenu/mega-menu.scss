@@ -386,9 +386,12 @@
   animation: mg-mega-content-swap 180ms ease-out;
 }
 
-/* Stronger keyboard focus ring for accessibility */
+/* Stronger keyboard focus ring for accessibility.
+   Was a hardcoded white inset ring, which is invisible here: the panel is
+   --mg-color-neutral-0 and the focused link tints it only 15%, so white
+   measured 1.28:1. The default focus ring measures 4.36:1 on that tint. */
 .mg-mega-content__section-list-link:focus-visible {
-  outline: 2px solid rgb(var(--mg-color-white));
+  outline: 2px solid rgb(var(--mg-color-focus-ring));
   outline-offset: -2px;
 }
 

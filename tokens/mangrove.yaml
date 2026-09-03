@@ -233,6 +233,25 @@ color:
   #   contract grades.
   focus-ring: { $value: '{color.gold-800}' }
 
+  # THE INVERSE RING
+  #   Seven component rules draw the ring on a surface that is already dark:
+  #   the Hero and TextCta buttons over a filled brand banner, the Snackbar
+  #   action inside its coloured bar, and the dark Card and StatsCard variants.
+  #   focus-ring measures 1.49:1 on the hero banner, so the ring above cannot
+  #   serve them; each had hardcoded its own white instead. This is that white,
+  #   named once.
+  #
+  #   The test is where the ring is actually painted, not what it surrounds.
+  #   A dark control with a positive outline-offset -- the Gallery arrows, for
+  #   instance -- draws its ring clear of itself on the light surface behind,
+  #   and belongs on focus-ring, not here.
+  #
+  #   Same value as neutral-0 today, so nothing renders differently. The point
+  #   is that "the ring on a dark surface" is now one themeable decision rather
+  #   than seven literals: a brand whose banner is light, or whose scrim is
+  #   tinted, retunes both rings together and keeps the pair legible.
+  focus-ring-inverse: { $value: '{color.neutral-0}' }
+
   # Hero
   hero: { $value: '{color.interactive}' }
   hero--secondary: { $value: '{color.secondary}' }

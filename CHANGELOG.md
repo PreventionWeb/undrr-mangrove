@@ -87,6 +87,7 @@ It now resolves to a new base primitive, `--mg-color-gold-800` (`#866200`, emitt
 | ----------------------- | ----------------------------- | -------------------------- |
 | `--mg-color-focus-ring` | `var(--mg-color-interactive)` | `var(--mg-color-gold-800)` |
 | `--mg-color-gold-800`   | —                             | `134 98 0`                 |
+| `--mg-color-focus-ring-inverse` | — | `var(--mg-color-neutral-0)` |
 
 Measured against both graded backgrounds, in all five themes (both backgrounds are theme-invariant today), as WCAG 2 ratio / Oklab perceptual score against a non-text floor of 3:1 and 50:
 
@@ -99,7 +100,13 @@ A deliberately non-brand focus colour is near-universal in public-sector design 
 
 **Migration.** Nothing to do unless you depend on the ring being brand-coloured. If you do, set `--mg-color-focus-ring` on `:root` or on your theme selector; a theme that overrides it owns both graded pairs above. `--mg-color-form-focus`, which drives the focused field's _border_, is unchanged and stays brand-coloured on purpose: the border says "this field is active", the ring says "the keyboard is here". Forced-colours mode is unaffected — focus indicators are already repainted to `CanvasText`.
 
-**Not yet covered.** Fourteen focus-outline rules across six component stylesheets draw from `--mg-color-interactive`, `--mg-color-blue-800` or a local Sass variable instead of `--mg-color-focus-ring`, so they keep a brand-coloured ring: `Gallery` (4 rules), `SyndicationSearchWidget` (6, `$search-primary`), `Pager`, `Tab`, `Boilerplate` and `Forms/_form-base` (`blue-800`). Routing those through the token is follow-up work.
+**Components now follow the default.** Every component focus outline that drew its own colour has been routed through a token, so the new ring is what consumers actually see rather than a base-layer default the components override. Twelve rules that painted `--mg-color-interactive`, `--mg-color-blue-800` or a local Sass variable now read `--mg-color-focus-ring`: `Gallery` (4), `SyndicationSearchWidget` (6, previously `$search-primary` and `$search-primary-dark`), `Pager`, `Boilerplate`, `MegaMenu` and `PreviewAccess` (2). `$search-primary-dark` itself is unchanged — it still drives a gradient and a hover fill — only its focus rule moved.
+
+Two of those are worth calling out. `MegaMenu`'s section-list link drew a hardcoded _white_ inset ring on a white panel, measuring 1.28:1; it was invisible, and now measures 4.36:1. `PreviewAccess` drew both its field border and its ring from `--mg-color-form-focus`; the border keeps that token and the ring moves to `--mg-color-focus-ring`, matching how `_form-base.scss` already splits the two signals.
+
+**New: `--mg-color-focus-ring-inverse`.** Seven rules deliberately painted white because they draw the ring on an already-dark surface — the `Hero` and `TextCta` buttons over a filled brand banner, the `Snackbar` action, and the dark `Card` and `StatsCard` variants — where `--mg-color-focus-ring` measures 1.49:1 and would be a regression, not a fix. They now share one token instead of five literals. It resolves to `var(--mg-color-neutral-0)` in all five themes, so **nothing renders differently today**; a theme with a light banner or a tinted scrim can now retune both rings together. Note that the test is where the ring is _painted_, not what it surrounds: a dark control with a positive `outline-offset` — the `Gallery` arrows, for instance — draws its ring clear of itself on the light surface behind, and stays on `--mg-color-focus-ring`.
+
+**Still not covered.** One rule: `Tab`'s `.mg-tabs__link:focus-visible`. That selector also repaints the tab to `--mg-color-tab-background--hover`, and its ring is inset, so the ring lands on a saturated brand surface. Measured there, no single colour clears 3:1 in all five themes — today 1.28 / 4.78 / 2.30 / 3.55 / 2.08, the focus ring 1.16 / 4.12 / 2.73 / 1.65 / 1.40, the inverse ring 6.49 / 1.36 / 2.05 / 3.39 / 3.99. It needs the two-band treatment `.mg-chip` and `_form-base.scss` already use (a neutral separator plus the ring), which is a geometry change and follow-up work. It is left on the brand colour, with the measurements recorded in `tab.scss`, rather than migrated into a regression.
 
 #### Deprecated: `--sendai-*` accent colours
 

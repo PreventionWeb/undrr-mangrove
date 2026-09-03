@@ -335,7 +335,7 @@ $search-input-padding-x: var(--mg-spacing-250);
   }
 
   &:focus-visible {
-    outline: 2px solid $search-primary;
+    outline: 2px solid rgb(var(--mg-color-focus-ring));
     outline-offset: 2px;
   }
 }
@@ -859,7 +859,7 @@ $search-input-padding-x: var(--mg-spacing-250);
   }
 
   &:focus-visible {
-    outline: 2px solid $search-primary;
+    outline: 2px solid rgb(var(--mg-color-focus-ring));
     outline-offset: 2px;
   }
 }
@@ -1305,7 +1305,7 @@ $search-input-padding-x: var(--mg-spacing-250);
   }
 
   &:focus-visible {
-    outline: 2px solid $search-primary;
+    outline: 2px solid rgb(var(--mg-color-focus-ring));
     outline-offset: -2px;
   }
 }
@@ -1347,7 +1347,7 @@ $search-input-padding-x: var(--mg-spacing-250);
   }
 
   &:focus-visible {
-    outline: 2px solid $search-primary-dark;
+    outline: 2px solid rgb(var(--mg-color-focus-ring));
     outline-offset: 2px;
   }
 }
@@ -1394,7 +1394,7 @@ $search-input-padding-x: var(--mg-spacing-250);
 
 .mg-search__facet-select:focus-visible,
 .mg-search__facet input:focus-visible {
-  outline: 2px solid $search-primary;
+  outline: 2px solid rgb(var(--mg-color-focus-ring));
   outline-offset: 2px;
 }
 
@@ -1477,7 +1477,7 @@ $search-input-padding-x: var(--mg-spacing-250);
 
   // Focus visible for keyboard navigation
   &:focus-within {
-    outline: 2px solid $search-primary;
+    outline: 2px solid rgb(var(--mg-color-focus-ring));
     outline-offset: 2px;
     border-radius: $search-radius;
   }

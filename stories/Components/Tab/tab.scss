@@ -171,6 +171,18 @@
   text-decoration: none;
 }
 
+// Deliberately NOT migrated to --mg-color-focus-ring, and not to
+// --mg-color-focus-ring-inverse either. The rule above repaints the tab to
+// --mg-color-tab-background--hover on :focus-visible, and this ring is inset
+// (-2px), so it is drawn on that saturated surface rather than on the page.
+// Measured against it, per theme (Mangrove/UNDRR, PreventionWeb, IRP,
+// MCR2030, DELTA): today 1.28 / 4.78 / 2.30 / 3.55 / 2.08; the focus ring
+// would give 1.16 / 4.12 / 2.73 / 1.65 / 1.40; the inverse ring 6.49 / 1.36 /
+// 2.05 / 3.39 / 3.99. No single colour clears 3:1 everywhere, so a token swap
+// cannot fix this one -- it needs the two-band treatment (a neutral separator
+// plus the ring, as .mg-chip and _form-base.scss already do), which is a
+// geometry change and a follow-up. Left on the brand colour so this pass does
+// not knowingly make four of five themes worse.
 .mg-tabs__link:focus-visible {
   outline: 2px solid rgb(var(--mg-color-interactive));
   outline-offset: -2px;
