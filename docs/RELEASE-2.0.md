@@ -1,12 +1,14 @@
 # Mangrove 2.0 release notes
 
-Mangrove 2.0 combines three related workstreams: the runtime theming foundation published in `2.0.0-alpha.1`, the experience and interaction baseline in `2.0.0-alpha.2`, and the design token pipeline proposed for `2.0.0-alpha.3`. See [PR #1061](https://github.com/unisdr/undrr-mangrove/pull/1061) for the first alpha, [PR #1086](https://github.com/unisdr/undrr-mangrove/pull/1086) for alpha.2 and [PR #1087](https://github.com/unisdr/undrr-mangrove/pull/1087) for alpha.3. The tagged `v1.8.2...v2.0.0` comparison lands with the stable release.
+Mangrove 2.0 combines four related workstreams: the runtime theming foundation published in `2.0.0-alpha.1`, the experience and interaction baseline in `2.0.0-alpha.2`, the design token pipeline proposed for `2.0.0-alpha.3`, and the React Aria Components surface proposed for `2.0.0-alpha.4`. See [PR #1061](https://github.com/unisdr/undrr-mangrove/pull/1061) for the first alpha, [PR #1086](https://github.com/unisdr/undrr-mangrove/pull/1086) for alpha.2, [PR #1087](https://github.com/unisdr/undrr-mangrove/pull/1087) for alpha.3 and [PR #1088](https://github.com/unisdr/undrr-mangrove/pull/1088) for alpha.4. The tagged `v1.8.2...v2.0.0` comparison lands with the stable release.
 
 > **If you consume the base UNDRR compiled CSS (CDN or prebuilt), no sub-brand theming:** the alpha.1 theming migration requires no integration change. Alpha.2 intentionally refreshes component presentation and interaction while retaining existing Drupal hydration and BEM contracts, apart from the deprecated Pagination removal.
 >
 > **Alpha.3 adds no required integration change, but it does change three system-wide defaults that every consumer will see, in every theme:** the neutral ramp's surface half is now cool-tinted, the keyboard focus ring is no longer the brand colour, and the focus ring is drawn as two bands. See [Alpha.3](#alpha3-token-pipeline-and-colour-methodology).
 >
 > **DELTA consumers: your palette changed.** DELTA was built on a navy that appears nowhere in DELTA's own codebase. Alpha.3 replaces it with DELTA's real sourced palette. This is the one theme whose compiled output moves beyond the three shared defaults. See [DELTA's palette is corrected](#deltas-palette-is-corrected).
+>
+> **Alpha.4 adds no required integration change either, and nothing outside the React Aria surface moves.** It styles the stock `.react-aria-*` classes from Mangrove tokens. The one thing it costs a consumer who never uses React Aria is stylesheet weight: roughly 59 KB of `style.css`. See [Alpha.4](#alpha4-react-aria-components-surface).
 >
 > **If you consume a sub-brand compiled stylesheet** (PreventionWeb, IRP, MCR, DELTA): one required change — add the matching `mg-theme-*` class to `<body>` or a wrapping element, or components fall back to the default UNDRR palette. See [Sub-brand theming migration](#sub-brand-theming-migration).
 >
@@ -38,6 +40,7 @@ For a compiled-CSS consumer the entire trial is two lines: swap the stylesheet h
 | `2.0.0-alpha.1` | Published under `next` | CSS custom-property theming, 16px root and sub-brand runtime selectors |
 | `2.0.0-alpha.2` | Prepared for manual release in [PR #1086](https://github.com/unisdr/undrr-mangrove/pull/1086) | Experience principles, component surfaces, interaction states, responsive behaviour and multilingual resilience |
 | `2.0.0-alpha.3` | Proposed in [PR #1087](https://github.com/unisdr/undrr-mangrove/pull/1087), not yet published | Design token pipeline, status and empty-state components, data-visualisation palette and a perceptual colour-contrast methodology |
+| `2.0.0-alpha.4` | Proposed in [PR #1088](https://github.com/unisdr/undrr-mangrove/pull/1088), not yet published | React Aria Components styling surface, built on the alpha.3 token contract |
 
 ### Alpha.2 experience and interaction baseline
 
@@ -93,6 +96,35 @@ These are known and deliberately unfinished in alpha.3:
 - Forced-colours behaviour has not been verified in real Windows High Contrast, only in emulation. The two-band mixins are built to degrade correctly there, but that is reasoned, not observed.
 - `--mg-color-focus-ring-inverse` resolves to white in all five themes, so it is a seam with nothing behind it yet. It earns its keep only when a theme retunes it.
 
+### Alpha.4 React Aria Components surface
+
+Alpha.4 is stacked on alpha.3 and is a styling surface only. It adds no component API, changes no `.mg-*` class, and requires no integration change. If you do not use React Aria, the one thing that reaches you is stylesheet weight — see the note on `style.css` below.
+
+**React Aria Components render as Mangrove components without integration work.** [React Aria Components](https://react-spectrum.adobe.com/react-aria/) 1.20 ship unstyled with stock `.react-aria-*` classes. Mangrove now styles those classes from its own tokens, so a `<Button>` or `<Select>` picks up the active `mg-theme-*` brand with no `className`, wrapper or configuration. This matters for product teams choosing a component library: React Aria supplies the accessible behaviour, Mangrove supplies the brand.
+
+- The surface is compiled into `style.css`, so it currently reaches **every** consumer — about 59 KB of a 355 KB stylesheet, comment-stripped, whether or not you use React Aria. Making it opt-in is open; see [Not yet resolved in alpha.4](#not-yet-resolved-in-alpha4).
+- `aria/react-aria.css` and `aria/tokens/{brand}.css` are also built standalone, for consumers who want the React Aria styling without Mangrove's full stylesheet. The token files are wrapped in `:where(:root)`, which has zero specificity, so Mangrove's own palette still wins when both are loaded regardless of load order. **These files are not distributed yet** — they are not copied into `dist/`, the published package or the CDN — so today they are build artifacts, not a consumer entry point.
+- The surface is **unlayered**, and there is no `@layer mangrove` flavour of it. Unlayered styles beat layered ones, which is the opposite of most expectations: it means your Tailwind utilities cannot override Mangrove, and it also means wrapping the aria file in a layer would not fix that, because the same rules are compiled unlayered into every theme stylesheet and would still win. Making the surface opt-in is the change that has to land first. See [Cascade layers](https://github.com/unisdr/undrr-mangrove/blob/main/docs/CASCADE-LAYERS.md).
+
+**The surface reads a `--mg-aria-*` token contract.** An adapter tier maps Mangrove's palette and component tokens onto the values the React Aria classes read. Brand-neutral constants — type metrics, the shape and size constants shared by the range and toggle family, dialog geometry — live in a Sass mixin, so the same declarations are emitted at `:root` inside Mangrove's own bundle and at zero specificity inside each standalone `aria/tokens/*.css`. `--mg-aria-color-border` now covers only *control* boundaries, where WCAG SC 1.4.11 applies, at opaque `neutral-400`; a new `--mg-aria-color-rule` carries *structure* — table rules, tab rails, section dividers, card and overlay edges — at `rgb(neutral-600 / 0.24)`, the same value the legacy `.mg-tabs__list` rule uses, so the two surfaces agree by construction. The token generator gained a matching build check: a dangling adapter reference fails the build.
+
+**The focus ring was measured against alpha.3's two-band default, not converted to it.** Alpha.3 made Mangrove's own ring two bands — a white separator plus the ring — and the rule it established is that a ring is judged where it is *painted*, not by what it surrounds. Twenty-five selectors on this surface draw a ring; twenty-one paint it at a `+2px` offset clear of the control (5.58:1 against the page, 5.01:1 against a field surface, in all five themes) and three of the four inset ones land on a table row or a field surface at 4.46–5.16:1. All twenty-four already clear SC 1.4.11's 3:1 floor, and three of those selectors carry their indicator in `box-shadow`, so adding a band there would have removed a different indicator to fix nothing.
+
+The twenty-fifth was a genuine defect, the same class as the `Tab` ring alpha.3 fixed: a **focused-and-selected calendar cell** draws its ring inside its own accent fill, where it measures 1.49 / 1.16 / 1.19 / 2.15 / 1.49 — invisible in every theme, on the state arrow-key navigation lands on. It now draws a two-band inset indicator through a new `--mg-aria-color-focus-ring-separator`, taking the weaker seam to 4.71:1 and the ring against the band to 5.58:1. The band lives in `box-shadow` and the ring in `outline`, alpha.3's split and order, so forced colours degrades to single-band rather than to nothing. There is no `--mg-aria-*` equivalent of `--mg-color-focus-ring-inverse`: no ring on this surface is painted over a filled brand banner, so it would have been a seam with nothing behind it.
+
+**Contrast.** The alpha.3 neutral tint moves four pairs that exist only on this surface — the slider, progress-bar and meter rail (`--mg-aria-color-track`) resolves to `neutral-50`, so it moves with the ramp. No pair loses; the tightest, IRP's fill against the page at 4.71:1 / 64.6, is painted on `neutral-0` and does not move at all. Adding this surface to the graded set raises the recorded contrast exceptions from alpha.3's 65 against WCAG 2 and 84 against the perceptual measure to **73 and 94**; every added row is an aria tab or button hover pair, and no pair outside this surface moved. The methodology is unchanged. Full tables are in the [changelog](https://github.com/unisdr/undrr-mangrove/blob/main/CHANGELOG.md).
+
+**Spike stories and written reasoning.** Four Storybook pages exercise the surface — `Spike/React Aria integration`, `Spike/React Aria gallery`, `Spike/React Aria collection states` and `Spike/React Aria CRUD`. [React Aria architecture notes](https://github.com/unisdr/undrr-mangrove/blob/main/docs/ARIA-ARCHITECTURE-NOTES.md) records the decisions, the measurements behind them and the things that were tried and rejected. [Cascade layers](https://github.com/unisdr/undrr-mangrove/blob/main/docs/CASCADE-LAYERS.md) records why the surface ships unlayered.
+
+#### Not yet resolved in alpha.4
+
+These are known and deliberately unfinished in alpha.4:
+
+- The React Aria surface compiles into `style.css` for every consumer, including those who will never use it. Making it opt-in is the main open packaging question.
+- The standalone `aria/*.css` files are not wired into any distribution channel: `yarn build` does not copy `aria/` into `dist/`, the release workflow does not copy it into the published package, and the published `package.json` is regenerated without an `exports` field. Until that is fixed the layered variant cannot help the Tailwind consumers it was written for.
+- Only one rule on this surface uses the two-band focus indicator; the other twenty-four stay single-band. The measurements say that is correct today, but it does mean a `.mg-button` and a `.react-aria-Button` do not paint an identical indicator, and a theme that retints `--mg-color-neutral-0` away from white would need both surfaces re-measured together.
+- The adapter currently reads the legacy component's tokens, which makes the semantic tier depend on the component tier. The intended shape is palette → semantic → component, with the library-specific `aria` prefix dropped. Recorded as a direction, not a decision, in [React Aria architecture notes](https://github.com/unisdr/undrr-mangrove/blob/main/docs/ARIA-ARCHITECTURE-NOTES.md).
+
 ## Find your path
 
 | I am... | Go to... |
@@ -102,6 +134,7 @@ These are known and deliberately unfinished in alpha.3:
 | A **DELTA** consumer | [DELTA's palette is corrected](#deltas-palette-is-corrected) — your brand colours changed |
 | A developer who imports Mangrove SCSS | [Breaking changes](#breaking-changes) |
 | A developer who overrides sub-brand tokens | [Sub-brand theming migration](#sub-brand-theming-migration) |
+| A developer building with **React Aria Components** | [Alpha.4](#alpha4-react-aria-components-surface) — stock `.react-aria-*` classes are styled from Mangrove tokens |
 | A developer who uses the **`--sendai-*` accent colours** | [Alpha.3](#alpha3-token-pipeline-and-colour-methodology) — deprecated, replaced by `--mg-sendai-target-a`…`-g` |
 | An AI agent or tool reading this for API context | [Token API summary](#token-api-summary) |
 
@@ -114,6 +147,8 @@ In **alpha.1**, colors and spacing remain visually equivalent for base UNDRR con
 **Alpha.3** changes three things in every theme — the neutral ramp's surface half is cool-tinted, the focus ring is gold rather than the brand colour, and that ring is now two bands — plus DELTA's palette, corrected against its own design sources. The tint is subtle per surface and cumulative across a page. DELTA's buttons in particular go from unfilled navy text to white on brand blue. See [Alpha.3](#alpha3-token-pipeline-and-colour-methodology).
 
 Otherwise the token rewrite carries the values it started with, apart from [three tokens that changed shape](#7-three-button-tokens-changed-shape). `StatusLabel` and `EmptyState` are additions no existing component uses.
+
+**Alpha.4** changes nothing visually for existing components. It styles React Aria Components, which no Mangrove `.mg-*` class touches. If you do not render React Aria, the only difference you can measure is the size of `style.css`.
 
 **Sub-brand consumers (PreventionWeb, IRP, MCR, DELTA) have one required change.** Brand colors previously baked into every component rule at compile time; they now live in a `.mg-theme-{brand}` selector block. Add `class="mg-theme-{brand}"` to `<body>` or a wrapping element, or components render with the default UNDRR palette instead of the brand palette. See [Sub-brand theming migration](#sub-brand-theming-migration).
 

@@ -159,6 +159,21 @@
   --mg-aria-color-focus-ring: rgb(var(--mg-color-focus-ring));
   --mg-aria-focus-width: var(--mg-focus-ring-width);
   --mg-aria-focus-offset: var(--mg-focus-ring-offset);
+
+  // The separator band of the two-band focus indicator, matching the
+  // --mg-color-neutral-0 band mg-focus-ring emits on Mangrove's own surface.
+  // It is a seam rather than a literal for the same reason the ring is one: a
+  // theme that repaints its surfaces has to be able to repaint the band with
+  // them, or the band stops separating anything.
+  // Only the CALENDAR CELL reads it, and that is a measurement, not an
+  // oversight. Every other focus ring on this surface is drawn at a POSITIVE
+  // offset, so it is painted clear of the control on the page or the field
+  // behind it, where it measures 5.58:1 and 5.01:1 in all five themes — a
+  // band there would separate the ring from a colour it already contrasts
+  // with. A focused-and-selected calendar cell is the one place the ring is
+  // painted INSIDE a brand fill, and it measures 1.49 / 1.16 / 1.19 / 2.15 /
+  // 1.49 there: below SC 1.4.11's 3:1 in every theme. See _react-aria.scss.
+  --mg-aria-color-focus-ring-separator: rgb(var(--mg-color-neutral-0));
   --mg-aria-surface-shadow: var(--mg-shadow-raised);
   --mg-aria-surface-shadow-hover: var(--mg-shadow-raised-hover);
 

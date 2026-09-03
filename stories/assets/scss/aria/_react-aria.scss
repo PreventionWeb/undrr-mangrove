@@ -858,7 +858,32 @@
   background: var(--mg-aria-color-accent);
   color: var(--mg-aria-color-on-accent);
 }
+
+// The one two-band focus indicator on this surface, and the only rule here
+// that needs one. A focused cell that is ALSO selected is filled with
+// --mg-aria-color-accent, and the ring is inset, so the ring is painted on the
+// brand fill rather than clear of it. Measured there the gold ring is
+// 1.49 / 1.16 / 1.19 / 2.15 / 1.49 (base / PreventionWeb / IRP / MCR2030 /
+// DELTA) — under SC 1.4.11's 3:1 in every theme, and effectively invisible in
+// two of them. This is the same defect the legacy Tab carried, on a different
+// surface: the state arrow-key navigation lands on had no measurable ring.
+// The band takes the worst seam to 4.71:1 (IRP; 6.49 / 8.31 / 12.03
+// elsewhere), and the ring against the band is 5.58:1 by construction in all
+// five themes.
+// Band INSIDE the ring, which is the opposite of Mangrove's
+// mg-focus-ring-inset and is deliberate: the cells are contiguous, so the
+// outermost 2px has to be the ring or the neighbouring cell paints over it.
+// The separation the band exists to provide is unchanged — the ring's inner
+// neighbour is the band rather than the fill either way.
+// The ring stays in `outline` and the band in `box-shadow`, the same split and
+// the same order Mangrove's mixins use, because forced colours drops
+// box-shadow and repaints outline: the indicator degrades to single-band there
+// instead of to nothing.
 .react-aria-CalendarCell[data-focused] {
+  // Outer 2px: the ring. Next 2px inward: the separator band, drawn as an
+  // inset shadow the outline is painted over.
+  box-shadow: inset 0 0 0 calc(var(--mg-aria-focus-width) * 2)
+    var(--mg-aria-color-focus-ring-separator);
   outline: var(--mg-aria-focus-width) solid var(--mg-aria-color-focus-ring);
 
   // A negative offset, unlike everywhere else in this file. Calendar cells are
@@ -2614,6 +2639,15 @@
   .react-aria-Tag {
     border: var(--mg-aria-border-width) solid CanvasText;
   }
+
+  // The focused calendar cell's separator band joins this list for a
+  // different reason from the four above. Its box-shadow is not the cell's
+  // only boundary — the CanvasText outline above is — but a SELECTED cell is
+  // opted out of forcing further down, so unlike every other shadow here its
+  // band would actually be painted, in brand white, inside a system-coloured
+  // ring. The ring is what carries the indicator in this mode; the band has
+  // nothing left to separate.
+  .react-aria-CalendarCell[data-focused],
   .react-aria-Switch::after,
   .react-aria-Tab[data-selected],
   .react-aria-Tag,

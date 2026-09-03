@@ -15,7 +15,80 @@ _Notable cross-cutting changes between releases land here. Per-component changes
 
 ## 2.0.0 — unreleased
 
-Development releases began with `2.0.0-alpha.1` under the npm `next` dist-tag. See [PR #1061](https://github.com/unisdr/undrr-mangrove/pull/1061) for the first alpha, [PR #1086](https://github.com/unisdr/undrr-mangrove/pull/1086) for alpha.2 and [PR #1087](https://github.com/unisdr/undrr-mangrove/pull/1087) for alpha.3. The [Storybook release notes](https://unisdr.github.io/undrr-mangrove/?path=/docs/getting-started-release-notes-v2-0--docs) cover the complete 2.0 line; the tagged stable GitHub Release link lands with 2.0.0.
+Development releases began with `2.0.0-alpha.1` under the npm `next` dist-tag. See [PR #1061](https://github.com/unisdr/undrr-mangrove/pull/1061) for the first alpha, [PR #1086](https://github.com/unisdr/undrr-mangrove/pull/1086) for alpha.2, [PR #1087](https://github.com/unisdr/undrr-mangrove/pull/1087) for alpha.3 and [PR #1088](https://github.com/unisdr/undrr-mangrove/pull/1088) for alpha.4. The [Storybook release notes](https://unisdr.github.io/undrr-mangrove/?path=/docs/getting-started-release-notes-v2-0--docs) cover the complete 2.0 line; the tagged stable GitHub Release link lands with 2.0.0.
+
+### `2.0.0-alpha.4` — unreleased
+
+Proposed in [PR #1088](https://github.com/unisdr/undrr-mangrove/pull/1088), stacked on alpha.3. A styling surface for [React Aria Components](https://react-spectrum.adobe.com/react-aria/): stock `.react-aria-*` classes rendered from Mangrove tokens. It adds no component API, changes no `.mg-*` class and requires no integration change. Nothing outside this surface moves.
+
+#### React Aria Components surface
+
+- Stock `.react-aria-*` classes from React Aria Components 1.20 are styled from Mangrove tokens, so React Aria components adopt the active `mg-theme-*` brand with no `className`, wrapper or configuration.
+- `aria/react-aria.css` and per-brand `aria/tokens/{brand}.css` are built standalone for consumers who do not load Mangrove's full stylesheet. Token files are wrapped in `:where(:root)` so Mangrove's own palette wins when both are present, regardless of load order. **Not distributed yet:** `aria/` is not copied into `dist/` or the published package, and the published `package.json` is regenerated without an `exports` field.
+- The surface ships **unlayered**, and no `@layer`-wrapped flavour is built. Because the same rules are also compiled unlayered into every theme stylesheet, a layered copy could not outrank them — see `docs/CASCADE-LAYERS.md` for why, and for what would have to change first.
+- **Known:** the surface also compiles into `style.css`, so it currently reaches every consumer — roughly 59 KB of a 355 KB stylesheet, comment-stripped. Making it opt-in is unresolved.
+
+#### The `--mg-aria-*` token contract
+
+- A `--mg-aria-*` adapter tier maps Mangrove's palette and component tokens onto the values the React Aria surface reads. Brand-neutral constants — type metrics, the shape and size constants shared by the range and toggle family, dialog geometry — live in a Sass mixin so the same declarations can be emitted at `:root` inside Mangrove's own bundle and at zero specificity inside each standalone `aria/tokens/*.css`.
+- `--mg-aria-color-border` was doing nine unrelated jobs. It now keeps only _control_ boundaries, where WCAG SC 1.4.11 applies — a field, a check, a Select trigger — at opaque `neutral-400`. A new `--mg-aria-color-rule` carries _structure_: table rules, tab rails, section dividers, card and overlay edges, at `rgb(neutral-600 / 0.24)`. That is the same value the legacy `.mg-tabs__list` rule uses, so the two surfaces agree by construction rather than by coincidence.
+- `scripts/build-tokens.cjs` now also fails the build on a dangling adapter reference, so an adapter token cannot point at a palette token that does not exist.
+- Build output for this surface is gitignored alongside the other generated partials: the five `aria/tokens/*.css` files and `aria/react-aria.css` are produced by `yarn scss`.
+- **Direction, not a decision:** the adapter currently reads the legacy component's tokens, which makes the semantic tier depend on the component tier and grows the key count with every component reconciled. The right shape is palette → semantic → component, with the `aria` prefix dropped entirely. Reversing it is a larger change than anything done so far. Reasoning in `docs/ARIA-ARCHITECTURE-NOTES.md` §3.
+
+#### Documentation and spike stories
+
+- Four Storybook spike stories exercise the surface: `Spike/React Aria integration`, `Spike/React Aria gallery`, `Spike/React Aria collection states` and `Spike/React Aria CRUD`.
+- `docs/CASCADE-LAYERS.md` and the matching `Cascade layers` Storybook page record why the surface ships unlayered, what layering would take, and the build-tool failures around `@layer`.
+- `docs/ARIA-ARCHITECTURE-NOTES.md` is the contributor-facing decision record: what was tried, measured and rejected. It is deliberately not published to Storybook.
+- `scripts/aria-coverage.cjs` reports which React Aria classes the surface styles.
+
+#### Focus indicator
+
+Alpha.3 made Mangrove's own focus ring two bands — a `neutral-0` separator drawn in `box-shadow`, then the ring drawn in `outline`, deliberately in that order because forced colours drops `box-shadow` and keeps a system-coloured `outline`. This surface was measured against that change rather than converted to match it, on alpha.3's own rule: **the test is where the ring is painted, not what it surrounds.**
+
+Twenty-five selectors here draw the ring. Four paint it inset — a table `Row`, a sticky `Column`, a NumberField stepper `Button` inside a `Group`, and a calendar cell — and the other twenty-one paint it at the `+2px` offset, clear of the control. Measured (WCAG 2 ratio / Oklab perceptual score, base · PreventionWeb · IRP · MCR2030 · DELTA):
+
+| Where the ring is actually painted           | Rules | Measured                                       | Against 3:1         |
+| -------------------------------------------- | ----- | ---------------------------------------------- | ------------------- |
+| The page, a popover or a field, at `+2px`    | 21    | 5.58 / 68.7, or 5.01 / 62.5 on a field surface | Passes              |
+| A table row's own fill, inset                | 2     | 4.46–5.16 / 56.2–64.1                          | Passes              |
+| A stepper button's field surface, inset      | 1     | 5.01 / 62.5                                    | Passes              |
+| A **selected** calendar cell's accent, inset | 1     | 1.49 · 1.16 · 1.19 · 2.15 · 1.49               | **Fails, all five** |
+
+So a separator band buys nothing on twenty-four of the twenty-five: they are already painted against a known colour, well clear of SC 1.4.11's floor. Adding one there would also have been destructive, because `.react-aria-Tab`, `.react-aria-Tag[data-selected]` and `.react-aria-Switch::after` carry their indicator, their selected ring and their hairline in `box-shadow` — the same collision that hid the checked radio's focus ring until alpha.3 fixed it.
+
+The twenty-fifth is a real defect of the same class as alpha.3's `Tab` fix: a focused-and-selected date cell — the state arrow-key navigation lands on — had **no measurable focus indicator in any theme**. It now draws a two-band inset indicator, and both seams are comfortable: the band against the accent fill measures 8.31 · 6.49 · 4.71 · 12.03 · 8.31, and the ring against the band measures 5.58 in all five by construction.
+
+- New token `--mg-aria-color-focus-ring-separator`, resolving to `rgb(var(--mg-color-neutral-0))`. It is a seam rather than a literal for the same reason the ring is one: a theme that repaints its surfaces has to be able to repaint the band with them, or the band stops separating anything.
+- The band is drawn **inside** the ring here, the opposite of Mangrove's `mg-focus-ring-inset`. Calendar cells are contiguous, so the outermost 2px has to be the ring or the neighbouring cell paints over it. What the band does is unchanged either way — the ring's inner neighbour becomes the band instead of the fill.
+- The split across `outline` and `box-shadow`, and the order, are Mangrove's, so the indicator degrades to single-band in forced colours rather than to nothing. The band is additionally reset to `none` inside `@media (forced-colors: active)`: a selected cell is opted out of forcing, so unlike every other shadow in that block its band would actually be painted, in brand white, inside a system-coloured ring.
+- **No `--mg-aria-*` equivalent of `--mg-color-focus-ring-inverse` was added.** That token exists on Mangrove's surface because seven rules paint a ring at a positive offset over a filled brand banner. No rule here does: the only ring painted on a brand fill is the calendar cell's, and the band already takes its weaker seam to 4.71:1. A second white-resolving token with no consumer would be a seam with nothing behind it.
+- Both new seams are graded in all five themes on both measures, by `ARIA_PAIRS` in `tokens-contract.test.js`. A two-band ring is only as good as its weaker band, so the band against the fill and the ring against the band are checked separately.
+
+This surface implements its own two-band rule in `_react-aria.scss` rather than calling Mangrove's `mg-focus-ring-inset`. `_mixins.scss` is not reachable from the standalone build — `aria/_tokens-*.scss` import only the generated partials, the tab tokens and the two aria mixins — so reaching for it would have made the standalone artifact depend on the stylesheet it exists to work without.
+
+#### Contrast
+
+The alpha.3 neutral tint moves four pairs that exist only on this surface. `--mg-aria-color-track` is the unfilled rail behind a slider, progress bar or meter and `--mg-aria-color-fill` is the filled portion in front of it. The rail resolves to `neutral-50`, so it moves with the ramp (WCAG 2 ratio / Oklab perceptual score):
+
+| Pair (React Aria surface)                       | Minimum | Before                  | After                   |
+| ----------------------------------------------- | ------- | ----------------------- | ----------------------- |
+| `color-accent` on `color-track` (UNDRR, DELTA)  | 3 / 50  | 6.66 / 66.3             | **6.69 / 66.6**         |
+| `color-accent` on `color-track` (PreventionWeb) | 3 / 50  | 5.20 / 61.4             | **5.23 / 61.7**         |
+| `color-accent` on `color-track` (IRP)           | 3 / 50  | 3.77 / 51.6             | **3.79 / 51.8**         |
+| `color-accent` on `color-track` (MCR2030)       | 3 / 50  | 9.64 / 73.2             | **9.69 / 73.4**         |
+| `color-fill` on `color-track`                   | 3 / 50  | as `color-accent` above | as `color-accent` above |
+
+No pair loses. Pairs painted directly on the page are unmoved, because the page resolves to `neutral-0` and `neutral-0` did not change — that includes IRP's slider and meter fill against the page at 4.71 / 64.6, whose rails lost their borders in alpha.2, the tightest pair this surface has.
+
+Adding the surface to the graded set raises the recorded contrast exceptions from alpha.3's 65 against WCAG 2 and 84 against the perceptual measure to **73 and 94**. Every one of the eighteen added rows is an aria tab or button hover pair; no pair outside this surface moved. The methodology itself is unchanged; see [alpha.3](#colour-contrast-methodology).
+
+#### Not yet resolved
+
+- The surface compiles into `style.css` for every consumer, including those who will never use React Aria. Making it opt-in is the main open packaging question, and it is the change that has to land before a layered variant could help anyone.
+- The standalone `aria/*.css` files are not wired into any distribution channel: `yarn build` does not copy `aria/` into `dist/`, the release workflow does not copy it into the published package, and the published `package.json` is regenerated without an `exports` field.
+- The two-band focus indicator is used on exactly one rule here, and the other twenty-four stay single-band. That is a measurement rather than a shortfall — see the focus indicator section above — but it does mean a `.mg-button` and a `.react-aria-Button` do not paint an identical indicator. If a theme ever retints `--mg-color-neutral-0` away from white, the two surfaces would need re-measuring together.
 
 ### `2.0.0-alpha.3` — unreleased
 

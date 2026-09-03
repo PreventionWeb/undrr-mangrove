@@ -15,16 +15,93 @@ const {
   perceptualContrast,
   THRESHOLD,
 } = require('../../../../scripts/lib/perceptual-contrast.cjs');
+const {
+  coverage: ariaCoverage,
+  summary,
+  listMissing,
+} = require('../../../../scripts/aria-coverage.cjs');
 const { version } = require('../../../../package.json');
 
 const SCSS_DIR = path.resolve(__dirname, '..');
 const BRANDS = ['preventionweb', 'irp', 'mcr', 'delta'];
+const RUNTIME_ARIA_ALIASES = [
+  'color-accent',
+  'color-accent-active',
+  'color-on-accent',
+  'color-text',
+  'color-muted-text',
+  'color-surface',
+  'color-field-surface',
+  'color-field-surface-focus',
+  'color-subtle-surface',
+  'color-selected-surface',
+  'color-border',
+  'color-border-focus',
+  'color-rule',
+  'color-hover-surface',
+  'color-inset-surface',
+  'color-invalid-surface',
+  'color-overlay-backdrop',
+  'color-track',
+  'color-fill',
+  'color-invalid',
+  'space-1',
+  'space-2',
+  'space-3',
+  'space-4',
+  'radius-button',
+  'radius-control',
+  'radius-surface',
+  'radius-item',
+  'radius-check',
+  'radius-control-inner',
+  'control-block-size',
+  'color-focus-ring',
+  'color-focus-ring-separator',
+  'focus-width',
+  'focus-offset',
+  'surface-shadow',
+  'surface-shadow-hover',
+  'overlay-shadow',
+  'modal-shadow',
+  'overlay-z-index',
+  'tag-radius',
+  'tag-background',
+  'tag-background-hover',
+  'check-color',
+  'check-color-hover',
+  'check-color-checked',
+  'button-background',
+  'button-background-hover',
+  'button-color',
+  'button-outline-color',
+  'button-outline-color-hover',
+  'button-border-width',
+  'button-padding',
+  'button-font-size',
+  'tab-padding',
+  'tab-font-size',
+  'tab-color',
+  'tab-color-hover',
+  'tab-color-active',
+  'tab-background-hover',
+  'tab-min-block-size',
+  'tab-indicator-size',
+  'tab-indicator-hover',
+  'tab-indicator-active',
+  'motion-duration-fast',
+  'motion-duration-medium',
+  'motion-easing',
+];
+
 /**
  * Mangrove's v2 tab colours are var() chains onto theme-owned values, so they
  * are re-emitted inside every runtime theme block rather than declared once at
- * :root — see stories/assets/scss/_tokens-tabs.scss for why. If that mixin
- * ever stops being included in a theme, the tab silently keeps the base
- * theme's colours.
+ * :root — see stories/assets/scss/_tokens-tabs.scss for why. They are owned by
+ * @mixin mg-tokens-tabs, NOT by the React Aria alias mixin, so the legacy
+ * .mg-tabs component keeps its brand colours with no aria layer present. If
+ * that mixin ever stops being included in a theme, the tab silently keeps the
+ * base theme's colours.
  */
 const RUNTIME_TAB_TOKENS = [
   'color',
@@ -103,6 +180,16 @@ describe('Mangrove 2.0 token contract (compiled CSS)', () => {
         expect(themeBlock).toMatch(new RegExp(`--mg-tab-${token}:`));
       });
     });
+
+    test('refreshes React Aria aliases inside the runtime theme', () => {
+      const themeBlock = brandCss[brand].match(
+        new RegExp(`\\.mg-theme-${brand}\\s*\\{([^}]*)\\}`)
+      )?.[1];
+
+      RUNTIME_ARIA_ALIASES.forEach(alias => {
+        expect(themeBlock).toMatch(new RegExp(`--mg-aria-${alias}:`));
+      });
+    });
   });
 
   test('combined style-all bundle carries every brand theme', () => {
@@ -129,6 +216,130 @@ describe('Mangrove 2.0 token contract (compiled CSS)', () => {
       expect(css).not.toContain('rgba(var(');
     }
   );
+});
+
+/**
+ * The React Aria surface is built as a standalone artifact
+ * (`aria/react-aria.css`) and is compiled into every theme stylesheet.
+ * Storybook's spike demos live in the same
+ * Sass tree and are trivially easy to re-add to the shipped entry point by
+ * accident, which would leak `.aria-crud-*` fixture styling into every
+ * consumer's bundle. These assertions pin the boundary.
+ */
+describe('distributed React Aria surface', () => {
+  // Selector prefixes that belong to the Storybook spike demos, plus the
+  // Mangrove component classes the demos compose with. None may appear in the
+  // shipped stylesheet.
+  const DEMO_SELECTOR =
+    /\.(aria-spike-|aria-crud-|aria-integration-demo|aria-calendar-header|mg-button|mg-tag)/;
+
+  let ariaCss;
+
+  beforeAll(() => {
+    ariaCss = compile('aria/_react-aria');
+  });
+
+  test('carries the reusable React Aria primitives', () => {
+    [
+      'Button',
+      'Input',
+      'Table',
+      'Cell',
+      'Popover',
+      'Modal',
+      'Checkbox',
+    ].forEach(part => {
+      expect(ariaCss).toContain(`.react-aria-${part}`);
+    });
+  });
+
+  test('the shipped theme bundle carries no spike-demo selectors either', () => {
+    // The boundary was previously guarded only on aria/react-aria.css, while
+    // _components.scss still pulled the fixtures into every consumer's
+    // style.css. Guarding one artefact and not the other missed that entirely.
+    // Narrower than DEMO_SELECTOR: .mg-button and .mg-tag are legitimate in the
+    // theme bundle and only count as leaks in the distributed aria artefact.
+    const FIXTURE_ONLY =
+      /\.(aria-spike-|aria-crud-|aria-integration-demo|aria-calendar-header)/;
+    const leaked = compile('style')
+      .split('\n')
+      .filter(line => FIXTURE_ONLY.test(line))
+      .map(line => line.trim());
+
+    expect(leaked).toEqual([]);
+  });
+
+  test('carries no spike-demo composition selectors', () => {
+    const leaked = ariaCss
+      .split('\n')
+      .filter(line => DEMO_SELECTOR.test(line))
+      .map(line => line.trim());
+
+    expect(leaked).toEqual([]);
+  });
+
+  test('resolves every value through a --mg-aria-* custom property', () => {
+    // Literals belong in the token files; the shared stylesheet must stay
+    // theme-neutral so a token swap fully re-skins it.
+    expect(ariaCss).not.toMatch(/:\s*#[0-9a-f]{3,8}\b/i);
+    expect(ariaCss).not.toMatch(/:\s*rgb\(\s*\d/);
+  });
+
+  test.each([
+    ['mangrove', 'aria/_tokens-mangrove'],
+    ['preventionweb', 'aria/_tokens-preventionweb'],
+    ['irp', 'aria/_tokens-irp'],
+    ['mcr', 'aria/_tokens-mcr'],
+    ['delta', 'aria/_tokens-delta'],
+  ])(
+    'every --mg-aria-* it consumes is defined by the %s token file',
+    (_name, entry) => {
+      // This is what makes "swap one token file to retheme" true. A property
+      // added to the stylesheet but not to both token files degrades silently
+      // to an unset value rather than failing the build.
+      const used = new Set(
+        [...ariaCss.matchAll(/var\(\s*(--mg-aria-[a-z0-9-]+)/g)].map(m => m[1])
+      );
+      const tokenCss = compile(entry);
+      const defined = new Set(
+        [...tokenCss.matchAll(/(--mg-aria-[a-z0-9-]+)\s*:/g)].map(m => m[1])
+      );
+
+      expect([...used].filter(prop => !defined.has(prop))).toEqual([]);
+    }
+  );
+
+  test('styles a floor proportion of React Aria stock classes', () => {
+    // A consumer importing aria.css gets every unstyled component bare, so
+    // coverage is a product fact rather than a metric. This is a floor, not a
+    // target: it exists so a refactor cannot quietly drop components. Raise it
+    // when coverage genuinely improves.
+    //
+    // The measurement itself comes from `scripts/aria-coverage.cjs` rather than
+    // being repeated here, so the CLI a developer runs and the guard CI runs
+    // cannot disagree. The script defaults to the built `aria/react-aria.css`;
+    // this passes the freshly compiled Sass so the guard does not depend on a
+    // build artifact being current.
+    const FLOOR = 65;
+    const result = ariaCoverage(ariaCss);
+
+    // Jest's expect() carries no custom message, so name the components a
+    // consumer would get bare before asserting. Without this the failure says
+    // only that a number shrank.
+    if (result.covered.length < FLOOR) {
+      throw new Error(
+        `React Aria styling coverage ${summary(result)} is below the floor of ` +
+          `${FLOOR}.\n${listMissing(result)}`
+      );
+    }
+    expect(result.covered.length).toBeGreaterThanOrEqual(FLOOR);
+  });
+
+  test('declares no cascade layer', () => {
+    // DELTA has unlayered legacy CSS that outranks any layered rule, so the
+    // agreed distribution shape is ordinary author CSS.
+    expect(ariaCss).not.toContain('@layer');
+  });
 });
 
 /* -------------------------------------------------------------------------
@@ -308,6 +519,48 @@ const themeVars = theme => {
   return vars;
 };
 
+/**
+ * Resting-state React Aria pairs, as [foreground, background, minimum].
+ * 3:1 is SC 1.4.11 non-text contrast; 4.5:1 is SC 1.4.3 for text.
+ *
+ * Module scope rather than describe scope so the perceptual measure and the
+ * disagreement report grade this exact list — one list, two measures.
+ */
+const ARIA_PAIRS = [
+  ['color-text', 'color-surface', 4.5],
+  ['color-muted-text', 'color-surface', 4.5],
+  // Muted text is painted on form surfaces too (help text under a field), and
+  // the field surface is tinted, so the surface pair alone does not cover it.
+  ['color-muted-text', 'color-field-surface', 4.5],
+  ['color-on-accent', 'color-accent', 4.5],
+  ['button-color', 'button-background', 4.5],
+  ['color-invalid', 'color-surface', 4.5],
+  ['color-border', 'color-surface', 3],
+  ['color-border', 'color-field-surface', 3],
+  ['color-accent', 'color-surface', 3],
+  // The filled portion of a slider, progress bar or switch against its rail.
+  // Graded on the fill seam as well as the accent: a theme may repoint
+  // --mg-aria-color-fill away from the accent (see the rail note in
+  // _runtime-theme-aliases.scss), and the rail contract has to follow it.
+  ['color-accent', 'color-track', 3],
+  ['color-fill', 'color-track', 3],
+  // The rail carries no border, so the fill's own edge against the page is
+  // what makes a part-full bar readable.
+  ['color-fill', 'color-surface', 3],
+  ['color-focus-ring', 'color-surface', 3],
+  ['color-focus-ring', 'color-field-surface', 3],
+  // The two-band indicator on a focused-and-selected calendar cell, which is
+  // the one place on this surface the ring is painted INSIDE a brand fill.
+  // Both seams are graded, because a two-band ring is only as good as its
+  // weaker one: the band has to separate from the fill it sits on, and the
+  // ring has to separate from the band. Without the band the ring measures
+  // 1.16-2.15 against the accent and fails 3:1 in all five themes.
+  ['color-focus-ring-separator', 'color-accent', 3],
+  ['color-focus-ring', 'color-focus-ring-separator', 3],
+];
+
+const ARIA_THEMES = [['base', null], ...BRANDS.map(b => [b, `.mg-theme-${b}`])];
+
 /* -------------------------------------------------------------------------
  * The second measure.
  *
@@ -384,8 +637,31 @@ const measurements = () => {
     return row;
   };
 
-  // Component tokens including hover and active states, resolved out of the
-  // combined bundle with the theme block overlaid.
+  // Suite one: resting-state --mg-aria-* pairs, read out of each brand's own
+  // bundle exactly as the WCAG assertions below do.
+  for (const [theme, selector] of ARIA_THEMES) {
+    const css = theme === 'base' ? compile('style') : compile(`style-${theme}`);
+    const vars = declarations(css, selector);
+    const read = token => parseColor(deref(vars, vars[`--mg-aria-${token}`]));
+    for (const [fg, bg, min] of ARIA_PAIRS) {
+      grade({
+        suite: 'aria',
+        theme,
+        name: `${fg} on ${bg}`,
+        min,
+        // These eleven are borders, fills, focus rings and accent-on-surface;
+        // none is large text, so a 3 minimum here is always SC 1.4.11.
+        why: min >= 4.5 ? 'SC 1.4.3' : 'SC 1.4.11',
+        foreground: read(fg),
+        // A missing background token is a contract bug, not a silent pass;
+        // `grade` leaves the row ungraded and the assertion below reports it.
+        backdrop: read(bg),
+      });
+    }
+  }
+
+  // Suite two: component tokens including hover and active states, resolved
+  // out of the combined bundle with the theme block overlaid.
   for (const theme of ALL_THEMES) {
     const vars = themeVars(theme);
     const resolve = token =>
@@ -449,6 +725,76 @@ const assertPerceptual = (row, exception) => {
 };
 
 /**
+ * Perceptual failures among the resting-state React Aria pairs.
+ *
+ * Empty, and that is a finding rather than an oversight: all 55 resting-state
+ * pairs clear both measures. The adapter's contrast problems are all in the
+ * hover and active states, which this suite does not reach and the component
+ * suite below does. Kept as an explicit table so a regression lands here with
+ * its measured score, on the same terms as every other exception in the file.
+ */
+const ARIA_PERCEPTUAL_EXCEPTIONS = {};
+
+/**
+ * An accessibility audit found real failures in the React Aria adapter that
+ * were invisible in source: DELTA's field borders sat at 2.10:1 and IRP's
+ * slider fill at 2.93:1 against its track. These assertions turn that audit
+ * into build errors so a future token change or a mechanical restyle cannot
+ * quietly reintroduce them.
+ *
+ * Resting states only. Interactive states and the legacy `.mg-*` component
+ * tokens are covered by the suite below this one.
+ */
+describe('React Aria token contrast (WCAG 2.2 AA)', () => {
+  const PAIRS = ARIA_PAIRS;
+  const THEMES = ARIA_THEMES;
+
+  const themeCss = {};
+  beforeAll(() => {
+    themeCss.base = compile('style');
+    BRANDS.forEach(brand => {
+      themeCss[brand] = compile(`style-${brand}`);
+    });
+  });
+
+  describe.each(THEMES)('%s theme', (theme, selector) => {
+    test.each(PAIRS)('%s on %s meets %s:1', (fg, bg, minimum) => {
+      const css = themeCss[theme];
+      const vars = declarations(css, selector);
+      const read = token => parseColor(deref(vars, vars[`--mg-aria-${token}`]));
+
+      const foreground = read(fg);
+      const background = read(bg);
+      // A missing token is a contract bug, not a silent pass.
+      expect(foreground).not.toBeNull();
+      expect(background).not.toBeNull();
+
+      const solidBg = flatten(background, WHITE);
+      const ratio = contrast(flatten(foreground, solidBg), solidBg);
+
+      expect(Number(ratio.toFixed(2))).toBeGreaterThanOrEqual(minimum);
+    });
+
+    // The same pair, the same resolved pixels, the second measure. Kept as a
+    // separate test so a perceptual failure names itself rather than hiding
+    // inside a WCAG failure.
+    test.each(PAIRS)(
+      '%s on %s is perceptually readable at the %s:1 role',
+      (fg, bg) => {
+        const row = measurement(`aria|${theme}|${fg} on ${bg}`);
+        // Guards the shared table against the resolution silently going null.
+        expect(
+          `${row.name}: ${row.score === undefined ? 'unresolved' : 'ok'}`
+        ).toBe(`${row.name}: ok`);
+
+        const exception = ARIA_PERCEPTUAL_EXCEPTIONS[`${theme}|${row.name}`];
+        assertPerceptual(row, exception);
+      }
+    );
+  });
+});
+
+/**
  * Mangrove stores colours as channel triplets ("0 79 145") so they can be used
  * with an alpha via `rgb(var(--x) / 0.5)`. A triplet is only valid inside
  * rgb(); dropped raw into a colour position it makes the whole declaration
@@ -509,6 +855,166 @@ describe('channel triplets are never used raw in a colour position', () => {
     walk(path.resolve(__dirname, '../../../../stories'));
 
     expect(offenders).toEqual([]);
+  });
+});
+
+/**
+ * The standalone React Aria token files must RESOLVE, not merely define.
+ *
+ * The existing "every --mg-aria-* it consumes is defined by the token file"
+ * assertion checks that a key exists. It does not check that the key's value
+ * bottoms out in anything. aria/tokens/mangrove.css passed 929 green tests
+ * while carrying 28 var() references to --mg-* properties it never defined,
+ * so a consumer importing it without Mangrove's stylesheet got no accent, no
+ * surface, no spacing and no focus indicator — and, in forced colours, no
+ * focus ring at all. Nothing failed, because "defined" and "resolves" are
+ * different questions.
+ *
+ * Each file is therefore compiled and evaluated ALONE here, exactly as an
+ * external consumer would load it.
+ */
+describe('standalone React Aria token files resolve on their own', () => {
+  const BRAND_FILES = [
+    ['mangrove', 'aria/_tokens-mangrove'],
+    ['preventionweb', 'aria/_tokens-preventionweb'],
+    ['irp', 'aria/_tokens-irp'],
+    ['mcr', 'aria/_tokens-mcr'],
+    ['delta', 'aria/_tokens-delta'],
+  ];
+
+  // A single flat table: the file declares one block, so nothing shadows.
+  const declarationsOf = css => {
+    const table = {};
+    for (const match of css.matchAll(/(--[a-z0-9-]+)\s*:\s*([^;}]+)[;}]/g)) {
+      table[match[1]] = match[2].replace(/\s+/g, ' ').trim();
+    }
+    return table;
+  };
+
+  // Substitution over balanced parentheses: a var() fallback may itself hold
+  // var() and rgb(), so this cannot be a regex. An unresolvable reference
+  // with no fallback is reported rather than silently dropped, which is the
+  // whole point of the test.
+  const resolveValue = (table, value, missing, depth = 0) => {
+    if (depth > 25) {
+      missing.push('depth limit — probable reference cycle');
+      return value;
+    }
+    if (!value || !value.includes('var(')) return value;
+    let out = '';
+    let index = 0;
+    while (index < value.length) {
+      const at = value.indexOf('var(', index);
+      if (at === -1) {
+        out += value.slice(index);
+        break;
+      }
+      out += value.slice(index, at);
+      let level = 0;
+      let end = at + 3;
+      for (; end < value.length; end++) {
+        if (value[end] === '(') level++;
+        else if (value[end] === ')' && --level === 0) break;
+      }
+      const inner = value.slice(at + 4, end);
+      let lvl = 0;
+      let comma = -1;
+      for (let k = 0; k < inner.length; k++) {
+        if (inner[k] === '(') lvl++;
+        else if (inner[k] === ')') lvl--;
+        else if (inner[k] === ',' && lvl === 0) {
+          comma = k;
+          break;
+        }
+      }
+      const name = (comma === -1 ? inner : inner.slice(0, comma)).trim();
+      const fallback = comma === -1 ? null : inner.slice(comma + 1).trim();
+      if (table[name] !== undefined) out += table[name];
+      else if (fallback !== null) out += fallback;
+      else missing.push(name);
+      index = end + 1;
+    }
+    return resolveValue(table, out, missing, depth + 1);
+  };
+
+  let ariaCss;
+  beforeAll(() => {
+    ariaCss = compile('aria/_react-aria');
+  });
+
+  describe.each(BRAND_FILES)('%s', (brand, entry) => {
+    let table;
+    let css;
+    beforeAll(() => {
+      css = compile(entry);
+      table = declarationsOf(css);
+    });
+
+    test('is emitted at zero specificity, not at :root', () => {
+      // :where(:root) means the published file works alone AND still loses to
+      // Mangrove's own stylesheet whenever both are loaded, regardless of load
+      // order. A plain :root block would let a stale package win.
+      const rules = css.replace(/\/\*[\s\S]*?\*\//g, '');
+      expect(rules).toContain(':where(:root)');
+      expect(rules).not.toMatch(/(^|[\s,}])\:root\s*[,{]/m);
+    });
+
+    test('every --mg-aria-* it declares bottoms out in a real value', () => {
+      const unresolved = [];
+      for (const [property, value] of Object.entries(table)) {
+        if (!property.startsWith('--mg-aria-')) continue;
+        const missing = [];
+        const resolved = resolveValue(table, value, missing);
+        if (missing.length > 0) {
+          unresolved.push(`${property} -> ${[...new Set(missing)].join(', ')}`);
+        } else if (!resolved.trim() || resolved.includes('var(')) {
+          unresolved.push(`${property} -> "${resolved}"`);
+        }
+      }
+      expect(unresolved).toEqual([]);
+    });
+
+    test('every --mg-aria-* the shared stylesheet reads resolves here', () => {
+      // The other direction: the token file may resolve everything it happens
+      // to declare while still missing something aria/react-aria.css uses.
+      const used = new Set(
+        [...ariaCss.matchAll(/var\(\s*(--mg-aria-[a-z0-9-]+)/g)].map(m => m[1])
+      );
+      const unresolved = [];
+      for (const property of used) {
+        if (table[property] === undefined) {
+          unresolved.push(`${property} (not declared)`);
+          continue;
+        }
+        const missing = [];
+        const resolved = resolveValue(table, table[property], missing);
+        if (
+          missing.length > 0 ||
+          !resolved.trim() ||
+          resolved.includes('var(')
+        ) {
+          unresolved.push(`${property} -> ${missing.join(', ') || resolved}`);
+        }
+      }
+      expect(unresolved).toEqual([]);
+    });
+
+    test('carries no unresolved --mg-* reference at all', () => {
+      // The 28-reference defect stated directly: nothing in the file may point
+      // at a Mangrove property the file does not itself define.
+      const declared = new Set(Object.keys(table));
+      const dangling = new Set();
+      for (const value of Object.values(table)) {
+        for (const match of value.matchAll(/var\(\s*(--mg-[a-z0-9-]+)/g)) {
+          if (!declared.has(match[1])) dangling.add(match[1]);
+        }
+      }
+      expect([...dangling]).toEqual([]);
+    });
+
+    test(`names ${brand} as its source and forbids hand-editing`, () => {
+      expect(css).toContain('do not edit that');
+    });
   });
 });
 
@@ -1137,6 +1643,121 @@ const COMPONENT_PAIRS = [
     why: 'SC 1.4.11 — the pale swatches sit at 1.3-2.2:1, so the ring is their boundary',
   },
 
+  // --- React Aria interactive states: aria/_react-aria.scss ---------------
+  // The adapter's own hover/pressed rules, which the resting-state suite
+  // above does not reach.
+  {
+    name: 'aria button label on the hover background',
+    fg: '--mg-aria-button-color',
+    bg: ['--mg-aria-button-background-hover'],
+    min: 4.5,
+    why: 'SC 1.4.3 — .react-aria-Button[data-hovered] and [data-pressed]',
+  },
+  {
+    name: 'aria on-accent text on the active accent',
+    fg: '--mg-aria-color-on-accent',
+    bg: ['--mg-aria-color-accent-active'],
+    min: 4.5,
+    why: 'SC 1.4.3 — .react-aria-ToggleButton[data-selected][data-hovered]',
+  },
+  {
+    name: 'aria selected tag label',
+    fg: '--mg-aria-color-on-accent',
+    bg: ['--mg-aria-tag-background'],
+    min: 4.5,
+    why: 'SC 1.4.3 — .react-aria-Tag[data-selected]',
+  },
+  {
+    name: 'aria selected tag label, hover',
+    fg: '--mg-aria-color-on-accent',
+    bg: ['--mg-aria-tag-background-hover'],
+    min: 4.5,
+    why: 'SC 1.4.3 — .react-aria-Tag[data-selected][data-hovered]',
+  },
+  {
+    name: 'aria link text, hover and pressed',
+    fg: '--mg-aria-color-accent-active',
+    bg: ['--mg-aria-color-surface'],
+    min: 4.5,
+    why: 'SC 1.4.3 — .react-aria-Link[data-hovered] and [data-pressed]',
+  },
+  {
+    name: 'aria tab label, resting',
+    fg: '--mg-aria-tab-color',
+    bg: ['--mg-aria-color-surface'],
+    min: 4.5,
+    why: 'SC 1.4.3 — .react-aria-Tab',
+  },
+  {
+    name: 'aria tab label, hover',
+    fg: '--mg-aria-tab-color-hover',
+    bg: ['--mg-aria-tab-background-hover', '--mg-aria-color-surface'],
+    min: 4.5,
+    why: 'SC 1.4.3 — .react-aria-Tab[data-hovered] tints its background',
+  },
+  {
+    name: 'aria tab label, selected',
+    fg: '--mg-aria-tab-color-active',
+    bg: ['--mg-aria-color-surface'],
+    min: 4.5,
+    why: 'SC 1.4.3 — the selected tab keeps a transparent background',
+  },
+  {
+    name: 'aria tab indicator, selected',
+    fg: '--mg-aria-tab-indicator-active',
+    bg: ['--mg-aria-color-surface'],
+    min: 3,
+    why: 'SC 1.4.11 — the inset underline identifies the selected tab',
+  },
+  {
+    name: 'aria tab indicator, hover',
+    fg: '--mg-aria-tab-indicator-hover',
+    bg: ['--mg-aria-color-surface'],
+    min: 3,
+    why: 'SC 1.4.11 — .react-aria-Tab[data-hovered] state indicator',
+  },
+  {
+    name: 'aria check control, resting',
+    fg: '--mg-aria-check-color',
+    bg: ['--mg-aria-color-surface'],
+    min: 3,
+    why: 'SC 1.4.11 — an unchecked Checkbox/Radio is only its border',
+  },
+  {
+    name: 'aria check control, hover',
+    fg: '--mg-aria-check-color-hover',
+    bg: ['--mg-aria-color-surface'],
+    min: 3,
+    why: 'SC 1.4.11 — [data-hovered] recolours the control boundary',
+  },
+  {
+    name: 'aria check control, checked',
+    fg: '--mg-aria-check-color-checked',
+    bg: ['--mg-aria-color-surface'],
+    min: 3,
+    why: 'SC 1.4.11 — the checked fill and its outline',
+  },
+  {
+    name: 'aria text on a selected row',
+    fg: '--mg-aria-color-text',
+    bg: ['--mg-aria-color-selected-surface', '--mg-aria-color-surface'],
+    min: 4.5,
+    why: 'SC 1.4.3 — selection is a 12% accent wash the label sits on',
+  },
+  {
+    name: 'aria text on the subtle surface',
+    fg: '--mg-aria-color-text',
+    bg: ['--mg-aria-color-subtle-surface'],
+    min: 4.5,
+    why: 'SC 1.4.3 — table headers, popover sections',
+  },
+  {
+    name: 'aria muted text on a field',
+    fg: '--mg-aria-color-muted-text',
+    bg: ['--mg-aria-color-field-surface'],
+    min: 4.5,
+    why: 'SC 1.4.3 — descriptions and placeholders inside form controls',
+  },
 ];
 
 /**
@@ -1227,6 +1848,14 @@ const WCAG_EXCEPTIONS = {
     2.95,
     'same orange-900 chain as the primary hover',
   ],
+  'preventionweb|aria button label on the hover background': [
+    2.95,
+    'the adapter inherits --mg-color-button-background--hover',
+  ],
+  'irp|aria button label on the hover background': [
+    2.95,
+    'the adapter inherits --mg-color-button-background--hover',
+  ],
 
   // The accent tag is white on orange in every theme, at rest and on hover.
   'base|accent tag label': [
@@ -1276,6 +1905,7 @@ const WCAG_EXCEPTIONS = {
     4.35,
     'IRP interactive-active on its own 6% wash; marginal',
   ],
+  'irp|aria tab label, hover': [4.35, 'same token chain as the v2 tab'],
   'base|v2 tab indicator, hover': [
     2.28,
     '45% accent wash; raise the alpha or use the solid accent',
@@ -1284,6 +1914,14 @@ const WCAG_EXCEPTIONS = {
   'irp|v2 tab indicator, hover': [1.9, '45% accent wash'],
   'mcr|v2 tab indicator, hover': [2.58, '45% accent wash'],
   'delta|v2 tab indicator, hover': [2.28, '45% accent wash'],
+  'base|aria tab indicator, hover': [2.28, 'same 45% wash as the v2 tab'],
+  'preventionweb|aria tab indicator, hover': [
+    2.09,
+    'same 45% wash as the v2 tab',
+  ],
+  'irp|aria tab indicator, hover': [1.9, 'same 45% wash as the v2 tab'],
+  'mcr|aria tab indicator, hover': [2.58, 'same 45% wash as the v2 tab'],
+  'delta|aria tab indicator, hover': [2.28, 'same 45% wash as the v2 tab'],
 
   // Card and hero share the orange secondary accent.
   'base|card title, secondary variant': [
@@ -1552,6 +2190,25 @@ const PERCEPTUAL_EXCEPTIONS = {
     'orange-800 label on the white pill',
   ],
 
+  'base|aria tab label, hover': [
+    61.1,
+    'same token chain as the v2 tab (WCAG 2 disagrees: 4.64:1 clears the 4.5:1 minimum)',
+  ],
+  'irp|aria tab label, hover': [59.8, 'same token chain as the v2 tab'],
+  'delta|aria tab label, hover': [
+    62.6,
+    'same token chain as the v2 tab (WCAG 2 disagrees: 4.94:1 clears the 4.5:1 minimum)',
+  ],
+
+  'base|aria tab indicator, hover': [38.3, 'same 45% wash as the v2 tab'],
+  'preventionweb|aria tab indicator, hover': [
+    34.5,
+    'same 45% wash as the v2 tab',
+  ],
+  'irp|aria tab indicator, hover': [29, 'same 45% wash as the v2 tab'],
+  'mcr|aria tab indicator, hover': [42.5, 'same 45% wash as the v2 tab'],
+  'delta|aria tab indicator, hover': [38.3, 'same 45% wash as the v2 tab'],
+
   'preventionweb|button label on primary background, hover': [
     46.7,
     'orange-900 hover fill under a white label',
@@ -1568,6 +2225,15 @@ const PERCEPTUAL_EXCEPTIONS = {
   'irp|outline primary button label, hover fill': [
     46.7,
     'same orange-900 chain as the primary hover',
+  ],
+
+  'preventionweb|aria button label on the hover background': [
+    46.7,
+    'the adapter inherits --mg-color-button-background--hover',
+  ],
+  'irp|aria button label on the hover background': [
+    46.7,
+    'the adapter inherits --mg-color-button-background--hover',
   ],
 
   'irp|outline tag label, hover fill': [54.7, 'IRP tag blue on blue-50'],
@@ -1611,10 +2277,12 @@ const EXCEPTION_KEYS = new Set([
 /**
  * Component-token contrast, including INTERACTIVE STATES.
  *
- * A resting-state check is a narrow slice of the design system: a hover
- * background is a different colour from the base one, and a WCAG 1.4.3 failure
- * shipped through that gap — white on DELTA's secondary-button hover at
- * 3.40:1 — because nothing here measured a `--hover` token.
+ * The suite above covers eleven `--mg-aria-*` pairs, all of them resting
+ * states. That is a narrow slice of the design system: most of Mangrove lives
+ * in the legacy `.mg-*` component tokens, and a hover background is a
+ * different colour from the base one. A WCAG 1.4.3 failure shipped through
+ * that gap — white on DELTA's secondary-button hover at 3.40:1 — because
+ * nothing here measured a `--hover` token.
  *
  * Every pair below is derived from a component stylesheet: the foreground
  * token is one a rule actually paints on the background token beneath it, read
@@ -1757,7 +2425,7 @@ describe('where the two contrast measures disagree', () => {
   /**
    * Every disagreement, in measurement order.
    *
-   * Direction matters. They all run the same way — WCAG 2 passes a pair the
+   * Direction matters. All eleven run the same way — WCAG 2 passes a pair the
    * perceptual measure fails — which is WCAG 2 OVER-rating readability, the
    * failure mode with a user behind it. Nothing here runs the other way: no
    * pair that WCAG 2 rejects is perceptually fine, so adopting the second
@@ -1769,6 +2437,7 @@ describe('where the two contrast measures disagree', () => {
     'base | error summary text on its tinted panel | WCAG 2 PASSES 5.27:1 (min 4.5) | perceptual fails 59.5 (BODY_TEXT needs 63)',
     'base | dataviz label on categorical fill 2 | WCAG 2 PASSES 6.66:1 (min 4.5) | perceptual fails 54.6 (BODY_TEXT needs 63)',
     'base | dataviz label on Sendai target C | WCAG 2 PASSES 6.66:1 (min 4.5) | perceptual fails 54.6 (BODY_TEXT needs 63)',
+    'base | aria tab label, hover | WCAG 2 PASSES 4.64:1 (min 4.5) | perceptual fails 61.1 (BODY_TEXT needs 63)',
     'preventionweb | error summary text on its tinted panel | WCAG 2 PASSES 5.27:1 (min 4.5) | perceptual fails 59.5 (BODY_TEXT needs 63)',
     'preventionweb | dataviz label on categorical fill 2 | WCAG 2 PASSES 6.66:1 (min 4.5) | perceptual fails 54.6 (BODY_TEXT needs 63)',
     'preventionweb | dataviz label on Sendai target C | WCAG 2 PASSES 6.66:1 (min 4.5) | perceptual fails 54.6 (BODY_TEXT needs 63)',
@@ -1783,6 +2452,7 @@ describe('where the two contrast measures disagree', () => {
     'delta | dataviz label on categorical fill 2 | WCAG 2 PASSES 6.66:1 (min 4.5) | perceptual fails 54.6 (BODY_TEXT needs 63)',
     'delta | dataviz label on Sendai target C | WCAG 2 PASSES 6.66:1 (min 4.5) | perceptual fails 54.6 (BODY_TEXT needs 63)',
     'delta | hero title on the split hero | WCAG 2 PASSES 3.07:1 (min 3) | perceptual fails 27.2 (LARGE_TEXT needs 50)',
+    'delta | aria tab label, hover | WCAG 2 PASSES 4.94:1 (min 4.5) | perceptual fails 62.6 (BODY_TEXT needs 63)',
   ];
 
   test('the two measures disagree about exactly these pairs', () => {
