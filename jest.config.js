@@ -44,6 +44,10 @@ const config = {
       'jest-transform-stub',
   },
 
+  // Generated build output the suites depend on is not committed, so make
+  // sure it exists before any suite runs. See jest.global-setup.cjs.
+  globalSetup: '<rootDir>/jest.global-setup.cjs',
+
   // Setup files to run before each test
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
 

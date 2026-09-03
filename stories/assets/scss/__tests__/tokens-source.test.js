@@ -7,7 +7,12 @@
  * that can rot, all silent:
  *
  *   1. someone edits a generated partial, or edits the YAML without
- *      rebuilding, so the artifact and the shipped CSS disagree;
+ *      rebuilding, so the working copy the SCSS compiles against and the YAML
+ *      disagree. The partials are build output and are not committed, so this
+ *      no longer guards a file in the repo; it guards the tree the rest of the
+ *      suite — and `yarn storybook` — actually compiles. Jest's globalSetup
+ *      writes them only when they are MISSING, precisely so a stale one still
+ *      fails here instead of being repaired behind the developer's back;
  *   2. someone re-hardcodes a brand value into a hand-written Sass file,
  *      which is exactly how _theme-delta.scss and aria/_tokens-delta.scss
  *      came to hold two independent copies of the same brand;
@@ -38,7 +43,9 @@ describe('design-token generator', () => {
       if (actual !== expected) stale.push(relative);
     }
 
-    // Run `yarn build:tokens` to fix.
+    // Run `yarn build:tokens` to fix. (A partial that is absent entirely
+    // cannot reach here: globalSetup generates missing ones before any suite
+    // runs, so a fresh clone starts from an up-to-date tree.)
     expect(stale).toEqual([]);
   });
 
