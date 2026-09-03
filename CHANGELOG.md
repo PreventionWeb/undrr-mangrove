@@ -25,7 +25,7 @@ Proposed in [PR #1087](https://github.com/unisdr/undrr-mangrove/pull/1087). A fo
 
 #### Design token pipeline
 
-- Brand palettes move from hand-maintained SCSS to [W3C DTCG](https://tr.designtokens.org/) YAML sources under `tokens/`, compiled by `scripts/build-tokens.cjs` into the theme CSS and Sass the library already consumed.
+- Brand palettes move from hand-maintained SCSS to YAML sources under `tokens/`, compiled by `scripts/build-tokens.cjs` into the theme CSS and Sass the library already consumed. The format borrows [W3C DTCG](https://tr.designtokens.org/)'s vocabulary -- `$value`, `$type`, `$description`, `{path}` aliases -- but is not conformant: six vendor keys sit outside `$extensions` and dimensions are bare numbers, so DTCG tooling cannot read these files without a conversion that does not exist yet.
 - `tokens/mangrove.yaml` is a brand-neutral base; UNDRR becomes a sub-brand alongside PreventionWeb, IRP, MCR and DELTA rather than the base itself.
 - The generator fails the build on an unknown or circular reference, a duplicate output name or a wrong token shape, so a malformed source cannot silently emit a stylesheet with missing colours.
 - Build output is no longer committed. The generated token partials are produced by `yarn scss` and are now gitignored, as the compiled theme stylesheets already were. A Jest `globalSetup` writes any missing partial, so `yarn test` works on a fresh clone with no build step.

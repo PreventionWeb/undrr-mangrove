@@ -259,6 +259,31 @@ Mangrove uses two distinct token mechanisms:
 
 **Build-time SCSS `!default` variables**: used for tokens that must be resolved at compile time and cannot be overridden at runtime. This includes breakpoints (`$mg-breakpoint-*`), font sizes (`$mg-font-size-*`), font families (`$mg-font-family-*`), and `$mg-tabs-border-bottom`. These carry `!default` so a consuming project can override them before importing Mangrove; include it on any new build-time variable for the same reason. (`$mg-html-font-size` is the exception — it is fixed at `16`, see below.)
 
+### Why a custom token generator
+
+`scripts/build-tokens.cjs` is bespoke, and Style Dictionary is the obvious
+off-the-shelf alternative. It was evaluated against these sources rather than
+in the abstract, and rejected on three findings:
+
+- **It would reintroduce a bug this codebase just fixed.** Style Dictionary's
+  `deepExtend` replaces the whole token object on a three-layer merge, dropping
+  `$type`, `$description` and `$extensions`. All four sub-brands are three-layer
+  (`irp`, `mcr`, `preventionweb` and `delta` all extend `undrr`, which sits over
+  `mangrove`), so metadata would be lost on four of five brands -- which is
+  exactly the `$format` clobber the `CARRIED` list exists to prevent. The
+  merge logic would have to be kept anyway.
+- **It costs more code, not less.** Reproducing today's output needs roughly
+  450-550 lines of config and hooks against 602 non-comment lines now, ~130 of
+  which port over unchanged. Net saving of 50-150 lines for a 106-package
+  dependency.
+- **The validation it exists for has no equivalent.** `assertChannels` -- the
+  shape check that catches a colour emitted in the wrong form -- has no Style
+  Dictionary counterpart, and its reference and duplicate-name diagnostics are
+  warn-by-default, with escalation colliding with warnings worth keeping.
+
+Revisit if the sources need to round-trip with Figma or Tokens Studio, or if a
+third output target appears. Both would change the arithmetic.
+
 ### Root font-size and the mg-rem() function
 
 The root is fixed at 16px (browser standard). The legacy 10px root — the `!default` override and the `-legacy` theme variants — was removed in 2.0; consumers use a standard 16px document root. See [RELEASE-2.0.md](RELEASE-2.0.md) breaking change #5.

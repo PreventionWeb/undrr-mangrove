@@ -8,9 +8,14 @@
 # adopting UNDRR branding" is a position the source can express.
 #
 # FORMAT
-#   Shaped compatibly with W3C DTCG (https://tr.designtokens.org/format/) so
-#   this can emit DTCG JSON later. $type, $format, $private and $sass are
-#   inherited by descendants and overridable per token.
+#   Borrows W3C DTCG's vocabulary (https://tr.designtokens.org/format/) --
+#   $value, $type, $description and {path} aliases -- but is NOT conformant and
+#   nothing emits DTCG JSON. Six vendor keys ($format, $alpha, $private, $sass,
+#   $brand, $name) sit at token level rather than inside $extensions, which is
+#   used nowhere, and dimensions are bare numbers rather than the spec's
+#   {value, unit} object. Emitting real DTCG would be a re-typing project, not
+#   a serialiser. $type, $format, $private and $sass are inherited by
+#   descendants and overridable per token.
 #
 #   $value      the value. `{path}` links to another token and emits a live
 #               var() chain; `{=path}` resolves it at build time; a cast
