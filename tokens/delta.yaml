@@ -63,17 +63,6 @@ brand:
       own ramp, so this is a deliberate, sourced divergence rather than an
       invented colour — the same call already made for DELTA's field border.
 
-font:
-  family-base:
-    $type: fontFamily
-    $value: [Dubai, sans-serif]
-    $private: true
-    $description: >-
-      DELTA body typeface. The @font-face src URLs are an asset declaration,
-      not a token, and stay hand-written in Sass.
-    $sass:
-      - { name: '$_delta-font-family-name', format: font-family-name }
-      - { name: '$_delta-font-family-stack', format: font-family-stack }
 
 color:
   $type: color
