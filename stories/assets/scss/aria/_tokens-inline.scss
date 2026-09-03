@@ -1,0 +1,15 @@
+/*
+ * The React Aria token layer as Mangrove's own bundle carries it.
+ *
+ * Declared at :root, not :where(:root): inside Mangrove's stylesheet these
+ * are the real values and should behave like every other :root token. The
+ * standalone aria/tokens/*.css artifacts use zero specificity instead, so a
+ * stale published package can never outrank a newer stylesheet.
+ */
+@import "./runtime-theme-aliases";
+@import "./tokens-shared";
+
+:root {
+  @include mg-aria-runtime-theme-aliases;
+  @include mg-aria-token-constants('"Roboto", sans-serif');
+}

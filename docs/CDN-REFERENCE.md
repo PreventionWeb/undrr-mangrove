@@ -39,6 +39,27 @@ The DELTA Resilience theme has no legacy variant.
 <link rel="stylesheet" href="https://assets.undrr.org/static/mangrove/1.8.2/css/style.css" />
 ```
 
+### React Aria stylesheets (proposed, not yet published)
+
+Mangrove styles the stock `.react-aria-*` classes of
+[React Aria Components](https://react-spectrum.adobe.com/react-aria/), so those
+components pick up Mangrove theming with no `className` or configuration.
+
+**If you load `style.css` or any sub-brand stylesheet you already have this** —
+the React Aria rules are compiled into every theme stylesheet. Nothing to add.
+
+Standalone files (`aria/react-aria.css` and `aria/tokens/{brand}.css`) exist in
+the repository for consumers who want that
+surface *without* a full Mangrove stylesheet, but they are **not currently
+distributed**: `yarn build` does not copy `aria/` into `dist/`, the release
+workflow does not copy it into the published package, and the published
+`package.json` is regenerated without an `exports` field. So there is no CDN
+path and no npm entry point for them today. Build them from source with
+`yarn build:aria` if you need them.
+
+Wiring these into the CDN and npm artifacts is open work tracked with the
+[React Aria spike](https://github.com/unisdr/undrr-mangrove/pull/1080).
+
 ### JavaScript modules
 
 | Module | Path | Purpose |

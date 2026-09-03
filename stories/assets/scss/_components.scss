@@ -84,3 +84,9 @@
 @import "../../Utilities/Loader/loader";
 @import "../../Utilities/FullWidth/full-width";
 @import "../../Utilities/ShowMore/show-more";
+
+// React Aria's Sass sources join each Mangrove theme rollup, so Storybook's
+// runtime theme switching uses the normal token cascade. Their compiled CSS is
+// also retained as the opt-in, component-free package surface for consumers.
+@import "aria/tokens-inline";
+@import "aria/react-aria";
