@@ -40,9 +40,13 @@
     background-color: rgb(var(--mg-color-blue-700) / 0.8);
   }
 
+  // Was a 4px glow in --mg-color-button-background--hover, painted directly on
+  // a button whose own fill is --mg-color-button-background: a near-same-colour
+  // halo on a filled surface, so effectively no indicator. The two-band ring
+  // is judged against its own white separator, so it reads on the filled
+  // button regardless of which theme is painting it.
   &:focus-visible {
-    box-shadow: 0 0 4px var(--mg-color-button-background--hover);
-    outline: 0;
+    @include mg-focus-ring;
   }
 }
 

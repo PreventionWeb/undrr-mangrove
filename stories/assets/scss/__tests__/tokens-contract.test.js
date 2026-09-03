@@ -831,6 +831,159 @@ const COMPONENT_PAIRS = [
     why: 'SC 1.4.11 — buttons and fields draw the ring on the page, inside a --mg-color-neutral-0 separator',
   },
 
+  // --- Focus ring: every surface it is actually painted on ---------------
+  //
+  // The headline change of 2.0.0-alpha.3 is that the focus ring stopped being
+  // the brand colour, and until now only the two pairs above tested it. These
+  // pairs measure the ring where the stylesheets actually paint it, so the
+  // numbers stop living as hand-computed prose in code comments.
+  //
+  // The load-bearing one is the first: mg-focus-ring draws a
+  // --mg-color-neutral-0 separator band immediately inside the ring, so the
+  // indicator is judged against that band rather than against whatever it
+  // happens to sit on. That pair is what makes the ring safe on an arbitrary
+  // consumer background, and it is the contract the two-band geometry rests
+  // on. The surface pairs below it are defence in depth: they say what the
+  // ring would measure if the band were ever removed.
+  {
+    name: 'focus ring against its own separator band',
+    fg: '--mg-color-focus-ring',
+    bg: ['--mg-color-neutral-0'],
+    min: 3,
+    why: 'SC 1.4.11 — the two-band contract: mg-focus-ring paints this band inside the ring, so this is the pair that holds on ANY background',
+  },
+  {
+    name: 'focus ring on the gallery letterbox',
+    fg: '--mg-color-focus-ring',
+    bg: ['--mg-color-neutral-50'],
+    min: 3,
+    why: 'SC 1.4.11 — .mg-gallery__arrow and __thumbnail draw the ring clear of the pill, on the neutral-50 letterbox',
+  },
+  {
+    name: 'focus ring on the mega-menu section link tint',
+    fg: '--mg-color-focus-ring',
+    // The tint is written inline as rgb(var(--mg-color-blue-900) / 0.15).
+    // blue-900 is a UNDRR primitive that no sub-brand overrides, so the
+    // composited value is the same in all five themes.
+    bg: ['rgb(0 79 145 / 0.15)'],
+    min: 3,
+    why: 'SC 1.4.11 — .mg-mega-content__section-list-link tints its own background on focus, and the ring is drawn on that tint',
+  },
+  {
+    name: 'focus ring on the form error summary',
+    fg: '--mg-color-focus-ring',
+    bg: ['--mg-color-red-50'],
+    min: 3,
+    why: 'SC 1.4.11 — .mg-form-error-summary takes focus programmatically after a failed submit, and the ring lands on its red-50 fill',
+  },
+  // Both of these fail on their own, and that is the whole reason the ring is
+  // two-band. They are exposed to consumers as .mg-u-background-color--*
+  // utilities, so any component can be dropped onto them; the separator band
+  // is what rescues the indicator. Recorded rather than deleted so that if the
+  // band is ever removed from mg-focus-ring, the suite says what breaks.
+  {
+    name: 'focus ring on the neutral-200 utility background',
+    fg: '--mg-color-focus-ring',
+    bg: ['--mg-color-neutral-200'],
+    min: 3,
+    why: 'SC 1.4.11 — .mg-u-background-color--neutral-200 under a focused control; rescued by the separator band, not by this pair',
+  },
+  {
+    name: 'focus ring on the neutral-300 utility background',
+    fg: '--mg-color-focus-ring',
+    bg: ['--mg-color-neutral-300'],
+    min: 3,
+    why: 'SC 1.4.11 — .mg-u-background-color--neutral-300 under a focused control; rescued by the separator band, not by this pair',
+  },
+  // The inverse ring is the other half of the story: it is correct on a filled
+  // brand surface and wrong on a light one. Pairing it against the letterbox
+  // records why Gallery keeps the default ring rather than the inverse.
+  {
+    name: 'inverse focus ring on the gallery letterbox',
+    fg: '--mg-color-focus-ring-inverse',
+    bg: ['--mg-color-neutral-50'],
+    min: 3,
+    why: 'SC 1.4.11 — records why Gallery must NOT use the inverse ring: white on the neutral-50 letterbox is invisible',
+  },
+  {
+    name: 'inverse focus ring on the snackbar',
+    fg: '--mg-color-focus-ring-inverse',
+    bg: ['--mg-color-interactive'],
+    min: 3,
+    why: 'SC 1.4.11 — .mg-snackbar is filled with --mg-color-interactive and .mg-snackbar .mg-button draws the inverse ring on it',
+  },
+  {
+    name: 'focus ring on the snackbar, for comparison',
+    fg: '--mg-color-focus-ring',
+    bg: ['--mg-color-interactive'],
+    min: 3,
+    why: 'SC 1.4.11 — records why Snackbar, Hero and TextCta use the inverse ring: the default ring cannot reach 3:1 on a filled brand surface',
+  },
+
+  // --- Data visualisation: _tokens-data-viz.scss -------------------------
+  //
+  // ~700 lines of new colour arrived in this release with no contrast
+  // coverage at all. The only thing measuring it was
+  // stories/Atom/DataVizColors/data-viz-colors.mdx, which computes ratios
+  // live in the browser -- useful documentation, but it renders in a story
+  // rather than failing a build, so nothing stops a regression landing.
+  //
+  // These tokens are declared :root-only (no .mg-theme-* block redefines
+  // them), so every theme measures identically. They are still graded in all
+  // five, because that is what proves they are theme-independent rather than
+  // merely assumed to be.
+  //
+  // Chart chrome: the axis is non-text furniture under SC 1.4.11; the two
+  // label tokens carry real text.
+  {
+    name: 'dataviz axis line on the chart surface',
+    fg: '--mg-dataviz-axis',
+    bg: ['--mg-dataviz-surface'],
+    min: 3,
+    why: 'SC 1.4.11 — the axis is a non-text graphical object a reader must perceive to read the chart',
+  },
+  {
+    name: 'dataviz gridline on the chart surface',
+    fg: '--mg-dataviz-gridline',
+    bg: ['--mg-dataviz-surface'],
+    min: 3,
+    why: 'SC 1.4.11 — measured so the decorative intent stays a deliberate, recorded choice rather than an oversight',
+  },
+  {
+    name: 'dataviz axis label on the chart surface',
+    fg: '--mg-dataviz-label',
+    bg: ['--mg-dataviz-surface'],
+    min: 4.5,
+    why: 'SC 1.4.3 — tick and axis labels',
+  },
+  {
+    name: 'dataviz muted label on the chart surface',
+    fg: '--mg-dataviz-muted-label',
+    bg: ['--mg-dataviz-surface'],
+    min: 4.5,
+    why: 'SC 1.4.3 — secondary chart annotations and footnotes',
+  },
+
+  // Every categorical fill that can carry a label, against the "on" colour
+  // paired with it. Slot 2 is the one that inverts to black; the pairing is
+  // the whole point of the on-* tokens, so it is what gets asserted.
+  ...Array.from({ length: 7 }, (unused, index) => index + 1).map(slot => ({
+    name: `dataviz label on categorical fill ${slot}`,
+    fg: `--mg-dataviz-on-categorical-${slot}`,
+    bg: [`--mg-dataviz-categorical-${slot}`],
+    min: 4.5,
+    why: `SC 1.4.3 — a value label printed on categorical slot ${slot}`,
+  })),
+
+  // The Sendai target fills, same contract via --mg-sendai-on-target-*.
+  ...[...'abcdefg'].map(target => ({
+    name: `dataviz label on Sendai target ${target.toUpperCase()}`,
+    fg: `--mg-sendai-on-target-${target}`,
+    bg: [`--mg-sendai-target-${target}`],
+    min: 4.5,
+    why: `SC 1.4.3 — a label printed on the Sendai target ${target.toUpperCase()} fill`,
+  })),
+
   // --- Card: card.scss ---------------------------------------------------
   {
     name: 'inverse focus ring on the hero banner',
@@ -996,6 +1149,66 @@ const COMPONENT_PAIRS = [
  * to a human, which is why no colour was changed to make a test pass.
  */
 const WCAG_EXCEPTIONS = {
+  // --- Focus ring exceptions -------------------------------------------
+  //
+  // These four pairs are RECORDED FAILURES BY DESIGN. Each one measures the
+  // ring against a surface it is never actually judged against, because
+  // mg-focus-ring always paints a --mg-color-neutral-0 separator band between
+  // the ring and the surface -- see the 'focus ring against its own separator
+  // band' pair, which is the one that has to pass. They are kept so that if
+  // the band is ever dropped from the mixin, the suite names exactly which
+  // surfaces stop working rather than going quiet.
+  ...Object.fromEntries(
+    ALL_THEMES.flatMap(theme => [
+      [
+        `${theme}|focus ring on the neutral-200 utility background`,
+        [2.68, 'rescued by the two-band separator, not by this pair'],
+      ],
+      [
+        `${theme}|focus ring on the neutral-300 utility background`,
+        [1.95, 'rescued by the two-band separator, not by this pair'],
+      ],
+      [
+        `${theme}|inverse focus ring on the gallery letterbox`,
+        [1.24, 'why Gallery keeps the default ring instead of the inverse'],
+      ],
+    ])
+  ),
+  // The default ring on a filled brand surface -- the measurement that
+  // justifies --mg-color-focus-ring-inverse existing at all.
+  'base|focus ring on the snackbar, for comparison': [
+    1.49,
+    'why Snackbar/Hero/TextCta use the inverse ring',
+  ],
+  'preventionweb|focus ring on the snackbar, for comparison': [
+    1.16,
+    'why Snackbar/Hero/TextCta use the inverse ring',
+  ],
+  'irp|focus ring on the snackbar, for comparison': [
+    1.19,
+    'why Snackbar/Hero/TextCta use the inverse ring',
+  ],
+  'mcr|focus ring on the snackbar, for comparison': [
+    2.15,
+    'why Snackbar/Hero/TextCta use the inverse ring',
+  ],
+  'delta|focus ring on the snackbar, for comparison': [
+    1.49,
+    'why Snackbar/Hero/TextCta use the inverse ring',
+  ],
+
+  // The gridline is deliberately below 3:1. SC 1.4.11 exempts objects that
+  // are purely decorative, and a gridline is readable-by-position rather than
+  // by contrast -- the axis and the labels carry the information. Recorded
+  // rather than raised so the choice is visible and cannot drift darker or
+  // lighter unnoticed.
+  ...Object.fromEntries(
+    ALL_THEMES.map(theme => [
+      `${theme}|dataviz gridline on the chart surface`,
+      [1.24, 'decorative by design; the axis and labels carry the meaning'],
+    ])
+  ),
+
   // orange-900 is 2.95:1 against white. Affects the primary button and the
   // outline button's hover fill, which share the token chain.
   'preventionweb|button label on primary background, hover': [
@@ -1145,6 +1358,62 @@ const WCAG_EXCEPTIONS = {
  * bottom of this file is the list of exactly those pairs.
  */
 const PERCEPTUAL_EXCEPTIONS = {
+  // Mirrors of the focus-ring and dataviz WCAG exceptions above: each pair
+  // that is a recorded failure on the WCAG measure is also one here, for the
+  // same reason.
+  ...Object.fromEntries(
+    ALL_THEMES.flatMap(theme => [
+      [
+        `${theme}|focus ring on the neutral-200 utility background`,
+        [28.1, 'rescued by the two-band separator, not by this pair'],
+      ],
+      [
+        `${theme}|focus ring on the neutral-300 utility background`,
+        [10.9, 'rescued by the two-band separator, not by this pair'],
+      ],
+      [
+        `${theme}|inverse focus ring on the gallery letterbox`,
+        [-2.6, 'why Gallery keeps the default ring instead of the inverse'],
+      ],
+      [
+        `${theme}|dataviz gridline on the chart surface`,
+        [-2.6, 'decorative by design; the axis and labels carry the meaning'],
+      ],
+      // Warm mid-tones are exactly where WCAG 2 and the Oklab measure part
+      // company: black on orange clears 4.5 comfortably (6.66) but sits below
+      // the perceptual body-text floor. The disagreement is the finding; both
+      // are recorded so neither measure gets to hide it.
+      [
+        `${theme}|dataviz label on categorical fill 2`,
+        [54.6, 'black on orange: passes WCAG 2 at 6.66, short of the Oklab floor'],
+      ],
+      [
+        `${theme}|dataviz label on Sendai target C`,
+        [54.6, 'same orange fill as categorical slot 2'],
+      ],
+    ])
+  ),
+  'base|focus ring on the snackbar, for comparison': [
+    -6.9,
+    'why Snackbar/Hero/TextCta use the inverse ring',
+  ],
+  'preventionweb|focus ring on the snackbar, for comparison': [
+    -18.1,
+    'why Snackbar/Hero/TextCta use the inverse ring',
+  ],
+  'irp|focus ring on the snackbar, for comparison': [
+    -20.7,
+    'why Snackbar/Hero/TextCta use the inverse ring',
+  ],
+  'mcr|focus ring on the snackbar, for comparison': [
+    6,
+    'why Snackbar/Hero/TextCta use the inverse ring',
+  ],
+  'delta|focus ring on the snackbar, for comparison': [
+    -6.9,
+    'why Snackbar/Hero/TextCta use the inverse ring',
+  ],
+
   'base|accent tag label': [46.7, 'orange-900 fill under #fff'],
   'preventionweb|accent tag label': [46.7, 'orange-900 fill under #fff'],
   'irp|accent tag label': [46.7, 'orange-900 fill under #fff'],
@@ -1498,11 +1767,21 @@ describe('where the two contrast measures disagree', () => {
     'base | legacy tab label, active | WCAG 2 PASSES 7.47:1 (min 4.5) | perceptual fails 60.8 (BODY_TEXT needs 63)',
     'base | v2 tab label, hover | WCAG 2 PASSES 4.64:1 (min 4.5) | perceptual fails 61.1 (BODY_TEXT needs 63)',
     'base | error summary text on its tinted panel | WCAG 2 PASSES 5.27:1 (min 4.5) | perceptual fails 59.5 (BODY_TEXT needs 63)',
+    'base | dataviz label on categorical fill 2 | WCAG 2 PASSES 6.66:1 (min 4.5) | perceptual fails 54.6 (BODY_TEXT needs 63)',
+    'base | dataviz label on Sendai target C | WCAG 2 PASSES 6.66:1 (min 4.5) | perceptual fails 54.6 (BODY_TEXT needs 63)',
     'preventionweb | error summary text on its tinted panel | WCAG 2 PASSES 5.27:1 (min 4.5) | perceptual fails 59.5 (BODY_TEXT needs 63)',
+    'preventionweb | dataviz label on categorical fill 2 | WCAG 2 PASSES 6.66:1 (min 4.5) | perceptual fails 54.6 (BODY_TEXT needs 63)',
+    'preventionweb | dataviz label on Sendai target C | WCAG 2 PASSES 6.66:1 (min 4.5) | perceptual fails 54.6 (BODY_TEXT needs 63)',
     'irp | error summary text on its tinted panel | WCAG 2 PASSES 5.27:1 (min 4.5) | perceptual fails 59.5 (BODY_TEXT needs 63)',
+    'irp | dataviz label on categorical fill 2 | WCAG 2 PASSES 6.66:1 (min 4.5) | perceptual fails 54.6 (BODY_TEXT needs 63)',
+    'irp | dataviz label on Sendai target C | WCAG 2 PASSES 6.66:1 (min 4.5) | perceptual fails 54.6 (BODY_TEXT needs 63)',
     'mcr | error summary text on its tinted panel | WCAG 2 PASSES 5.27:1 (min 4.5) | perceptual fails 59.5 (BODY_TEXT needs 63)',
+    'mcr | dataviz label on categorical fill 2 | WCAG 2 PASSES 6.66:1 (min 4.5) | perceptual fails 54.6 (BODY_TEXT needs 63)',
+    'mcr | dataviz label on Sendai target C | WCAG 2 PASSES 6.66:1 (min 4.5) | perceptual fails 54.6 (BODY_TEXT needs 63)',
     'delta | v2 tab label, hover | WCAG 2 PASSES 4.94:1 (min 4.5) | perceptual fails 62.6 (BODY_TEXT needs 63)',
     'delta | error summary text on its tinted panel | WCAG 2 PASSES 5.27:1 (min 4.5) | perceptual fails 59.5 (BODY_TEXT needs 63)',
+    'delta | dataviz label on categorical fill 2 | WCAG 2 PASSES 6.66:1 (min 4.5) | perceptual fails 54.6 (BODY_TEXT needs 63)',
+    'delta | dataviz label on Sendai target C | WCAG 2 PASSES 6.66:1 (min 4.5) | perceptual fails 54.6 (BODY_TEXT needs 63)',
     'delta | hero title on the split hero | WCAG 2 PASSES 3.07:1 (min 3) | perceptual fails 27.2 (LARGE_TEXT needs 50)',
   ];
 

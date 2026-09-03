@@ -47,8 +47,7 @@
   }
 
   &:focus-visible {
-    outline: 2px solid rgb(var(--mg-color-focus-ring));
-    outline-offset: 2px;
+    @include mg-focus-ring;
   }
 
   &__image-wrapper {
@@ -242,8 +241,7 @@
     }
 
     &:focus-visible {
-      outline: 2px solid rgb(var(--mg-color-focus-ring));
-      outline-offset: 2px;
+      @include mg-focus-ring;
     }
 
     &--active {
@@ -374,8 +372,7 @@
     // __image-wrapper, not on the pill. Measured there the default ring is
     // 4.50:1 and an inverse ring 1.26:1 -- invisible. Keep the default ring.
     &:focus-visible {
-      outline: 2px solid rgb(var(--mg-color-focus-ring));
-      outline-offset: 2px;
+      @include mg-focus-ring;
     }
 
     &:disabled {
@@ -445,8 +442,7 @@
     // __image-wrapper, not on the pill. Measured there the default ring is
     // 4.50:1 and an inverse ring 1.26:1 -- invisible. Keep the default ring.
     &:focus-visible {
-      outline: 2px solid rgb(var(--mg-color-focus-ring));
-      outline-offset: 2px;
+      @include mg-focus-ring;
     }
 
     &:disabled {

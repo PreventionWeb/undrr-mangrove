@@ -39,11 +39,8 @@
 
   &:focus-visible {
     border-radius: 999px;
-    box-shadow:
-      0 0 0 var(--mg-focus-ring-offset) rgb(var(--mg-color-neutral-0)),
-      0 0 0 calc(var(--mg-focus-ring-offset) + var(--mg-focus-ring-width))
-        rgb(var(--mg-color-focus-ring));
-    outline: 0;
+
+    @include mg-focus-ring;
   }
 
   @media (forced-colors: active) {

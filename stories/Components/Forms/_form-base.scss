@@ -59,11 +59,8 @@
   &:focus-visible {
     background-color: var(--mg-form-input-background--focus);
     border-color: rgb(var(--mg-color-form-focus));
-    box-shadow:
-      0 0 0 var(--mg-focus-ring-offset) rgb(var(--mg-color-neutral-0)),
-      0 0 0 calc(var(--mg-focus-ring-offset) + var(--mg-focus-ring-width))
-        rgb(var(--mg-color-focus-ring));
-    outline: 0;
+
+    @include mg-focus-ring;
   }
 }
 
@@ -138,11 +135,8 @@
   &:focus-visible {
     background-color: var(--mg-form-input-background--focus);
     border-color: rgb(var(--mg-color-form-focus));
-    box-shadow:
-      0 0 0 var(--mg-focus-ring-offset) rgb(var(--mg-color-neutral-0)),
-      0 0 0 calc(var(--mg-focus-ring-offset) + var(--mg-focus-ring-width))
-        rgb(var(--mg-color-focus-ring));
-    outline: 0;
+
+    @include mg-focus-ring;
   }
 
   &--disabled {
@@ -179,9 +173,13 @@
       border-color: rgb(var(--mg-color-form-check--hover));
     }
 
+    // Was a 4px glow in --mg-color-form-focus with `outline: 0`. Two problems:
+    // the glow bypassed --mg-color-focus-ring entirely, and because it was a
+    // box-shadow it was silently replaced by the radio's centre-dot shadow in
+    // `.mg-form-check__input--radio:checked` below -- equal specificity,
+    // declared later -- so a CHECKED RADIO had no focus indicator at all.
     &:focus-visible {
-      box-shadow: 0 0 4px rgb(var(--mg-color-form-focus));
-      outline: 0;
+      @include mg-focus-ring;
     }
 
     &--checkbox {
@@ -232,6 +230,17 @@
   box-shadow: inset 0 0 0 3px rgb(var(--mg-color-white));
 }
 
+// A checked radio owns its box-shadow (the centre dot), and the focus ring's
+// separator band is also a box-shadow, so the two cannot both be declared by
+// the rules above -- whichever came last would win, and it was the dot, which
+// is how the checked radio ended up with no focus indicator. Declaring both
+// here, at higher specificity, keeps the dot and the band.
+.mg-form-check__input--radio:checked:focus-visible {
+  box-shadow:
+    inset 0 0 0 3px rgb(var(--mg-color-white)),
+    0 0 0 var(--mg-focus-ring-offset) rgb(var(--mg-color-neutral-0));
+}
+
 // -----------------------------------------------------------------------------
 // Help text
 // -----------------------------------------------------------------------------
@@ -265,8 +274,7 @@
   // shared rule was painting UNDRR blue in PreventionWeb, IRP, MCR2030 and
   // DELTA -- and bypassing the focus-ring token entirely.
   &:focus {
-    outline: 3px solid rgb(var(--mg-color-focus-ring));
-    outline-offset: 0;
+    @include mg-focus-ring;
   }
 
   &__title {
