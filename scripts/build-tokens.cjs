@@ -724,10 +724,19 @@ function build({ tokensDir = TOKENS_DIR } = {}) {
  *     node scripts/build-tokens.cjs --baseline
  * ------------------------------------------------------------------ */
 const BASELINE_NOTE =
-  'SHA-256 of every file scripts/build-tokens.cjs emits. The generated ' +
-  'partials are not committed, so this is the only committed record of what ' +
-  'the generator produces. Regenerate with `node scripts/build-tokens.cjs ' +
-  '--baseline` in the same commit as the tokens/*.yaml change that moved it.';
+  'GENERATED FILE - DO NOT EDIT BY HAND. SHA-256 of every file ' +
+  'scripts/build-tokens.cjs emits. The generated partials are not committed, ' +
+  'so this is the only committed record of what the generator produces. ' +
+  'Regenerate with `node scripts/build-tokens.cjs --baseline` in the same ' +
+  'commit as the tokens/*.yaml change that moved it. ' +
+  'MERGE CONFLICTS: never resolve one by hand or by picking a side on ' +
+  'merit - these values are a function of the generator and the token ' +
+  'sources, not of either branch\'s intent, so a hand-merged digest is ' +
+  'simply wrong. Take either side to clear the conflict, then re-run ' +
+  '--baseline and commit what it writes. A branch that changes what the ' +
+  'generator emits (for example by adding a mixin) will legitimately have ' +
+  'its own baseline, and taking the other side without re-running leaves a ' +
+  'digest that no longer describes anything.';
 
 function digest(contents) {
   return crypto.createHash('sha256').update(contents, 'utf8').digest('hex');
