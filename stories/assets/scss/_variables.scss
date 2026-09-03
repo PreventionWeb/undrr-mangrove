@@ -128,8 +128,16 @@ $mg-font-family-icons: "fontawesome";
 // Arabic fonts
 // One Arabic family across headings and body. Mangrove previously paired Noto
 // Kufi Arabic headings with Dubai body text, which is two typefaces doing one
-// job and two font downloads for Arabic readers. Dubai is the UN-family choice
-// inherited from OCHA and covers both roles.
+// job and two font downloads for Arabic readers. Kufi is a display style, so
+// dropping it costs readers nothing they were using.
+
+// Dubai came from OCHA's brand guidance, as archived September 2024:
+// https://web.archive.org/web/20240910173629/https://brand.unocha.org/document/281801#/fonts/fonts
+// OCHA has since updated that guidance, so this inheritance is dated and worth
+// re-checking against whatever they moved to before 2.1.
+
+// Only 400 and 700 are loaded, while the Latin side uses 500 and 600, so
+// medium-weight Arabic synthesises or jumps to bold. Dubai ships a Medium.
 $mg-font-family-arabic-headings: "Dubai", sans-serif;
 $mg-font-family-arabic-body: "Dubai", sans-serif;
 
