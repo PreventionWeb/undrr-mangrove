@@ -26,6 +26,20 @@
  */
 @use "sass:math";
 @use "sass:meta";
+@import "./tokens-tabs";
+
+// Data-visualisation palettes: categorical, sequential and Sendai target
+// ramps. A distinct concern from brand tokens, sourced from the DLDTS design
+// system. @import must precede rule blocks, hence its position here.
+@import "./tokens-data-viz";
+@import "./deprecated-sendai-accents";
+
+// Brand tokens. The palette, the spacing/type/width scales, the semantic
+// tier and every component token a brand can restyle are generated from
+// tokens/mangrove.yaml (the brand-neutral base) merged with tokens/undrr.yaml
+// (UNDRR identity). Editing a value here would be overwritten; edit the YAML
+// and run `yarn build:tokens`.
+@import "./generated/tokens-mangrove";
 
 // --- Mangrove 2.0 upgrade guard (build-time) ---
 // Color and spacing tokens are now CSS custom properties. Assigning the old
@@ -36,9 +50,10 @@
 // See docs/RELEASE-2.0.md (breaking change #1). This fires only for consumer
 // overrides — Mangrove itself no longer defines these SCSS variables.
 @each $_legacy in "mg-color-interactive", "mg-color-interactive-active",
-                  "mg-color-button-background", "mg-color-button-background--hover",
-                  "mg-color-tag", "mg-color-form-check", "mg-color-form-focus",
-                  "mg-color-hero--secondary", "mg-spacing-150", "mg-spacing-300" {
+  "mg-color-button-background", "mg-color-button-background--hover",
+  "mg-color-tag", "mg-color-form-check", "mg-color-form-focus",
+  "mg-color-hero--secondary", "mg-spacing-150", "mg-spacing-300"
+{
   @if meta.variable-exists($_legacy) {
     @warn "Mangrove 2.0: `$#{$_legacy}` no longer has any effect — color and spacing tokens are CSS custom properties now. Move the override into a `.mg-theme-* { --#{$_legacy}: ...; }` block (or `:root`). See docs/RELEASE-2.0.md.";
   }
@@ -66,106 +81,11 @@ $img-path-Icon: "~/stories/assets/icons"; // BUILD-TIME ONLY
 $img-path-Iconback: "~/stories/assets/icons"; // BUILD-TIME ONLY
 $img-path-Iconfourback: "~/stories/assets/icons"; // BUILD-TIME ONLY
 
-// MG-COLORS BLUE SHADES (#004f91)
 :root {
-  --mg-color-blue-50:  230 237 244;
-  --mg-color-blue-100: 204 220 233;
-  --mg-color-blue-200: 179 202 222;
-  --mg-color-blue-300: 153 185 211;
-  --mg-color-blue-400: 128 167 200;
-  --mg-color-blue-500: 102 149 189;
-  --mg-color-blue-600: 77 132 178;
-  --mg-color-blue-700: 51 114 167;
-  --mg-color-blue-800: 26 97 156;
-  --mg-color-blue-900: 0 79 145;
+  @include mg-tokens-mangrove;
+  @include mg-tokens-tabs;
 }
 
-// MG-COLORS ORANGE SHADES (#eb752a)
-:root {
-  --mg-color-orange-50:  253 241 234;
-  --mg-color-orange-100: 251 227 212;
-  --mg-color-orange-200: 249 214 191;
-  --mg-color-orange-300: 247 200 170;
-  --mg-color-orange-400: 245 186 149;
-  --mg-color-orange-500: 243 172 127;
-  --mg-color-orange-600: 241 158 106;
-  --mg-color-orange-700: 239 145 85;
-  --mg-color-orange-800: 237 131 63;
-  --mg-color-orange-900: 235 117 42;
-}
-
-// MG-COLORS RED SHADES (#c10920)
-:root {
-  --mg-color-red-50:  249 230 233;
-  --mg-color-red-100: 243 206 210;
-  --mg-color-red-200: 236 181 188;
-  --mg-color-red-300: 230 157 166;
-  --mg-color-red-400: 224 132 144;
-  --mg-color-red-500: 218 107 121;
-  --mg-color-red-600: 212 83 99;
-  --mg-color-red-700: 205 58 77;
-  --mg-color-red-800: 199 34 54;
-  --mg-color-red-900: 193 9 32;
-}
-
-// MG-COLORS NEUTRAL
-:root {
-  --mg-color-neutral-0:   255 255 255;
-  --mg-color-neutral-25:  242 242 242;
-  --mg-color-neutral-50:  230 230 230;
-  --mg-color-neutral-100: 204 204 204;
-  --mg-color-neutral-200: 179 179 179;
-  --mg-color-neutral-300: 153 153 153;
-  --mg-color-neutral-400: 128 128 128;
-  --mg-color-neutral-500: 102 102 102;
-  --mg-color-neutral-600: 77 77 77;
-  --mg-color-neutral-700: 51 51 51;
-  --mg-color-neutral-800: 26 26 26;
-  --mg-color-neutral-900: 0 0 0;
-}
-
-// MG-COLORS ACCENT
-:root {
-  --mg-color-accent-100: 244 228 150;
-  --mg-color-accent-200: 211 206 169;
-  --mg-color-accent-300: 253 246 217;
-  --mg-color-accent-400: 10 105 105;
-}
-
-/**
- * Spacing scale — CSS custom properties emitted to :root.
- */
-:root {
-  --mg-spacing-0:    0;
-  --mg-spacing-25:   #{mg-rem(2.5)};
-  --mg-spacing-50:   #{mg-rem(5)};
-  --mg-spacing-75:   #{mg-rem(7.5)};
-  --mg-spacing-100:  #{mg-rem(10)};
-  --mg-spacing-150:  #{mg-rem(15)};
-  --mg-spacing-175:  #{mg-rem(18)};
-  --mg-spacing-200:  #{mg-rem(20)};
-  --mg-spacing-250:  #{mg-rem(24)};
-  --mg-spacing-300:  #{mg-rem(30)};
-  --mg-spacing-350:  #{mg-rem(35)};
-  --mg-spacing-400:  #{mg-rem(50)};
-  --mg-spacing-500:  #{mg-rem(60)};
-  --mg-spacing-600:  #{mg-rem(80)};
-  --mg-spacing-800:  #{mg-rem(100)};
-  --mg-spacing-1000: #{mg-rem(400)};
-}
-
-$mg-font-size-100: mg-rem(10);
-$mg-font-size-150: mg-rem(11.25);
-$mg-font-size-200: mg-rem(12.5);
-$mg-font-size-250: mg-rem(14);
-$mg-font-size-300: mg-rem(16); // regular body text
-$mg-font-size-400: mg-rem(18);
-$mg-font-size-500: mg-rem(23);
-$mg-font-size-600: mg-rem(32);
-$mg-font-size-800: mg-rem(36);
-$mg-font-size-900: mg-rem(40);
-$mg-font-size-1000: mg-rem(48);
-$mg-font-size-1100: mg-rem(64);
 $mg-font-body: $mg-font-size-300;
 $mg-font-tag: $mg-font-size-250 !default;
 $mg-font-line-height-500: 1.25em;
@@ -207,7 +127,11 @@ $mg-font-family-headings: $mg-font-family-condensed !default;
 $mg-font-family-icons: "fontawesome";
 
 // Arabic fonts
-$mg-font-family-arabic-headings: "Noto Kufi Arabic", sans-serif;
+// One Arabic family across headings and body. Mangrove previously paired Noto
+// Kufi Arabic headings with Dubai body text, which is two typefaces doing one
+// job and two font downloads for Arabic readers. Dubai is the UN-family choice
+// inherited from OCHA and covers both roles.
+$mg-font-family-arabic-headings: "Dubai", sans-serif;
 $mg-font-family-arabic-body: "Dubai", sans-serif;
 
 // $mg-font-family-icons: "mangrove-icon-set";
@@ -227,203 +151,99 @@ $mg-breakpoint-desktop-wide: 1440px;
 // All sub-brands use true. To disable, set to false before @use.
 $mg-tabs-border-bottom: true !default;
 
+// Tokens deliberately NOT in the token sources.
+// - The Sendai ramp and the legacy one-off colours predate the naming
+//   convention, carry their own prefixes, and no theme overrides them.
+// - The status-label and empty-state blocks are component tokens with no
+//   brand overrides; they read the generated tokens at runtime.
 :root {
-  --mg-color-tabbar-background:      rgb(var(--mg-color-blue-50));
-  --mg-color-tab-background:         rgb(var(--mg-color-blue-200));
-  --mg-color-tab-background--inactive: rgb(var(--mg-color-blue-50));
-  --mg-color-tab-border:             rgb(var(--mg-color-neutral-700));
-  --mg-color-tab-border--hover:      rgb(var(--mg-color-neutral-900));
-  --mg-color-tab-border--active:     rgb(var(--mg-color-blue-800));
-  --mg-color-tab-background--hover:  rgb(var(--mg-color-blue-800));
-  --mg-radius-tab:                   0;
-  --mg-padding-tab:                  var(--mg-spacing-75) var(--mg-spacing-150);
-  --mg-color-text-tab:               rgb(var(--mg-color-neutral-700));
-  --mg-color-text-tab--hover:        rgb(var(--mg-color-neutral-0));
-  --mg-color-text-tab-active:        rgb(var(--mg-color-neutral-700));
-  --mg-color-text-tab-no-results:    rgb(var(--mg-color-neutral-500));
-  --mg-color-tab-section-background: rgb(var(--mg-color-neutral-0));
-  --mg-padding-tab-section:          var(--mg-spacing-100) var(--mg-spacing-0);
-  --mg-radius-tab-section:           0;
-  --mg-box-shadow-tab-section:       none;
-}
-
-// Z-index layers: use these named tokens for global stacking contexts
-// (fixed, sticky, or portaled elements). One token per UI concept — backdrops
-// and sub-layers use $token - 1 / $token + 1 arithmetic within the component
-// SCSS rather than separate variables. Local stacking within a component's own
-// isolated context uses raw values with an explanatory comment.
-// Pick the nearest existing layer; open a GitHub discussion before adding one.
-
-:root {
-  // Interactive
-  --mg-color-interactive:          var(--mg-color-blue-900);
-  --mg-color-interactive-active:   var(--mg-color-blue-700);
-
-  // Text + aliases
-  --mg-color-text:                 var(--mg-color-neutral-800);
-  --mg-color-black:                var(--mg-color-neutral-800);
-  --mg-color-white:                var(--mg-color-neutral-0);
-
-  // Tags
-  --mg-color-tag:                  var(--mg-color-interactive);
-  --mg-color-tag--hover:           var(--mg-color-interactive-active);
-  --mg-color-tag-secondary:        var(--mg-color-neutral-500);
-  --mg-color-tag-secondary--hover: var(--mg-color-neutral-600);
-  --mg-color-tag-accent:           var(--mg-color-orange-900);
-  --mg-color-tag-accent--hover:    var(--mg-color-orange-800);
-
-  // Buttons
-  --mg-color-button:               var(--mg-color-neutral-0);
-  --mg-color-button--hover:        var(--mg-color-neutral-0);
-  --mg-color-button-background:    var(--mg-color-interactive);
-  --mg-color-button-background--hover: var(--mg-color-interactive-active);
-  --mg-color-button-secondary-background: var(--mg-color-blue-800);
-  --mg-color-button-secondary-background--hover: var(--mg-color-blue-700);
-  --mg-color-button-outline-primary: var(--mg-color-interactive);
-  --mg-color-button-outline-primary--hover: var(--mg-color-interactive-active);
-  --mg-color-button-outline-secondary: var(--mg-color-button-secondary-background);
-  --mg-color-button-outline-secondary--hover: var(--mg-color-button-secondary-background--hover);
-  --mg-color-text-button:          var(--mg-color-neutral-0);
-  --mg-border-color-button:        var(--mg-color-text-button);
-
-  // Form
-  --mg-color-form-check:           var(--mg-color-interactive);
-  --mg-color-form-check--hover:    var(--mg-color-interactive-active);
-  --mg-color-form-check--checked:  var(--mg-color-interactive);
-  --mg-color-form-focus:           var(--mg-color-interactive);
-
-  // Focus ring
-  --mg-color-focus-ring:           var(--mg-color-interactive);
-
-  // Brand hierarchy
-  --mg-color-secondary:            var(--mg-color-orange-800);
-  --mg-color-tertiary:             var(--mg-color-neutral-900);
-  --mg-color-quaternary:           var(--mg-color-red-800);
-
-  // Hero
-  --mg-color-hero:                 var(--mg-color-interactive);
-  --mg-color-hero--secondary:      var(--mg-color-secondary);
-  --mg-color-hero--tertiary:       var(--mg-color-tertiary);
-  --mg-color-hero--quaternary:     var(--mg-color-quaternary);
-  --mg-color-hero-title:           var(--mg-color-neutral-0);
-  --mg-color-hero-button-secondary-background: rgb(var(--mg-color-neutral-0) / 0.9);
-  --mg-color-hero-button-secondary-color: var(--mg-color-hero);
-  --mg-border-color-hero-button-secondary: var(--mg-color-neutral-0);
-
-  // Mega menu
-  --mg-color-mega-content-bg:      var(--mg-color-button);
-
-  // Modal
-  --mg-color-modal-scrim:          rgb(var(--mg-color-neutral-900) / 0.85);
-
   // Legacy one-off colors (hardcoded — no palette backing)
-  --mg-color-green:                #008484;
-  --mg-color-green-light:          #90ee90;
-  --mg-color-green-dark:           #006400;
-  --mg-color-yellow:               #ff0;
-  --mg-color-yellow-light:         lightyellow;
-  --mg-color-yellow-dark:          #d6d624;
-  --mg-color-azure:                #f0ffff;
-  --mg-color-azure-dark:           #d4e3e3;
-  --mg-color-azure-light:          #f0f8f8;
-  --mg-color-ebony-clay:           #3d4242;
+  --mg-color-green: #008484;
+  --mg-color-green-light: #90ee90;
+  --mg-color-green-dark: #006400;
+  --mg-color-yellow: #ff0;
+  --mg-color-yellow-light: lightyellow;
+  --mg-color-yellow-dark: #d6d624;
+  --mg-color-azure: #f0ffff;
+  --mg-color-azure-dark: #d4e3e3;
+  --mg-color-azure-light: #f0f8f8;
+  --mg-color-ebony-clay: #3d4242;
 
   // Sendai Framework
-  --sendai-red-400:     #d45363;
-  --sendai-red-600:     #cd3a4d;
-  --sendai-red-800:     #c72236;
-  --sendai-red-900:     #c10920;
-  --sendai-red:         var(--sendai-red-900);
-  --sendai-orange-400:  #f19e6a;
-  --sendai-orange-600:  #ef9155;
-  --sendai-orange-800:  #ed833f;
-  --sendai-orange-900:  #eb752a;
-  --sendai-orange:      var(--sendai-orange-900);
-  --sendai-purple-400:  #b669ab;
-  --sendai-purple-600:  #ab549f;
-  --sendai-purple-800:  #a13e93;
-  --sendai-purple-900:  #962987;
-  --sendai-purple:      var(--sendai-purple-900);
+  --sendai-red-400: #d45363;
+  --sendai-red-600: #cd3a4d;
+  --sendai-red-800: #c72236;
+  --sendai-red-900: #c10920;
+  --sendai-red: var(--sendai-red-900);
+  --sendai-orange-400: #f19e6a;
+  --sendai-orange-600: #ef9155;
+  --sendai-orange-800: #ed833f;
+  --sendai-orange-900: #eb752a;
+  --sendai-orange: var(--sendai-orange-900);
+  --sendai-purple-400: #b669ab;
+  --sendai-purple-600: #ab549f;
+  --sendai-purple-800: #a13e93;
+  --sendai-purple-900: #962987;
+  --sendai-purple: var(--sendai-purple-900);
   --sendai-turquoise-400: #4dc7c6;
   --sendai-turquoise-600: #33bfbe;
   --sendai-turquoise-800: #1ab7b6;
   --sendai-turquoise-900: #00afae;
-  --sendai-turquoise:   var(--sendai-turquoise-900);
+  --sendai-turquoise: var(--sendai-turquoise-900);
 
-  // UNDRR
-  --undrr-color-corporate-blue: var(--mg-color-blue-900);
-}
+  // Status label
+  // Geometry and the four status colours come from the DELTA design system
+  // board "Status Labels for Records and Events" (14px dot, 8px gap, 16px
+  // label text). The colour-to-label mapping was read off the board's own
+  // swatch/label pairs, which are vertically centred on each other.
+  // -
+  // The dots are decoration, not the message — the label text always names the
+  // status, so SC 1.4.1 does not depend on them. They still need a boundary:
+  // the pale swatches sit at 1.3-2.2:1 against a white page, so a neutral-500
+  // ring (5.74:1 on white) gives every indicator a visible edge. Set
+  // --mg-status-label-indicator-border-width to 0 to drop it.
+  --mg-status-label-gap: var(--mg-spacing-75);
+  --mg-status-label-font-size: #{$mg-font-size-300};
+  --mg-status-label-color: rgb(var(--mg-color-text));
+  --mg-status-label-indicator-size: #{mg-rem(14)};
+  --mg-status-label-indicator-radius: 50%;
+  --mg-status-label-indicator-border-width: 1px;
+  --mg-status-label-indicator-border-color: rgb(var(--mg-color-neutral-500));
+  --mg-status-label-indicator: rgb(var(--mg-color-neutral-100));
+  --mg-status-label-indicator--draft: rgb(var(--mg-color-accent-100));
+  --mg-status-label-indicator--waiting-information: rgb(
+    var(--mg-color-accent-600)
+  );
+  --mg-status-label-indicator--waiting-validation: rgb(
+    var(--mg-color-accent-500)
+  );
+  --mg-status-label-indicator--published: rgb(var(--mg-color-accent-400));
 
-:root {
-  // Container
-  --mg-container-spacer:         var(--mg-spacing-150);
+  // Empty state
+  // Layout follows the DELTA "Empty State" boards (centred glyph above a short
+  // message, compact variant for indicator tiles and chart wells). The boards
+  // set the "No data" text in black at 25% opacity, which is 1.6:1 — that one
+  // value is deliberately not reproduced; neutral-500 is the nearest Mangrove
+  // token that clears 4.5:1.
+  --mg-empty-state-gap: var(--mg-spacing-100);
+  --mg-empty-state-padding: var(--mg-spacing-300) var(--mg-spacing-150);
+  --mg-empty-state-max-inline-size: #{mg-rem(440)};
+  --mg-empty-state-title-font-size: #{$mg-font-size-400};
+  --mg-empty-state-title-color: rgb(var(--mg-color-text));
+  --mg-empty-state-text-font-size: #{$mg-font-size-300};
+  --mg-empty-state-text-color: rgb(var(--mg-color-neutral-500));
+  --mg-empty-state-media-size: #{mg-rem(56)};
 
-  // Tag
-  --mg-radius-tag:               var(--mg-spacing-0);
-
-  // Button
-  --mg-radius-button:            var(--mg-spacing-50);
-  --mg-border-width-button:      1px;
-  --mg-padding-button:           var(--mg-spacing-100) var(--mg-spacing-150);
-  --mg-font-size-button:         #{$mg-font-size-250};
-
-  // Form
-  --mg-radius-form-input:        var(--mg-spacing-50);
-
-  // Focus ring
-  --mg-focus-ring-width:         2px;
-  --mg-focus-ring-offset:        2px;
-  --mg-focus-ring-radius:        2px;
-
-  // Modernisation: shared surface, elevation, and motion semantics
-  --mg-surface-raised:           rgb(var(--mg-color-neutral-0));
-  --mg-shadow-raised:            inset 0 0 0 1px rgb(var(--mg-color-neutral-600) / 0.24);
-  --mg-shadow-raised-hover:      inset 0 0 0 2px rgb(var(--mg-color-interactive));
-  --mg-motion-duration-fast:     160ms;
-  --mg-motion-duration-medium:   300ms;
-  --mg-motion-easing-standard:   cubic-bezier(0.2, 0, 0, 1);
-
-  // Card
-  --mg-card-background:          var(--mg-surface-raised);
-  --mg-card-padding:             var(--mg-spacing-150);
-  --mg-card-border-radius:       var(--mg-spacing-50);
-  --mg-card-shadow:              var(--mg-shadow-raised);
-  --mg-card-shadow-hover:        var(--mg-shadow-raised-hover);
-  --mg-card-icon-badge-radius:   20%;
-
-  // CTA
-  --mg-cta-padding:              var(--mg-spacing-400);
-
-  // Author image
-  --mg-author-image-radius:      50%;
-
-  // Hero
-  --mg-opacity-hero:             0.85;
-  --mg-spacing-hero-overlay:     0;
-  --mg-hero-overlay-max-width:   #{mg-rem(600)};
-  --mg-hero-overlay-padding:     var(--mg-spacing-300);
-  --mg-hero-overlay-radius:      var(--mg-spacing-50);
-  --mg-hero-overlay-shadow:      0 18px 55px rgb(var(--mg-color-neutral-900) / 0.22);
-  --mg-hero-gradient-start-opacity:  0.98;
-  --mg-hero-gradient-middle-opacity: 0.82;
-  --mg-hero-gradient-end-opacity:    0.08;
-
-  // Widths (build-time resolved)
-  --mg-width-150:                #{mg-rem(150)};
-  --mg-width-300:                #{mg-rem(300)};
-  --mg-width-400:                #{mg-rem(400)};
-  --mg-width-600:                #{mg-rem(600)};
-
-  // Z-index (named stacking contexts)
-  --mg-z-index-behind:     -1;
-  --mg-z-index-nav:        10;
-  --mg-z-index-sticky:     11;
-  --mg-z-index-nav-toggle: 14;
-  --mg-z-index-header:     22;
-  --mg-z-index-drawer:     2000;
-  --mg-z-index-dropdown:   2500;
-  --mg-z-index-modal:      5000;
-  --mg-z-index-toast:      5500;
+  // DELTA draws the glyph at #d9d9d9 (1.5:1). The glyph is decorative and
+  // always sits above the message, so SC 1.4.11 exempts it — neutral-400 is
+  // used anyway so it clears 3:1 (3.96:1) and stays legible on a tinted panel.
+  --mg-empty-state-media-color: rgb(var(--mg-color-neutral-400));
+  --mg-empty-state-actions-gap: var(--mg-spacing-100);
+  --mg-empty-state-panel-background: rgb(var(--mg-color-neutral-25));
+  --mg-empty-state-panel-radius: var(--mg-card-border-radius);
+  --mg-empty-state-compact-padding: var(--mg-spacing-150);
+  --mg-empty-state-compact-media-size: #{mg-rem(34)};
+  --mg-empty-state-compact-font-size: #{$mg-font-size-250};
 }
 
 // Header height

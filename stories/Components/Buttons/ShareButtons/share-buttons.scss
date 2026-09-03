@@ -28,7 +28,7 @@
   height: mg-rem(40);
   padding: var(--mg-spacing-100);
   border-radius: var(--mg-radius-button);
-  background-color: rgb(var(--mg-color-button-background));
+  background-color: var(--mg-color-button-background);
   color: rgb(var(--mg-color-button));
   display: flex;
   justify-content: center;
@@ -41,7 +41,7 @@
   }
 
   &:focus-visible {
-    box-shadow: 0 0 4px rgb(var(--mg-color-button-background--hover));
+    box-shadow: 0 0 4px var(--mg-color-button-background--hover);
     outline: 0;
   }
 }

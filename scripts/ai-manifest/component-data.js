@@ -374,6 +374,41 @@ export default {
       'Grid of numeric statistics with optional icons, labels, and descriptions. Variants: default, compact, highlighted, negative.',
   },
 
+  // --- Status and empty states ---
+  'components-status-label': {
+    description:
+      'Status of a record or event, as a coloured indicator dot plus the status name in text. Variants: draft, waiting-validation, waiting-information, published, plus a neutral default with no modifier. The dot is decorative: the status name is always present as text, so meaning never depends on colour. Wrap several in mg-status-label-group.',
+    cssClasses: [
+      'mg-status-label',
+      'mg-status-label--draft',
+      'mg-status-label--waiting-validation',
+      'mg-status-label--waiting-information',
+      'mg-status-label--published',
+      'mg-status-label-group',
+    ],
+    examples: [
+      '<span class="mg-status-label mg-status-label--published"><span class="mg-status-label__indicator"></span>Published</span>',
+    ],
+  },
+  'components-empty-state': {
+    description:
+      'Message shown where a collection, table or panel has no content. Optional media slot for a glyph, a title, a description and an optional actions slot. Variants: panel, compact, start-aligned. Inside a table, place it in a single td with colspan so the row structure and column headers survive for screen readers.',
+    cssClasses: [
+      'mg-empty-state',
+      'mg-empty-state--panel',
+      'mg-empty-state--compact',
+      'mg-empty-state--start',
+      'mg-empty-state-cell',
+      'mg-empty-state__media',
+      'mg-empty-state__title',
+      'mg-empty-state__description',
+      'mg-empty-state__actions',
+    ],
+    examples: [
+      '<div class="mg-empty-state"><p class="mg-empty-state__title">No hazardous events recorded</p><p class="mg-empty-state__description">Events appear here once a national focal point submits them.</p></div>',
+    ],
+  },
+
   // --- Tags ---
   'components-tag': {
     description:

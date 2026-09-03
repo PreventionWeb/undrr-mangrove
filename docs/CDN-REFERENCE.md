@@ -21,6 +21,12 @@ Base URL: `https://assets.undrr.org/static/mangrove/{version}/`
 | DELTA Resilience | `/css/style-delta.css` | deltaresilience.org |
 | Gutenberg editor | `/css/style-gutenberg.css` | Drupal Gutenberg block previews |
 
+`style.css` **is** the UNDRR theme. There is no `style-undrr.css`: UNDRR is the
+default palette and lives at `:root` in the base stylesheet, while each
+sub-brand adds a `.mg-theme-*` block on top. Sub-brand consumers also need the
+matching `mg-theme-{brand}` class on `<body>` from 2.0 onward — see the
+[2.0 release notes](https://github.com/unisdr/undrr-mangrove/blob/main/docs/RELEASE-2.0.md#sub-brand-theming-migration).
+
 #### Legacy theme variants
 
 Legacy variants keep the pre-1.4 behavior (`html { font-size: 10px }`). Use these if your site has custom CSS written for the 10px root. See the [v1.4 release notes](https://github.com/unisdr/undrr-mangrove/blob/main/docs/RELEASE-1.4.md#migration-root-font-size-change) for migration details.
