@@ -15,7 +15,13 @@
  *   2. someone re-hardcodes a brand value into a hand-written Sass file,
  *      which is exactly how _theme-delta.scss came to hold a second,
  *      independent copy of the DELTA brand;
- *   3. the generator quietly produces wrong output instead of failing —
+ *   3. the generated partials are build output and are not committed, so
+ *      nothing in the repository records what the generator produces. On a
+ *      fresh clone — every CI run — globalSetup writes the partials from
+ *      `build()`, and comparing `build()` to them compares the generator to
+ *      itself. tokens/output-baseline.json is the committed digest that makes
+ *      "the generator's output moved" fail somewhere;
+ *   4. the generator quietly produces wrong output instead of failing —
  *      the failure mode the whole architecture exists to prevent. The
  *      second half of this file mutation-tests each guard, because a guard
  *      nobody has watched fail is not a guard.
@@ -25,7 +31,7 @@ const os = require('os');
 const path = require('path');
 
 const ROOT = path.resolve(__dirname, '../../../..');
-const { build, TokenError } = require(
+const { build, TokenError, baselineOf, readBaseline } = require(
   path.join(ROOT, 'scripts/build-tokens.cjs')
 );
 
@@ -46,6 +52,48 @@ describe('design-token generator', () => {
     // cannot reach here: globalSetup generates missing ones before any suite
     // runs, so a fresh clone starts from an up-to-date tree.)
     expect(stale).toEqual([]);
+  });
+
+  test('emitted bytes match the committed baseline', () => {
+    // The stale-partial test above cannot catch this. On a fresh clone the
+    // partials are written from `build()` by globalSetup, so it compares the
+    // generator to its own output. This compares it to a digest committed at
+    // the time the output was last reviewed.
+    const baseline = readBaseline();
+    const actual = baselineOf(build());
+    expect(actual.algorithm).toBe(baseline.algorithm);
+
+    const moved = [];
+    for (const name of new Set([
+      ...Object.keys(baseline.files),
+      ...Object.keys(actual.files),
+    ])) {
+      if (baseline.files[name] === actual.files[name]) continue;
+      if (!baseline.files[name])
+        moved.push(`${name} — emitted, not in the baseline`);
+      else if (!actual.files[name])
+        moved.push(`${name} — in the baseline, no longer emitted`);
+      else moved.push(`${name} — different bytes`);
+    }
+
+    const report = moved.length
+      ? [
+          'The generator no longer emits what tokens/output-baseline.json records:',
+          ...moved.sort().map(line => `  ${line}`),
+          '',
+          'If a tokens/*.yaml change caused this, it is expected. Regenerate the',
+          'partials and the baseline together, in that same commit:',
+          '',
+          '    yarn build:tokens',
+          '    node scripts/build-tokens.cjs --baseline',
+          '',
+          'and review the resulting diff of stories/assets/scss/generated/.',
+          '',
+          'If nothing in tokens/ changed, then scripts/build-tokens.cjs changed',
+          'what it produces — that is the regression this test exists to catch.',
+        ].join('\n')
+      : '';
+    expect(report).toBe('');
   });
 
   test('emits one partial per distributed brand', () => {
@@ -279,5 +327,124 @@ alias: { $type: color, dup: { $name: '--mg-color-tag', $value: '#654321' } }`
 color: { $type: color, tag: { $value: '{color.interactive}' } }`
     );
     expect(run()).toThrow(/\$brand\.extends "ghost" is not a known brand/);
+  });
+
+  test('an override that re-values a rem token as a link', () => {
+    // The shape an override inherits is enforced, not quietly abandoned.
+    // tokens/delta.yaml did exactly this: it re-valued a `$format: rem`
+    // token as `{width.600}`, and because the missing $format silently
+    // reverted the token to `literal` the generator emitted a var() chain
+    // where the base declared a rem conversion. Now it says so.
+    write(
+      'mangrove.yaml',
+      `${BASE}
+size:
+  $type: dimension
+  $format: rem
+  wide: { $value: 600 }
+  gap: { $value: 8 }`
+    );
+    write(
+      'x.yaml',
+      `$brand: { id: x, title: X, selector: '.x' }
+size: { $type: dimension, gap: { $value: '{size.wide}' } }`
+    );
+    expect(run()).toThrow(/format "rem" needs a number/);
+  });
+});
+
+/**
+ * An override states a new VALUE. Everything else the base declared about the
+ * token — the shape it is emitted in, the property it is emitted as, whether
+ * it is emitted at all — carries, because `flatten` writes every key and a
+ * key the override did not state used to arrive at `mergeLayers` as
+ * `undefined` and delete the base's. Same fixture style as the suite above:
+ * a deliberately minimal source tree, built through the real generator.
+ */
+describe('an override inherits the shape it does not restate', () => {
+  let dir;
+
+  const BASE = `
+$brand: { id: mangrove, base: true, title: Base, selector: ':root' }
+color:
+  $type: color
+  neutral-0: { $value: '#ffffff' }
+  interactive: { $value: '{color.neutral-0}' }
+  # A colour consumed inside a \`border:\` shorthand, so it must be emitted
+  # as a finished colour. A bare triplet there is invalid CSS and is dropped
+  # silently — the .mg-button-outline bug, documented in tokens/mangrove.yaml.
+  button-border: { $value: '#004f91', $format: srgb-rgb-function }
+  # A property whose name consumers hardcode, so it cannot follow the id.
+  legacy: { $name: '--mg-legacy-alias', $value: '#112233' }
+brand:
+  $type: color
+  $private: true
+  primary: { $value: '#abcdef' }
+`;
+  const DEFAULT_BRAND = `
+$brand: { id: undrr, output: mangrove, default: true, title: UNDRR, selector: ':root' }
+color: { $type: color, blue-900: { $value: '#004f91' } }
+`;
+  // Every token here is re-valued and NOTHING else is restated.
+  const SUB_BRAND = `
+$brand: { id: sub, title: Sub, selector: '.mg-theme-sub' }
+color:
+  $type: color
+  button-border: { $value: '#ff0000' }
+  legacy: { $value: '#445566' }
+brand:
+  $type: color
+  primary: { $value: '#000000' }
+`;
+
+  beforeEach(() => {
+    dir = fs.mkdtempSync(path.join(os.tmpdir(), 'mg-tokens-'));
+    fs.writeFileSync(path.join(dir, 'mangrove.yaml'), BASE);
+    fs.writeFileSync(path.join(dir, 'undrr.yaml'), DEFAULT_BRAND);
+    fs.writeFileSync(path.join(dir, 'sub.yaml'), SUB_BRAND);
+  });
+  afterEach(() => fs.rmSync(dir, { recursive: true, force: true }));
+
+  const sub = () =>
+    build({ tokensDir: dir }).get(
+      'stories/assets/scss/generated/_tokens-sub.scss'
+    );
+
+  test('the fixture builds and the base emits each token as declared', () => {
+    const base = build({ tokensDir: dir }).get(
+      'stories/assets/scss/generated/_tokens-mangrove.scss'
+    );
+    expect(base).toContain('--mg-color-button-border: rgb(0 79 145);');
+    expect(base).toContain('--mg-legacy-alias: 17 34 51;');
+    expect(base).not.toContain('--mg-brand-primary');
+  });
+
+  test('$format carries, so a re-valued colour keeps its emitted shape', () => {
+    expect(sub()).toContain('--mg-color-button-border: rgb(255 0 0);');
+    expect(sub()).not.toContain('--mg-color-button-border: 255 0 0;');
+  });
+
+  test('$name carries, so the override reaches the property consumers read', () => {
+    expect(sub()).toContain('--mg-legacy-alias: 68 85 102;');
+    // Writing --mg-color-legacy instead would leave --mg-legacy-alias at the
+    // base value: the override would be a silent no-op.
+    expect(sub()).not.toContain('--mg-color-legacy');
+  });
+
+  test('$private carries, so re-valuing a primitive does not publish it', () => {
+    expect(sub()).not.toContain('--mg-brand-primary');
+  });
+
+  test('an override may still turn a private token public, by saying so', () => {
+    // Inheritance must not become a trapdoor: a stated value wins, including
+    // a stated `false`.
+    fs.writeFileSync(
+      path.join(dir, 'sub.yaml'),
+      `${SUB_BRAND}\n`.replace(
+        "  primary: { $value: '#000000' }",
+        "  primary: { $private: false, $value: '#000000' }"
+      )
+    );
+    expect(sub()).toContain('--mg-brand-primary: 0 0 0;');
   });
 });

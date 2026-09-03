@@ -25,12 +25,19 @@
  * Usage:
  *   node scripts/build-tokens.cjs            write the generated partials
  *   node scripts/build-tokens.cjs --check    exit 1 if any are stale
+ *   node scripts/build-tokens.cjs --baseline update tokens/output-baseline.json
+ *
+ * The partials are build output and are NOT committed, so the only committed
+ * record of what this generator produces is tokens/output-baseline.json — a
+ * SHA-256 per emitted file, checked by tokens-source.test.js. A deliberate
+ * token change moves it; regenerate it in the same commit with --baseline.
  *
  * Wired into package.json as `yarn build:tokens`, which `yarn scss` and
  * `yarn scss-watch` both run first.
  */
 'use strict';
 
+const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
 const YAML = require('yaml');
@@ -39,6 +46,7 @@ const ROOT = path.resolve(__dirname, '..');
 const TOKENS_DIR = path.join(ROOT, 'tokens');
 const SCSS_DIR = path.join(ROOT, 'stories/assets/scss');
 const GENERATED_DIR = path.join(SCSS_DIR, 'generated');
+const BASELINE_PATH = path.join(TOKENS_DIR, 'output-baseline.json');
 
 class TokenError extends Error {}
 
@@ -174,13 +182,17 @@ function flatten(node, trail, inherited, tokens, file) {
 
   if (Object.prototype.hasOwnProperty.call(node, '$value')) {
     const id = trail.join('.');
+    // `private` is deliberately left undefined when nothing states it, rather
+    // than defaulted to false: `mergeLayers` has to be able to tell "this
+    // source said public" from "this source said nothing". Every consumer
+    // tests it for truthiness, so undefined behaves as false everywhere.
     tokens.set(id, {
       id,
       file,
       value: node.$value,
       type: context.$type,
       format: node.$format ?? context.$format,
-      private: node.$private ?? context.$private ?? false,
+      private: node.$private ?? context.$private,
       sass: node.$sass ?? context.$sass,
       name: node.$name,
       alpha: node.$alpha,
@@ -276,12 +288,48 @@ function loadSources(dir) {
  * afterwards, against the merged table. That ordering is the point: a brand
  * that redefines one primitive moves every token derived from it.
  * ------------------------------------------------------------------ */
+/**
+ * Properties of a token that describe its SHAPE and its IDENTITY rather than
+ * its value, and therefore survive an override that only re-values it.
+ *
+ * A plain `{ ...inherited, ...token }` spread cannot express this: `flatten`
+ * writes every key, so a key the override did not state arrives as
+ * `undefined` and DELETES what the base declared. Three live bugs came out of
+ * that, each one silent:
+ *
+ *   - `format`: a sub-brand that re-values a colour without restating
+ *     `$format: srgb-rgb-function` reverted it to bare channels. That is
+ *     precisely the `.mg-button-outline` failure documented in
+ *     tokens/mangrove.yaml — a triplet in a colour position is invalid CSS
+ *     and is discarded without a word;
+ *   - `name`: an override that omitted `$name` stopped writing the property
+ *     its consumers actually read and wrote `--mg-<id>` instead, so the
+ *     override became a no-op;
+ *   - `private`: an override of a brand primitive that omitted `$private`
+ *     leaked it into the emitted CSS as a public custom property.
+ *
+ * `value`, `alpha` and `description` are deliberately NOT here. They belong
+ * to the specific value a layer states: an override supplies its own colour,
+ * its own opacity and its own reasoning, and inheriting the base's prose onto
+ * a different value is how a comment comes to describe something that is no
+ * longer true.
+ */
+const CARRIED = ['type', 'format', 'private', 'sass', 'name'];
+
 function mergeLayers(layers) {
   const merged = new Map();
   for (const layer of layers) {
     for (const [id, token] of layer.tokens) {
       const inherited = merged.get(id);
-      merged.set(id, inherited ? { ...inherited, ...token } : token);
+      if (!inherited) {
+        merged.set(id, token);
+        continue;
+      }
+      const next = { ...inherited, ...token };
+      for (const key of CARRIED) {
+        if (token[key] === undefined) next[key] = inherited[key];
+      }
+      merged.set(id, next);
     }
   }
   return merged;
@@ -654,9 +702,84 @@ function build({ tokensDir = TOKENS_DIR } = {}) {
 }
 
 /* ------------------------------------------------------------------ *
+ * Output baseline
+ *
+ * The generated partials are build output and are NOT committed. That leaves
+ * nothing in the repository to compare the generator against: on a fresh
+ * clone Jest's globalSetup writes the partials from `build()`, and a test
+ * that then compares `build()` to those files compares the generator to
+ * itself and cannot fail. Every CI run is a fresh clone, so "the generator's
+ * output changed" was caught by nothing at all.
+ *
+ * tokens/output-baseline.json closes that. It is a lockfile: one SHA-256 per
+ * emitted file, committed, and independent of whether the partials exist.
+ * A full golden copy of the partials would say more on failure, but it is
+ * ~1500 lines that churn on every legitimate colour change and it would
+ * re-commit exactly the build output this PR stopped committing. The digest
+ * says only THAT the output moved — which, paired with the contributor's own
+ * `git diff` of tokens/ and of the regenerated partials, is enough.
+ *
+ * Update it deliberately, in the same commit as the token change:
+ *
+ *     node scripts/build-tokens.cjs --baseline
+ * ------------------------------------------------------------------ */
+const BASELINE_NOTE =
+  'SHA-256 of every file scripts/build-tokens.cjs emits. The generated ' +
+  'partials are not committed, so this is the only committed record of what ' +
+  'the generator produces. Regenerate with `node scripts/build-tokens.cjs ' +
+  '--baseline` in the same commit as the tokens/*.yaml change that moved it.';
+
+function digest(contents) {
+  return crypto.createHash('sha256').update(contents, 'utf8').digest('hex');
+}
+
+/** The baseline document for a build's output. */
+function baselineOf(files) {
+  return {
+    $comment: BASELINE_NOTE,
+    algorithm: 'sha256',
+    files: Object.fromEntries(
+      [...files].map(([relative, contents]) => [relative, digest(contents)])
+    ),
+  };
+}
+
+function readBaseline() {
+  if (!fs.existsSync(BASELINE_PATH)) {
+    throw new TokenError(
+      `${path.relative(ROOT, BASELINE_PATH)} is missing. Recreate it with ` +
+        '`node scripts/build-tokens.cjs --baseline`.'
+    );
+  }
+  return JSON.parse(fs.readFileSync(BASELINE_PATH, 'utf8'));
+}
+
+function writeBaseline(files = build()) {
+  const contents = `${JSON.stringify(baselineOf(files), null, 2)}\n`;
+  if (
+    fs.existsSync(BASELINE_PATH) &&
+    fs.readFileSync(BASELINE_PATH, 'utf8') === contents
+  ) {
+    return false;
+  }
+  fs.writeFileSync(BASELINE_PATH, contents);
+  return true;
+}
+
+/* ------------------------------------------------------------------ *
  * Entry point
  * ------------------------------------------------------------------ */
 function main(argv) {
+  if (argv.includes('--baseline')) {
+    const relative = path.relative(ROOT, BASELINE_PATH);
+    process.stdout.write(
+      writeBaseline()
+        ? `build-tokens: wrote ${relative}\n`
+        : `build-tokens: ${relative} already matches the generator\n`
+    );
+    return;
+  }
+
   const check = argv.includes('--check');
   const files = build();
   const stale = [];
@@ -698,4 +821,11 @@ if (require.main === module) {
   }
 }
 
-module.exports = { build, TokenError };
+module.exports = {
+  build,
+  TokenError,
+  BASELINE_PATH,
+  baselineOf,
+  readBaseline,
+  writeBaseline,
+};

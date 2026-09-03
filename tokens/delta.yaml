@@ -166,7 +166,12 @@ opacity:
   hero: { $value: '1' }
 
 hero-overlay:
-  max-width: { $type: dimension, $value: '{width.600}' }
+  # $format: literal is load-bearing. The base states this as a rem
+  # conversion of a raw number (tokens/mangrove.yaml); DELTA re-values it as
+  # a link, which is CSS syntax and cannot be run through the rem converter.
+  # An override inherits everything it does not restate, so the shape has to
+  # be restated alongside the new value.
+  max-width: { $type: dimension, $value: '{width.600}', $format: literal }
   padding: { $type: dimension, $value: '{spacing.400}' }
 
 spacing:
