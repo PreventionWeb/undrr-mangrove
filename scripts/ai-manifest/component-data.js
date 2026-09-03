@@ -376,10 +376,12 @@ export default {
 
   // --- Status and empty states ---
   'components-status-label': {
+    name: 'Status label',
     description:
       'Status of a record or event, as a coloured indicator dot plus the status name in text. Variants: draft, waiting-validation, waiting-information, published, plus a neutral default with no modifier. The dot is decorative: the status name is always present as text, so meaning never depends on colour. Wrap several in mg-status-label-group.',
     cssClasses: [
       'mg-status-label',
+      'mg-status-label__indicator',
       'mg-status-label--draft',
       'mg-status-label--waiting-validation',
       'mg-status-label--waiting-information',
@@ -387,10 +389,22 @@ export default {
       'mg-status-label-group',
     ],
     examples: [
-      '<span class="mg-status-label mg-status-label--published"><span class="mg-status-label__indicator"></span>Published</span>',
+      {
+        name: 'Single status',
+        html: '<span class="mg-status-label mg-status-label--published">\n  <span class="mg-status-label__indicator"></span>\n  Published\n</span>',
+      },
+      {
+        name: 'All four workflow states',
+        html: '<ul class="mg-status-label-group">\n  <li>\n    <span class="mg-status-label mg-status-label--draft">\n      <span class="mg-status-label__indicator"></span>\n      Draft\n    </span>\n  </li>\n  <li>\n    <span class="mg-status-label mg-status-label--waiting-information">\n      <span class="mg-status-label__indicator"></span>\n      Waiting for more information\n    </span>\n  </li>\n  <li>\n    <span class="mg-status-label mg-status-label--waiting-validation">\n      <span class="mg-status-label__indicator"></span>\n      Waiting for validation\n    </span>\n  </li>\n  <li>\n    <span class="mg-status-label mg-status-label--published">\n      <span class="mg-status-label__indicator"></span>\n      Published\n    </span>\n  </li>\n</ul>',
+      },
+      {
+        name: 'Neutral status (no modifier)',
+        html: '<span class="mg-status-label">\n  <span class="mg-status-label__indicator"></span>\n  Archived\n</span>',
+      },
     ],
   },
   'components-empty-state': {
+    name: 'Empty state',
     description:
       'Message shown where a collection, table or panel has no content. Optional media slot for a glyph, a title, a description and an optional actions slot. Variants: panel, compact, start-aligned. Inside a table, place it in a single td with colspan so the row structure and column headers survive for screen readers.',
     cssClasses: [
@@ -405,7 +419,30 @@ export default {
       'mg-empty-state__actions',
     ],
     examples: [
-      '<div class="mg-empty-state"><p class="mg-empty-state__title">No hazardous events recorded</p><p class="mg-empty-state__description">Events appear here once a national focal point submits them.</p></div>',
+      {
+        name: 'Default, with an action',
+        html: '<div class="mg-empty-state">\n  <div class="mg-empty-state__media" aria-hidden="true">\n    <svg viewBox="0 0 56 44" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" focusable="false">\n      <path d="M8 18 14 4h28l6 14" />\n      <path d="M8 18h12l3 6h10l3-6h12v18a4 4 0 0 1-4 4H12a4 4 0 0 1-4-4z" />\n    </svg>\n  </div>\n  <h2 class="mg-empty-state__title">No records yet</h2>\n  <p class="mg-empty-state__description">\n    Records you add or import will appear here.\n  </p>\n  <div class="mg-empty-state__actions">\n    <a href="/records/add" class="mg-button mg-button-primary">Add a record</a>\n  </div>\n</div>',
+      },
+      {
+        name: 'Panel variant, no action',
+        html: '<div class="mg-empty-state mg-empty-state--panel">\n  <h2 class="mg-empty-state__title">Nothing to chart yet</h2>\n  <p class="mg-empty-state__description">\n    This chart appears once economic loss figures have been recorded.\n  </p>\n</div>',
+      },
+      {
+        name: 'Compact, for a dashboard tile',
+        html: '<div class="mg-empty-state mg-empty-state--compact mg-empty-state--panel">\n  <p class="mg-empty-state__description">No data</p>\n</div>',
+      },
+      {
+        name: 'Start-aligned',
+        html: '<div class="mg-empty-state mg-empty-state--start">\n  <h2 class="mg-empty-state__title">No saved searches</h2>\n  <p class="mg-empty-state__description">\n    Save a search from the results page and it will be listed here.\n  </p>\n</div>',
+      },
+      {
+        name: 'Inside a table',
+        // The empty state goes in one td with colspan so the column headers
+        // survive for screen readers. role="status" belongs here only because
+        // the emptiness is the result of a filter the user just applied; a
+        // table that renders empty on first load must omit it.
+        html: '<table class="mg-table">\n  <caption class="mg-u-sr-only">Disaster records</caption>\n  <thead>\n    <tr>\n      <th scope="col">Record</th>\n      <th scope="col">Updated</th>\n      <th scope="col">Status</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <td class="mg-empty-state-cell" colspan="3">\n        <div class="mg-empty-state" role="status">\n          <p class="mg-empty-state__title">No records match your filters</p>\n          <p class="mg-empty-state__description">\n            Clear the country filter to see all records.\n          </p>\n        </div>\n      </td>\n    </tr>\n  </tbody>\n</table>',
+      },
     ],
   },
 

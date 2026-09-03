@@ -54,7 +54,7 @@ This project uses the UNDRR Mangrove component library.
 - AI manifest: https://unisdr.github.io/undrr-mangrove/llms.txt
 - Component index: https://unisdr.github.io/undrr-mangrove/ai-components/index.json
 - CSS prefix: mg-
-- Naming: BEM (e.g., mg-card__title, mg-button--primary)
+- Naming: BEM (e.g., mg-card__title, mg-card__icon--bordered); buttons are single-dash (mg-button-primary)
 ```
 
 ### Cursor
@@ -98,7 +98,7 @@ Create a hero section with a button.
 The things agents most often get wrong: CSS class prefix, naming pattern, and theme support. Including these up front saves a round of corrections.
 
 - All CSS classes use the `mg-` prefix (e.g., `mg-button`, `mg-card`)
-- Classes follow BEM (e.g., `mg-card__title`, `mg-button--primary`)
+- Classes follow BEM (e.g., `mg-card__title`, `mg-card__icon--bordered`). Buttons are the exception and use single-dash names: `mg-button-primary`, `mg-button-secondary`, `mg-button-outline` — `mg-button--primary` does not exist and has no styles.
 - Components use semantic HTML for accessibility
 - Five themes: undrr (default), preventionweb, irp, mcr2030, delta
 - RTL is supported for Arabic and other right-to-left languages
@@ -126,14 +126,18 @@ With the Storybook MCP server running, agents can:
 
 ### Setting up MCP for local development
 
-Storybook 10.3+ includes a built-in MCP server. To try it locally:
+Storybook can serve an MCP endpoint at `/mcp`, but **it is not enabled in this repository**: the installed Storybook (10.5.x) only reports that endpoint as ready when `@storybook/addon-mcp` is listed in `.storybook/main.js`, and it is neither listed nor installed. Without it, `/mcp` reports `status: "not-installed"`.
 
-1. **Start Storybook**:
+To try it locally you have to add the addon first:
+
+1. **Install and register the addon**: add `@storybook/addon-mcp` to `devDependencies` and to the `addons` array in `.storybook/main.js`.
+
+2. **Start Storybook**:
    ```bash
    yarn dev
    ```
 
-2. **Configure your AI tool** to connect to `http://localhost:6006/mcp`
+3. **Configure your AI tool** to connect to `http://localhost:6006/mcp`
 
    For Claude Code:
    ```bash
@@ -171,7 +175,7 @@ The [component index](https://unisdr.github.io/undrr-mangrove/ai-components/inde
 
 The index also includes library-level metadata:
 
-- **`quickstart`** — CSS `<link>` tag, all four theme URLs, and a minimal HTML boilerplate
+- **`quickstart`** — two keys only: `css` (a ready-made `<link>` tag for the default UNDRR theme) and `cssThemes` (the bundle URL per theme). Full page boilerplate is not here; it is in the `renderedHtml` of `ai-components/example-page-template-example.json`.
 - **`breakpoints`** — mobile (480px), tablet (900px), desktop (1164px), wide (1440px)
 - **`requiredAssets`** — every stylesheet, script, and logo URL a UNDRR page needs, with load order and `defer`/`async` attributes
 - **`utilitiesUrl`** — link to the CSS utility class reference
@@ -180,12 +184,12 @@ Agents can filter by `vanillaHtml: true` (works as plain HTML/CSS) or `requiresR
 
 ### Per-component details (`ai-components/{id}.json`)
 
-Each component gets its own JSON file (1-10 KB) with:
+Each component gets its own JSON file (roughly 0.3-21 KB) with some of:
 
 - **Props** with types, defaults, and descriptions (from PropTypes and JSDoc)
 - **Story examples** with JSX code snippets (from Storybook)
 - **Rendered HTML** — copy-pasteable HTML showing the actual DOM structure. Some components are auto-rendered from the built React bundles using `renderToStaticMarkup`; others have curated HTML examples.
-- **CSS classes** — list of BEM classes the component uses
+- **CSS classes** — list of the classes the component uses. Only curated components carry this (about a third of the files); `renderedHtml` is on roughly three quarters. Check for the key rather than assuming it is there.
 - **Branding flags** — `doNotModify` warnings on components like PageHeader and Footer where the markup is a UNDRR branding requirement
 
 Components with syndication support (Footer) include a `vanillaHtmlEmbed` field with the complete script-tag embed pattern and configuration options.
@@ -262,12 +266,12 @@ The ecosystem tools are complementary, not competing. We recommend `@storybook/m
 
 ## Ecosystem and alternatives
 
-### Storybook MCP (`@storybook/mcp`)
+### Storybook MCP (`@storybook/addon-mcp`)
 
-As of Storybook 10.3 (March 2025), the official [`@storybook/mcp`](https://www.npmjs.com/package/@storybook/mcp) package ships a built-in MCP server at `http://localhost:6006/mcp`. It exposes three tool groups — docs (list/get component metadata), development (story-writing guidance, preview rendering), and testing (run story tests and accessibility checks). Requires a running Storybook dev server or a self-hosted Node.js server with generated manifests.
+Recent Storybook versions can serve an MCP endpoint at `http://localhost:6006/mcp`. The package name the installed Storybook looks for is [`@storybook/addon-mcp`](https://www.npmjs.com/package/@storybook/addon-mcp); it is not a dependency of this repository, so the endpoint is inactive here until it is added. It exposes three tool groups — docs (list/get component metadata), development (story-writing guidance, preview rendering), and testing (run story tests and accessibility checks). Requires a running Storybook dev server or a self-hosted Node.js server with generated manifests.
 
-- [Storybook 10.3 changelog](https://github.com/storybookjs/storybook/blob/main/CHANGELOG.md#1030)
-- [npm package](https://www.npmjs.com/package/@storybook/mcp)
+- [Storybook changelog](https://github.com/storybookjs/storybook/blob/main/CHANGELOG.md)
+- [npm package](https://www.npmjs.com/package/@storybook/addon-mcp)
 - [Storybook MCP docs](https://storybook.js.org/docs/next/ai/mcp/overview/)
 
 ### Fluent UI LLMs extractor (`@fluentui/storybook-llms-extractor`)
