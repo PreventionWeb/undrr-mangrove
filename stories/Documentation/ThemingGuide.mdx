@@ -14,15 +14,18 @@ import TableOfContents from '../Components/TableOfContents/TableOfContents';
 
 # Theming guide
 
-Mangrove ships five built-in themes. Each theme overrides CSS custom properties at runtime by applying a `.mg-theme-{name}` selector block to change colors, border radii, spacing, and component-level styling. This page explains how the system works, documents every overridable token, and walks through creating a new theme.
+Mangrove ships five built-in themes. Colour, spacing, radius and component tokens are CSS custom properties, so a theme is a block of property overrides that takes effect the moment you add its class — no rebuild. This page explains the token system, shows the override that works in 2.0, and walks through building a new theme.
 
 <TableOfContents
   title="On this page"
   tocData={[
     { id: 'built-in-themes', text: 'Built-in themes' },
-    { id: 'how-theming-works', text: 'How theming works' },
-    { id: 'design-tokens-reference', text: 'Design tokens reference' },
+    { id: 'two-token-systems', text: 'Two token systems' },
+    { id: 'how-to-override-a-token', text: 'How to override a token' },
+    { id: 'token-shapes-channels-vs-colours', text: 'Token shapes: channels vs colours' },
+    { id: 'where-the-token-values-live', text: 'Where the token values live' },
     { id: 'creating-a-new-theme', text: 'Creating a new theme' },
+    { id: 'migrating-1x-overrides', text: 'Migrating 1.x overrides' },
     { id: 'rtl-considerations', text: 'RTL considerations' },
   ]}
   showNumbers={false}
@@ -30,256 +33,180 @@ Mangrove ships five built-in themes. Each theme overrides CSS custom properties 
 
 ## Built-in themes
 
-| Theme | File | Primary color | Use case |
-|-------|------|---------------|----------|
-| **Global UNDRR** | `style.scss` | `#004f91` (blue-900) | Default theme for undrr.org and general UNDRR properties |
-| **PreventionWeb** | `style-preventionweb.scss` | `#0a6969` (teal) | preventionweb.net knowledge platform |
-| **IRP** | `style-irp.scss` | `#0f78bf` (bright blue) | International Recovery Platform |
-| **MCR2030** | `style-mcr.scss` | `#591a61` (purple) | Making Cities Resilient 2030 campaign |
-| **DELTA Resilience** | `style-delta.scss` | `#132e48` (dark navy) | deltaresilience.org standalone app |
+| Theme | Stylesheet | Body class | Interactive colour |
+|-------|-----------|------------|--------------------|
+| **Global UNDRR** | `style.css` | none — the `:root` default | `#004f91` |
+| **PreventionWeb** | `style-preventionweb.css` | `mg-theme-preventionweb` | `#0a6969` |
+| **IRP** | `style-irp.css` | `mg-theme-irp` | `#0f78bf` |
+| **MCR2030** | `style-mcr.css` | `mg-theme-mcr` | `#591a61` |
+| **DELTA Resilience** | `style-delta.css` | `mg-theme-delta` | `#004f91` |
 
-The Global UNDRR theme uses the defaults defined in `_variables.scss`. The other themes each have a `_theme-{name}.scss` file that overrides CSS custom properties at runtime using a `.mg-theme-{name} { }` selector block.
+A sub-brand stylesheet carries both the `:root` defaults and its own `.mg-theme-*` block. **The class is what activates the brand** — without it, components render in the default UNDRR palette. `style-all.css` carries every brand block at once, for pages that host more than one brand or switch brand at runtime. Load one Mangrove stylesheet per page; two bundles fight over the same `:root` globals.
+
+DELTA's interactive colour is UNDRR blue by design: alpha.3 replaced the navy Mangrove had been using with DELTA's real sourced palette. See [DELTA's palette is corrected](/docs/getting-started-release-notes-v2-0--docs) in the v2.0 release notes.
 
 ### Legacy 10px root (removed in 2.0)
 
 The `-legacy` theme variants and the 10px root font-size they preserved were removed in Mangrove 2.0. Mangrove now assumes a standard 16px document root and ships only the standard themes. Sites migrating off the old 10px root must serve a 16px root and convert their own rem-based CSS to a 16px basis — see the [v2.0 release notes](/docs/getting-started-release-notes-v2-0--docs) (breaking change #5).
 
-## How theming works
+## Two token systems
 
-### CSS custom property overrides
+Mangrove has two, and the split is deliberate.
 
-Mangrove's theming uses CSS custom properties overridden at runtime via a `.mg-theme-{name}` selector block. Color and spacing tokens are defined as CSS custom properties in the compiled output. Each theme file (`_theme-{name}.scss`) contains a single selector block that reassigns the relevant properties. Applying the class to `<body>` or a wrapping element activates the theme immediately — no CSS rebuild is needed.
+**CSS custom properties — everything a theme restyles.** Colour, spacing, radius, border, shadow, opacity and every component token (`--mg-color-*`, `--mg-spacing-*`, `--mg-radius-*`, …). Components read them at runtime, so a theme changes them by re-declaring them under a selector. That is what makes brand switching possible without a rebuild, and what makes a single component stylesheet serve five brands.
 
-All five compiled stylesheets share the same SCSS compilation pipeline. The theme selector block is included via `@import "./theme-{name}"` in each theme's entry point. Because the override rules sit inside a more specific selector, they take precedence over the base custom property definitions.
+**SCSS variables — the handful that cannot be resolved at runtime.** A `@media` query cannot read `var()`, so breakpoints have to be static at compile time. Neither can `@if`, `@font-face`, or interpolation into a selector. These are the survivors, and the whole list:
 
-The import order inside each theme entry point:
+| Variable | Why it stays SCSS |
+|----------|-------------------|
+| `$mg-breakpoint-mobile`, `$mg-breakpoint-tablet`, `$mg-breakpoint-desktop`, `$mg-breakpoint-desktop-wide` | `@media` needs a static value |
+| `$mg-font-size-100` … `$mg-font-size-1100` (12 steps) | interpolated and passed to Sass functions at compile time |
+| `$mg-font-body`, `$mg-font-tag`, `$mg-font-line-height-500`, `$mg-font-line-height-700` | aliases over the type scale |
+| `$mg-font-family`, `$mg-font-family-condensed`, `$mg-font-family-headings`, `$mg-font-family-icons`, `$mg-font-family-arabic-headings`, `$mg-font-family-arabic-body` | resolved at compile time |
+| `$mg-html-font-size` | the rem anchor `mg-rem()` divides by; fixed at `16` in 2.0 and no longer overridable |
+| `$mg-tabs-border-bottom` | drives an `@if`, which is compile-time |
 
-**Base theme** (`style.scss`) — uses defaults only:
+Anything else you remember as a `$mg-*` variable — every `$mg-color-*`, `$mg-spacing-*`, `$mg-radius-*`, `$mg-width-*` and component variable — no longer exists. Referencing one fails the build. **Assigning one does nothing at all**, which is the dangerous case, so `_variables.scss` emits a Sass `@warn` for the names consumers are known to set:
 
-```scss
-@import "./variables";       // Build-time SCSS tokens (breakpoints, font sizes, families)
-@import "./fonts";
-@import "./breakpoints";
-@import "./mixins";
-@import "./utility";
-@import "./foundational";
-@import "./components";
-```
+`$mg-color-interactive`, `$mg-color-interactive-active`, `$mg-color-button-background`, `$mg-color-button-background--hover`, `$mg-border-color-button`, `$mg-color-tag`, `$mg-color-form-check`, `$mg-color-form-focus`, `$mg-color-hero--secondary`, `$mg-spacing-150`, `$mg-spacing-300`.
 
-**Themed variant** (e.g. `style-preventionweb.scss`) — base imports plus theme selector block:
+Overriding a variable *not* on that list gets no warning and no effect. Watch your Sass build log, and treat "my brand colour reverted to UNDRR blue and the build was green" as the signature of this mistake.
 
-```scss
-@import "./variables";          // Build-time SCSS tokens
-@import "./theme-preventionweb"; // .mg-theme-preventionweb { } CSS custom property overrides
-@import "./fonts";
-@import "./breakpoints";
-@import "./mixins";
-@import "./utility";
-@import "./foundational";
-@import "./components";
-```
+## How to override a token
 
-`_theme-preventionweb.scss` contains a `.mg-theme-preventionweb { }` block that reassigns the CSS custom properties for interactive colors, buttons, tags, forms, hero, and tabs. Applying `class="mg-theme-preventionweb"` to `<body>` activates those overrides for the entire page.
-
-**Build-time-only tokens** (breakpoints, font sizes, font families, `$mg-html-font-size`, `$mg-tabs-border-bottom`) remain as SCSS `!default` variables and are resolved at compile time. These are not overridable at runtime via CSS custom properties.
-
-### What each theme overrides
-
-All non-default themes follow the same pattern: set a primary brand color, then reassign the interactive, button, tag, form, hero, and tab tokens to use that color.
-
-**PreventionWeb** (`_theme-preventionweb.scss`):
-- Primary: `$pw-color-primary: #0a6969`
-- Rounded buttons and tab corners (`$mg-radius-button: $mg-spacing-50`)
-- Button hover uses Sendai orange (`$sendai-orange-900`)
-- Hero overlay spacing (`$mg-spacing-hero-overlay: mg-rem(20) 0`)
-
-**IRP** (`_theme-irp.scss`):
-- Primary: `$irp-color-primary: #0f78bf`
-- Accent green: `rgb(140 198 63)` used for tab backgrounds
-- Rounded form inputs and tags (`$mg-radius-form-input: $mg-spacing-50`, `$mg-radius-tag: $mg-spacing-50`)
-
-**MCR2030** (`_theme-mcr.scss`):
-- Primary: `$mcr-color-purple: #591a61`
-- Secondary green: `rgb(10 105 105)` and orange from Sendai palette
-- Pill-shaped buttons (`$mg-radius-button: $mg-spacing-300`, `$mg-padding-button: $mg-spacing-150 $mg-spacing-300`)
-- Heavier button border (`$mg-border-width-button: 2px`)
-- Larger button text (`$mg-font-size-button: $mg-font-size-400`)
-- Elevated tab sections with box shadow and rounded corners
-- Fully rounded tag corners (`$mg-radius-tag: $mg-spacing-100`)
-- Rounded form inputs (`$mg-radius-form-input: $mg-spacing-100`)
-
-**DELTA Resilience** (`_theme-delta.scss`):
-- Primary interactive: `$delta-color-primary: #132e48` (dark navy, used for links and buttons)
-- Outline-style buttons: transparent background, blue border/text, 2px border, 8px radius
-- Tinted card backgrounds: `$delta-color-card-bg` (#fafafa) with `$mg-spacing-150` padding and rounded corners
-- Red accent: `$delta-color-red: #b52a32`
-- 6 pastel accent colors for feature card icons (design-system semantics TBD)
-- Dark near-black for CTA banner sections (`$delta-color-dark: #181823`)
-- Rounded tags, tabs, and form inputs (`$mg-radius-*: $mg-spacing-50`)
-- Hero overlay spacing (`$mg-spacing-hero-overlay: mg-rem(20) 0`)
-- No font override needed (Mangrove already defaults to Roboto)
-
-## Design tokens reference
-
-Every variable below is declared with `!default` in `stories/assets/scss/_variables.scss` and can be overridden by a theme.
-
-### Interactive colors
-
-| Token | Default value | Purpose |
-|-------|---------------|---------|
-| `$mg-color-interactive` | `$mg-color-blue-900` (`#004f91`) | Primary interactive color (links, buttons, tags) |
-| `$mg-color-interactive-active` | `$mg-color-blue-700` (`#3372a7`) | Active/pressed state |
-
-Focus rings do not come from `$mg-color-interactive`. They read `--mg-color-focus-ring` (`--mg-color-gold-800`, `#866200`), with `--mg-color-focus-ring-inverse` for dark surfaces. All four themes use the same ring colour so the indicator does not weaken when a theme changes its brand colour.
-
-### Shared variant accent colors
-
-Used by hero, cards, and other components that support color variants.
-
-| Token | Default value | Purpose |
-|-------|---------------|---------|
-| `$mg-color-secondary` | `$mg-color-orange-800` (`#ed833f`) | Secondary variant accent |
-| `$mg-color-tertiary` | `$mg-color-neutral-900` (`#000`) | Tertiary variant accent |
-| `$mg-color-quaternary` | `$mg-color-red-800` (`#c72236`) | Quaternary variant accent |
-
-### Tag tokens
-
-| Token | Default value | Purpose |
-|-------|---------------|---------|
-| `$mg-color-tag` | `$mg-color-interactive` | Tag text/border color |
-| `$mg-color-tag--hover` | `$mg-color-interactive-active` | Tag hover color |
-| `$mg-color-tag-secondary` | `$mg-color-neutral-500` | Secondary tag color |
-| `$mg-color-tag-secondary--hover` | `$mg-color-neutral-600` | Secondary tag hover |
-| `$mg-color-tag-accent` | `$mg-color-orange-900` | Accent tag color |
-| `$mg-color-tag-accent--hover` | `$mg-color-orange-800` | Accent tag hover |
-| `$mg-radius-tag` | `$mg-spacing-0` (0) | Tag border radius |
-
-### Button tokens
-
-| Token | Default value | Purpose |
-|-------|---------------|---------|
-| `$mg-color-button` | `$mg-color-white` | Button text color |
-| `$mg-color-button--hover` | `$mg-color-white` | Button text hover color |
-| `$mg-color-button-background` | `$mg-color-interactive` | Button background |
-| `$mg-color-button-background--hover` | `$mg-color-interactive-active` | Button hover background |
-| `$mg-radius-button` | `$mg-spacing-0` (0) | Button border radius |
-| `$mg-border-width-button` | `1px` | Button border width |
-| `$mg-color-text-button` | `$mg-color-white` | Button text (used by border color) |
-| `$mg-border-color-button` | `$mg-color-text-button` | Button border color |
-| `$mg-color-button-secondary-background` | `$mg-color-blue-800` (`#1a619c`) | Secondary button background |
-| `$mg-color-button-secondary-background--hover` | `$mg-color-blue-700` (`#3372a7`) | Secondary button hover background |
-| `$mg-padding-button` | `$mg-spacing-100 $mg-spacing-150` | Button padding |
-| `$mg-font-size-button` | `$mg-font-size-250` (14px) | Button font size |
-
-`--mg-color-button-background`, `--mg-color-button-background--hover` and `--mg-border-color-button` hold a full colour, not a channel triplet. Overrides must wrap a triplet token in `rgb()`.
-
-### Card tokens
-
-| Token | Default value | Purpose |
-|-------|---------------|---------|
-| `$mg-card-background` | `none` | Card container background (set to a color for tinted cards) |
-| `$mg-card-padding` | `0` | Card container padding |
-| `$mg-card-border-radius` | `0` | Card container border radius |
-| `$mg-card-icon-badge-radius` | `20%` | Icon badge border radius (rounded square by default; Delta uses `15%`) |
-
-### Form tokens
-
-| Token | Default value | Purpose |
-|-------|---------------|---------|
-| `$mg-color-form-check` | `$mg-color-interactive` | Checkbox/radio color |
-| `$mg-color-form-check--hover` | `$mg-color-interactive-active` | Checkbox/radio hover |
-| `$mg-color-form-check--checked` | `$mg-color-interactive` | Checkbox/radio checked state |
-| `$mg-color-form-focus` | `$mg-color-interactive` | Border color of a focused input (the ring itself is `--mg-color-focus-ring`) |
-| `$mg-radius-form-input` | `$mg-spacing-0` (0) | Input border radius |
-
-### Hero tokens
-
-| Token | Default value | Purpose |
-|-------|---------------|---------|
-| `$mg-color-hero` | `$mg-color-interactive` | Hero background overlay color |
-| `$mg-color-hero--secondary` | `$mg-color-secondary` | Hero secondary variant |
-| `$mg-color-hero--tertiary` | `$mg-color-tertiary` | Hero tertiary variant |
-| `$mg-color-hero--quaternary` | `$mg-color-quaternary` | Hero quaternary variant |
-| `$mg-opacity-hero` | `0.85` | Hero overlay opacity |
-| `$mg-color-hero-title` | `$mg-color-neutral-0` (white) | Hero title text color |
-| `$mg-spacing-hero-overlay` | `0` | Hero overlay padding |
-| `$mg-hero-overlay-max-width` | `$mg-width-400` | Hero overlay max width |
-| `$mg-hero-overlay-padding` | `$mg-spacing-200` | Hero overlay inner padding |
-| `$mg-color-hero-button-secondary-background` | `rgba($mg-color-neutral-0, 0.9)` | Hero secondary button background |
-| `$mg-color-hero-button-secondary-color` | `$mg-color-hero` | Hero secondary button text color |
-| `$mg-border-color-hero-button-secondary` | `$mg-color-neutral-0` (white) | Hero secondary button border color |
-
-### CTA tokens
-
-| Token | Default value | Purpose |
-|-------|---------------|---------|
-| `$mg-cta-padding` | `$mg-spacing-400 0` | CTA banner vertical padding |
-
-### Tab tokens
-
-| Token | Default value | Purpose |
-|-------|---------------|---------|
-| `--mg-color-tabbar-background` | `rgb(var(--mg-color-blue-50))` | Tab bar container background |
-| `--mg-color-tab-background` | `rgb(var(--mg-color-blue-200))` | Active tab background |
-| `--mg-color-tab-background--inactive` | `rgb(var(--mg-color-blue-50))` | Inactive tab background |
-| `--mg-color-tab-background--hover` | `rgb(var(--mg-color-blue-800))` | Tab hover background |
-| `--mg-color-tab-border` | `rgb(var(--mg-color-neutral-700))` | Tab border color |
-| `--mg-color-tab-border--hover` | `rgb(var(--mg-color-neutral-900))` | Tab border hover |
-| `--mg-color-tab-border--active` | `rgb(var(--mg-color-blue-800))` | Active tab border |
-| `--mg-radius-tab` | `var(--mg-spacing-0)` | Tab border radius |
-| `--mg-padding-tab` | `var(--mg-spacing-75) var(--mg-spacing-150)` | Tab padding |
-| `--mg-color-text-tab` | `rgb(var(--mg-color-neutral-700))` | Tab text color |
-| `--mg-color-text-tab--hover` | `rgb(var(--mg-color-neutral-0))` | Tab text hover color |
-| `--mg-color-text-tab-active` | `rgb(var(--mg-color-neutral-700))` | Active tab text color |
-| `$mg-color-tab-section-background` | `$mg-color-neutral-0` (white) | Tab content section background |
-| `$mg-padding-tab-section` | `$mg-spacing-100 $mg-spacing-0` | Tab content section padding |
-| `$mg-radius-tab-section` | `$mg-spacing-0` (0) | Tab content section border radius |
-| `$mg-box-shadow-tab-section` | `none` | Tab content section shadow |
-| `$mg-tabs-border-bottom` | `true` | Whether tabs have a bottom border |
-
-## Creating a new theme
-
-### Step 1: Create a theme selector file
-
-Create `stories/assets/scss/_theme-mytheme.scss`. Set only the CSS custom properties you want to change inside a `.mg-theme-mytheme { }` selector block. Everything else inherits from the base custom property definitions.
+Set the custom property inside a selector. Use `:root` to change every brand on the page, or a `.mg-theme-*` block to change one.
 
 ```scss
-// _theme-mytheme.scss
+// Globally, for the whole document
+:root {
+  --mg-color-interactive: 46 125 50;
+}
 
-.mg-theme-mytheme {
-  // Define your brand color
-  --mg-color-interactive: 44, 95, 45;        // #2c5f2d as RGB channel values
-  --mg-color-interactive-active: 30, 68, 31;
-
-  // Override component tokens
-  --mg-color-tag: var(--mg-color-interactive);
-  --mg-color-tag--hover: var(--mg-color-interactive-active);
-  // Button background tokens hold a full colour, not a channel triplet,
-  // so wrap the triplet in rgb().
-  --mg-color-button-background: rgb(var(--mg-color-interactive));
-  --mg-color-button-background--hover: rgb(var(--mg-color-interactive-active));
-  --mg-radius-button: var(--mg-spacing-50);
-
-  // Form elements
-  --mg-color-form-check: var(--mg-color-interactive);
-  --mg-color-form-check--hover: var(--mg-color-interactive-active);
-  --mg-color-form-check--checked: var(--mg-color-interactive);
-  --mg-color-form-focus: var(--mg-color-interactive);
-
-  // Hero
-  --mg-color-hero: var(--mg-color-interactive);
+// Or scoped to one brand
+.mg-theme-myorg {
+  --mg-color-interactive: 46 125 50;
 }
 ```
 
-Apply `class="mg-theme-mytheme"` to `<body>` or a wrapping element to activate the theme at runtime. No CSS rebuild is needed when switching themes.
+This is plain CSS. You can put it in a stylesheet that loads after Mangrove, in a SCSS partial you compile yourself, or in a `<style>` block — there is no import-order requirement and no rebuild of Mangrove. Semantic tokens derive from each other with live `var()` chains, so overriding `--mg-color-interactive` also moves the tag, form, hero and button colours that reference it.
 
-### Step 2: Create a style entry point
+## Token shapes: channels vs colours
 
-Create `stories/assets/scss/style-mytheme.scss`:
+**Most colour tokens hold bare RGB channels** — `--mg-color-interactive: 0 79 145` — and components wrap them at the point of use. That is what makes alpha compositing possible:
+
+```css
+color: rgb(var(--mg-color-interactive));
+background: rgb(var(--mg-color-interactive) / 0.1);
+```
+
+**Three tokens hold a complete colour instead**, because a channel triple cannot express `transparent`:
+
+- `--mg-color-button-background`
+- `--mg-color-button-background--hover`
+- `--mg-border-color-button`
+
+Assign these a finished colour, never channels:
+
+```css
+.mg-theme-myorg {
+  --mg-color-interactive: 46 125 50;                              /* channels */
+  --mg-color-button-background: rgb(var(--mg-color-interactive)); /* colour   */
+}
+```
+
+All three changed shape in `2.0.0-alpha.3`. An override still written as channels produces an invalid declaration that the browser drops silently — the symptom is buttons losing their fill. See [breaking change #7](/docs/getting-started-release-notes-v2-0--docs) in the release notes.
+
+### The focus ring is not a brand colour
+
+Focus rings do not follow `--mg-color-interactive`. They read `--mg-color-focus-ring`, which resolves to `--mg-color-gold-800` (`#866200`) in every theme, with `--mg-color-focus-ring-inverse` for dark surfaces. Focus and selection have to be distinguishable signals, so a theme changing its brand colour must not weaken the keyboard indicator. You can override the ring, but then you own its contrast against every surface it lands on.
+
+## Where the token values live
+
+Mangrove declares more than 350 distinct custom properties across the five themes. A table here would be stale within a release, so this page points at the sources instead.
+
+| To find | Look at |
+|---------|---------|
+| The authoritative value of any token | `tokens/mangrove.yaml` (brand-neutral base) and `tokens/undrr.yaml`, `tokens/preventionweb.yaml`, `tokens/irp.yaml`, `tokens/mcr.yaml`, `tokens/delta.yaml` |
+| What a theme actually emits | `stories/assets/scss/generated/_tokens-{brand}.scss`, or the `.mg-theme-{brand}` block in the compiled `stories/assets/css/style-{brand}.css` |
+| Swatches and scales you can browse | <LinkTo kind="design-decisions-colors" story="docs">Colors</LinkTo>, <LinkTo kind="design-decisions-spacing" story="docs">Spacing</LinkTo>, <LinkTo kind="design-decisions-typography" story="docs">Typography</LinkTo>, <LinkTo kind="design-decisions-widths" story="docs">Widths</LinkTo> |
+| Which token a component reads | that component's `.scss` file |
+
+The YAML sources are the truth. `yarn build:tokens` compiles them into the generated partials; `yarn scss` runs it first. Editing a generated partial is pointless — the next build overwrites it. A brand file is merged *over* the base before references resolve, so overriding one primitive cascades to everything derived from it.
+
+### The tokens you are most likely to change
+
+Verified against the compiled output. Every one is a channel triple unless marked.
+
+| Token | Controls |
+|-------|----------|
+| `--mg-color-interactive` | links, primary actions; most other colour tokens chain to it |
+| `--mg-color-interactive-active` | hover and active states |
+| `--mg-color-secondary`, `--mg-color-tertiary`, `--mg-color-quaternary` | hero and card colour variants |
+| `--mg-color-button-background`, `--mg-color-button-background--hover` | button fill (**full colour**) |
+| `--mg-border-color-button` | button border (**full colour**, may be `transparent`) |
+| `--mg-radius-button`, `--mg-radius-tag`, `--mg-radius-form-input`, `--mg-radius-tab` | corner geometry (lengths) |
+| `--mg-color-tag`, `--mg-color-tag--hover` | tag text and border |
+| `--mg-color-form-check`, `--mg-color-form-focus` | checkbox/radio colour, focused field border |
+| `--mg-color-hero`, `--mg-opacity-hero` | hero overlay colour and opacity |
+| `--mg-color-focus-ring` | keyboard focus indicator — override with care |
+
+## Creating a new theme
+
+### Step 1: Add a token source
+
+Create `tokens/myorg.yaml`. Declare the brand block, then only the tokens that differ from the base — everything else is inherited, and anything derived from what you change moves with it.
+
+```yaml
+$brand:
+  id: myorg
+  extends: undrr
+  title: My Org
+  selector: '.mg-theme-myorg'
+
+brand:
+  $type: color
+  $private: true
+  primary:
+    $value: '#2e7d32'
+    $description: The one primitive this brand states.
+
+color:
+  $type: color
+  interactive: { $value: '{=brand.primary}' }
+  interactive-active: { $value: '{=brand.primary}' }
+  # $format states the shape at the point of use — this token is consumed
+  # as a finished colour, not as channels.
+  button-background:
+    $value: '{=color.interactive}'
+    $format: srgb-rgb-function
+
+radius:
+  $type: dimension
+  button: { $value: '{spacing.50}' }
+```
+
+`{path}` emits a live `var()` chain, so the token follows whatever the referenced token becomes; `{=path}` resolves the value at build time. `$private` keeps a token out of the CSS output. The conventions are documented in the header of `tokens/mangrove.yaml`, and `tokens/preventionweb.yaml` is the shortest complete example to copy.
+
+Run `yarn build:tokens` to emit `stories/assets/scss/generated/_tokens-myorg.scss`. The generator fails the build on an unknown reference, a circular reference, a duplicate output name or a wrong token shape, so a malformed source cannot quietly produce a stylesheet with missing colours.
+
+### Step 2: Add a theme partial and an entry point
+
+`stories/assets/scss/_theme-myorg.scss` wraps the generated mixin in the brand selector:
+
+```scss
+@import "./generated/tokens-myorg";
+
+.mg-theme-myorg {
+  @include mg-tokens-tabs;
+  @include mg-tokens-myorg;
+}
+```
+
+`stories/assets/scss/style-myorg.scss` is the entry point:
 
 ```scss
 @import "./variables";
-@import "./theme-mytheme";
+@import "./theme-myorg";
 @import "./fonts";
 @import "./breakpoints";
 @import "./mixins";
@@ -288,9 +215,39 @@ Create `stories/assets/scss/style-mytheme.scss`:
 @import "./components";
 ```
 
-The `_theme-mytheme.scss` import includes the `.mg-theme-mytheme { }` selector block in the compiled output. The `.mg-theme-mytheme` class activates those overrides at runtime.
+Run `yarn scss`, then apply `class="mg-theme-myorg"` to `<body>` or any wrapping element. The class can sit on any ancestor, and different subtrees can carry different theme classes.
 
-**Contributing a new official theme to Mangrove?** After creating your override file and entry point (steps 1-2 above), you also need to register the theme in Storybook, build the CSS, and deploy to Drupal. See the <LinkTo kind="contributing-architecture" story="docs">Architecture guide</LinkTo> for the Storybook theme registration process and Drupal CSS deployment workflow.
+### Not contributing to Mangrove?
+
+If the theme belongs to your own project rather than to the library, you do not need the token pipeline at all. Write the `.mg-theme-myorg { }` block by hand in your own stylesheet, load it after Mangrove's, and skip both steps above. The pipeline exists so that *Mangrove's* brands stay in sync with a source; a consumer theme has no such source to stay in sync with.
+
+**Contributing a new official theme?** You also need to register it in Storybook, build the CSS and deploy it to Drupal. See the <LinkTo kind="contributing-architecture" story="docs">Architecture guide</LinkTo>.
+
+## Migrating 1.x overrides
+
+If you arrive with a 1.x theme, the mechanical change is this:
+
+```scss
+// 1.x — reassign the SCSS variable before importing Mangrove
+$mg-color-interactive: #2e7d32 !default;
+$mg-color-button-background: #2e7d32 !default;
+@import "@undrr/undrr-mangrove/stories/assets/scss/style";
+
+// 2.0 — declare custom properties in a selector, order irrelevant
+.mg-theme-myorg {
+  --mg-color-interactive: 46 125 50;
+  --mg-color-button-background: rgb(var(--mg-color-interactive));
+}
+```
+
+Four things to check as you go:
+
+1. **Colour values become channels.** `#2e7d32` becomes `46 125 50` — except for the three full-colour tokens [named above](#token-shapes-channels-vs-colours).
+2. **`rgba()`, `darken()`, `lighten()` and `color.adjust()` no longer work on these values.** A Sass colour function cannot take a `var()`. Use `rgb(var(--token) / 0.5)` for alpha, and a computed literal for the rest.
+3. **The sub-brand `_variables-*.scss` files are gone**, replaced by `_theme-*.scss`.
+4. **Compiled-CSS consumers of a sub-brand must add the `mg-theme-*` class**, or they get the UNDRR palette.
+
+The full list, including the 10px root removal and the button token shape change, is in the [v2.0 release notes](/docs/getting-started-release-notes-v2-0--docs).
 
 ## RTL considerations
 
@@ -316,7 +273,7 @@ Theming and RTL are independent. All five themes support RTL. When testing a the
 
 ### RTL-aware CSS patterns
 
-Mangrove uses logical properties and `[dir="rtl"]` selectors where needed. Component-level SCSS files handle their own RTL overrides where layout direction matters (e.g., chevron icons, margin directions, text alignment).
+Mangrove uses logical properties and `[dir="rtl"]` selectors where needed. Component-level SCSS files handle their own RTL overrides where layout direction matters (for example chevron icons, margin directions, text alignment).
 
 ### Burmese language adjustments
 
@@ -324,10 +281,10 @@ Burmese-specific font-size overrides (`:lang(my)`) were removed in v1.4 as they 
 
 ## Next steps
 
-- <LinkTo kind="getting-started-integration-sass-integration" story="docs">Sass integration</LinkTo> -- variable overrides and build configuration
+- <LinkTo kind="getting-started-integration-sass-integration" story="docs">Sass integration</LinkTo> -- build configuration, mixins and the surviving SCSS API
 - <LinkTo kind="getting-started-integration-cdn-reference" story="docs">CDN reference</LinkTo> -- pre-built theme CSS URLs
 - <LinkTo kind="contributing-architecture" story="docs">Architecture</LinkTo> -- Storybook theme registration and Drupal CSS deployment
 
 ---
 
-Last updated: 20 March 2026 · <a href="https://github.com/unisdr/undrr-mangrove/blob/main/stories/Documentation/ThemingGuide.mdx" target="_blank" rel="noopener noreferrer">View source on GitHub</a>
+Last updated: 3 September 2026 · <a href="https://github.com/unisdr/undrr-mangrove/blob/main/stories/Documentation/ThemingGuide.mdx" target="_blank" rel="noopener noreferrer">View source on GitHub</a>
