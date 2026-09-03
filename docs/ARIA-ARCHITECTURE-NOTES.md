@@ -1,6 +1,9 @@
 # React Aria integration: architecture notes and decision record
 
 Working notes from the PR #1080 spike and the reconciliation work that followed.
+The surface these notes describe is proposed for `2.0.0-alpha.4` in
+[PR #1088](https://github.com/unisdr/undrr-mangrove/pull/1088), stacked on the
+alpha.3 token pipeline in PR #1087.
 This is a thinking document, not a specification. It records what was decided,
 what was measured, what turned out to be wrong, and what is still open, so that
 whoever picks this up can see the reasoning rather than just the diff.
