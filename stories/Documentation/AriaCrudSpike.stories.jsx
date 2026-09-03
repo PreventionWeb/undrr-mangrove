@@ -219,8 +219,15 @@ function EventEditor({ item, onClose, onSave }) {
             it. Same pattern as the Column and Cell overrides below. */}
         <Dialog className="react-aria-Dialog aria-crud-editor">
           {() => (
-            <Form noValidate onSubmit={submit} className="aria-crud-editor">
-              <Heading slot="title" className="aria-crud-editor__title">
+            <Form
+              noValidate
+              onSubmit={submit}
+              className="react-aria-Form aria-crud-editor"
+            >
+              <Heading
+                slot="title"
+                className="react-aria-Heading aria-crud-editor__title"
+              >
                 {item ? 'Edit hazardous event' : 'Add hazardous event'}
               </Heading>
               <div className="mg-grid mg-grid__col-2 aria-crud-editor__identity">
@@ -726,7 +733,7 @@ function CrudDemo() {
           Add event
         </Button>
       </div>
-      <ResizableTableContainer className="aria-spike-table-scroll mg-u-responsive--show-large">
+      <ResizableTableContainer className="react-aria-ResizableTableContainer aria-spike-table-scroll mg-u-responsive--show-large">
         <Table
           aria-label="Hazardous events"
           selectionMode="multiple"
@@ -788,11 +795,7 @@ function CrudDemo() {
             renderEmptyState={() => 'No results. Try changing the filters.'}
           >
             {item => (
-              <Row
-                className={
-                  selected.has(item.id) ? 'aria-spike-row-selected' : undefined
-                }
-              >
+              <Row>
                 <Cell className="react-aria-Cell aria-crud-selection-cell">
                   <Checkbox
                     slot="selection"
@@ -892,7 +895,7 @@ function CrudDemo() {
         </Table>
       </ResizableTableContainer>
       <GridList
-        className="mg-u-responsive--show-small aria-crud-list"
+        className="react-aria-GridList mg-u-responsive--show-small aria-crud-list"
         aria-label="Hazardous events"
         items={pageItems}
       >
