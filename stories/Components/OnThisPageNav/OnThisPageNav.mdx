@@ -318,7 +318,7 @@ The component supports RTL layouts automatically:
 
 - The nav list scrolls right-to-left via CSS flexbox and `overflow-x`
 - The CTA button pins to the left (logical end) via `margin-inline-start: auto`
-- Arabic headings use the Noto Kufi Arabic font family (`:lang(ar)` override)
+- Arabic headings use the Dubai font family (`:lang(ar)` override)
 - Scroll buttons use direction-neutral labels ("Previous navigation items" / "Next navigation items") and RTL-aware `scrollBy` direction; `getComputedStyle(list).direction` maps which button shows for which overflow direction in RTL
 - **Known open item**: the `mask-image` trailing-edge gradient uses a physical `to right` direction and does not auto-flip in RTL (items scrolled off the right edge in RTL have no fade). A follow-up fix will use logical values or a separate RTL rule
 

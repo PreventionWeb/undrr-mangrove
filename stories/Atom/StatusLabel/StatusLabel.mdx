@@ -55,7 +55,7 @@ Two of the four colours were already in Mangrove: `--mg-color-accent-100` is `#f
 ## Accessibility
 
 - **SC 1.4.1 Use of colour.** The status name is always rendered as text, so the indicator is reinforcement, never the message. Do not build an indicator-only variant.
-- **SC 1.4.3 Contrast (minimum).** The label text resolves to `--mg-color-text` (`#1a1a1a`), 17.40:1 on a white page and 15.55:1 on a tinted panel.
+- **SC 1.4.3 Contrast (minimum).** The label text resolves to `--mg-color-text` (`#1a1a1a`), 17.40:1 on a white page and 15.63:1 on a tinted panel.
 - **SC 1.4.11 Non-text contrast.** The four indicator fills are 1.28:1 (draft), 1.63:1 (waiting for validation), 2.24:1 (waiting for more information) and 6.49:1 (published) against white. Three of the four would be close to invisible unbounded, so every indicator carries a 1px `--mg-color-neutral-500` ring at 5.74:1. Because the dots are decorative the ring is not strictly required by 1.4.11, but without it the component looks broken on a white page. Set `--mg-status-label-indicator-border-width: 0` to remove it.
 - **Grouping.** When several statuses appear together as a legend, use `.mg-status-label-group` on a `<ul>` so screen readers announce the count.
 - **RTL.** The component is laid out with flex and logical properties. The indicator moves to the right of the text under `dir="rtl"` with no extra CSS.

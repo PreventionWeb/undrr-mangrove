@@ -10,16 +10,19 @@ WCAG 2 compares *relative luminance*, which is not perceptually uniform, so one
 ratio can describe two pairs that are visibly different to read. It is weakest
 where design systems spend their time: mid-tones, warm hues, light-on-dark.
 
-Mangrove's orange accent, `#eb752a`:
+A label on Mangrove's orange accent, `#eb752a`:
 
-| Pair | WCAG 2 | Oklab | |
+| Label | WCAG 2 | Oklab | APCA |
 | --- | --- | --- | --- |
-| white on orange-900 | 2.95 | 46.7 | both fail |
-| **black on orange-900** | **7.11** | **57.4** | **they disagree** |
+| white | 2.95 | 46.7 | Lc 60.8 |
+| **black** | **7.11** | **57.4** | **Lc 48.6** |
 
-WCAG 2 rates black-on-orange a comfortable pass; perceptually it sits below the
-body-text threshold. So "flip the label to dark text" satisfies WCAG 2 and still
-leaves text that is hard to read at body size.
+WCAG 2 rates black-on-orange a comfortable pass; this measure puts it under the
+63 body-text threshold. So "flip the label to dark text" satisfies WCAG 2 and
+still leaves text hard to read at body size. Note the limit on display too: this
+measure is polarity-insensitive, so it ranks black above white, while APCA,
+which models polarity, prefers white. The disagreement is the useful output; the
+ranking is not.
 
 ## Why not APCA
 
@@ -51,8 +54,13 @@ render them. No licence, patent, trademark or attribution requirement.
 
 ## The measure
 
-Contrast is the difference in Oklab lightness, shaped by a perceptual-difference
-curve and scaled to roughly 0-100. See `scripts/lib/perceptual-contrast.cjs`.
+Contrast is the difference in Oklab lightness, put through a power curve —
+`|L₂^φ − L₁^φ|^(1/φ)` — and shifted onto a roughly 0-100 scale
+(`scripts/lib/perceptual-contrast.cjs`). It is **a local invention, not a
+published measure**: the curve has no standard form behind it, its scale and
+offset are only what the two anchors below solve to (1.408 and 39.61, shipped
+rounded to √2 and 40), and a `NORM` term moves the result by 0.035%. Only the
+calibration is load-bearing.
 
 Thresholds are **calibrated, not asserted** — anchored to the two boundaries the
 field already agrees on:
@@ -64,12 +72,13 @@ field already agrees on:
 
 A pair WCAG 2 puts precisely on a boundary lands on the same boundary here, so
 the two diverge only where WCAG 2 is unreliable. Adopting this does not silently
-re-baseline decisions already taken.
+re-baseline decisions already taken. Both anchors are grey on white, so nothing
+calibrates the measure on dark backgrounds; treat those scores as indicative.
 
 ## Limitations
 
-- **Polarity-insensitive.** Dark-on-light and light-on-dark score the same;
-  perception is not symmetric. APCA models this and we do not.
+- **Polarity-insensitive**, so dark-on-light and light-on-dark score the same,
+  and nothing calibrates it on dark surfaces. APCA models polarity; we do not.
 - **Not size or weight aware** beyond the coarse large-text threshold.
 - **Assumes sRGB** and an ordinary viewing environment.
 - It is a model. Where a decision is marginal, the answer is a person reading

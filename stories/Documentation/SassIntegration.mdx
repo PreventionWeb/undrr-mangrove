@@ -160,6 +160,8 @@ These define the palette and are not overridden per-theme. Override them if you 
 | `$mg-padding-button` | `$mg-spacing-100 $mg-spacing-150` |
 | `$mg-font-size-button` | `$mg-font-size-250` (14px) |
 
+`--mg-color-button-background`, `--mg-color-button-background--hover` and `--mg-border-color-button` hold a full colour, not a channel triplet. Overrides must wrap a triplet token in `rgb()`.
+
 ### Form variables (`!default`)
 
 | Variable | Default value |
@@ -263,7 +265,7 @@ Used by hero, cards, and other components for color variants.
 | `$mg-font-family-condensed` | `"Roboto Condensed", sans-serif` |
 | `$mg-font-family-headings` | `$mg-font-family-condensed` (alias for heading contexts; `!default`) |
 | `$mg-font-family-icons` | `"fontawesome"` |
-| `$mg-font-family-arabic-headings` | `"Noto Kufi Arabic", sans-serif` |
+| `$mg-font-family-arabic-headings` | `"Dubai", sans-serif` |
 | `$mg-font-family-arabic-body` | `"Dubai", sans-serif` |
 
 ### Breakpoints
@@ -404,8 +406,8 @@ And `_theme-preventionweb.scss` overrides the custom properties that differ:
 .mg-theme-preventionweb {
   --mg-color-interactive: 10, 105, 105;       // #0a6969 as RGB channel values
   --mg-color-interactive-active: 10, 105, 105;
-  --mg-color-button-background: var(--mg-color-interactive);
-  --mg-color-button-background--hover: /* sendai orange */;
+  --mg-color-button-background: rgb(var(--mg-color-interactive));
+  --mg-color-button-background--hover: rgb(var(--mg-color-orange-900)); // sendai orange
   --mg-radius-button: var(--mg-spacing-50);
   // ...
 }
@@ -429,9 +431,10 @@ To create your own theme, write a theme selector file and a theme entry point th
   --mg-color-interactive: 46, 125, 50;        // #2e7d32
   --mg-color-interactive-active: 27, 94, 32;  // darken(#2e7d32, ~10%)
 
-  // Override button styling
-  --mg-color-button-background: var(--mg-color-interactive);
-  --mg-color-button-background--hover: var(--mg-color-interactive-active);
+  // Override button styling. The button background and border tokens hold a
+  // full colour rather than a channel triplet, so wrap the triplet in rgb().
+  --mg-color-button-background: rgb(var(--mg-color-interactive));
+  --mg-color-button-background--hover: rgb(var(--mg-color-interactive-active));
   --mg-radius-button: var(--mg-spacing-50);
 
   // Override tag colors

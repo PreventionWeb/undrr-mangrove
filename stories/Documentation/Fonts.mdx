@@ -75,24 +75,26 @@ When content is marked with a language attribute (e.g., `lang="ar"`), CSS `:lang
 
 ### Supported languages
 
-| Language | Selector    | Font override                             |
-| -------- | ----------- | ----------------------------------------- |
-| Arabic   | `:lang(ar)` | Noto Kufi Arabic (headings), Dubai (body) |
+| Language | Selector    | Font override                  |
+| -------- | ----------- | ------------------------------ |
+| Arabic   | `:lang(ar)` | Dubai (headings and body text) |
 
 ---
 
 ## Arabic fonts
 
-Arabic content uses dedicated fonts optimized for Arabic script, replacing Roboto which lacks proper Arabic character support.
+Arabic content uses a dedicated font, Dubai, which covers the Arabic script that Roboto and Roboto Condensed do not.
 
 ### Font usage
 
-| Purpose          | Font             | Weight   | Variable                          |
-| ---------------- | ---------------- | -------- | --------------------------------- |
-| Headings (h1-h6) | Noto Kufi Arabic | 700 only | `$mg-font-family-arabic-headings` |
-| Body text        | Dubai            | 400      | `$mg-font-family-arabic-body`     |
+| Purpose          | Font  | Weight   | Variable                          |
+| ---------------- | ----- | -------- | --------------------------------- |
+| Headings (h1-h6) | Dubai | 400, 700 | `$mg-font-family-arabic-headings` |
+| Body text        | Dubai | 400, 700 | `$mg-font-family-arabic-body`     |
 
-> **Note**: Noto Kufi Arabic is only available in 700 (Bold) weight, which is appropriate for headings. Dubai is used for body text at regular weight.
+> **Note**: Arabic used to pair Noto Kufi Arabic headings with Dubai body text. That was two typefaces and two downloads doing one job, so Mangrove now sets Dubai for both. Only Regular (400) and Bold (700) are published upstream, so Arabic has a two-step weight ladder where Latin has a full one. Nothing is faux-bolded: the `600` used in `_foundational.scss` resolves up to the real Bold face.
+>
+> Dubai's own licence is unresolved for this use. The EULA requires the font to be embedded so an end user cannot extract it, and forbids redistribution; Mangrove serves a plain WOFF2 from an open CDN, referenced by an Apache-2.0 library. This needs a legal read, not a design one. Tracked in [#1089](https://github.com/unisdr/undrr-mangrove/issues/1089).
 
 ### Implementation
 
@@ -109,12 +111,12 @@ To see Arabic fonts in action, [view the Hero component with Arabic locale](?pat
 
 ### Arabic font sources
 
-> **Note**: Fonts are temporarily served from the testing CDN during development. Before production release, update paths to use `/static/fonts/` instead of `/testing/static/fonts/`.
+| Font  | Weight        | CDN path                                                      |
+| ----- | ------------- | ------------------------------------------------------------- |
+| Dubai | 400 (Regular) | `https://assets.undrr.org/static/fonts/dubai/v1.0.0/Regular/` |
+| Dubai | 700 (Bold)    | `https://assets.undrr.org/static/fonts/dubai/v1.0.0/Bold/`    |
 
-| Font             | Weight        | CDN Path                                                                      |
-| ---------------- | ------------- | ----------------------------------------------------------------------------- |
-| Noto Kufi Arabic | 700 (Bold)    | `https://assets.undrr.org/testing/static/fonts/noto-kufi-arabic/v1.0.0/Bold/` |
-| Dubai            | 400 (Regular) | `https://assets.undrr.org/testing/static/fonts/dubai/v1.0.0/Regular/`         |
+Light and Medium are not declared: they return 404 on the CDN.
 
 **Font formats**: WOFF2 and WOFF formats are served for optimal browser compatibility and compression.
 

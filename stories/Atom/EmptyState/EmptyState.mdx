@@ -77,8 +77,8 @@ The alternative, replacing the whole table with a `<div>`, also works and is sim
 
 ### Other notes
 
-- **SC 1.4.3 Contrast.** The title resolves to `--mg-color-text` (17.40:1 on white, 15.55:1 on the tinted panel). The description resolves to `--mg-color-neutral-500` (5.74:1 and 5.13:1).
-- **SC 1.4.11 Non-text contrast.** The glyph is decorative and is always accompanied by text, so it is exempt — but `--mg-empty-state-media-color` is `--mg-color-neutral-400` (3.95:1 on white, 3.53:1 on the panel) so it clears the threshold anyway.
+- **SC 1.4.3 Contrast.** The title resolves to `--mg-color-text` (17.40:1 on white, 15.63:1 on the tinted panel). The description resolves to `--mg-color-neutral-500` (5.74:1 and 5.16:1).
+- **SC 1.4.11 Non-text contrast.** The glyph is decorative and is always accompanied by text, so it is exempt — but `--mg-empty-state-media-color` is `--mg-color-neutral-400` (3.96:1 on white, 3.56:1 on the panel) so it clears the threshold anyway.
 - **The glyph is decoration.** Give it `aria-hidden="true"` and `focusable="false"`. It must never be the only thing that says the list is empty.
 - **Actions.** The action slot takes ordinary `.mg-button` markup, so focus rings, hit targets and hover states are inherited rather than reimplemented.
 - **RTL.** Logical properties throughout. `--start` aligns to the inline start, so it is left-aligned in English and right-aligned in Arabic.
@@ -91,8 +91,8 @@ Layout and the compact variant come from the DELTA design system boards **"Empty
 
 Two values were deliberately not reproduced:
 
-- The boards set "No data" in **black at 25% opacity**, which is 1.6:1 against white and fails SC 1.4.3 outright. `--mg-empty-state-text-color` is `--mg-color-neutral-500` (5.74:1), the nearest existing Mangrove token that clears 4.5:1.
-- The boards draw the glyph at `#d9d9d9` (1.5:1). `--mg-empty-state-media-color` is `--mg-color-neutral-400` (3.95:1).
+- The boards set "No data" in **black at 25% opacity**, which composites to `#bfbfbf`, 1.84:1 against white, and fails SC 1.4.3 outright. `--mg-empty-state-text-color` is `--mg-color-neutral-500` (5.74:1), the nearest existing Mangrove token that clears 4.5:1.
+- The boards draw the glyph at `#d9d9d9` (1.41:1). `--mg-empty-state-media-color` is `--mg-color-neutral-400` (3.96:1).
 
 The action slot has no counterpart on the boards, which show message-only empty states. It is added here because an empty state a user cannot act on is a dead end; it is optional, and omitting it reproduces the Figma exactly.
 
