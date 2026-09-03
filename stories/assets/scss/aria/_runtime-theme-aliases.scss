@@ -125,7 +125,6 @@
   --mg-aria-space-2: var(--mg-spacing-100);
   --mg-aria-space-3: var(--mg-spacing-150);
   --mg-aria-space-4: var(--mg-spacing-200);
-  --mg-aria-radius: var(--mg-radius-form-input);
   --mg-aria-radius-button: var(--mg-radius-button);
   --mg-aria-radius-control: var(--mg-radius-form-input);
   --mg-aria-radius-surface: var(--mg-card-border-radius);
@@ -166,10 +165,6 @@
   --mg-aria-color-focus-ring: rgb(var(--mg-color-focus-ring));
   --mg-aria-focus-width: var(--mg-focus-ring-width);
   --mg-aria-focus-offset: var(--mg-focus-ring-offset);
-  --mg-aria-shadow:
-    0 0 0 var(--mg-aria-focus-offset) var(--mg-aria-color-surface),
-    0 0 0 calc(var(--mg-aria-focus-offset) + var(--mg-aria-focus-width))
-      var(--mg-aria-color-focus-ring);
   --mg-aria-surface-shadow: var(--mg-shadow-raised);
   --mg-aria-surface-shadow-hover: var(--mg-shadow-raised-hover);
   /* The elevation ladder: card (inset rule) -> popover -> modal.

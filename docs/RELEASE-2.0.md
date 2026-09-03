@@ -88,7 +88,7 @@ These are known and deliberately unfinished in alpha.3:
 - The accent ramp is the largest remaining accessibility debt and is the reason most of the 48 WCAG exceptions exist. Retuning it is a brand decision.
 - Forced-colours behaviour has not been verified in real Windows High Contrast, only in emulation.
 - Fourteen focus-outline rules across six component stylesheets still draw from `--mg-color-interactive`, `--mg-color-blue-800` or a local Sass variable rather than `--mg-color-focus-ring`, so they keep a brand-coloured ring: `Gallery`, `Pager`, `Tab`, `Boilerplate`, `Forms/_form-base` and `SyndicationSearchWidget`. Routing them through the token is follow-up work.
-- The two-band focus treatment GOV.UK and NHS use is not implemented. `--mg-aria-shadow` already composes a surface-coloured band inside a ring and is read by nothing; wiring it up would let a genuinely loud yellow work while a dark anchor band carried the 3:1 boundary. That needs stylesheet changes, not token values.
+- The two-band focus treatment GOV.UK and NHS use is not implemented. A dark anchor band inside a loud ring is what lets a colour like `#ffdd00` carry a 3:1 boundary it cannot carry alone. It needs stylesheet rules, not token values, so the placeholder token that used to sit here was removed rather than shipped unread.
 
 ## Find your path
 

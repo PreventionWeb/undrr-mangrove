@@ -38,10 +38,8 @@
   /* 24px: WCAG 2.5.8 minimum target size. Also sets the switch track
      geometry, which derives from this value. */
   --mg-aria-thumb-size: 1.5rem;
-  /* 24px, matching the thumb and the WCAG 2.5.8 target minimum. Mangrove's own
-     checks grew to 24px with a 2px brand-coloured border in #1086
-     (_form-base.scss); the adapter's are still 20px with a 1px grey border,
-     which is the most visible size disagreement between the two surfaces. */
+  /* 24px, matching the thumb and the WCAG 2.5.8 target minimum, so the
+     adapter's checks agree with Mangrove's own (_form-base.scss). */
   --mg-aria-check-size: 1.5rem;
   --mg-aria-dialog-width: 42rem;
   --mg-aria-dialog-available-width: calc(100% - var(--mg-aria-space-4) * 2);
