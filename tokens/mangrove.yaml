@@ -46,13 +46,60 @@ color:
   # Neutral ramp. The only colour ramp that carries no brand identity, so it
   # is what a brand-free Mangrove falls back to for text, interaction and
   # surfaces.
+  #
+  # THE SURFACE HALF IS COOL-TINTED; THE TEXT HALF IS NOT.
+  # Steps 25-400 carry a small cool chroma in Oklch at an unchanged Oklch
+  # lightness. Steps 0 and 500-900 are untouched achromatic greys.
+  #
+  # Why at all: an institutional survey of GOV.UK, USWDS, NHS, EU ECL, OCHA
+  # Common Design, Primer, Carbon and Atlassian found that every peer tints
+  # its neutrals toward cool or toward brand, and that Mangrove's pure greys
+  # were the single largest reason the system read as a generic admin kit
+  # rather than an institution. The header, the hover fill, the menu focus
+  # fill, the tag fill, the empty-state panel and the form field all resolve
+  # to neutral-25, so one flat grey was doing most of the visual work.
+  #
+  # Why only 25-400: the "generic" reading lives on surfaces. The dark half
+  # is body text (neutral-800), muted text (neutral-500), rules and shadows,
+  # where a hue shift buys nothing and every text contrast ratio in the
+  # system would have to be re-argued. GOV.UK draws the same line - tinted
+  # background, near-black text.
+  #
+  # Why neutral-0 stays pure white: the page itself is the floor every
+  # translucent token composites onto, and tinting it is a much larger claim
+  # than tinting the raised and sunken surfaces above it. Primer's
+  # canvas-default and GOV.UK's page background are both plain white.
+  #
+  # Why one shared cool hue rather than five brand-derived ones: no brand
+  # overrides this ramp, and this file's whole premise is that the ramp
+  # carries no brand identity. PreventionWeb's teal and MCR2030's purple
+  # would also pull their greys somewhere muddy. A brand that wants its own
+  # tint can still override these six steps in its own token file without
+  # any restructuring - the mechanism is unchanged, only the default moved.
+  #
+  # How much: Oklch hue 247.9 degrees at chroma 0.0039-0.0056, one hue for
+  # the whole tinted run. 247.9 is the hue of Primer's bgColor-muted, and
+  # the chroma sits inside the band the peers occupy (Atlassian 0.0029,
+  # Primer 0.0034, NHS 0.0045, OCHA 0.0093) - below the level at which a
+  # tint reads as a colour rather than as a refinement.
+  #
+  # Contrast cost, and why the lightness moves at all: the project's Oklab
+  # measure is lightness-only, so hue alone would leave it untouched, but
+  # WCAG 2's luminance does move with hue, and it moved DOWNWARD on a
+  # muted-text pair that had 0.25 of headroom. So each step is nudged in
+  # whichever lightness direction its ROLE needs: the four surface steps
+  # (25-200), which are always the lighter half of a pair, go up by at most
+  # 0.0017 in Oklch L; the two mark steps (300, 400), which are borders and
+  # rules and are always the darker half, go down by at most 0.0016. The
+  # result is that no graded pair in any of the five themes loses contrast
+  # on either measure - every pair that moves, moves upward.
   neutral-0: { $value: '#ffffff' }
-  neutral-25: { $value: '#f2f2f2' }
-  neutral-50: { $value: '#e6e6e6' }
-  neutral-100: { $value: '#cccccc' }
-  neutral-200: { $value: '#b3b3b3' }
-  neutral-300: { $value: '#999999' }
-  neutral-400: { $value: '#808080' }
+  neutral-25: { $value: '#f0f3f6' }
+  neutral-50: { $value: '#e4e7ea' }
+  neutral-100: { $value: '#cacdd0' }
+  neutral-200: { $value: '#b1b4b7' }
+  neutral-300: { $value: '#96999c' }
+  neutral-400: { $value: '#7e8082' }
   neutral-500: { $value: '#666666' }
   neutral-600: { $value: '#4d4d4d' }
   neutral-700: { $value: '#333333' }
@@ -392,7 +439,7 @@ form-input:
     $description: >-
       The border was rgb(neutral-600 / 0.22), which is 1.43:1 against the
       page and 1.39:1 against the field's own fill, so every input, textarea
-      and select in the system failed WCAG 1.4.11. neutral-400 is 3.95:1.
+      and select in the system failed WCAG 1.4.11. neutral-400 is 3.96:1.
   border-width: { $type: dimension, $value: '1px' }
   block-size: { $type: dimension, $value: '46px' }
   padding: { $type: dimension, $value: 6.25, $format: rem }

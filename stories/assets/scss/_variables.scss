@@ -235,7 +235,7 @@ $mg-tabs-border-bottom: true !default;
 
   // DELTA draws the glyph at #d9d9d9 (1.5:1). The glyph is decorative and
   // always sits above the message, so SC 1.4.11 exempts it — neutral-400 is
-  // used anyway so it clears 3:1 (3.95:1) and stays legible on a tinted panel.
+  // used anyway so it clears 3:1 (3.96:1) and stays legible on a tinted panel.
   --mg-empty-state-media-color: rgb(var(--mg-color-neutral-400));
   --mg-empty-state-actions-gap: var(--mg-spacing-100);
   --mg-empty-state-panel-background: rgb(var(--mg-color-neutral-25));

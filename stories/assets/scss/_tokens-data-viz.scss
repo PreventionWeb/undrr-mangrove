@@ -240,14 +240,18 @@
  * palette so a theme swap carries it. Gridlines are intentionally BELOW the
  * 3:1 non-text threshold: they are decoration, and SC 1.4.11 does not apply
  * to them. The axis line and tick labels are informational and are not.
+ *
+ * Chrome follows the neutral ramp and is therefore cool-tinted from 2.0.0-
+ * alpha.3 onward; the Sendai target A DATA ramp above is a separate,
+ * deliberately achromatic series read off the design file and is NOT
+ * retinted, because moving a categorical data colour changes what a reader
+ * decodes from a chart. Chrome and target A will read fractionally
+ * differently side by side. That is intended.
  * ------------------------------------------------------------------------- */
 :root {
-  --mg-dataviz-surface: var(--mg-color-neutral-0); // 255 255 255
-  --mg-dataviz-gridline: var(--mg-color-neutral-50); // 230 230 230, decorative
-  --mg-dataviz-axis: var(
-    --mg-color-neutral-400
-  ); // 128 128 128, 3.95:1 on white
-
+  --mg-dataviz-surface: var(--mg-color-neutral-0); // the page, plain white
+  --mg-dataviz-gridline: var(--mg-color-neutral-50); // decorative
+  --mg-dataviz-axis: var(--mg-color-neutral-400); // 3.96:1 on white
   --mg-dataviz-label: var(--mg-color-neutral-700); // 51 51 51, 12.63:1 on white
   --mg-dataviz-muted-label: var(--mg-color-neutral-500); // 102 102 102, 5.74:1
 }

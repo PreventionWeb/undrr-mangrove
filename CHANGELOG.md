@@ -19,7 +19,7 @@ Development releases began with `2.0.0-alpha.1` under the npm `next` dist-tag. S
 
 ### `2.0.0-alpha.3` — unreleased
 
-Proposed in [PR #1080](https://github.com/unisdr/undrr-mangrove/pull/1080). A foundation release: no required integration change. The token rewrite itself is value-identical — compiled output for all five themes is byte-unchanged apart from the one deliberate default change recorded under [Focus ring](#changed-default-the-focus-ring-is-no-longer-the-brand-colour) below.
+Proposed in [PR #1080](https://github.com/unisdr/undrr-mangrove/pull/1080). A foundation release: no required integration change, but **two system-wide defaults change deliberately and are visible to every consumer in every theme** — the [neutral ramp's surface half is cool-tinted](#changed-default-the-neutral-ramps-surface-half-is-cool-tinted) and the [keyboard focus ring is no longer the brand colour](#changed-default-the-focus-ring-is-no-longer-the-brand-colour). The token-pipeline rewrite that carries them is itself value-identical: apart from those two changes, compiled output for all five themes is byte-unchanged.
 
 #### Design token pipeline
 
@@ -40,6 +40,54 @@ Proposed in [PR #1080](https://github.com/unisdr/undrr-mangrove/pull/1080). A fo
 - New `EmptyState` (`.mg-empty-state`) with `--compact`, `--panel` and `--start` variants.
 - New data-visualisation palette, including `--mg-sendai-target-a` through `--mg-sendai-target-g` for the seven Sendai Framework targets.
 
+#### Changed default: the neutral ramp's surface half is cool-tinted
+
+**Every component in every theme is affected.** Steps `neutral-25` through `neutral-400` gain a small cool tint. `neutral-0` and `neutral-500` through `neutral-900` are unchanged.
+
+Mangrove's neutrals were pure achromatic greys. An institutional survey of GOV.UK, USWDS, NHS, EU ECL, OCHA Common Design, Primer, Carbon and Atlassian found that every peer tints its neutrals toward cool or toward brand, and identified Mangrove's pure greys as the single largest reason the system read as a generic admin kit rather than an institution. One flat grey was doing most of the visual work: the site header, the hover fill, the menu focus fill, the tag fill, the empty-state panel and every form field all resolve to `neutral-25`.
+
+| Token | Before | After | Oklch before | Oklch after |
+|---|---|---|---|---|
+| `--mg-color-neutral-0` | `#ffffff` | *unchanged* | `L 1.0000 C 0` | — |
+| `--mg-color-neutral-25` | `#f2f2f2` | `#f0f3f6` | `L 0.9612 C 0` | `L 0.9627 C 0.0051 H 247.9` |
+| `--mg-color-neutral-50` | `#e6e6e6` | `#e4e7ea` | `L 0.9249 C 0` | `L 0.9265 C 0.0052 H 247.9` |
+| `--mg-color-neutral-100` | `#cccccc` | `#cacdd0` | `L 0.8452 C 0` | `L 0.8469 C 0.0053 H 247.9` |
+| `--mg-color-neutral-200` | `#b3b3b3` | `#b1b4b7` | `L 0.7668 C 0` | `L 0.7684 C 0.0054 H 247.9` |
+| `--mg-color-neutral-300` | `#999999` | `#96999c` | `L 0.6830 C 0` | `L 0.6814 C 0.0056 H 247.9` |
+| `--mg-color-neutral-400` | `#808080` | `#7e8082` | `L 0.5999 C 0` | `L 0.5988 C 0.0039 H 247.9` |
+| `--mg-color-neutral-500` | `#666666` | *unchanged* | `L 0.5103 C 0` | — |
+| `--mg-color-neutral-600` | `#4d4d4d` | *unchanged* | `L 0.4202 C 0` | — |
+| `--mg-color-neutral-700` | `#333333` | *unchanged* | `L 0.3211 C 0` | — |
+| `--mg-color-neutral-800` | `#1a1a1a` | *unchanged* | `L 0.2178 C 0` | — |
+| `--mg-color-neutral-900` | `#000000` | *unchanged* | `L 0 C 0` | — |
+
+Four decisions, each deliberate:
+
+- **Only the surface half moves.** The "generic" reading lives on surfaces. The dark half is body text (`neutral-800`), muted text (`neutral-500`), rules and shadows, where a hue shift buys nothing and every text contrast ratio in the system would have to be re-argued. GOV.UK draws the same line: tinted background, near-black text. Primer tints both; we did not follow it there.
+- **`neutral-0` stays pure white.** The page is the floor every translucent token composites onto, and tinting it is a far larger claim than tinting the raised and sunken surfaces above it. Primer's `canvas-default` and GOV.UK's page background are both plain white.
+- **One shared cool hue, not five brand-derived ones.** No brand overrides this ramp today, and `tokens/mangrove.yaml` exists on the premise that the ramp carries no brand identity — a Mangrove adopted without UNDRR branding still gets it. PreventionWeb's teal (195°) and MCR2030's purple (323°) would also pull their greys somewhere muddy. A brand that wants its own tint can still override these six steps in its own token file; the mechanism is unchanged, only the default moved.
+- **Restrained.** Oklch hue 247.9° at chroma 0.0039–0.0056 — 247.9° is the hue of Primer's `bgColor-muted`, and the chroma sits inside the peer band (Atlassian `#f4f5f7` 0.0029, Primer `#f6f8fa` 0.0034, NHS `#f0f4f5` 0.0045, OCHA `#e6ecf1` 0.0093). Below the level at which a tint reads as a colour rather than as a refinement.
+
+**Contrast: no pair loses, in any theme, on either measure.** The Oklab measure is lightness-only, so hue alone would not move it, but WCAG 2's luminance does move with hue — and it moved *downward* on a muted-text pair with only 0.25 of perceptual headroom. So each step is nudged in whichever lightness direction its role needs: the four surface steps (25–200), always the lighter half of a pair, go up by at most 0.0017 in Oklch L; the two mark steps (300, 400), always the darker half, go down by at most 0.0016. Every graded pair that moves, moves upward. Figures are identical in all five themes because no brand overrides any of these tokens (WCAG 2 ratio / Oklab perceptual score):
+
+| Pair | Minimum | Before | After |
+|---|---|---|---|
+| `color-muted-text` on `color-field-surface` | 4.5 / 63 | 5.13 / 63.2 | **5.16 / 63.5** |
+| `color-border` on `color-surface` | 3 / 50 | 3.95 / 59.1 | **3.96 / 59.2** |
+| `color-border` on `color-field-surface` | 3 / 50 | 3.53 / 52.2 | **3.56 / 52.6** |
+| `color-focus-ring` on `color-field-surface` | 3 / 50 | 4.99 / 62.2 | **5.01 / 62.5** |
+| `color-accent` on `color-track` (UNDRR, DELTA) | 3 / 50 | 6.66 / 66.3 | **6.69 / 66.6** |
+| `color-accent` on `color-track` (PreventionWeb) | 3 / 50 | 5.20 / 61.4 | **5.23 / 61.7** |
+| `color-accent` on `color-track` (IRP) | 3 / 50 | 3.77 / 51.6 | **3.79 / 51.8** |
+| `color-accent` on `color-track` (MCR2030) | 3 / 50 | 9.64 / 73.2 | **9.69 / 73.4** |
+| `color-fill` on `color-track` | 3 / 50 | as `color-accent` above | as `color-accent` above |
+
+`color-fill` on `color-surface`, `color-text` on `color-surface`, `color-muted-text` on `color-surface` and `color-focus-ring` on `color-surface` are **unmoved**, because `color-surface` resolves to `neutral-0` and `neutral-0` did not change. That covers the tightest pair in the system — IRP's slider and meter fill against the page at 4.71 / 64.6, whose rails lost their borders in alpha.2 — which is exactly why `neutral-0` was left alone.
+
+**Migration.** Nothing to do. Consumers who match Mangrove's greys in their own CSS (a Drupal child theme painting `#f2f2f2` behind a region, for example) will see a seam where their grey meets a Mangrove surface; the fix is to read `rgb(var(--mg-color-neutral-25))` instead of restating the hex. A consumer or brand that wants the achromatic ramp back can restore all six steps on `:root` or on its theme selector, and then owns the graded pairs above.
+
+**Deliberately not retinted.** The data-visualisation Sendai target A series (`--mg-dataviz-sendai-a-*`) is a categorical *data* ramp read off the design file and stays achromatic — moving a categorical data colour changes what a reader decodes from a chart. Chart chrome (`--mg-dataviz-gridline`, `--mg-dataviz-axis`) does follow the neutral ramp and is tinted, so chrome and target A read fractionally differently side by side. That is intended.
+
 #### Changed default: the focus ring is no longer the brand colour
 
 `--mg-color-focus-ring` was aliased to `--mg-color-interactive` in every theme, so the keyboard focus ring and the selection cue were the same signal: `--mg-aria-color-selected-surface` is the interactive colour at 12% and the ring was the same hue at full strength. A focused row in a selected state said one thing twice.
@@ -56,7 +104,7 @@ Measured against both graded backgrounds, in all five themes (both backgrounds a
 | Pair | Before (UNDRR / PW / IRP / MCR / DELTA) | After (all five) |
 |---|---|---|
 | ring on `--mg-aria-color-surface` (`#ffffff`) | 8.31 / 78.3 · 6.49 / 73.7 · 4.71 / 64.6 · 12.03 / 84.7 · 8.31 / 78.3 | 5.58 / 68.7 |
-| ring on `--mg-aria-color-field-surface` (`#f2f2f2`) | 7.42 / 72.1 · 5.79 / 67.4 · 4.21 / 57.9 · 10.75 / 78.8 · 7.42 / 72.1 | 4.99 / 62.2 |
+| ring on `--mg-aria-color-field-surface` (`#f2f2f2`, now `#f0f3f6`) | 7.42 / 72.1 · 5.79 / 67.4 · 4.21 / 57.9 · 10.75 / 78.8 · 7.42 / 72.1 | 4.99 / 62.2, and 5.01 / 62.5 once the neutral tint above lands |
 
 A deliberately non-brand focus colour is near-universal in public-sector design systems (GOV.UK `#ffdd00`, NHS `#ffeb3b`, USWDS a `blue-40v` distinct from its link blue). Those systems' yellows cannot be used unaided here: `#ffdd00` is 1.35:1 on the raised surface and 1.20:1 on the field surface, scoring 5.3 and −6.6 perceptually. They work because their indicator is two bands — a yellow fill over a near-black bar — and the dark band carries the contrast. `gold-800` keeps the yellow register and takes it down the lightness ramp until a single band measures on its own.
 

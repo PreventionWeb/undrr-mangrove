@@ -43,9 +43,9 @@
   /* The transitive closure of Mangrove tokens the --mg-aria-* contract reads,
      resolved for DELTA. Generated: see tokens/delta.yaml. */
   --mg-color-neutral-0: 255 255 255;
-  --mg-color-neutral-25: 242 242 242;
-  --mg-color-neutral-50: 230 230 230;
-  --mg-color-neutral-400: 128 128 128;
+  --mg-color-neutral-25: 240 243 246;
+  --mg-color-neutral-50: 228 231 234;
+  --mg-color-neutral-400: 126 128 130;
   --mg-color-neutral-500: 102 102 102;
   --mg-color-neutral-600: 77 77 77;
   --mg-color-neutral-800: 26 26 26;

@@ -123,13 +123,13 @@
   --mg-color-neutral-0: 255 255 255;
 
   // color.neutral-25
-  --mg-color-neutral-25: 242 242 242;
+  --mg-color-neutral-25: 240 243 246;
 
   // color.neutral-50
-  --mg-color-neutral-50: 230 230 230;
+  --mg-color-neutral-50: 228 231 234;
 
   // color.neutral-400
-  --mg-color-neutral-400: 128 128 128;
+  --mg-color-neutral-400: 126 128 130;
 
   // color.neutral-500
   --mg-color-neutral-500: 102 102 102;
@@ -253,7 +253,7 @@
   // form-input.border-color
   // The border was rgb(neutral-600 / 0.22), which is 1.43:1 against the page
   // and 1.39:1 against the field's own fill, so every input, textarea and
-  // select in the system failed WCAG 1.4.11. neutral-400 is 3.95:1.
+  // select in the system failed WCAG 1.4.11. neutral-400 is 3.96:1.
   --mg-form-input-border-color: rgb(var(--mg-color-neutral-400));
 
   // form-input.block-size
