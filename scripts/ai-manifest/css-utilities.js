@@ -22,6 +22,31 @@ function textClass(suffix, desc) {
   return { class: `mg-u-color--${suffix}`, description: desc };
 }
 
+/**
+ * The pre-2.0 Sendai accent utilities. Still shipped, still working, and
+ * scheduled for removal in 2.1 — but an agent asked for "Sendai colours" will
+ * reach for these on the name alone, so every entry has to carry the warning
+ * with it rather than relying on a note somewhere else in the file.
+ *
+ * They are named by colour rather than by Sendai meaning: --sendai-red-900 is
+ * byte-identical to --mg-color-red-900, three of the seven framework targets
+ * have no counterpart here at all, and --sendai-turquoise sits 16.0 dE00 from
+ * Target D as the framework's own design system defines it.
+ */
+function deprecatedSendaiClass(className, hue) {
+  return {
+    class: className,
+    description: `DEPRECATED — ${hue} accent. Named by colour, not by Sendai target.`,
+    deprecated: true,
+    removalTarget: '2.1',
+    replacement:
+      'For Sendai Framework target semantics use the --mg-sendai-target-a ' +
+      'through -g custom properties (with their --mg-sendai-on-target-* label ' +
+      'colours). For a plain accent, use the --mg-color-* palette. Do not ' +
+      'emit this class in new code.',
+  };
+}
+
 function colorScale(prefix, name) {
   return colorShades.map(s => ({
     class: `mg-u-background-color--${prefix}-${s}`,
@@ -381,10 +406,10 @@ export default {
         bgClass('accent-200', 'Accent 200 background'),
         bgClass('accent-300', 'Accent 300 background'),
         bgClass('accent-400', 'Accent 400 background'),
-        bgClass('sendai-red', 'Sendai Framework red background'),
-        bgClass('sendai-orange', 'Sendai Framework orange background'),
-        bgClass('sendai-purple', 'Sendai Framework purple background'),
-        bgClass('sendai-turquoise', 'Sendai Framework turquoise background'),
+        deprecatedSendaiClass('mg-u-background-color--sendai-red', 'red'),
+        deprecatedSendaiClass('mg-u-background-color--sendai-orange', 'orange'),
+        deprecatedSendaiClass('mg-u-background-color--sendai-purple', 'purple'),
+        deprecatedSendaiClass('mg-u-background-color--sendai-turquoise', 'turquoise'),
         bgClass('interactive', 'Interactive color background (default: blue-900)'),
         bgClass('interactive-active', 'Interactive active color background (default: blue-700)'),
       ],
@@ -412,10 +437,10 @@ export default {
         textClass('accent-200', 'Accent 200 text color'),
         textClass('accent-300', 'Accent 300 text color'),
         textClass('accent-400', 'Accent 400 text color'),
-        textClass('sendai-red', 'Sendai Framework red text'),
-        textClass('sendai-orange', 'Sendai Framework orange text'),
-        textClass('sendai-purple', 'Sendai Framework purple text'),
-        textClass('sendai-turquoise', 'Sendai Framework turquoise text'),
+        deprecatedSendaiClass('mg-u-color--sendai-red', 'red'),
+        deprecatedSendaiClass('mg-u-color--sendai-orange', 'orange'),
+        deprecatedSendaiClass('mg-u-color--sendai-purple', 'purple'),
+        deprecatedSendaiClass('mg-u-color--sendai-turquoise', 'turquoise'),
         textClass('interactive', 'Interactive color text (default: blue-900)'),
         textClass('interactive-active', 'Interactive active color text (default: blue-700)'),
       ],

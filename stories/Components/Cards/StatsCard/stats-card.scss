@@ -207,7 +207,7 @@
         color: rgb(var(--mg-color-white));
 
         &:focus {
-          outline-color: rgb(var(--mg-color-white));
+          outline-color: rgb(var(--mg-color-focus-ring-inverse));
         }
       }
     }
@@ -215,7 +215,7 @@
 
   // Focus styles for linked cards
   .mg-stats-card-item a.mg-stats-card-item__value:focus-visible::after {
-    outline-color: rgb(var(--mg-color-white));
+    outline-color: rgb(var(--mg-color-focus-ring-inverse));
   }
 }
 

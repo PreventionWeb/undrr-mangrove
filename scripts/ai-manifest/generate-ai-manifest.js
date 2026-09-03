@@ -46,11 +46,19 @@ const CDN_BASE = 'https://assets.undrr.org/static/mangrove/{{version}}';
 const ASSETS_BASE = 'https://assets.undrr.org';
 const DOCS_BASE = 'https://unisdr.github.io/undrr-mangrove/';
 
+// One bundle per theme, plus the combined bundle.
+//
+// Each single-theme bundle carries its own token block and nothing else, so
+// style.css has no .mg-theme-* rules at all: adding class="mg-theme-irp" to a
+// page that loaded style.css changes nothing. Use that theme's own bundle, or
+// style-all.css if the page has to switch themes at runtime.
 const THEME_CSS = {
   undrr: `${CDN_BASE}/css/style.css`,
   preventionweb: `${CDN_BASE}/css/style-preventionweb.css`,
   mcr2030: `${CDN_BASE}/css/style-mcr.css`,
   irp: `${CDN_BASE}/css/style-irp.css`,
+  delta: `${CDN_BASE}/css/style-delta.css`,
+  all: `${CDN_BASE}/css/style-all.css`,
 };
 
 const REQUIRED_SCRIPTS = [
@@ -768,6 +776,131 @@ if (uncoveredIds.length > 0) {
   for (const id of uncoveredIds) console.warn(`  - ${id}`);
 }
 
+// ---------------------------------------------------------------------------
+// Check curated example shape
+//
+// `examples` must be [{ name, html }]. A bare array of HTML strings still
+// reaches the output — it is just assigned to renderedHtml — so it looks like
+// it worked, but the a11y lint below skips it (`if (!example.html) continue`),
+// the drift check reads no classes from it, and consumers that read
+// `renderedHtml[n].html` get undefined for that component alone. StatusLabel
+// and EmptyState shipped in exactly that state: present in the manifest, but
+// in a shape nothing else in the file uses and no check could see.
+// ---------------------------------------------------------------------------
+const malformedExamples = [];
+for (const [componentId, data] of Object.entries(curatedData)) {
+  if (!data?.examples) continue;
+  if (!Array.isArray(data.examples)) {
+    malformedExamples.push(`${componentId}: examples is not an array`);
+    continue;
+  }
+  data.examples.forEach((example, index) => {
+    if (typeof example !== 'object' || example === null) {
+      malformedExamples.push(
+        `${componentId}: examples[${index}] is a ${typeof example}, expected ` +
+          '{ name, html }'
+      );
+    } else if (typeof example.html !== 'string' || example.html.length === 0) {
+      malformedExamples.push(
+        `${componentId}: examples[${index}] has no html string`
+      );
+    } else if (typeof example.name !== 'string' || example.name.length === 0) {
+      malformedExamples.push(
+        `${componentId}: examples[${index}] has no name`
+      );
+    }
+  });
+}
+
+if (malformedExamples.length > 0) {
+  console.warn('Curated examples in the wrong shape (expected { name, html }):');
+  for (const problem of malformedExamples) console.warn(`  ${problem}`);
+}
+
+// ---------------------------------------------------------------------------
+// Check that every documented CSS class actually exists
+//
+// A class list in component-data.js is hand-maintained, so it drifts when a
+// component is renamed and it is wrong from the start when a class is
+// mistyped. Nothing checked this before, so the manifest could advertise a
+// class that had never existed and no build would notice.
+//
+// "Exists" cannot mean "has a rule in the compiled CSS". Several real classes
+// deliberately carry no styles: mg-card__meta and mg-card__label--active are
+// structural hooks the card components render, mg-hero--split-2-3 is the
+// default split that needs no override, mg-on-this-page-nav--exclude is a
+// marker the nav's JS reads, and the scroll-button modifiers are injected at
+// runtime. So a class passes if it is styled OR if it appears in the story
+// sources — and fails only when it exists nowhere in the library, which is
+// the typo-and-rename case this is actually for.
+// ---------------------------------------------------------------------------
+const compiledCssPath = path.resolve(
+  process.cwd(),
+  'stories/assets/css/style.css'
+);
+const storiesDir = path.resolve(process.cwd(), 'stories');
+const missingCssClasses = [];
+const unstyledCssClasses = [];
+let cssCheckSkipped = null;
+
+/** Every .jsx/.js/.mdx/.scss file under stories/, concatenated. */
+function readStorySources(dir) {
+  const chunks = [];
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      if (entry.name === 'node_modules') continue;
+      chunks.push(readStorySources(full));
+    } else if (/\.(jsx?|mdx|scss)$/.test(entry.name)) {
+      chunks.push(fs.readFileSync(full, 'utf8'));
+    }
+  }
+  return chunks.join('\n');
+}
+
+if (!fs.existsSync(compiledCssPath)) {
+  cssCheckSkipped =
+    `${path.relative(process.cwd(), compiledCssPath)} not found — run ` +
+    '"yarn scss" first. Skipping the CSS class existence check.';
+} else {
+  const compiledCss = fs.readFileSync(compiledCssPath, 'utf8');
+  const storySources = readStorySources(storiesDir);
+
+  const escape = value => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  // A class selector, i.e. ".name" not followed by another identifier
+  // character, so ".mg-card" does not match ".mg-card__title".
+  const isStyled = className =>
+    new RegExp(`\\.${escape(className)}(?![\\w-])`).test(compiledCss);
+  // The class named anywhere in the story sources — a className string, a JS
+  // string literal, an MDX table row, or an SCSS selector.
+  const isRendered = className =>
+    new RegExp(`(?<![\\w-])${escape(className)}(?![\\w-])`).test(storySources);
+
+  for (const [componentId, data] of Object.entries(curatedData)) {
+    for (const className of data?.cssClasses || []) {
+      if (isStyled(className)) continue;
+      if (isRendered(className)) {
+        unstyledCssClasses.push(`${componentId}: .${className}`);
+      } else {
+        missingCssClasses.push(`${componentId}: .${className}`);
+      }
+    }
+  }
+}
+
+if (cssCheckSkipped) console.warn(`Note: ${cssCheckSkipped}`);
+if (unstyledCssClasses.length > 0) {
+  console.log(
+    `Note: ${unstyledCssClasses.length} documented class(es) are rendered by a ` +
+      'component but carry no CSS rule (structural or JS marker classes):'
+  );
+  for (const item of unstyledCssClasses) console.log(`  ${item}`);
+}
+if (missingCssClasses.length > 0) {
+  console.warn('Documented CSS classes that exist nowhere in the library:');
+  for (const problem of missingCssClasses) console.warn(`  ${problem}`);
+}
+
 // Check COMPONENT_IDS entries that won't render due to missing data
 const orphanedIds = Object.entries(COMPONENT_IDS)
   .filter(([, id]) => !curatedData[id] && !REQUIRES_REACT[id])
@@ -1061,6 +1194,27 @@ if (validateOnly) {
     failed = true;
   }
 
+  if (malformedExamples.length > 0) {
+    console.error(
+      `Validation failed: ${malformedExamples.length} curated example(s) are ` +
+        'not in the { name, html } shape. Such an example is skipped by the ' +
+        'a11y lint and by drift detection, and reaches consumers as a bare ' +
+        'string where every other component gives an object.'
+    );
+    failed = true;
+  }
+
+  if (missingCssClasses.length > 0) {
+    console.error(
+      `Validation failed: ${missingCssClasses.length} documented CSS class(es) ` +
+        'appear neither in the compiled CSS nor in any story source. Either ' +
+        'the class was renamed, or component-data.js names one that never ' +
+        'existed:'
+    );
+    for (const problem of missingCssClasses) console.error(`  - ${problem}`);
+    failed = true;
+  }
+
   const developmentJsxBundles = findDevelopmentJsxBundles();
   if (developmentJsxBundles.length > 0) {
     console.error(
@@ -1117,7 +1271,11 @@ async function main() {
 
   for (const [, component] of Object.entries(manifest.components)) {
     const id = component.id;
-    const name = component.name || id;
+    // Storybook derives `name` from meta.component, and falls back to a
+    // squashed filename when a story file has none — which every CSS-only
+    // component does, giving "Statuslabel" for StatusLabel. A curated `name`
+    // overrides that so the index reads as the component is actually called.
+    const name = curatedData[id]?.name || component.name || id;
     const jsDocParams = parseJsDocParams(component.jsDocTags);
     const data = curatedData[id];
     const isReact = REQUIRES_REACT[id];
@@ -1239,8 +1397,9 @@ async function main() {
       repository: 'https://github.com/unisdr/undrr-mangrove',
       npm: `https://www.npmjs.com/package/${pkg.name}`,
       cssPrefix: 'mg-',
-      namingConvention: 'BEM (e.g., mg-card__title, mg-button--primary)',
-      themes: ['undrr', 'preventionweb', 'irp', 'mcr2030'],
+      namingConvention:
+        'BEM (e.g., mg-card__title, mg-card__icon--bordered). Buttons are the exception: mg-button-primary, mg-button-secondary and mg-button-outline are single-dash, not BEM modifiers.',
+      themes: ['undrr', 'preventionweb', 'irp', 'mcr2030', 'delta'],
       locales: ['en', 'ar', 'my', 'ja'],
       rtlSupport: true,
       semanticHtml: true,
@@ -1338,6 +1497,13 @@ ${vanillaCount} of the ${indexEntries.length} components work as plain HTML with
    - PreventionWeb: ${themeCss.preventionweb}
    - MCR2030: ${themeCss.mcr2030}
    - IRP: ${themeCss.irp}
+   - DELTA: ${themeCss.delta}
+   - All themes in one bundle: ${themeCss.all}
+
+   Each single-theme bundle carries only its own tokens. style.css contains no
+   .mg-theme-* rules, so putting class="mg-theme-irp" on a page that loaded
+   style.css does nothing — load that theme's bundle, or style-all.css if the
+   page has to switch themes at runtime.
 
 2. Fetch the component index and find what you need
 3. Fetch the component's detailsUrl and use the renderedHtml examples
@@ -1354,28 +1520,48 @@ The utilities.json file lists ~${utilityClassCount} utility classes grouped by c
 
 ### Z-index layers
 
-Use $mg-z-index-* tokens from _variables.scss for global stacking contexts (fixed, sticky, portaled, or deliberately negative elements). One token per UI concept; derive backdrops with arithmetic (e.g. z-index: $mg-z-index-drawer - 1). For local stacking within a component's own isolated stacking context (e.g. inside position: relative), use a raw value with a comment instead of a token. The navigation zone tokens ($mg-z-index-nav through $mg-z-index-header, values 10-22) are frozen; do not change their numeric values. See the "Design decisions/Z-index layers" Storybook page for the full layer table and philosophy.
+Use the --mg-z-index-* custom properties for global stacking contexts (fixed, sticky, portaled, or deliberately negative elements). One token per UI concept: --mg-z-index-behind, -nav, -sticky, -nav-toggle, -header, -drawer, -dropdown, -modal, -toast. Derive backdrops with calc(), e.g. z-index: calc(var(--mg-z-index-drawer) - 1). For local stacking within a component's own isolated stacking context (e.g. inside position: relative), use a raw value with a comment instead of a token. The navigation zone tokens (-nav through -header, values 10-22) are frozen; do not change their numeric values. These were $mg-z-index-* Sass variables before 2.0 and no longer exist in that form. See the "Design decisions/Z-index layers" Storybook page for the full layer table and philosophy.
 
 ### Design tokens
 
-Color and spacing tokens are CSS custom properties on \`:root\`. Palette colors use space-separated RGB channels to enable alpha compositing:
+Colour, spacing, radii and component tokens are CSS custom properties, so they are themeable at runtime from a \`:root\` block or a \`.mg-theme-*\` block. No rebuild of Mangrove is needed.
+
+Where they come from (raw sources, browsable on GitHub):
+
+- \`tokens/mangrove.yaml\` — the brand-neutral base: https://raw.githubusercontent.com/unisdr/undrr-mangrove/main/tokens/mangrove.yaml
+- \`tokens/undrr.yaml\`, \`preventionweb.yaml\`, \`irp.yaml\`, \`mcr.yaml\`, \`delta.yaml\` — brand layers merged over the base, same directory.
+- \`stories/assets/scss/_tokens-data-viz.scss\` — the chart and map palette: https://raw.githubusercontent.com/unisdr/undrr-mangrove/main/stories/assets/scss/_tokens-data-viz.scss
+
+Those YAML files carry a \`$description\` on the tokens that need one, which is the reasoning behind the value. They borrow DTCG's vocabulary but are NOT DTCG-conformant — several vendor keys sit outside \`$extensions\` (which is unused) and dimensions are bare numbers. Do not feed them to DTCG tooling. These links track \`main\`; for exactly this version, use the matching \`v${pkg.version}\` tag.
+
+What you actually write against is the compiled result: the \`--mg-*\` custom properties in the theme stylesheets above.
+
+Four things the sources do not make obvious:
+
+**1. The rgb() wrapping rule.** Most colour tokens are sRGB channel triples, not colours:
 
 \`\`\`css
---mg-color-blue-900: 0 79 145;
---mg-color-interactive: var(--mg-color-blue-900);
+--mg-color-blue-900: 0 79 145;              /* channels, not a colour */
+color: rgb(var(--mg-color-interactive));    /* correct */
+color: var(--mg-color-interactive);         /* INVALID — silently dropped */
+background: rgb(var(--mg-color-interactive) / 0.1);   /* alpha for free */
 \`\`\`
 
-Consuming a color token: \`rgb(var(--mg-color-interactive))\` or with alpha: \`rgb(var(--mg-color-interactive) / 0.1)\`.
+Getting it wrong produces a declaration the browser discards with no console error, so it fails by looking almost right. Three tokens are full colours as of ${pkg.version} and must NOT be wrapped, because a brand needs to be able to put \`transparent\` there and a triple cannot express it: \`--mg-color-button-background\`, \`--mg-color-button-background--hover\`, \`--mg-border-color-button\`. In the YAML these are the tokens declaring \`$format: srgb-rgb-function\` — check there rather than assuming the list is still three.
 
-Sub-brand themes apply CSS custom property overrides via a \`.mg-theme-{name}\` class on \`<body>\` or a wrapping element (e.g. \`.mg-theme-irp\`, \`.mg-theme-preventionweb\`, \`.mg-theme-mcr\`, \`.mg-theme-delta\`). No rebuild needed to switch themes at runtime.
+**2. Focus rings.** \`--mg-color-focus-ring\` is the ring colour (deliberately not a brand colour: a brand-coloured ring vanishes against the brand's own filled surfaces). \`--mg-color-focus-ring-inverse\` is for a ring painted on an already-dark surface — a button on a filled hero banner, the Snackbar action, the dark Card variants. Geometry is \`--mg-focus-ring-width\`, \`-offset\` and \`-radius\`. Components should \`@include mg-focus-ring;\` or \`@include mg-focus-ring-inset;\` (\`stories/assets/scss/_mixins.scss\`) rather than hand-rolling an outline: the mixin draws two bands so the indicator is legible on any surface, and keeps the ring as an \`outline\` so it survives forced-colors mode.
 
-Font sizes, font families, breakpoints, and \`$mg-tabs-border-bottom\` remain as SCSS-only build-time variables — they are not available as CSS custom properties.
+**3. Sendai Framework colours.** \`--mg-sendai-target-a\` through \`-g\` are the seven Sendai targets, with matching \`--mg-sendai-on-target-*\` label colours (Target C is the one that takes a dark label). \`--mg-dataviz-*\` carries the chart palette: \`categorical\` for unordered series, \`sequential\` for ordered magnitude, \`sendai-*\` for the ten-stop target ramps, plus chart chrome. Do not mix those three jobs.
+
+**4. Deprecated: \`--sendai-red|orange|purple|turquoise\`** and their \`.mg-u-background-color--sendai-*\` / \`.mg-u-color--sendai-*\` utility classes. Named by colour rather than by Sendai meaning, three of the seven targets have no counterpart, and they are scheduled for removal in 2.1. Do not emit them in new code — use \`--mg-sendai-target-*\` for target semantics or the \`--mg-color-*\` palette for a plain accent.
+
+Font families, breakpoints, and \`$mg-tabs-border-bottom\` remain SCSS-only build-time variables and are not available as CSS custom properties.
 
 ### Conventions
 
 - CSS prefix: mg-
 - Naming: BEM (e.g., mg-card__title, mg-button--primary)
-- Themes: undrr, preventionweb, irp, mcr2030
+- Themes: undrr, preventionweb, irp, mcr2030, delta
 - Locales: en, ar, my, ja (RTL supported)
 - Semantic HTML, WCAG accessible
 
@@ -1409,7 +1595,7 @@ Editorial rules:
 Typography:
 - Body and narrative headings (h1-h6): Roboto (\`$mg-font-family\`). H1-h6 inherit the body font — Roboto Condensed at heading size feels too tight for sustained reading.
 - Component titles, labels, tags, and UI chrome: Roboto Condensed via \`$mg-font-family-headings\` (\`!default\`-flagged alias for \`$mg-font-family-condensed\`). Applied to: \`.mg-hero__title\`, \`.mg-hero__label\`, \`.mg-card__title\`, \`.mg-card__label\`, \`.mg-stats-card-item__value\`, \`.mg-stats-card-item__label\`, \`.mg-stats-card-item__bottom-label\`, \`.mg-gallery__title\`, \`.mg-mega-content__banner header\`, \`.mg-tabs__link\`, \`.mg-on-this-page-nav__link\`, \`.mg-on-this-page-nav__cta\`, \`.mg-mega-topbar__item-link\`, \`.mg-button\`, \`.mg-footer--about-footer--links\`, \`.mg-tag\` and variants. New components that render titles, labels, tags, or UI chrome should use this token rather than \`$mg-font-family-condensed\` directly.
-- Arabic: Noto Kufi Arabic (\`$mg-font-family-arabic-headings\`) for headings and UI chrome, Dubai (\`$mg-font-family-arabic-body\`) for body. Applied automatically via \`:lang(ar)\` selectors when \`lang="ar"\` is set on a container. Heading/label/UI-chrome components must include a matching \`:lang(ar)\` block since Roboto Condensed has no Arabic glyph coverage.
+- Arabic: Dubai for both headings and body (\`$mg-font-family-arabic-headings\` and \`$mg-font-family-arabic-body\` both resolve to it). Applied automatically via \`:lang(ar)\` selectors when \`lang="ar"\` is set on a container. Heading/label/UI-chrome components must include a matching \`:lang(ar)\` block since Roboto Condensed has no Arabic glyph coverage. Only Regular and Bold exist upstream, so Arabic has a 400/700 ladder where Latin has four steps.
 
 Photo sizes (credit/source required on every image):
 - Hero 1440x540 (16:6), News 1164x665 (16:9), Publication 176x235 (3:4), Thumbnail 176x176 (1:1).
@@ -1467,7 +1653,7 @@ Icons:
       conventions: {
         cssPrefix: 'mg-',
         naming: 'BEM',
-        themes: ['undrr', 'preventionweb', 'irp', 'mcr2030'],
+        themes: ['undrr', 'preventionweb', 'irp', 'mcr2030', 'delta'],
         locales: ['en', 'ar', 'my', 'ja'],
         breakpoints: {
           mobile: '480px',

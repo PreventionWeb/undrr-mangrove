@@ -152,7 +152,7 @@
   background: var(--mg-color-tab-background--inactive);
   color: var(--mg-color-text-tab);
   font-family: $mg-font-family-headings;
-  font-size: $mg-font-size-400;
+  font-size: var(--mg-font-size-tab);
   font-weight: 600;
   line-height: 1.421;
   margin: 0;
@@ -171,9 +171,50 @@
   text-decoration: none;
 }
 
+// This is the fallback path: it only paints for bare `.mg-tabs` markup, since
+// Tab.jsx always emits .mg-tabs--horizontal or .mg-tabs--stacked and both of
+// those carry a higher-specificity focus rule. Consumers who hand-write the
+// markup land here, so it has to be correct on its own.
+
+// It used to keep a brand-coloured inset ring, justified by a table showing no
+// single colour cleared 3:1 in all five themes. Re-derived, that table was
+// wrong in one row and measured only half the problem:
+
+//   INACTIVE tab focused -- ring inset on --mg-color-tab-background--hover
+//   theme          surface   brand   gold   white
+//   UNDRR          #1a619c    1.28   1.16    6.49
+//   PreventionWeb  #bad5d5    4.19   3.61    1.55
+//   IRP            #8cc63f    2.30   2.73    2.05
+//   MCR2030        #a87dad    3.55   1.65    3.39
+//   DELTA          #4d84b2    2.07   1.39    4.00
+
+// The old table read 4.78 / 4.12 / 1.36 for PreventionWeb. That is the value
+// on an uncomposited surface: PW's --mg-color-tab-background--inactive is
+// var(--mg-color-tabbar-background), so the tab tint composites over the
+// tabbar's own 0.1 tint and the real surface is #bad5d5, not #cee1e1.
+
+// It also measured only the inactive tab. The tabs runtime uses roving
+// tabindex, so the tab the keyboard actually lands on is the ACTIVE one, which
+// repaints to --mg-color-tab-background:
+
+//   ACTIVE tab focused -- the state Tab actually reaches
+//   theme          surface   brand   gold   white
+//   UNDRR          #b3cade    4.91   3.30    1.69
+//   PreventionWeb  #d0e3e3    4.86   4.18    1.33
+//   IRP            #d4eab8    3.65   4.32    1.29
+//   MCR2030        #6e2677    1.26   1.70    9.52
+//   DELTA          #004f91    1.00   1.49    8.31
+
+// DELTA's --mg-color-interactive and --mg-color-tab-background are the same
+// colour, so the ring on the tab the keyboard reaches was drawn in the tab's
+// own fill: 1.00:1, literally invisible. MCR2030 was 1.26:1.
+
+// The two-band ring fixes every row because it is judged against its own white
+// separator (5.58:1) rather than against the surface underneath, so the
+// surface columns above stop mattering. Inset rather than outward so the ring
+// stays inside a tab sitting flush in its bar.
 .mg-tabs__link:focus-visible {
-  outline: 2px solid rgb(var(--mg-color-interactive));
-  outline-offset: -2px;
+  @include mg-focus-ring-inset;
 }
 
 .mg-tabs__link.is-active {
@@ -220,25 +261,28 @@
     background: transparent;
     border: 0;
     border-radius: 0;
-    box-shadow: inset 0 -3px 0 transparent;
-    color: rgb(var(--mg-color-text));
+    box-shadow: inset 0 calc(var(--mg-tab-indicator-size) * -1) 0 transparent;
+    color: var(--mg-tab-color);
     display: flex;
-    min-height: mg-rem(44);
-    padding: var(--mg-spacing-150) var(--mg-spacing-200);
+    min-height: var(--mg-tab-min-block-size);
+    padding: var(--mg-tab-padding);
     text-align: start;
 
     @media (prefers-reduced-motion: no-preference) {
       transition:
-        background-color var(--mg-motion-duration-fast) var(--mg-motion-easing-standard),
-        box-shadow var(--mg-motion-duration-fast) var(--mg-motion-easing-standard),
+        background-color var(--mg-motion-duration-fast)
+          var(--mg-motion-easing-standard),
+        box-shadow var(--mg-motion-duration-fast)
+          var(--mg-motion-easing-standard),
         color var(--mg-motion-duration-fast) var(--mg-motion-easing-standard);
     }
 
     &:hover {
-      background: rgb(var(--mg-color-interactive) / 0.06);
+      background: var(--mg-tab-background--hover);
       border: 0;
-      box-shadow: inset 0 -3px 0 rgb(var(--mg-color-interactive) / 0.45);
-      color: rgb(var(--mg-color-interactive-active));
+      box-shadow: inset 0 calc(var(--mg-tab-indicator-size) * -1) 0
+        var(--mg-tab-indicator--hover);
+      color: var(--mg-tab-color--hover);
     }
 
     &:focus-visible {
@@ -249,12 +293,26 @@
     }
 
     &.is-active,
-    &.is-active:hover,
+    &.is-active:hover {
+      background: transparent;
+      border: 0;
+      box-shadow: inset 0 calc(var(--mg-tab-indicator-size) * -1) 0
+        var(--mg-tab-indicator--active);
+      color: var(--mg-tab-color--active);
+    }
+
+    // The active tab's indicator bar and the focus ring's separator band are
+    // both box-shadows, and this selector outranks the :focus-visible rule
+    // above, so declaring only the bar here would silently drop the band from
+    // the one tab roving tabindex actually lands on. Both are listed.
     &.is-active:focus-visible {
       background: transparent;
       border: 0;
-      box-shadow: inset 0 -3px 0 rgb(var(--mg-color-interactive));
-      color: rgb(var(--mg-color-interactive));
+      box-shadow:
+        inset 0 calc(var(--mg-tab-indicator-size) * -1) 0
+          var(--mg-tab-indicator--active),
+        0 0 0 var(--mg-focus-ring-offset) rgb(var(--mg-color-neutral-0));
+      color: var(--mg-tab-color--active);
     }
   }
 
@@ -301,7 +359,8 @@
 
     @media (prefers-reduced-motion: no-preference) {
       transition:
-        background-color var(--mg-motion-duration-fast) var(--mg-motion-easing-standard),
+        background-color var(--mg-motion-duration-fast)
+          var(--mg-motion-easing-standard),
         color var(--mg-motion-duration-fast) var(--mg-motion-easing-standard);
     }
 
@@ -326,7 +385,7 @@
       content: "+";
       display: flex;
       font-family: $mg-font-family;
-      font-size: $mg-font-size-400;
+      font-size: var(--mg-font-size-tab);
       font-weight: 400;
       height: mg-rem(30);
       justify-content: center;
@@ -337,7 +396,8 @@
 
       @media (prefers-reduced-motion: no-preference) {
         transition:
-          background-color var(--mg-motion-duration-fast) var(--mg-motion-easing-standard),
+          background-color var(--mg-motion-duration-fast)
+            var(--mg-motion-easing-standard),
           scale var(--mg-motion-duration-fast) var(--mg-motion-easing-standard);
       }
     }

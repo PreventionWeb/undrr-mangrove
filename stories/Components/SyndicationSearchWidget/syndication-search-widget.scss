@@ -200,9 +200,12 @@ $search-input-padding-x: var(--mg-spacing-250);
     border-color: $search-primary;
   }
 
-  &:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px $search-primary;
+  // The one rule in this file left on $search-primary when its seven siblings
+  // moved to the focus-ring token, so the widget drew two different focus
+  // colours depending on which control you tabbed to. Also keyed on :focus
+  // rather than :focus-visible, so it fired on mouse clicks too.
+  &:focus-visible {
+    @include mg-focus-ring;
   }
 }
 
@@ -335,8 +338,7 @@ $search-input-padding-x: var(--mg-spacing-250);
   }
 
   &:focus-visible {
-    outline: 2px solid $search-primary;
-    outline-offset: 2px;
+    @include mg-focus-ring;
   }
 }
 
@@ -859,8 +861,7 @@ $search-input-padding-x: var(--mg-spacing-250);
   }
 
   &:focus-visible {
-    outline: 2px solid $search-primary;
-    outline-offset: 2px;
+    @include mg-focus-ring;
   }
 }
 
@@ -1305,8 +1306,7 @@ $search-input-padding-x: var(--mg-spacing-250);
   }
 
   &:focus-visible {
-    outline: 2px solid $search-primary;
-    outline-offset: -2px;
+    @include mg-focus-ring;
   }
 }
 
@@ -1347,8 +1347,7 @@ $search-input-padding-x: var(--mg-spacing-250);
   }
 
   &:focus-visible {
-    outline: 2px solid $search-primary-dark;
-    outline-offset: 2px;
+    @include mg-focus-ring;
   }
 }
 
@@ -1394,8 +1393,7 @@ $search-input-padding-x: var(--mg-spacing-250);
 
 .mg-search__facet-select:focus-visible,
 .mg-search__facet input:focus-visible {
-  outline: 2px solid $search-primary;
-  outline-offset: 2px;
+  @include mg-focus-ring;
 }
 
 // ========================================
@@ -1477,8 +1475,8 @@ $search-input-padding-x: var(--mg-spacing-250);
 
   // Focus visible for keyboard navigation
   &:focus-within {
-    outline: 2px solid $search-primary;
-    outline-offset: 2px;
+    @include mg-focus-ring;
+
     border-radius: $search-radius;
   }
 }

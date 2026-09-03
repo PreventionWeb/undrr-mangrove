@@ -1,6 +1,6 @@
 {
   "name": "@undrr/undrr-mangrove",
-  "version": "2.0.0-alpha.2",
+  "version": "2.0.0-alpha.3",
   "description": "Mangrove design System for UNDRR",
   "main": "src/index.js",
   "type": "module",
@@ -10,9 +10,19 @@
   "exports": {
     ".": "./src/index.js"
   },
+  "//files": "Positive allowlist for `npm pack`. The matching .npmignore stops npm falling back to .gitignore, which would drop the generated token partials and compiled style*.css; `prepack` regenerates both. Note the release workflow publishes its own assembled package.json, not this one.",
+  "files": [
+    "src/**/*.js",
+    "stories/**",
+    "tokens/**",
+    "!**/__tests__/**",
+    "!**/__snapshots__/**"
+  ],
   "scripts": {
     "prepare": "node scripts/setup-git-hooks.cjs",
+    "prepack": "yarn scss",
     "hooks:install": "node scripts/setup-git-hooks.cjs",
+    "build:tokens": "node scripts/build-tokens.cjs",
     "build:icons": "node scripts/icon-build.cjs",
     "build:css-version": "node scripts/sync-css-version.js",
     "build": "NODE_ENV=production yarn run scss && storybook build -o docs-build-temp --stats-json && webpack --progress && node scripts/ai-manifest/generate-ai-manifest.js",
@@ -22,8 +32,8 @@
     "dev": "NODE_ENV=development yarn run scss-watch & yarn run storybook",
     "storybook": "NODE_ENV=development storybook dev -p 6006",
     "update-cdn-version": "node scripts/update-cdn-version.js",
-    "scss": "yarn build:icons && yarn build:css-version && sass ./stories/assets/scss:./stories/assets/css --silence-deprecation import",
-    "scss-watch": "yarn build:icons && yarn build:css-version && sass --watch ./stories/assets/scss:./stories/assets/css --silence-deprecation import",
+    "scss": "yarn build:tokens && yarn build:icons && yarn build:css-version && sass ./stories/assets/scss:./stories/assets/css --silence-deprecation import",
+    "scss-watch": "yarn build:tokens && yarn build:icons && yarn build:css-version && { node scripts/watch-tokens.cjs & } && sass --watch ./stories/assets/scss:./stories/assets/css --silence-deprecation import",
     "lint": "yarn run lint:css && yarn run lint:js",
     "prettier:check": "prettier --check \"stories/**/*.{js,jsx,ts,tsx,json,css,scss,md,mdx}\" --ignore-path .gitignore",
     "lint:js": "eslint --ignore-pattern '**/Table.jsx' ./stories --fix",
@@ -138,7 +148,8 @@
     "typescript": "^6.0.3",
     "webpack": "5.109.0",
     "webpack-bundle-analyzer": "^5.3.2",
-    "webpack-cli": "7.2.2"
+    "webpack-cli": "7.2.2",
+    "yaml": "^2.4.2"
   },
   "dependencies": {
     "@mdx-js/loader": "3.1.1",

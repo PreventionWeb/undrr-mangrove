@@ -253,9 +253,13 @@
 .mg-mega-content__left,
 .mg-mega-content__right,
 .mg-mega-topbar__item-link {
+  // Was `-webkit-focus-ring-color auto 1px`, which hands the indicator to the
+  // browser: a WebKit/Blink-only keyword that renders nothing in Firefox, and
+  // that no Mangrove token can reach. These panels and topbar links sit on
+  // --mg-color-neutral-0, so the two-band ring is legible and consistent with
+  // every other focusable surface in the library.
   &:focus-visible {
-    outline: -webkit-focus-ring-color auto 1px;
-    outline-offset: 1px;
+    @include mg-focus-ring;
   }
 }
 
@@ -304,7 +308,7 @@
 
     &:hover,
     &:focus-visible {
-      background: rgb(var(--mg-color-blue-900) / 0.15);
+      background: rgb(var(--mg-color-interactive) / 0.15);
       text-decoration: underline;
     }
 
@@ -330,7 +334,7 @@
       margin-inline-start: calc(-1 * var(--mg-spacing-200));
       border-inline-start: 4px solid rgb(var(--mg-color-interactive)); // RTL-friendly vertical rule
       text-decoration: underline;
-      background: rgb(var(--mg-color-blue-900) / 0.15);
+      background: rgb(var(--mg-color-interactive) / 0.15);
 
       &::after {
         opacity: 1;
@@ -386,10 +390,12 @@
   animation: mg-mega-content-swap 180ms ease-out;
 }
 
-/* Stronger keyboard focus ring for accessibility */
+/* Stronger keyboard focus ring for accessibility.
+   Was a hardcoded white inset ring, which is invisible here: the panel is
+   --mg-color-neutral-0 and the focused link tints it only 15%, so white
+   measured 1.28:1. The default focus ring measures 4.22-4.58:1 across the five themes on that tint. */
 .mg-mega-content__section-list-link:focus-visible {
-  outline: 2px solid rgb(var(--mg-color-white));
-  outline-offset: -2px;
+  @include mg-focus-ring;
 }
 
 .mg-mega-content__right {
@@ -592,9 +598,13 @@
     color: rgb(var(--mg-color-white));
   }
 
+  // Was `-webkit-focus-ring-color auto 2px` inset by 1px. On mobile this row
+  // is filled with --mg-color-interactive, so an inset brand-adjacent ring is
+  // drawn straight onto the brand colour; the inset two-band keeps the ring
+  // inside the full-bleed row (an outward ring would be clipped by the
+  // sidebar) while giving it a separator to be judged against.
   &:focus-visible {
-    outline: -webkit-focus-ring-color auto 2px;
-    outline-offset: -1px;
+    @include mg-focus-ring-inset;
   }
 
   // Rotate arrow icon when section is expanded

@@ -1,0 +1,114 @@
+import { Meta, Canvas } from '@storybook/addon-docs/blocks';
+import * as StatusLabelStories from './StatusLabel.stories';
+
+<Meta of={StatusLabelStories} />
+
+> If you are creating or modifying this component, see [docs/REVIEW-CHECKLIST.md](../../../docs/REVIEW-CHECKLIST.md) for Mangrove's component standards.
+
+# Status label
+
+A workflow status shown as a coloured indicator followed by the status name. Use it in record and event lists, on a record's own page, and anywhere a piece of content has an editorial state a reader or editor needs to see.
+
+CSS only. There is no React component and no JavaScript — the markup is two elements, so Drupal, Twig, and plain HTML consumers can emit it directly.
+
+## Usage
+
+### HTML
+
+```html
+<span class="mg-status-label mg-status-label--published">
+  <span class="mg-status-label__indicator"></span>
+  Published
+</span>
+```
+
+The indicator is an empty `<span>`, not an icon font or an image, so it needs no alternative text. The status name is always present as real text.
+
+### The four DELTA statuses
+
+| Modifier                                | Label                        | Indicator |
+| --------------------------------------- | ---------------------------- | --------- |
+| `.mg-status-label--draft`               | Draft                        | `#f4e496` |
+| `.mg-status-label--waiting-information` | Waiting for more information | `#bcae67` |
+| `.mg-status-label--waiting-validation`  | Waiting for validation       | `#fec124` |
+| `.mg-status-label--published`           | Published                    | `#0a6969` |
+
+Used without a modifier the indicator is neutral grey. Prefer that for a status outside this workflow rather than borrowing a colour that already means something else.
+
+## Where these values come from
+
+The colours, the geometry, and the four status names are taken from the DELTA design system board **"Status Labels for Records and Events"** (Elements & Patterns → 02 Components).
+
+The colour-to-label mapping was read off the board's own swatch/label pairs. Each 44 × 44 swatch sits directly to the left of its label, and the two are vertically centred on each other to within 2px:
+
+| Swatch (y range)      | Label (y range)                          | Centres     |
+| --------------------- | ---------------------------------------- | ----------- |
+| `#f4e496` (2720–2764) | Draft (2728–2758)                        | 2742 / 2743 |
+| `#bcae67` (2768–2812) | Waiting for more information (2775–2805) | 2790 / 2790 |
+| `#fec124` (2817–2861) | Waiting for validation (2822–2852)       | 2839 / 2837 |
+| `#0a6969` (2863–2907) | Published (2869–2899)                    | 2885 / 2884 |
+
+The dot-plus-text shape rather than a filled pill is also from the file: the board's own table example and its "Colors in Status Dropdown" both draw a 14px circle, an 8px gap, and the status name at 16px. No filled status pill appears anywhere on the design system pages.
+
+Two of the four colours were already in Mangrove: `--mg-color-accent-100` is `#f4e496` and `--mg-color-accent-400` is `#0a6969`. The published teal differs from the Figma swatch by one unit in the blue channel (`#0a6969` vs `#0a696a`) — the existing token is used rather than a near-duplicate. `--mg-color-accent-500` and `--mg-color-accent-600` were added for the remaining two.
+
+## Accessibility
+
+- **SC 1.4.1 Use of colour.** The status name is always rendered as text, so the indicator is reinforcement, never the message. Do not build an indicator-only variant.
+- **SC 1.4.3 Contrast (minimum).** The label text resolves to `--mg-color-text` (`#1a1a1a`), 17.40:1 on a white page and 15.63:1 on a tinted panel.
+- **SC 1.4.11 Non-text contrast.** The four indicator fills are 1.28:1 (draft), 1.63:1 (waiting for validation), 2.24:1 (waiting for more information) and 6.49:1 (published) against white. Three of the four would be close to invisible unbounded, so every indicator carries a 1px `--mg-color-neutral-500` ring at 5.74:1. Because the dots are decorative the ring is not strictly required by 1.4.11, but without it the component looks broken on a white page. Set `--mg-status-label-indicator-border-width: 0` to remove it.
+- **Grouping.** When several statuses appear together as a legend, use `.mg-status-label-group` on a `<ul>` so screen readers announce the count.
+- **RTL.** The component is laid out with flex and logical properties. The indicator moves to the right of the text under `dir="rtl"` with no extra CSS.
+
+<Canvas of={StatusLabelStories.RightToLeft} />
+
+## Examples
+
+### All statuses
+
+<Canvas of={StatusLabelStories.AllStatuses} />
+
+### Neutral
+
+<Canvas of={StatusLabelStories.Neutral} />
+
+### In a table
+
+<Canvas of={StatusLabelStories.InATable} />
+
+## CSS class reference
+
+| Class                                   | Description                              |
+| --------------------------------------- | ---------------------------------------- |
+| `.mg-status-label`                      | Base element; indicator plus text        |
+| `.mg-status-label__indicator`           | The coloured dot (decorative, empty)     |
+| `.mg-status-label--draft`               | Draft                                    |
+| `.mg-status-label--waiting-validation`  | Waiting for validation                   |
+| `.mg-status-label--waiting-information` | Waiting for more information             |
+| `.mg-status-label--published`           | Published                                |
+| `.mg-status-label-group`                | Unstyled list wrapper for several labels |
+
+## Design tokens
+
+| Token                                              | Default                  | Description                      |
+| -------------------------------------------------- | ------------------------ | -------------------------------- |
+| `--mg-status-label-gap`                            | `--mg-spacing-75`        | Space between indicator and text |
+| `--mg-status-label-font-size`                      | `16px`                   | Label text size                  |
+| `--mg-status-label-color`                          | `--mg-color-text`        | Label text colour                |
+| `--mg-status-label-indicator-size`                 | `14px`                   | Indicator diameter               |
+| `--mg-status-label-indicator-radius`               | `50%`                    | Indicator shape                  |
+| `--mg-status-label-indicator-border-width`         | `1px`                    | Indicator ring width             |
+| `--mg-status-label-indicator-border-color`         | `--mg-color-neutral-500` | Indicator ring colour            |
+| `--mg-status-label-indicator`                      | `--mg-color-neutral-100` | Neutral indicator fill           |
+| `--mg-status-label-indicator--draft`               | `--mg-color-accent-100`  | Draft                            |
+| `--mg-status-label-indicator--waiting-validation`  | `--mg-color-accent-500`  | Waiting for validation           |
+| `--mg-status-label-indicator--waiting-information` | `--mg-color-accent-600`  | Waiting for more information     |
+| `--mg-status-label-indicator--published`           | `--mg-color-accent-400`  | Published                        |
+
+### Theming
+
+No sub-brand overrides these tokens. PreventionWeb, IRP and MCR2030 have no defined workflow status palette, so they inherit DELTA's; a brand that needs its own should redefine the four `--mg-status-label-indicator--*` properties inside its `.mg-theme-*` block rather than restyling the modifiers.
+
+## Changelog
+
+- **1.0** — 2026-09-02: Initial release. Colours, geometry and status names sourced from the DELTA design system board "Status Labels for Records and Events".

@@ -257,7 +257,32 @@ Mangrove uses two distinct token mechanisms:
 
 **CSS custom properties** (`--mg-color-*`, `--mg-spacing-*`): color and spacing tokens defined in the compiled output. Themes override these at runtime via a `.mg-theme-{name} { }` selector block in `_theme-{name}.scss`. Applying the class to `<body>` or a wrapping element activates the theme without any CSS rebuild.
 
-**Build-time SCSS `!default` variables**: used for tokens that must be resolved at compile time and cannot be overridden at runtime. This includes breakpoints (`$mg-breakpoint-*`), font sizes (`$mg-font-size-*`), font families (`$mg-font-family-*`), and `$mg-tabs-border-bottom`. When adding new build-time-only variables, include `!default` so consuming projects can override them before importing Mangrove. (`$mg-html-font-size` is the exception — it is fixed at `16`, see below.)
+**Build-time SCSS `!default` variables**: used for tokens that must be resolved at compile time and cannot be overridden at runtime. This includes breakpoints (`$mg-breakpoint-*`), font sizes (`$mg-font-size-*`), font families (`$mg-font-family-*`), and `$mg-tabs-border-bottom`. These carry `!default` so a consuming project can override them before importing Mangrove; include it on any new build-time variable for the same reason. (`$mg-html-font-size` is the exception — it is fixed at `16`, see below.)
+
+### Why a custom token generator
+
+`scripts/build-tokens.cjs` is bespoke, and Style Dictionary is the obvious
+off-the-shelf alternative. It was evaluated against these sources rather than
+in the abstract, and rejected on three findings:
+
+- **It would reintroduce a bug this codebase just fixed.** Style Dictionary's
+  `deepExtend` replaces the whole token object on a three-layer merge, dropping
+  `$type`, `$description` and `$extensions`. All four sub-brands are three-layer
+  (`irp`, `mcr`, `preventionweb` and `delta` all extend `undrr`, which sits over
+  `mangrove`), so metadata would be lost on four of five brands -- which is
+  exactly the `$format` clobber the `CARRIED` list exists to prevent. The
+  merge logic would have to be kept anyway.
+- **It costs more code, not less.** Reproducing today's output needs roughly
+  450-550 lines of config and hooks against 602 non-comment lines now, ~130 of
+  which port over unchanged. Net saving of 50-150 lines for a 106-package
+  dependency.
+- **The validation it exists for has no equivalent.** `assertChannels` -- the
+  shape check that catches a colour emitted in the wrong form -- has no Style
+  Dictionary counterpart, and its reference and duplicate-name diagnostics are
+  warn-by-default, with escalation colliding with warnings worth keeping.
+
+Revisit if the sources need to round-trip with Figma or Tokens Studio, or if a
+third output target appears. Both would change the arithmetic.
 
 ### Root font-size and the mg-rem() function
 
@@ -282,8 +307,8 @@ When writing component SCSS, use `mg-rem()` or an existing token. Never hard-cod
 
 ```scss
 // Correct
-padding: mg-rem(15);       // 15px at any root
-padding: $mg-spacing-150;  // same thing, via the token
+padding: mg-rem(15);                  // 15px at any root
+padding: var(--mg-spacing-150);       // same thing, via the token
 
 // Wrong — breaks when root changes
 padding: 1.5rem;
@@ -296,3 +321,4 @@ padding: 1.5rem;
 - [Hydration guide](HYDRATION.md) — consumer-facing integration guide
 - [Adding hydration support](HYDRATION-AUTHORING.md) — contributor guide for `fromElement`, barrel files, and tests
 - [Testing guide](TESTING.md) — unit, visual, and accessibility testing
+- [Colour contrast methodology](COLOUR-CONTRAST-METHODOLOGY.md) — why token contrast is graded perceptually rather than by WCAG 2 alone

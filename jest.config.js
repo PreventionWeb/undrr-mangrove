@@ -27,12 +27,26 @@ const config = {
   // The regexp pattern or array of patterns that Jest uses to detect test files
   testRegex: ['(/__tests__/.*|\\.(test|spec))\\.(js|jsx)$'],
 
+  // Build output contains copies of the source tree, including its test files.
+  // Those copies compile against a flattened directory layout and fail, so
+  // `yarn test` would break for anyone who had previously run `yarn build`.
+  testPathIgnorePatterns: [
+    '/node_modules/',
+    '/dist/',
+    '/docs-build-temp/',
+    '/storybook-static/',
+  ],
+
   // A map from regular expressions to paths to transformers
   transform: {
     '^.+\\.(js|jsx)$': 'babel-jest',
     '.+\\.(svg|css|styl|less|sass|scss|png|jpg|ttf|woff|woff2)$':
       'jest-transform-stub',
   },
+
+  // Generated build output the suites depend on is not committed, so make
+  // sure it exists before any suite runs. See jest.global-setup.cjs.
+  globalSetup: '<rootDir>/jest.global-setup.cjs',
 
   // Setup files to run before each test
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],

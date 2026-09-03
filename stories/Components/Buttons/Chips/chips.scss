@@ -39,16 +39,17 @@
 
   &:focus-visible {
     border-radius: 999px;
-    box-shadow:
-      0 0 0 var(--mg-focus-ring-offset) rgb(var(--mg-color-neutral-0)),
-      0 0 0 calc(var(--mg-focus-ring-offset) + var(--mg-focus-ring-width))
-        rgb(var(--mg-color-focus-ring));
-    outline: 0;
+
+    @include mg-focus-ring;
   }
 
   @media (forced-colors: active) {
     border: 1px solid ButtonText;
 
+    // Deliberately does NOT read --mg-color-focus-ring. In forced-colors
+    // mode the UA discards author colours, so a token would be dropped and
+    // the ring lost; `Highlight` is the system keyword the OS substitutes
+    // with the user's own chosen focus colour. Leave as-is.
     &:focus-visible {
       outline: 2px solid Highlight;
       outline-offset: 2px;

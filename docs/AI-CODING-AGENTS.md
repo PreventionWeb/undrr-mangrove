@@ -1,6 +1,6 @@
 # AI coding agent guidelines
 
-> Edits to this file show up on both [GitHub](https://github.com/unisdr/undrr-mangrove/blob/main/docs/AI-CODING-AGENTS.md) and in [Storybook](https://unisdr.github.io/undrr-mangrove/?path=/docs/contributing-ai-coding-agent-guidelines--docs).
+> This file is GitHub-only: no MDX imports it, so it does not appear in Storybook. (`docs/AI-MCP-INTEGRATION.md` is the one `docs/*.md` file that is wrapped into a Storybook page.)
 
 Practical guidance for AI coding agents (Claude Code, Cursor, Copilot, etc.) working on Mangrove. This covers the specific gaps between how human developers and AI agents approach code changes — the edge cases where an agent naturally drifts from the project's workflow.
 
@@ -18,7 +18,7 @@ Key items agents commonly miss:
 - **Story source examples** must match current class names (stale HTML in `parameters.docs.source.code` is invisible to tests but misleads consumers)
 - **CSF3 format** for stories (no `Template.bind({})`)
 - **Storybook imports**: use `import { Meta, Canvas } from '@storybook/addon-docs/blocks'` — not `@storybook/blocks` (that package was removed in Storybook 9; this project is on Storybook 10)
-- **Storybook links**: use `<LinkTo kind="..." story="...">` from `@storybook/addon-links/react` for prose story links. Never use `href="/?path=..."` or `href="?path=..."` — all MDX and stories render inside the preview iframe, so plain `<a href>` navigates the iframe directly, stripping the Storybook UI shell. For interactive navigation that also sets a global (e.g., theme-switching cards), use `linkTo` + `useGlobals` from `@storybook/preview-api` in an onClick handler — see the `StorybookNavCard` component in `stories/Documentation/Brand/components/` as a reference, and the [Component guide — Linking within Storybook docs](COMPONENT-GUIDE.md) section.
+- **Storybook links**: use `<LinkTo kind="..." story="...">` from `@storybook/addon-links/react` for prose story links. Never use `href="/?path=..."` or `href="?path=..."` — all MDX and stories render inside the preview iframe, so plain `<a href>` navigates the iframe directly, stripping the Storybook UI shell. For interactive navigation that also sets a global (e.g., theme-switching cards), use `linkTo` from `@storybook/addon-links` plus `addons.getChannel()` from `storybook/preview-api` (bare `storybook/`, not `@storybook/` — Storybook 10 moved it, and `@storybook/preview-api` is not installed) in an onClick handler. Do not reach for the `useGlobals` hook here: Storybook hooks can only be called inside a story or decorator function. See the `StorybookNavCard` component in `stories/Documentation/Brand/components/` as a reference, and the [Component guide — Linking within Storybook docs](COMPONENT-GUIDE.md) section.
 
 ## Keeping the AI manifest in sync
 
@@ -47,16 +47,16 @@ return null;
 return <></>;
 ```
 
-### PropTypes coverage: the practical ceiling is ~87%
+### PropTypes coverage: there is a practical ceiling
 
-`yarn validate-manifest` reports the share of components with documented `propTypes`. As of v1.7.0 the ceiling is **~87% (61 of 70)** and reaching it took two scoped passes (#1005, #1007). The remaining 9 entries are *not* PropTypes gaps to chase — they are manifest entries that do not have a React prop contract by design. Don't open PRs trying to push the percentage higher unless you're changing what the manifest classifies as a "component".
+`yarn validate-manifest` reports the share of components with documented `propTypes`. As of v2.0.0-alpha.3 it stands at **84% (57 of 68)**; reaching the earlier ceiling took two scoped passes (#1005, #1007). The remaining 11 entries are *not* PropTypes gaps to chase — they are manifest entries that do not have a React prop contract by design. Don't open PRs trying to push the percentage higher unless you're changing what the manifest classifies as a "component".
 
-The 9 currently exempt entries, grouped by why:
+The 11 currently exempt entries, grouped by why (re-derive the count with `yarn validate-manifest` rather than trusting this number):
 
 | Why | Entries |
 |---|---|
 | **CSS-utility documentation pages** (catalogue utility classes; no React props) | `Fontsizeutilities`, `Normalize`, `Typography`, `UtilityCSS` |
-| **Vanilla CSS patterns with no `.jsx` file** (consumed as HTML + class names; correctly listed as vanilla-HTML in the manifest) | `Tag` |
+| **Vanilla CSS patterns with no `.jsx` file** (consumed as HTML + class names; correctly listed as vanilla-HTML in the manifest) | `Tag`, `Statuslabel`, `Emptystate` |
 | **Story-only examples / page templates** (single-shot demonstrations, not reusable components) | `TypographyIntegrationExample`, `Formvalidation`, `PageTemplateExample` |
 | **Intentional empty stubs** (design-token / layout demos with `Component.propTypes = {}`) | `Grid` |
 
@@ -127,7 +127,7 @@ Beyond standard React linting, these conventions have been codified through the 
 - **Lazy-init `useState` from computed values.** `useState(data.map(…))` re-runs the initializer every render — use `useState(() => data.map(…))`.
 - **Always return a cleanup from `useEffect`** for `setTimeout` / `setInterval` / `addEventListener` / subscriptions. Anything that registers must unregister on re-run and unmount.
 
-The editorial rules in this list (em-dashes, ellipses, English locale) operationalise the brand-voice policy. The source of truth for the editorial side lives in the Storybook `Brand/Written voice` page (`stories/Documentation/Brand/WrittenVoice.mdx`, introduced in PR #983), which catalogues the full set of house conventions with their UN-policy citations. When the brand doc and this section drift, the brand doc wins — this section is the developer-tooling view of those rules.
+The editorial rules in this list (em-dashes, ellipses, English locale) operationalise the brand-voice policy. The editorial source of truth is `stories/Documentation/ComponentContribution.mdx`, plus the `Brand/Brand guidelines` Storybook page. (An earlier revision of this doc pointed at `stories/Documentation/Brand/WrittenVoice.mdx`; no such file exists in the tree.) When the brand docs and this section drift, the brand docs win — this section is the developer-tooling view of those rules.
 
 ### Findings to triage carefully
 
@@ -137,7 +137,7 @@ Not every react-doctor finding wants fixing. Two flavours show up:
 
 Rules that fire correctly on patterns Mangrove deliberately uses. Don't suppress blindly, but also don't try to refactor them away.
 
-- **`react/no-danger` (`dangerouslySetInnerHTML`) ×20.** Mangrove is a Drupal component library; Hero, QuoteHighlight, Gallery, TextCta, MegaMenu/Section, Map, and ScrollContainer accept rich HTML authored in Drupal's text editor (sanitised at save time by Drupal's text-format pipeline). The rule will keep firing on legitimate call sites. Two acceptable patterns:
+- **`react/no-danger` (`dangerouslySetInnerHTML`), ~30 call sites.** Mangrove is a Drupal component library; Hero, QuoteHighlight, Gallery, TextCta, MegaMenu/Section and ScrollContainer accept rich HTML authored in Drupal's text editor (sanitised at save time by Drupal's text-format pipeline). The rule will keep firing on legitimate call sites. Two acceptable patterns:
   - **Sanitise inline** (gold standard) — `dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(item.summaryText) }}`. The component owns the sanitisation contract; callers can pass any string. See `IconCard.jsx`, `TextCta.jsx`.
   - **Caller-sanitised, documented contract** — `dangerouslySetInnerHTML={{ __html: item.html }}` with the PropTypes JSDoc explicitly declaring the prop pre-sanitised. The component trusts the caller; the contract must be stated in the prop documentation. See `Hero.jsx` — the `html` media variant documents: *"is a pre-sanitised HTML string rendered via dangerouslySetInnerHTML. The consumer (e.g. Drupal) must sanitise."*
 
@@ -146,16 +146,14 @@ Rules that fire correctly on patterns Mangrove deliberately uses. Don't suppress
   - Is the sanitisation contract documented in PropTypes JSDoc?
   - Prefer inline `// eslint-disable-next-line react/no-danger -- <reason>` over a file-level `/* eslint-disable react/no-danger */`.
 
-- **`react-doctor/rendering-hydration-mismatch-time` ×20.** Chart stories (`Histogram.stories.jsx`, `IndexChart.stories.jsx`) use `Math.random()` to generate fixture data. Fine in Storybook; would mismatch under SSR. The chart *components* themselves are server-safe — the *stories* are intentionally client-only.
 
 #### False positives
 
 Rules that fire but aren't actionable as written.
 
-- **`no-z-index-9999`** — the rule wants a 1–50 scale, but `_variables.scss` defines `$mg-z-index-modal: 5000` etc. by intent. Use the `$mg-z-index-*` tokens instead of raw numbers, accept that the rule will keep firing for tokenised values.
+- **`no-z-index-9999`** — the rule wants a 1–50 scale, but the token set defines `--mg-z-index-modal: 5000` etc. by intent. Use the `--mg-z-index-*` custom properties instead of raw numbers, and accept that the rule will keep firing for tokenised values. (These were `$mg-z-index-*` Sass variables in `_variables.scss` before 2.0; that file no longer contains any z-index at all.)
 - **`iframe-has-title`** when `title={a || 'fallback'}` — the static analyzer can't see through the `||` fallback. Titles are present and valid.
 - **`rendering-conditional-render`** flagged on identifiers prefixed with `show` / `is` (e.g. `showResultsCount`) — the rule infers from the variable name pattern and may fire on booleans.
-- **`effect-needs-cleanup`** on d3 chart components that have no `setTimeout` / `addEventListener` in source — likely a d3-pattern false positive.
 
 When you skip a finding, leave a one-line comment explaining why (or note it in the PR's *Out of scope* section) so the next agent doesn't re-investigate.
 
@@ -169,7 +167,7 @@ When you skip a finding, leave a one-line comment explaining why (or note it in 
 | Story source examples | Updates by habit | Doesn't notice stale static HTML | Check `parameters.docs.source.code` in `.stories.jsx` |
 | AI manifest | Updates after code changes | Doesn't know it exists | Check `scripts/ai-manifest/component-data.js` and `css-utilities.js` |
 | Compiled output | Inspects the result | Trusts the build succeeded | Verify class names in `stories/assets/css/style.css` after build |
-| Z-index values | Knows the layer system | Uses raw numbers | Use `$mg-z-index-*` tokens for global stacking (fixed/sticky/portaled); derive backdrops with `$token - 1`; use raw values + comments for local stacking inside a component's own stacking context |
+| Z-index values | Knows the layer system | Uses raw numbers | Use `--mg-z-index-*` custom properties for global stacking (fixed/sticky/portaled); derive backdrops with `calc(var(--token) - 1)`; use raw values + comments for local stacking inside a component's own stacking context |
 | Quality linter | Runs lint and tests | Skips additional component-quality checks | Run `npx -y react-doctor@latest .` after non-trivial changes; aim to leave the score equal or higher than where you found it |
 
 ## Related documentation

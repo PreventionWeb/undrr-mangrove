@@ -126,7 +126,7 @@
 
   a.mg-button:focus-visible {
     box-shadow: 0 0 0 2px rgb(var(--mg-color-neutral-0));
-    outline: 2px solid rgb(var(--mg-color-neutral-0));
+    outline: 2px solid rgb(var(--mg-color-focus-ring-inverse));
     outline-offset: 2px;
   }
 
@@ -418,7 +418,7 @@ $variant-colour-props: (
 
   a.mg-button:focus-visible {
     box-shadow: 0 0 0 2px rgb(var(--mg-color-neutral-0));
-    outline: 2px solid rgb(var(--mg-color-neutral-0));
+    outline: 2px solid rgb(var(--mg-color-focus-ring-inverse));
     outline-offset: 2px;
   }
 
@@ -549,8 +549,8 @@ $variant-colour-props: (
 }
 
 // Arabic font override for the title wrapper. $mg-font-family-headings is
-// Roboto Condensed which has no Arabic glyph coverage; route to Noto Kufi
-// Arabic. Scoped to heading tags + anchor so unrelated descendant content
+// Roboto Condensed which has no Arabic glyph coverage; route to the Arabic
+// family. Scoped to heading tags + anchor so unrelated descendant content
 // (slotted subtitles, body copy) keeps its own font.
 :lang(ar) {
   .mg-hero__title,

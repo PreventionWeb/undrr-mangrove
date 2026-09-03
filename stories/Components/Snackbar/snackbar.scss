@@ -110,7 +110,7 @@
     }
 
     &:focus-visible {
-      outline: 2px solid rgb(var(--mg-color-white));
+      outline: 2px solid rgb(var(--mg-color-focus-ring-inverse));
       outline-offset: 2px;
     }
 

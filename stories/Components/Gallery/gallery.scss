@@ -47,8 +47,7 @@
   }
 
   &:focus-visible {
-    outline: 2px solid rgb(var(--mg-color-interactive));
-    outline-offset: 2px;
+    @include mg-focus-ring;
   }
 
   &__image-wrapper {
@@ -242,8 +241,7 @@
     }
 
     &:focus-visible {
-      outline: 2px solid rgb(var(--mg-color-interactive));
-      outline-offset: 2px;
+      @include mg-focus-ring;
     }
 
     &--active {
@@ -369,9 +367,12 @@
       outline: none;
     }
 
+    // The pill is dark --mg-color-neutral-700, but the ring is offset 2px, so
+    // it is drawn clear of the pill on the --mg-color-neutral-50 letterbox of
+    // __image-wrapper, not on the pill. Measured there the default ring is
+    // 4.50:1 and an inverse ring 1.24:1 -- invisible. Keep the default ring.
     &:focus-visible {
-      outline: 2px solid rgb(var(--mg-color-interactive));
-      outline-offset: 2px;
+      @include mg-focus-ring;
     }
 
     &:disabled {
@@ -436,9 +437,12 @@
       outline: none;
     }
 
+    // The pill is dark --mg-color-neutral-700, but the ring is offset 2px, so
+    // it is drawn clear of the pill on the --mg-color-neutral-50 letterbox of
+    // __image-wrapper, not on the pill. Measured there the default ring is
+    // 4.50:1 and an inverse ring 1.24:1 -- invisible. Keep the default ring.
     &:focus-visible {
-      outline: 2px solid rgb(var(--mg-color-interactive));
-      outline-offset: 2px;
+      @include mg-focus-ring;
     }
 
     &:disabled {

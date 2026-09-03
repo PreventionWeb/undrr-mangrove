@@ -1,8 +1,12 @@
 # Mangrove 2.0 release notes
 
-Mangrove 2.0 combines two related workstreams: the runtime theming foundation published in `2.0.0-alpha.1`, and the experience and interaction baseline in `2.0.0-alpha.2`. See [PR #1061](https://github.com/unisdr/undrr-mangrove/pull/1061) for the first alpha and [PR #1086](https://github.com/unisdr/undrr-mangrove/pull/1086) for alpha.2. The tagged `v1.8.2...v2.0.0` comparison lands with the stable release.
+Mangrove 2.0 combines three related workstreams: the runtime theming foundation published in `2.0.0-alpha.1`, the experience and interaction baseline in `2.0.0-alpha.2`, and the design token pipeline proposed for `2.0.0-alpha.3`. See [PR #1061](https://github.com/unisdr/undrr-mangrove/pull/1061) for the first alpha, [PR #1086](https://github.com/unisdr/undrr-mangrove/pull/1086) for alpha.2 and [PR #1087](https://github.com/unisdr/undrr-mangrove/pull/1087) for alpha.3. The tagged `v1.8.2...v2.0.0` comparison lands with the stable release.
 
 > **If you consume the base UNDRR compiled CSS (CDN or prebuilt), no sub-brand theming:** the alpha.1 theming migration requires no integration change. Alpha.2 intentionally refreshes component presentation and interaction while retaining existing Drupal hydration and BEM contracts, apart from the deprecated Pagination removal.
+>
+> **Alpha.3 adds no required integration change, but it does change three system-wide defaults that every consumer will see, in every theme:** the neutral ramp's surface half is now cool-tinted, the keyboard focus ring is no longer the brand colour, and the focus ring is drawn as two bands. See [Alpha.3](#alpha3-token-pipeline-and-colour-methodology).
+>
+> **DELTA consumers: your palette changed.** DELTA was built on a navy that appears nowhere in DELTA's own codebase. Alpha.3 replaces it with DELTA's real sourced palette. This is the one theme whose compiled output moves beyond the three shared defaults. See [DELTA's palette is corrected](#deltas-palette-is-corrected).
 >
 > **If you consume a sub-brand compiled stylesheet** (PreventionWeb, IRP, MCR, DELTA): one required change — add the matching `mg-theme-*` class to `<body>` or a wrapping element, or components fall back to the default UNDRR palette. See [Sub-brand theming migration](#sub-brand-theming-migration).
 >
@@ -12,7 +16,7 @@ Mangrove 2.0 combines two related workstreams: the runtime theming foundation pu
 
 ## Try the alpha
 
-2.0 ships as a **prerelease** under the `next` dist-tag, so it never lands on `latest` — a plain `npm install @undrr/undrr-mangrove` stays on 1.x until 2.0 is stable. This release is `2.0.0-alpha.2`; until the manual publish completes, `@next` may still resolve to alpha.1.
+2.0 ships as a **prerelease** under the `next` dist-tag, so it never lands on `latest` — a plain `npm install @undrr/undrr-mangrove` stays on 1.x until 2.0 is stable. This release is `2.0.0-alpha.3`; until the manual publish completes, `@next` may still resolve to an earlier alpha.
 
 ```bash
 # npm (prerelease tag — does not become your default version)
@@ -21,8 +25,8 @@ npm install @undrr/undrr-mangrove@next
 
 ```html
 <!-- CDN, versioned path (pick the base or a sub-brand stylesheet) -->
-<link rel="stylesheet" href="https://assets.undrr.org/static/mangrove/2.0.0-alpha.2/css/style.css">
-<link rel="stylesheet" href="https://assets.undrr.org/static/mangrove/2.0.0-alpha.2/css/style-preventionweb.css">
+<link rel="stylesheet" href="https://assets.undrr.org/static/mangrove/2.0.0-alpha.3/css/style.css">
+<link rel="stylesheet" href="https://assets.undrr.org/static/mangrove/2.0.0-alpha.3/css/style-preventionweb.css">
 ```
 
 For a compiled-CSS consumer the entire trial is two lines: swap the stylesheet href above, and — for a sub-brand — add `class="mg-theme-{brand}"` to `<body>` or a wrapping element. Found a problem? See [where to report](#feedback).
@@ -33,6 +37,7 @@ For a compiled-CSS consumer the entire trial is two lines: swap the stylesheet h
 |---|---|---|
 | `2.0.0-alpha.1` | Published under `next` | CSS custom-property theming, 16px root and sub-brand runtime selectors |
 | `2.0.0-alpha.2` | Prepared for manual release in [PR #1086](https://github.com/unisdr/undrr-mangrove/pull/1086) | Experience principles, component surfaces, interaction states, responsive behaviour and multilingual resilience |
+| `2.0.0-alpha.3` | Proposed in [PR #1087](https://github.com/unisdr/undrr-mangrove/pull/1087), not yet published | Design token pipeline, status and empty-state components, data-visualisation palette and a perceptual colour-contrast methodology |
 
 ### Alpha.2 experience and interaction baseline
 
@@ -51,14 +56,53 @@ Alpha.2 applies a shared experience direction without mechanically homogenising 
 
 Alpha.2 has been checked across desktop and mobile layouts, Chromium and Firefox, RTL, long labels, keyboard focus, reduced motion, forced colours and representative UNDRR themes. See the [Experience principles](https://unisdr.github.io/undrr-mangrove/?path=/docs/design-decisions-experience-principles--docs) for the design guardrails behind these changes.
 
+### Alpha.3 token pipeline and colour methodology
+
+A foundation release. No required integration change, but **three defaults change for every consumer in every theme**, and DELTA's palette is corrected further.
+
+**Design tokens have a source.** Brand palettes move from hand-maintained SCSS to YAML sources under `tokens/`, compiled into the same CSS and Sass the library already used. The format borrows [W3C DTCG](https://tr.designtokens.org/)'s vocabulary rather than conforming to it, so it is not consumable by DTCG tooling as it stands. The build fails on an unknown or circular reference, a duplicate output name or a wrong token shape. Generated output is no longer committed — `yarn scss` produces it and a Jest `globalSetup` writes anything missing, so a fresh clone still tests clean. Base, PreventionWeb, IRP and MCR values are unchanged; three tokens change shape ([breaking change #7](#7-three-button-tokens-changed-shape)).
+
+**The neutral ramp's surface half is cool-tinted.** `neutral-25` through `neutral-400` gain a small cool tint — `#f2f2f2` → `#f0f3f6`, `#808080` → `#7e8082`, and four steps between. The page (`neutral-0`) and the dark half — text, rules, shadows — are untouched. No graded contrast pair loses on either measure. Nothing to do, unless your own stylesheet restates Mangrove's greys as literal hex; read `rgb(var(--mg-color-neutral-25))` instead.
+
+**The focus ring is no longer the brand colour.** It was aliased to `--mg-color-interactive`, so focus and selection were the same signal. It is now `--mg-color-gold-800` (`#866200`) in every theme. The focused field's *border* stays brand-coloured — the border says the field is active, the ring says the keyboard is here. To put a brand ring back, set `--mg-color-focus-ring` on `:root` or your theme selector.
+
+**The ring is now two bands, which fixed two real defects.** A separator against the control, then the ring — shipped as `mg-focus-ring` / `mg-focus-ring-inset`. Doing it properly surfaced a **checked radio with no focus indicator at all** (WCAG 2.4.7, level A) and **`.mg-button`, `.mg-chip` and the form inputs with none in forced-colours mode**. `Tab` is fixed too: in DELTA its ring was drawn in the tab's own fill at 1.00:1.
+
+**New components.** `StatusLabel` (`--draft`, `--published`, `--waiting-validation`, `--waiting-information`) and `EmptyState` (`--compact`, `--panel`, `--start`).
+
+**A data-visualisation palette with real Sendai semantics.** `--mg-sendai-target-a` through `-g` express the seven framework targets. The old `--sendai-red|orange|purple|turquoise` tokens and their utility classes are **deprecated** — they are accent hues named by colour, carrying no framework meaning. They keep working until 2.1.
+
+**Colour contrast is graded twice.** Every token pair is measured with WCAG 2 and an [Oklab](https://www.w3.org/TR/css-color-4/#ok-lab) perceptual measure, across every theme and state, and the build fails if a pair passes perceptually while WCAG 2 fails it. Pairs that cannot yet meet the target are recorded as explicit exceptions rather than excluded. APCA was evaluated and rejected on licensing grounds — see [Colour contrast methodology](https://github.com/unisdr/undrr-mangrove/blob/main/docs/COLOUR-CONTRAST-METHODOLOGY.md).
+
+#### DELTA's palette is corrected
+
+DELTA's theme was built on a navy that appears nowhere in DELTA's own codebase. Alpha.3 reads its colours from DELTA's production repository and design file instead: its brand blue is UNDRR blue, and UNDRR Teal is a genuine second brand colour Mangrove had collapsed into the primary. **26 of DELTA's 57 tokens move, and its buttons become filled** — previously navy text on no background, now white on brand blue. If your DELTA site restates any of these colours, it will need updating. Per-token values are in the [changelog](https://github.com/unisdr/undrr-mangrove/blob/main/CHANGELOG.md).
+
+#### Arabic text uses one family
+
+Arabic headings were Noto Kufi Arabic and body was Dubai. Both are now Dubai, so Arabic readers download one font instead of two. Only Regular and Bold exist upstream, so Arabic has a 400/700 ladder where Latin has four steps; nothing is faux-bolded.
+
+Two caveats worth stating. Dropping Kufi is a judgement, not a correction — the UAE Federal Design System and OCHA's own base theme both set it for body. And **the Dubai licensing position is unresolved**: its EULA forbids redistribution and requires the font be embedded so it cannot be extracted, while Mangrove serves it as a plain woff2 from an open CDN. That needs a legal read. Both are tracked in [issue #1089](https://github.com/unisdr/undrr-mangrove/issues/1089), along with the fact that OCHA — where Mangrove got Dubai — moved off it in May 2026.
+
+#### Not yet resolved
+
+These are known and deliberately unfinished in alpha.3:
+
+- Sub-brand tab colours are not wired into the alpha.2 underline tab treatment. The brands designed a filled tab (white on a solid brand background); piping those colours into an underline on a white page measures 1.00:1. Resolving it is a design decision, not a wiring change.
+- The accent ramp is the largest remaining accessibility debt and is the reason most of the 65 WCAG exceptions exist. Retuning it is a brand decision.
+- Forced-colours behaviour has not been verified in real Windows High Contrast, only in emulation. The two-band mixins are built to degrade correctly there, but that is reasoned, not observed.
+- `--mg-color-focus-ring-inverse` resolves to white in all five themes, so it is a seam with nothing behind it yet. It earns its keep only when a theme retunes it.
+
 ## Find your path
 
 | I am... | Go to... |
 |---|---|
 | A **base UNDRR** Drupal/CDN consumer, no custom SCSS | [What changed visually](#what-changed-visually) and [the alpha.2 baseline](#alpha2-experience-and-interaction-baseline) |
 | A **sub-brand** Drupal/CDN consumer (PW, IRP, MCR, DELTA) | [Sub-brand theming migration](#sub-brand-theming-migration) — add the `mg-theme-*` body class |
+| A **DELTA** consumer | [DELTA's palette is corrected](#deltas-palette-is-corrected) — your brand colours changed |
 | A developer who imports Mangrove SCSS | [Breaking changes](#breaking-changes) |
 | A developer who overrides sub-brand tokens | [Sub-brand theming migration](#sub-brand-theming-migration) |
+| A developer who uses the **`--sendai-*` accent colours** | [Alpha.3](#alpha3-token-pipeline-and-colour-methodology) — deprecated, replaced by `--mg-sendai-target-a`…`-g` |
 | An AI agent or tool reading this for API context | [Token API summary](#token-api-summary) |
 
 ## What changed visually
@@ -66,6 +110,10 @@ Alpha.2 has been checked across desktop and mobile layouts, Chromium and Firefox
 In **alpha.1**, colors and spacing remain visually equivalent for base UNDRR consumers: the values moved from SCSS variables to CSS custom properties, but the compiled `style.css` output is equivalent.
 
 **Alpha.2** intentionally refreshes the presentation and interaction of core components. It introduces softer theme-aware surfaces, clearer focus and hover states, more consistent responsive spacing, joined form actions and stronger multilingual behaviour. Semantic shapes remain component-specific: carousel controls stay circular, chips retain meaningful pill geometry and institutional chrome continues to express its owning theme.
+
+**Alpha.3** changes three things in every theme — the neutral ramp's surface half is cool-tinted, the focus ring is gold rather than the brand colour, and that ring is now two bands — plus DELTA's palette, corrected against its own design sources. The tint is subtle per surface and cumulative across a page. DELTA's buttons in particular go from unfilled navy text to white on brand blue. See [Alpha.3](#alpha3-token-pipeline-and-colour-methodology).
+
+Otherwise the token rewrite carries the values it started with, apart from [three tokens that changed shape](#7-three-button-tokens-changed-shape). `StatusLabel` and `EmptyState` are additions no existing component uses.
 
 **Sub-brand consumers (PreventionWeb, IRP, MCR, DELTA) have one required change.** Brand colors previously baked into every component rule at compile time; they now live in a `.mg-theme-{brand}` selector block. Add `class="mg-theme-{brand}"` to `<body>` or a wrapping element, or components render with the default UNDRR palette instead of the brand palette. See [Sub-brand theming migration](#sub-brand-theming-migration).
 
@@ -164,6 +212,26 @@ There is no compatibility build; the 16px root is the only supported basis.
 
 The deprecated `Pagination` component, its stories and documentation are removed in alpha.2. Use `Pager`, which is the supported 2.0 pagination pattern. Existing consumers that still import or render `Pagination` must migrate before adopting this prerelease.
 
+### 7. Three button tokens changed shape
+
+Added in alpha.3. Three tokens moved from a bare RGB channel triple to a complete colour value. Components consumed them as `rgb(var(--token))` and now consume them as `var(--token)` directly.
+
+| Token | Before | After |
+|---|---|---|
+| `--mg-color-button-background` | channels — `0 79 145` | colour — `rgb(0 79 145)` |
+| `--mg-color-button-background--hover` | channels | colour |
+| `--mg-border-color-button` | channels | colour, and may be `transparent` |
+
+**Two of these break overrides.** `--mg-color-button-background` and `--mg-color-button-background--hover` are on the legacy-override warn list precisely because consumers set them. An override still written as channels is now invalid and the browser drops it silently — buttons lose their fill. Wrap the channels in `rgb()`:
+
+```scss
+.mg-theme-mytheme {
+  --mg-color-button-background: rgb(10 105 105); // was: 10 105 105
+}
+```
+
+**`--mg-border-color-button` is a fix.** It held channels but was consumed in a bare colour position, so the declaration was invalid in every theme and no button border was ever painted.
+
 ## Sub-brand theming migration
 
 **Consuming a compiled sub-brand stylesheet?** You do not touch SCSS at all — just add `class="mg-theme-{brand}"` (e.g. `mg-theme-preventionweb`) to `<body>` or a wrapping element. The compiled CSS already carries the brand block; the class is what activates it. Skip to [Apply the class](#sub-brand-theming-migration) below.
@@ -183,10 +251,14 @@ $mg-color-button-background: #0a6969 !default;
 ```scss
 // _theme-mytheme.scss
 .mg-theme-mytheme {
+  // Channel-triple token: consumed as rgb(var(--mg-color-interactive)).
   --mg-color-interactive:        var(--mg-color-teal-900);
-  --mg-color-button-background:  var(--mg-color-interactive);
+  // Full-colour token: wrap the channels in rgb() yourself.
+  --mg-color-button-background:  rgb(var(--mg-color-interactive));
 }
 ```
+
+> **Two token shapes.** Most palette tokens hold bare RGB channels (`0 79 145`) and components wrap them in `rgb()` at the point of use. A few hold a complete colour instead, because they have to be able to say `transparent` — a channel triple cannot. Assigning the wrong shape produces an invalid declaration that the browser drops silently. See [breaking change #7](#7-three-button-tokens-changed-shape) for the three tokens that changed.
 
 Apply the class in your HTML:
 

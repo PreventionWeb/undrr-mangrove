@@ -45,11 +45,7 @@
   // same-colour glow), follows the button's border-radius, and is not clipped
   // by overflow like an outline can be.
   &:focus-visible {
-    box-shadow:
-      0 0 0 var(--mg-focus-ring-offset) rgb(var(--mg-color-neutral-0)),
-      0 0 0 calc(var(--mg-focus-ring-offset) + var(--mg-focus-ring-width))
-        rgb(var(--mg-color-focus-ring));
-    outline: 0;
+    @include mg-focus-ring;
   }
 
   @include devicebreak(medium) {
@@ -64,19 +60,27 @@
   gap: var(--mg-spacing-75);
 }
 
-button {
-  &:focus-visible {
-    box-shadow: 0 0 4px rgb(var(--mg-color-button-background));
-    outline: 0;
-  }
-}
+// Removed: a bare `button:focus-visible { box-shadow: 0 0 4px
+// var(--mg-color-button-background); outline: 0; }` rule used to live here.
+
+// Two things were wrong with it. It was an unscoped element selector, so it
+// stripped the user-agent focus ring from every <button> in a consuming page,
+// including buttons Mangrove does not own and cannot style back. And what it
+// put in place was a glow in the button's own fill colour -- invisible against
+// the thing it surrounds -- which is the exact pattern the comment above
+// argues against.
+
+// It is not replaced with a scoped equivalent because none is needed:
+// .mg-button-primary/-secondary/-outline are only ever used alongside
+// .mg-button, which already takes the two-band ring above. Deleting the rule
+// hands unowned buttons back their UA outline, which is the correct default.
 
 .mg-button-primary {
-  background-color: rgb(var(--mg-color-button-background));
+  background-color: var(--mg-color-button-background);
 
   &:hover {
     color: rgb(var(--mg-color-button));
-    background-color: rgb(var(--mg-color-button-background--hover));
+    background-color: var(--mg-color-button-background--hover);
   }
 }
 
