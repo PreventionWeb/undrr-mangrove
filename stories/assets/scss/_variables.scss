@@ -32,7 +32,6 @@
 // ramps. A distinct concern from brand tokens, sourced from the DLDTS design
 // system. @import must precede rule blocks, hence its position here.
 @import "./tokens-data-viz";
-@import "./deprecated-sendai-accents";
 
 // Brand tokens. The palette, the spacing/type/width scales, the semantic
 // tier and every component token a brand can restyle are generated from
@@ -169,7 +168,12 @@ $mg-tabs-border-bottom: true !default;
   --mg-color-azure-light: #f0f8f8;
   --mg-color-ebony-clay: #3d4242;
 
-  // Sendai Framework
+  /* Sendai Framework accents -- DEPRECATED, removal in 2.1.
+   * Named by colour, not by Sendai meaning: --sendai-red-900 is byte-identical
+   * to --mg-color-red-900, three of the seven framework targets have no
+   * counterpart here, and --sendai-turquoise sits 16.0 dE00 from Target D as
+   * the framework's own design system defines it. For target semantics use
+   * --mg-sendai-target-a through -g. These keep working until removal. */
   --sendai-red-400: #d45363;
   --sendai-red-600: #cd3a4d;
   --sendai-red-800: #c72236;
