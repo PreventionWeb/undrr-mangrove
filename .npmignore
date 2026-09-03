@@ -17,3 +17,9 @@
 #
 # Positive selection (and the __tests__ exclusion) lives in package.json
 # "files". Add exclusions there, not here -- "files" wins over this file.
+#
+# One invariant that is now load-bearing: prepack runs `yarn scss`, which on
+# this branch chains `build:aria` and therefore writes aria/. That directory
+# is deliberately absent from "files", because the React Aria surface is not
+# distributed yet -- see the alpha.4 notes. Adding `aria/**` to "files" would
+# silently start publishing it.
