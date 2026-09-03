@@ -32,7 +32,7 @@ Proposed in [PR #1080](https://github.com/unisdr/undrr-mangrove/pull/1080). A fo
 - Stock `.react-aria-*` classes from [React Aria Components](https://react-spectrum.adobe.com/react-aria/) 1.20 are styled from Mangrove tokens, so React Aria components adopt the active `mg-theme-*` brand with no `className`, wrapper or configuration.
 - `aria/react-aria.css` and per-brand `aria/tokens/{brand}.css` are built standalone for consumers who do not load Mangrove's full stylesheet. Token files are wrapped in `:where(:root)` so Mangrove's own palette wins when both are present, regardless of load order. **Not distributed yet:** `aria/` is not copied into `dist/` or the published package, and the published `package.json` is regenerated without an `exports` field.
 - `aria/react-aria.layered.css` provides the same surface inside a `@layer mangrove` block. See `docs/CASCADE-LAYERS.md`.
-- **Known:** the surface also compiles into `style.css`, so it currently reaches every consumer — roughly 42 KB of a 313 KB stylesheet. Making it opt-in is unresolved.
+- **Known:** the surface also compiles into `style.css`, so it currently reaches every consumer — roughly 59 KB of a 355 KB stylesheet, comment-stripped. Making it opt-in is unresolved.
 
 #### Components and tokens
 
@@ -110,7 +110,7 @@ A deliberately non-brand focus colour is near-universal in public-sector design 
 
 **Migration.** Nothing to do unless you depend on the ring being brand-coloured. If you do, set `--mg-color-focus-ring` on `:root` or on your theme selector; a theme that overrides it owns both graded pairs above. `--mg-color-form-focus`, which drives the focused field's *border* (`--mg-aria-color-border-focus`), is unchanged and stays brand-coloured on purpose: the border says "this field is active", the ring says "the keyboard is here". Forced-colours mode is unaffected — focus indicators are already repainted to `CanvasText`.
 
-**Not yet covered.** Twelve component stylesheets draw their own focus outline from `--mg-color-interactive`, `--mg-color-blue-800` or a local Sass variable instead of `--mg-color-focus-ring`, so they keep a brand-coloured ring: `Gallery` (4 rules), `Tab`, `Boilerplate`, `Forms/_form-base` (`blue-800`) and `SyndicationSearchWidget` (6 rules, `$search-primary`). Routing those through the token is follow-up work.
+**Not yet covered.** Fourteen focus-outline rules across six component stylesheets draw from `--mg-color-interactive`, `--mg-color-blue-800` or a local Sass variable instead of `--mg-color-focus-ring`, so they keep a brand-coloured ring: `Gallery` (4 rules), `SyndicationSearchWidget` (6, `$search-primary`), `Pager`, `Tab`, `Boilerplate` and `Forms/_form-base` (`blue-800`). Routing those through the token is follow-up work.
 
 #### Deprecated: `--sendai-*` accent colours
 
@@ -119,7 +119,7 @@ A deliberately non-brand focus colour is near-universal in public-sector design 
 #### Colour contrast methodology
 
 - Token pairs are now graded with an [Oklab](https://www.w3.org/TR/css-color-4/#ok-lab)-based perceptual measure alongside WCAG 2's relative-luminance figure, calibrated so its thresholds align with the familiar 4.5:1 and 3:1 boundaries.
-- The suite makes 896 graded contrast assertions across the two measures, covering every theme, hover and active states and the legacy `.mg-*` components, and fails if any pair passes perceptually while WCAG 2 fails it. Pairs that cannot yet meet the target are recorded as explicit exceptions — 48 against WCAG 2, 59 against the perceptual measure.
+- Every foreground/background token pair is graded on both measures, covering every theme, hover and active states and the legacy `.mg-*` components, and fails if any pair passes perceptually while WCAG 2 fails it. Pairs that cannot yet meet the target are recorded as explicit exceptions — 48 against WCAG 2, 59 against the perceptual measure.
 - APCA was evaluated and rejected on licensing grounds. Reasoning in `docs/COLOUR-CONTRAST-METHODOLOGY.md`.
 
 ### `2.0.0-alpha.2` — 2026-09-01

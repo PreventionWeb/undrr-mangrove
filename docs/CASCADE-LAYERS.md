@@ -17,8 +17,8 @@ order — the order is yours to set.
 > **The layered file only helps if you are not also loading a Mangrove brand
 > stylesheet.** The React Aria surface is currently compiled into `style.css`
 > and into every brand sheet (`style-preventionweb.css`, `style-irp.css`,
-> `style-mcr.css`, `style-delta.css`, `style-all.css`) — about 30
-> `.react-aria-*` rules, unlayered. Because unlayered CSS beats layered CSS,
+> `style-mcr.css`, `style-delta.css`, `style-all.css`) — the whole
+> `.react-aria-*` surface, unlayered. Because unlayered CSS beats layered CSS,
 > that copy wins over `react-aria.layered.css` no matter what layer order you
 > declare. Adding the layered file on top of a brand stylesheet changes
 > nothing.
@@ -267,7 +267,7 @@ you still support pre-2022 browsers, ship the unlayered file.
 
 ## Design tokens stay unlayered
 
-`aria/tokens/mangrove.css` and `aria/tokens/delta.css` are deliberately **not**
+The `aria/tokens/*.css` files are deliberately **not**
 layered. They only declare custom properties, and keeping them out of a layer
 means a consumer can override a token from anywhere without thinking about layer
 order. Import them alongside either flavour.

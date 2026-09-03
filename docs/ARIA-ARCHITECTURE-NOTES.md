@@ -753,7 +753,7 @@ as "somebody decided".
 - **Should the React Aria surface be opt-in rather than compiled into every
   theme stylesheet?** `_components.scss` still imports `aria/react-aria`, so
   every Drupal and CDN consumer downloads it whether or not they run React.
-  It is ~56KB comment-stripped (110KB as authored) inside a ~320KB `style.css`,
+  It is ~59KB comment-stripped inside a ~355KB `style.css`,
   and it roughly doubled during this wave, so the cost is growing rather than
   static. This is a product decision, not a defect — but it should be a
   decision. **Owner: whoever signs off the 2.0 bundle.**
@@ -772,12 +772,15 @@ as "somebody decided".
   plus the brand owners** — it cannot be resolved by wiring.
 - **Component stylesheets that draw their own focus outline and bypass
   `--mg-color-focus-ring`.** A survey of `stories/Components` finds focus
-  outlines hardcoded in at least ten stylesheets — Gallery (4), Syndication
-  search widget (6), Hero (2), Pager, Tab, MegaMenu, Snackbar, TextCta,
-  Boilerplate and Forms — mostly `2px solid rgb(var(--mg-color-interactive))`,
-  which is the brand colour the ring was deliberately moved *away* from in
-  §9d. Two more (`PreviewAccess`) read `--mg-color-form-focus`, the field
-  border token, which is a near-miss rather than a hit.
+  outlines hardcoded in **24 rules across 13 stylesheets** — Syndication
+  search widget (6), Gallery (4), Hero, Card and PreviewAccess (2 each), and
+  one apiece in Boilerplate, Chips, Forms, MegaMenu, Pager, Snackbar, Tab and
+  TextCta. **Fourteen of those, across six files, read the brand colour the
+  ring was deliberately moved away from in §9d** (`--mg-color-interactive`,
+  `--mg-color-blue-800`, or the widget's local `$search-primary`); the rest
+  hardcode a neutral or read `--mg-color-form-focus`, the field border token,
+  which is a near-miss rather than a hit. Counts measured, not recalled: the
+  narrow query is the one the changelog quotes.
 
   The one to fix first is **`stories/Components/Forms/_form-base.scss:264`**,
   which hardcodes `rgb(var(--mg-color-blue-800))` — a UNDRR blue *primitive*,
