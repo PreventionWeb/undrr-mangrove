@@ -216,7 +216,9 @@ function HazardEventTable() {
               <StatusLabel status="Published" />
             </Cell>
             <Cell>
-              <time dateTime="2026-05-14">14 May 2026</time>
+              <time dir="auto" dateTime="2026-05-14">
+                14 May 2026
+              </time>
             </Cell>
           </Row>
           <Row id="flood">
@@ -229,7 +231,9 @@ function HazardEventTable() {
               <StatusLabel status="Waiting for validation" />
             </Cell>
             <Cell>
-              <time dateTime="2026-05-12">12 May 2026</time>
+              <time dir="auto" dateTime="2026-05-12">
+                12 May 2026
+              </time>
             </Cell>
           </Row>
           <Row id="drought">
@@ -242,7 +246,9 @@ function HazardEventTable() {
               <StatusLabel status="Draft" />
             </Cell>
             <Cell>
-              <time dateTime="2026-05-02">2 May 2026</time>
+              <time dir="auto" dateTime="2026-05-02">
+                2 May 2026
+              </time>
             </Cell>
           </Row>
         </TableBody>

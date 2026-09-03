@@ -32,10 +32,18 @@
   inline-size: var(--mg-aria-width-full);
   justify-content: space-between;
 }
+/* `anywhere` is the right inherited default for a DATA cell, where an
+   unbroken token (a URL, an identifier) has to break somewhere or it blows the
+   column open. It is the wrong default for a column HEADING, which is prose:
+   a heading should wrap between its words. `break-word` says exactly that -
+   break inside a word only when that word cannot fit a line by itself, which
+   is a last resort that still keeps the text inside the cell rather than
+   spilling it over the neighbouring header. The columns themselves are sized
+   so that last resort is not reached by their labels. */
 .aria-spike-column-header > span,
 .aria-collection-column-header > span {
   min-inline-size: 0;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
 }
 .aria-crud-selection-column,
 .aria-crud-favorite-column,

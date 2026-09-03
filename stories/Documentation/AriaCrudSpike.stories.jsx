@@ -166,13 +166,20 @@ function formatUnDate(iso) {
   return Number.isNaN(parsed.getTime()) ? iso : UN_DATE.format(parsed);
 }
 
+// Default widths are sized from the label, not from the data. A sortable
+// header spends roughly 80px on chrome before the label gets any room: the
+// column's own padding, the lane the stylesheet reserves for the sort
+// indicator, and the ColumnResizer's WCAG 2.5.8 hit area. `Exposure` at 130px
+// left the label 48px and broke it mid-word as `Exposur / e`. Each width below
+// clears its label by ~20-30px, so English sits on one line and a longer
+// translated string wraps between words instead of inside one.
 const allColumns = [
   { id: 'hazard', label: 'Hazard type', width: 220 },
   { id: 'cycle', label: 'Onset', width: 150 },
-  { id: 'sunlight', label: 'Exposure', width: 130 },
-  { id: 'watering', label: 'Severity', width: 130 },
-  { id: 'status', label: 'Record status', width: 180 },
-  { id: 'updated', label: 'Updated', width: 140 },
+  { id: 'sunlight', label: 'Exposure', width: 170 },
+  { id: 'watering', label: 'Severity', width: 170 },
+  { id: 'status', label: 'Record status', width: 200 },
+  { id: 'updated', label: 'Updated', width: 160 },
 ];
 
 function EventEditor({ item, onClose, onSave }) {
@@ -761,19 +768,16 @@ function CrudDemo() {
                 allowsSorting
                 defaultWidth={column.width}
               >
-                {({ sortDirection }) => (
-                  <div className="aria-spike-column-header">
-                    <span>
-                      {column.label}
-                      {sortDirection
-                        ? sortDirection === 'ascending'
-                          ? ' ↑'
-                          : ' ↓'
-                        : ''}
-                    </span>
-                    <ColumnResizer />
-                  </div>
-                )}
+                {/* No hand-rolled sort arrow here. The distributed
+                    stylesheet draws the indicator from React Aria's own
+                    data-sort-direction attribute, and React Aria sets
+                    aria-sort for assistive technology, so a second glyph in
+                    story code only duplicated it - and in RTL sat next to the
+                    neighbouring column's label. */}
+                <div className="aria-spike-column-header">
+                  <span>{column.label}</span>
+                  <ColumnResizer />
+                </div>
               </Column>
             ))}
             <Column id="actions" width={64} aria-label="Actions" />
@@ -818,7 +822,13 @@ function CrudDemo() {
                     ) : column.id === 'status' ? (
                       <StatusLabel status={item.status} />
                     ) : column.id === 'updated' ? (
-                      <time dateTime={item.updated}>
+                      <time
+                        // A UN-style date opens with a weak-direction
+                        // numeral, which an RTL base direction reorders
+                        // to "May 2026 2". dir="auto" isolates the run.
+                        dir="auto"
+                        dateTime={item.updated}
+                      >
                         {formatUnDate(item.updated)}
                       </time>
                     ) : (
