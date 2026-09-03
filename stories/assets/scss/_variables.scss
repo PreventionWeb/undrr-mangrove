@@ -50,7 +50,8 @@
 // overrides — Mangrove itself no longer defines these SCSS variables.
 @each $_legacy in "mg-color-interactive", "mg-color-interactive-active",
   "mg-color-button-background", "mg-color-button-background--hover",
-  "mg-color-tag", "mg-color-form-check", "mg-color-form-focus",
+  "mg-border-color-button", "mg-color-tag", "mg-color-form-check",
+  "mg-color-form-focus",
   "mg-color-hero--secondary", "mg-spacing-150", "mg-spacing-300"
 {
   @if meta.variable-exists($_legacy) {

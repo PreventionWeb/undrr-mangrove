@@ -182,6 +182,16 @@ function flatten(node, trail, inherited, tokens, file) {
 
   if (Object.prototype.hasOwnProperty.call(node, '$value')) {
     const id = trail.join('.');
+    // A YAML key with nothing after it parses as null, which used to reach the
+    // emitter and print the string "null" -- invalid CSS the browser drops
+    // without complaint. Same class as the shape bugs above: fail loudly.
+    if (node.$value === null || node.$value === undefined) {
+      throw new TokenError(
+        `${id} has a $value with nothing after it. Give it a value, or ` +
+          `remove the token.`,
+        file
+      );
+    }
     // `private` is deliberately left undefined when nothing states it, rather
     // than defaulted to false: `mergeLayers` has to be able to tell "this
     // source said public" from "this source said nothing". Every consumer

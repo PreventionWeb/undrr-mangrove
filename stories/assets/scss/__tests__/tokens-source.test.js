@@ -253,6 +253,18 @@ color: { $type: color, tag: { $value: '{color.interactive}' } }`
     expect(run()).toThrow(/two brands write the same output name "shared"/);
   });
 
+  test('a $value with nothing after it', () => {
+    // A YAML key with an empty value parses as null. It used to reach the
+    // emitter and print the string "null" -- invalid CSS a browser drops in
+    // silence, which is the failure mode this whole suite exists to prevent.
+    write(
+      'x.yaml',
+      `$brand: { id: x, title: X, selector: '.x' }
+size: { $type: dimension, gap: { $value: } }`
+    );
+    expect(run()).toThrow(/\$value with nothing after it/);
+  });
+
   test('unknown format', () => {
     write(
       'x.yaml',

@@ -308,7 +308,7 @@
 
     &:hover,
     &:focus-visible {
-      background: rgb(var(--mg-color-blue-900) / 0.15);
+      background: rgb(var(--mg-color-interactive) / 0.15);
       text-decoration: underline;
     }
 
@@ -334,7 +334,7 @@
       margin-inline-start: calc(-1 * var(--mg-spacing-200));
       border-inline-start: 4px solid rgb(var(--mg-color-interactive)); // RTL-friendly vertical rule
       text-decoration: underline;
-      background: rgb(var(--mg-color-blue-900) / 0.15);
+      background: rgb(var(--mg-color-interactive) / 0.15);
 
       &::after {
         opacity: 1;
@@ -393,7 +393,7 @@
 /* Stronger keyboard focus ring for accessibility.
    Was a hardcoded white inset ring, which is invisible here: the panel is
    --mg-color-neutral-0 and the focused link tints it only 15%, so white
-   measured 1.28:1. The default focus ring measures 4.36:1 on that tint. */
+   measured 1.28:1. The default focus ring measures 4.22-4.58:1 across the five themes on that tint. */
 .mg-mega-content__section-list-link:focus-visible {
   @include mg-focus-ring;
 }
