@@ -1,6 +1,6 @@
 {
   "name": "@undrr/undrr-mangrove",
-  "version": "2.0.0-alpha.2",
+  "version": "2.0.0-alpha.3",
   "description": "Mangrove design System for UNDRR",
   "main": "src/index.js",
   "type": "module",
@@ -10,8 +10,17 @@
   "exports": {
     ".": "./src/index.js"
   },
+  "//files": "Positive allowlist for `npm pack`. The matching .npmignore stops npm falling back to .gitignore, which would drop the generated token partials and compiled style*.css; `prepack` regenerates both. Note the release workflow publishes its own assembled package.json, not this one.",
+  "files": [
+    "src/**/*.js",
+    "stories/**",
+    "tokens/**",
+    "!**/__tests__/**",
+    "!**/__snapshots__/**"
+  ],
   "scripts": {
     "prepare": "node scripts/setup-git-hooks.cjs",
+    "prepack": "yarn scss",
     "hooks:install": "node scripts/setup-git-hooks.cjs",
     "build:tokens": "node scripts/build-tokens.cjs",
     "build:icons": "node scripts/icon-build.cjs",
