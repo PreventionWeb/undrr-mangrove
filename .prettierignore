@@ -35,4 +35,3 @@ coverage/
 stories/assets/scss/generated/
 aria/tokens/
 aria/react-aria.css
-aria/react-aria.layered.css

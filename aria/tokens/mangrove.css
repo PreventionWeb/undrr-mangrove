@@ -89,26 +89,6 @@
   --mg-motion-easing-standard: cubic-bezier(0.2, 0, 0, 1);
   --mg-card-border-radius: var(--mg-spacing-50);
   --mg-z-index-modal: 5000;
-  /* Mangrove's own v2 tab colours live here, not at :root, for the reason this
-     mixin exists: a custom property declared at :root resolves its inner var()
-     against :root and then inherits the already-resolved value, so a theme
-     override never reaches it. The legacy .mg-tabs component and React Aria's
-     Tabs both read these, which is what keeps the two tab surfaces identical
-     under every brand. */
-  /* Deliberately NOT wired to each brand's --mg-color-*-tab* tokens, though
-     those exist and currently reach nothing in the default variant.
-
-     They cannot be transferred mechanically. MCR2030, PreventionWeb and DELTA
-     designed a FILLED tab: white text on a solid brand background. alpha.2
-     replaced that with an underline treatment on a transparent tab. Piping the
-     brand text colour into it puts white text on a white page - measured 1.00:1,
-     the active tab literally invisible - and MCR's tab border, designed as a
-     pale edge on purple, is 1.49:1 as an underline on white. The same tokens
-     score 9.52:1 in the design they were drawn for.
-
-     Resolving this is a design decision, not a wiring change: either the brands
-     re-express their tab identity in the underline vocabulary, or the v2 tab
-     regains a filled variant. Recorded in the architecture notes. */
   --mg-tab-color: rgb(var(--mg-color-text));
   --mg-tab-color--hover: rgb(var(--mg-color-interactive-active));
   --mg-tab-color--active: rgb(var(--mg-color-interactive));
@@ -119,15 +99,8 @@
   --mg-aria-color-accent-active: rgb(var(--mg-color-interactive-active));
   --mg-aria-color-on-accent: rgb(var(--mg-color-white));
   --mg-aria-color-text: rgb(var(--mg-color-text));
-  /* neutral-500, not neutral-600: post-#1086 every muted text in Mangrove is
-     neutral-500 (.mg-form-help in _form-base.scss, pager.scss,
-     --mg-empty-state-text-color). Verified to clear 4.5:1 on both
-     color-surface and color-field-surface, under WCAG 2 and the Oklab
-     measure, in all five themes — see the pairs added to ARIA_PAIRS. */
   --mg-aria-color-muted-text: rgb(var(--mg-color-neutral-500));
   --mg-aria-color-surface: var(--mg-surface-raised);
-  /* Form controls sit on the tinted field surface Mangrove's own inputs use,
-     and lift to the plain surface on focus, matching _form-base.scss. */
   --mg-aria-color-field-surface: var(
     --mg-form-input-background,
     rgb(var(--mg-color-neutral-50))
@@ -143,67 +116,11 @@
     rgb(var(--mg-color-neutral-400))
   );
   --mg-aria-color-border-focus: rgb(var(--mg-color-form-focus));
-  /* The QUIET structural register, and the reason it exists: --mg-aria-color-
-     border is opaque neutral-400, which is correct where SC 1.4.11 needs 3:1
-     on a CONTROL boundary (a field, a checkbox) and much too loud everywhere
-     else. Modern Mangrove draws structure — table rules, tab rails, section
-     dividers, card edges — with a translucent neutral-600 instead. Identical
-     value to --mg-shadow-raised's inset and to the .mg-tabs__list rule
-     (tab.scss:211, 293; mega-menu.scss:4). Anything that is not a control
-     boundary should read this, not color-border. */
   --mg-aria-color-rule: rgb(var(--mg-color-neutral-600) / 0.24);
-  /* Brand-tinted hover fill. Mangrove hovers with 6% of the interactive
-     colour (pager.scss, details.scss, scroll-container.scss, and the v2 tab
-     above via --mg-tab-background--hover), so a menu or a row that hovers grey
-     is the only brand-blind surface left in the adapter. Never the sole state
-     signal: it composites to ~4% luminance change and is paired with a colour
-     or weight change at the use site. */
   --mg-aria-color-hover-surface: rgb(var(--mg-color-interactive) / 0.06);
-  /* A ~3% neutral wash for an INSET cell inside a control: the NumberField's
-     steppers, and anything else that has to read as a pressable part of a
-     field without becoming a button. Deliberately neutral rather than
-     brand-tinted — --mg-aria-color-hover-surface is the brand at 6% and using
-     it at rest would make a resting stepper look permanently hovered — and
-     deliberately TRANSLUCENT: --mg-aria-color-subtle-surface resolves to the
-     identical value as --mg-aria-color-field-surface in every one of the five
-     themes (measured in the browser), so an opaque neutral paints nothing at
-     all on a field, while a wash darkens both the resting field fill and the
-     white it lifts to on focus. Same neutral as --mg-aria-color-rule at a quarter of
-     its alpha; like that token it is a supporting surface and never a
-     control's only boundary, so it is not graded by the contrast pairs. */
   --mg-aria-color-inset-surface: rgb(var(--mg-color-neutral-600) / 0.06);
-  /* A scannable wash for an invalid field. Deliberately far below any contrast
-     threshold: --mg-aria-color-invalid on the border and in the message stays
-     the contrast carrier, per "never rely on tint alone". */
   --mg-aria-color-invalid-surface: rgb(var(--mg-color-red-900) / 0.04);
-  /* Unfilled rails: slider track, progress/meter background, switch when off.
-     Kept light so the filled portion clears 3:1 against it in every theme, and
-     it CANNOT be darkened while the fill stays the accent colour. Measured on
-     white in all five themes (WCAG 2 / Oklab, NON_TEXT threshold 50):
-
-       track          rail-vs-page      IRP fill-vs-rail   PW fill-vs-rail
-       neutral-50     1.25 / -2.1       3.77 / 51.6        5.20 / 61.4
-       neutral-100    1.61 / 18.3       2.93 / 37.2        4.04 / 48.0
-       neutral-200    2.10 / 33.8       2.25 / 22.1        3.09 / 34.3
-       neutral-300    2.85 / 47.6       1.65 /  4.4        2.28 / 18.8
-
-     There is no value that clears 3:1 against the page AND leaves the accent
-     3:1 against the rail: IRP's accent is itself only ~4.2:1 on white, which
-     algebraically requires a rail LIGHTER than the page to satisfy both. The
-     rail therefore stays in the register every surveyed system ships it in
-     (Adobe neutral-300, Spectrum 2 gray-300, Jolly zinc-200 = 1.19:1 on
-     white) and carries no border of its own — see the rail group in
-     _react-aria.scss. A theme that wants a mid-tone rail must repoint
-     --mg-aria-color-fill to something darker FIRST and then darken this; the
-     two move together, which is why the fill has its own seam below. */
   --mg-aria-color-track: rgb(var(--mg-color-neutral-50));
-  /* The filled portion of a slider, progress bar or meter. Defaults to the
-     accent, which is what every brand wants and what the contract grades
-     against --mg-aria-color-track. It is a separate seam from
-     --mg-aria-color-accent because Spectrum 2's answer to the rail problem
-     above is a neutral default fill with accent as an emphasised opt-in: a
-     theme whose accent is too light to sit on a darker rail can repoint this
-     one property instead of restyling four components. */
   --mg-aria-color-fill: var(--mg-aria-color-accent);
   --mg-aria-color-invalid: rgb(var(--mg-color-red-900));
   --mg-aria-space-1: var(--mg-spacing-50);
@@ -213,81 +130,27 @@
   --mg-aria-radius-button: var(--mg-radius-button);
   --mg-aria-radius-control: var(--mg-radius-form-input);
   --mg-aria-radius-surface: var(--mg-card-border-radius);
-  /* Anything nested INSIDE a surface — a MenuItem in a Popover, a row in a
-     ListBox. Nothing guarantees a theme's control radius is smaller than its
-     surface radius, and MCR2030 is a live counter-example: a 10px MenuItem
-     inside a 5px Popover, the inner corner visibly outside the outer one.
-     min() makes inner <= outer true by construction in every theme. */
   --mg-aria-radius-item: min(
     var(--mg-aria-radius-control),
     var(--mg-aria-radius-surface)
   );
-  /* A 20-24px check is too small to carry a full field radius: at MCR2030's
-     10px it reads as a radio button, which is a meaning change, not a style
-     one. Capped at 4px, and still a theme's own radius wherever that is
-     smaller. */
   --mg-aria-radius-check: min(var(--mg-aria-radius-control), 0.25rem);
-  /* The radius a child nested INSIDE a control's own 1px border needs so its
-     corner follows the parent's rather than cutting across it. Concentric
-     corners share a centre, so the inner radius is the outer radius minus the
-     border between them — the `calc(radius - 1px)` every RAC starter uses for
-     a button joined into a field group (Marigold, Intent UI). max() with 0
-     keeps it legal where a theme squares its fields: DELTA, IRP and
-     PreventionWeb are all 5px so this is 4px, MCR2030's 10px gives 9px, and a
-     hypothetical 0 radius theme gets 0 rather than a negative length, which
-     would invalidate the whole declaration. */
   --mg-aria-radius-control-inner: max(
     0px,
     calc(var(--mg-aria-radius-control) - var(--mg-aria-border-width))
   );
-  /* Field height, so a NumberField stepper, a ComboBox trigger and a
-     DatePicker button end up the same height as the input they belong to.
-     They are currently 41px against a 46px field. The token has existed since
-     #1086 and the aria contract never read it. */
   --mg-aria-control-block-size: var(--mg-form-input-block-size, 2.875rem);
-  /* The focus ring has its own seam in 2.0 so a theme can retint it
-     independently of the interactive colour. */
   --mg-aria-color-focus-ring: rgb(var(--mg-color-focus-ring));
   --mg-aria-focus-width: var(--mg-focus-ring-width);
   --mg-aria-focus-offset: var(--mg-focus-ring-offset);
   --mg-aria-surface-shadow: var(--mg-shadow-raised);
   --mg-aria-surface-shadow-hover: var(--mg-shadow-raised-hover);
-  /* The elevation ladder: card (inset rule) -> popover -> modal.
-     Two earlier values were both wrong for different reasons. 0 5px 15px/0.2
-     was a hand-rolled short HARD drop belonging to no other surface here.
-     0 15px 40px/0.12 was derived from the mega-menu (mega-menu.scss:194,
-     0 18px 45px/0.14) — correct for a full-width panel, but on a 200px-wide
-     popover a 40px blur reads as a SaaS floating panel rather than a menu.
-     10px/20px/0.12 is the popover register the institutional survey found
-     (GOV.UK, USWDS, NHS, OCHA, Primer, Atlassian, Carbon) and the RAC
-     ecosystem confirms (Adobe 0 8px 20px/0.12). It is deliberately paired
-     with a QUIET edge rather than the opaque form-field border: drawing an
-     opaque boundary AND a long shadow was doing the same job twice, which
-     was the finding. See --mg-aria-color-rule and the overlay border group
-     in _react-aria.scss. */
   --mg-aria-overlay-shadow: 0 var(--mg-aria-space-2) var(--mg-aria-space-4)
     rgb(var(--mg-color-neutral-900) / 0.12);
-  /* The modal is the top of the ladder, so it has to out-elevate the popover
-     rather than match it: 15px/30px/0.16, a deeper offset, a wider blur and a
-     darker alpha than the popover, in the peer modal register (Adobe
-     0 8px 32px/0.2, the survey's 0 12px 32px/0.14). */
   --mg-aria-modal-shadow: 0 var(--mg-aria-space-3)
     calc(var(--mg-aria-space-4) * 1.5) rgb(var(--mg-color-neutral-900) / 0.16);
-  /* Lives here rather than in the brand-neutral constants because it is now
-     derived from the theme's own darkest neutral instead of the off-palette
-     navy (24 24 35) it used to hardcode. Alpha raised 0.2 -> 0.18 on a pure
-     black: composited over white both land on ~209, so the scrim is the same
-     darkness it has always been, now retintable by a theme. */
   --mg-aria-color-overlay-backdrop: rgb(var(--mg-color-neutral-900) / 0.18);
   --mg-aria-overlay-z-index: var(--mg-z-index-modal);
-  /* Tabs exist twice in Mangrove: the legacy .mg-tabs component and React
-     Aria's Tabs. Rather than inventing a second tab vocabulary, both read the
-     same v2 tab tokens, so a theme that restyles tabs restyles both surfaces
-     from one definition. Fallbacks keep the contract usable for consumers that
-     have no Mangrove component tokens at all. */
-  /* Tags and form checks also exist on both surfaces. MCR2030 rounds its tags
-     to 10px where the base theme squares them, and each theme owns its check
-     colour. */
   --mg-aria-tag-radius: var(--mg-radius-tag, var(--mg-aria-radius-control));
   --mg-aria-tag-background: rgb(
     var(--mg-color-tag, var(--mg-color-interactive))
@@ -304,10 +167,6 @@
   --mg-aria-check-color-checked: rgb(
     var(--mg-color-form-check--checked, var(--mg-color-interactive))
   );
-  /* Buttons exist on both surfaces and every theme restyles them: MCR2030
-     enlarges the pill to 15px/30px with 18px type, DELTA retints nineteen
-     button tokens. The adapter previously read only --mg-radius-button, so
-     colour and radius flowed and nothing else did. */
   --mg-aria-button-background: var(
     --mg-color-button-background,
     rgb(var(--mg-color-interactive))
@@ -317,11 +176,6 @@
     rgb(var(--mg-color-interactive-active))
   );
   --mg-aria-button-color: rgb(var(--mg-color-button, var(--mg-color-white)));
-  /* The contract could previously only say "primary", so the outline variant
-     every brand defines reached nothing. Both source tokens are channel
-     triplets, so they must be wrapped in rgb() here — dropped raw into a
-     colour position they are discarded silently, which is the value-type trap
-     in the architecture notes. */
   --mg-aria-button-outline-color: rgb(
     var(--mg-color-button-outline-primary, var(--mg-color-interactive))
   );
@@ -331,7 +185,6 @@
       var(--mg-color-interactive-active)
     )
   );
-  /* MCR2030 draws a 2px button border where every other theme draws 1px. */
   --mg-aria-button-border-width: var(--mg-border-width-button, 0);
   --mg-aria-button-padding: var(
     --mg-padding-button,
@@ -373,9 +226,6 @@
     var(--mg-aria-color-accent)
   );
   --mg-aria-motion-duration-fast: var(--mg-motion-duration-fast);
-  /* Overlay entry and exit: long enough to read as a transition, short enough
-     to stay interruptible. --mg-motion-duration-medium has existed in the base
-     tokens since 2.0 and nothing read it. */
   --mg-aria-motion-duration-medium: var(--mg-motion-duration-medium);
   --mg-aria-motion-easing: var(--mg-motion-easing-standard);
   --mg-aria-font-family: "Roboto", sans-serif;
@@ -384,55 +234,16 @@
   --mg-aria-line-height: 1.5;
   --mg-aria-border-width: 1px;
   --mg-aria-width-full: 100%;
-  /* --mg-aria-color-overlay-backdrop moved to the runtime theme aliases: it
-     was the one colour literal in this file (an off-palette navy) and it is
-     theme-dependent now that it derives from --mg-color-neutral-900. */
-  /* Constants a theme could not previously touch because they were literals
-     repeated in the stylesheet: opacity 0.55 appears twelve times, the press
-     scale twice, the strong weight five times. Naming them does not change any
-     rendered value; it makes them one decision instead of nineteen. */
   --mg-aria-opacity-disabled: 0.55;
   --mg-aria-press-scale: 0.96;
   --mg-aria-font-weight-strong: 600;
-  /* Shape and size constants shared by the range/toggle family. Brand-neutral,
-     so they sit outside the runtime theme aliases. */
   --mg-aria-radius-pill: 9999px;
   --mg-aria-track-thickness: 0.5rem;
-  /* 24px: WCAG 2.5.8 minimum target size. Also sets the switch track
-     geometry, which derives from this value. */
   --mg-aria-thumb-size: 1.5rem;
-  /* 24px, matching the thumb and the WCAG 2.5.8 target minimum, so the
-     adapter's checks agree with Mangrove's own (_form-base.scss). */
   --mg-aria-check-size: 1.5rem;
   --mg-aria-dialog-width: 42rem;
   --mg-aria-dialog-available-width: calc(100% - var(--mg-aria-space-4) * 2);
   --mg-aria-dialog-available-height: calc(100% - var(--mg-aria-space-4) * 2);
-  /* Arabic. Roboto has no Arabic coverage, so an Arabic React Aria control
-     rendered in it falls through to whatever system sans the browser picks —
-     while the legacy surface beside it correctly switches to Dubai via the
-     `:lang(ar)` blocks in _foundational.scss. The adapter cannot inherit that
-     switch: every `.react-aria-*` rule sets `font-family:
-     var(--mg-aria-font-family)` explicitly, which beats any inherited value.
-     So the swap has to happen on the custom property itself.
-
-     Two selectors, because they solve two different problems:
-
-     - `&:lang(ar)` is the document case (`<html lang="ar">`, which is what
-       Storybook's locale decorator and every UNDRR Arabic page produce). It
-       compiles to `:root:lang(ar)` (0,2,0) here and `:where(:root):lang(ar)`
-       (0,1,0) in the standalone token files — in both, strictly higher than
-       the `:root`/`:where(:root)` block it overrides, so it wins on
-       specificity and not on source order.
-     - `@at-root :lang(ar)` is the subtree case (an Arabic pull-quote inside an
-       English page). `:root` does not match that element at all, so there is
-       no specificity contest: the declaration simply replaces the value
-       inherited from the document root, matching how every other `:lang(ar)`
-       block in Mangrove behaves.
-
-     A plain `:root { --mg-aria-font-family: ... }` override could never do
-     this: `:root` matches one element, and the value it resolves is then
-     inherited already-resolved by every descendant. This is the same trap
-     documented at the top of _runtime-theme-aliases.scss. */
 }
 :where(:root):lang(ar) {
   --mg-aria-font-family: "Dubai", sans-serif;

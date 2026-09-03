@@ -1,58 +1,37 @@
 # Cascade layers
 
-Mangrove ships two flavours of the React Aria stylesheet. Which one you import
-decides whether your own CSS can override Mangrove, or whether Mangrove wins
-every time.
+Mangrove ships its React Aria stylesheet **unlayered**, and there is currently
+no layered flavour of it. This page explains why — because "just wrap it in
+`@layer mangrove`" is the obvious fix, and today it would not work.
 
-| File                          | Wrapped in a layer?  | Import this when                                                          |
-| ----------------------------- | -------------------- | ------------------------------------------------------------------------- |
-| `aria/react-aria.css`         | No                   | Your page has no cascade layers, or you want today's behaviour unchanged.  |
-| `aria/react-aria.layered.css` | Yes, `@layer mangrove` | You use Tailwind or another layer-based framework **and** you do not load a Mangrove brand stylesheet. See the note below. |
-
-Both files contain byte-identical rules. The layered one adds a single
-`@layer mangrove { … }` wrapper (with `@charset` hoisted above it, where it is
-still legal). Nothing else differs, and no version of Mangrove declares a layer
-order — the order is yours to set.
-
-> **The layered file only helps if you are not also loading a Mangrove brand
-> stylesheet.** The React Aria surface is currently compiled into `style.css`
-> and into every brand sheet (`style-preventionweb.css`, `style-irp.css`,
-> `style-mcr.css`, `style-delta.css`, `style-all.css`) — the whole
-> `.react-aria-*` surface, unlayered. Because unlayered CSS beats layered CSS,
-> that copy wins over `react-aria.layered.css` no matter what layer order you
-> declare. Adding the layered file on top of a brand stylesheet changes
-> nothing.
->
-> So the layered file is for consumers who load **no** Mangrove brand
-> stylesheet and pull in `aria/react-aria.layered.css` on its own — typically
-> a React or Tailwind product using Mangrove only for the React Aria surface.
->
-> If you load a brand stylesheet **and** need your layered utilities to win,
-> there is no supported answer yet: put your own CSS in an unlayered position,
-> or override with specificity. Making the aria surface opt-in rather than
-> compiling it into every sheet is the open packaging question that would fix
-> this properly.
-
-Neither file is distributed yet. `yarn build` does not copy `aria/` into
-`dist/`, the release workflow does not copy it into the published package, and
-the published `package.json` is regenerated without an `exports` field — so
-there is no npm entry point and no CDN path for either file today. Build them
-from source with `yarn build:aria`. Wiring them into the published artifacts is
-open work.
-
-## The problem the layered file solves
+## Why Mangrove is not layered
 
 An unlayered rule beats a layered rule, always, no matter the specificity. That
 is the whole point of cascade layers: unlayered CSS sits at the top of the layer
 order.
 
-So if you use Tailwind 4 — which puts its utilities in `@layer utilities` — and
-you import the unlayered Mangrove file, **your utility classes cannot override
-Mangrove.** Measured in a browser:
+That cuts both ways, and it is the reason a layered build would not currently
+help anyone:
+
+- **It hurts you.** If you use Tailwind 4 — which puts its utilities in
+  `@layer utilities` — and you load Mangrove, **your utility classes cannot
+  override Mangrove**, because Mangrove is unlayered and therefore above every
+  layer you declare.
+- **But layering Mangrove would not fix it.** The React Aria surface is
+  compiled into `style.css` and into every brand sheet
+  (`style-preventionweb.css`, `style-irp.css`, `style-mcr.css`,
+  `style-delta.css`, `style-all.css`) — the whole `.react-aria-*` surface,
+  unlayered. Adding a layered copy on top of a brand stylesheet changes nothing:
+  the unlayered copy inside the brand sheet still wins, whatever layer order you
+  declare.
+
+A layered React Aria file could therefore only help a consumer who loads **no**
+Mangrove brand stylesheet at all — and a page with no Mangrove stylesheet is
+barely a Mangrove consumer. That is why one is not built or shipped.
 
 ```html
-<link rel="stylesheet" href="aria/react-aria.css" />
-<!-- .react-aria-Button { display: inline-flex } -->
+<link rel="stylesheet" href="css/style.css" />
+<!-- .react-aria-Button { display: inline-flex }, unlayered -->
 <style>
   @layer utilities {
     .u-block {
@@ -64,17 +43,26 @@ Mangrove.** Measured in a browser:
 <!-- computed display: inline-flex — Mangrove wins, the utility loses -->
 ```
 
-Swap in `react-aria.layered.css`, declare an order, and the utility wins:
+## What would have to change first
 
-```html
-<style>
-  @layer legacy, mangrove, utilities;
-</style>
-<link rel="stylesheet" href="aria/react-aria.layered.css" />
-<!-- computed display: block — the utility wins -->
-```
+**Making the React Aria surface opt-in rather than compiling it into every theme
+stylesheet.** Once the surface is no longer baked unlayered into `style.css`, a
+layered build of it becomes meaningful and Mangrove can ship one. Until then it
+would be a file that cannot win. That packaging question is open work — see
+[React Aria architecture notes](ARIA-ARCHITECTURE-NOTES.md).
 
-## What a consumer must do
+## If you need a layered build today
+
+You can produce one yourself in a few lines; `postcss` is already a Mangrove
+dependency. Parse the built CSS, hoist `@charset` / `@import` / `@namespace`
+above the wrapper (they are illegal inside `@layer`), and wrap the rest in
+`@layer mangrove { … }`.
+
+Read the rest of this page first, though — the ordering rules and the toolchain
+failures below apply to any layered stylesheet, yours included, and they are the
+part that actually bites.
+
+## What a consumer must do with any layered stylesheet
 
 ### 1. Declare the layer order first, before any stylesheet loads
 
@@ -87,7 +75,7 @@ every `<link>` and every bundler-injected stylesheet:
   <style>
     @layer legacy, mangrove, utilities;
   </style>
-  <link rel="stylesheet" href="/path/to/react-aria.layered.css" />
+  <link rel="stylesheet" href="/path/to/your-layered.css" />
   <link rel="stylesheet" href="/path/to/your-utilities.css" />
 </head>
 ```
@@ -128,7 +116,7 @@ Mangrove versus **unlayered** legacy CSS means legacy wins every rule, even a
 low-specificity one:
 
 ```html
-<link rel="stylesheet" href="aria/react-aria.layered.css" />
+<link rel="stylesheet" href="your-layered-mangrove.css" />
 <style>
   .legacy button {
     display: grid;
@@ -154,26 +142,24 @@ Or, if that stylesheet is yours to edit, wrap its contents directly:
 ```
 
 **Prefer wrapping the contents over `@import … layer()`.** See the toolchain
-warnings below — `@import … layer()` is the part that breaks in build tools,
-which is precisely why Mangrove pre-wraps its own file rather than telling you
-to `@import` it into a layer.
+warnings below — `@import … layer()` is the part that breaks in build tools.
 
 ### 3. Do not double-wrap
 
-Import the layered file plainly. Doing
-`@import url('react-aria.layered.css') layer(vendor)` nests it as
-`vendor.mangrove`, so `@layer legacy, mangrove, utilities` no longer refers to
-it and your ordering silently stops applying.
+Import an already-layered file plainly. Doing
+`@import url('layered.css') layer(vendor)` nests it as `vendor.mangrove`, so
+`@layer legacy, mangrove, utilities` no longer refers to it and your ordering
+silently stops applying.
 
 ## What breaks if you get it wrong
 
 | Mistake                                        | Symptom                                                                    |
 | ---------------------------------------------- | -------------------------------------------------------------------------- |
-| Unlayered Mangrove + Tailwind                  | Utility classes have no effect on React Aria elements.                      |
-| Layered Mangrove, no order statement           | Order falls back to first appearance; usually still fine, but not stated.   |
+| Unlayered Mangrove + Tailwind (**today's shape**) | Utility classes have no effect on React Aria elements.                   |
+| Layered stylesheet, no order statement         | Order falls back to first appearance; usually still fine, but not stated.   |
 | Order statement after the first `@layer` block | Order silently inverts; legacy CSS outranks Mangrove.                       |
 | Layered Mangrove + unlayered legacy CSS        | Legacy CSS wins every conflict, including single-class selectors.           |
-| Both files imported                            | The unlayered copy wins everything. Import exactly one.                     |
+| A layered copy loaded alongside a brand sheet  | The unlayered copy in the brand sheet wins everything. No effect.           |
 
 ## Toolchain warnings — measured, not assumed
 
@@ -241,9 +227,9 @@ of edge-case breakage generally — see
 its transformations are comment stripping, whitespace minification and `url()`
 rewriting, none of which should touch an at-rule block — but we found no
 drupal.org issue or test that states this either way, and we did not run a live
-Drupal aggregation. If you are the first Drupal site to ship
-`react-aria.layered.css`, verify with aggregation switched on before trusting it
-in production.
+Drupal aggregation. If you are the first Drupal site to ship a layered
+stylesheet, verify with aggregation switched on before trusting it in
+production.
 
 Note also that aggregation strips comments and rewrites relative `url()` paths.
 Neither affects layering.
@@ -262,31 +248,12 @@ engine, so there is no browser-side reason to prefer one over the other. The
 risk with `@import … layer()` is entirely in build tooling, above.
 
 Browsers that predate `@layer` ignore the whole `@layer { … }` block, so an old
-browser loading `react-aria.layered.css` gets **no Mangrove styling at all**. If
-you still support pre-2022 browsers, ship the unlayered file.
+browser loading a layered stylesheet gets **none of its rules at all**. If you
+still support pre-2022 browsers, ship unlayered CSS.
 
 ## Design tokens stay unlayered
 
 The `aria/tokens/*.css` files are deliberately **not**
 layered. They only declare custom properties, and keeping them out of a layer
 means a consumer can override a token from anywhere without thinking about layer
-order. Import them alongside either flavour.
-
-## How the layered file is built
-
-`yarn build:aria` compiles the Sass to `aria/react-aria.css` as before, then
-runs:
-
-```
-node scripts/build-layered-css.js --layer=mangrove \
-  aria/react-aria.css:aria/react-aria.layered.css
-```
-
-The script (`scripts/lib/wrap-css-layer.js`) parses the built CSS with postcss,
-hoists `@charset` / `@import` / `@namespace` above the wrapper because those are
-illegal inside `@layer`, and wraps the rest. Rule text and whitespace are
-preserved byte for byte, so the two files diff cleanly.
-`scripts/__tests__/build-layered-css.test.js` asserts the two stay in sync, so a
-stale layered artifact fails CI.
-
-To layer another stylesheet, add a `input.css:output.css` pair to that command.
+order. Import them alongside `aria/react-aria.css` however you load it.

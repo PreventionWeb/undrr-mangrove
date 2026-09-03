@@ -54,8 +54,8 @@ components pick up Mangrove theming with no `className` or configuration.
 **If you load `style.css` or any sub-brand stylesheet you already have this** —
 the React Aria rules are compiled into every theme stylesheet. Nothing to add.
 
-Standalone files (`aria/react-aria.css`, `aria/react-aria.layered.css` and
-`aria/tokens/{brand}.css`) exist in the repository for consumers who want that
+Standalone files (`aria/react-aria.css` and `aria/tokens/{brand}.css`) exist in
+the repository for consumers who want that
 surface *without* a full Mangrove stylesheet, but they are **not currently
 distributed**: `yarn build` does not copy `aria/` into `dist/`, the release
 workflow does not copy it into the published package, and the published
