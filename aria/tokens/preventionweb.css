@@ -158,6 +158,19 @@
      signal: it composites to ~4% luminance change and is paired with a colour
      or weight change at the use site. */
   --mg-aria-color-hover-surface: rgb(var(--mg-color-interactive) / 0.06);
+  /* A ~3% neutral wash for an INSET cell inside a control: the NumberField's
+     steppers, and anything else that has to read as a pressable part of a
+     field without becoming a button. Deliberately neutral rather than
+     brand-tinted — --mg-aria-color-hover-surface is the brand at 6% and using
+     it at rest would make a resting stepper look permanently hovered — and
+     deliberately TRANSLUCENT: --mg-aria-color-subtle-surface resolves to the
+     identical value as --mg-aria-color-field-surface in every one of the five
+     themes (measured in the browser), so an opaque neutral paints nothing at
+     all on a field, while a wash darkens both the resting field fill and the
+     white it lifts to on focus. Same neutral as --mg-aria-color-rule at a quarter of
+     its alpha; like that token it is a supporting surface and never a
+     control's only boundary, so it is not graded by the contrast pairs. */
+  --mg-aria-color-inset-surface: rgb(var(--mg-color-neutral-600) / 0.06);
   /* A scannable wash for an invalid field. Deliberately far below any contrast
      threshold: --mg-aria-color-invalid on the border and in the message stays
      the contrast carrier, per "never rely on tint alone". */

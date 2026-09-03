@@ -39,6 +39,7 @@ const RUNTIME_ARIA_ALIASES = [
   'color-border-focus',
   'color-rule',
   'color-hover-surface',
+  'color-inset-surface',
   'color-invalid-surface',
   'color-overlay-backdrop',
   'color-track',

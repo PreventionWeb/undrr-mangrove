@@ -111,6 +111,41 @@
   border-color: var(--mg-aria-color-border-focus);
 }
 
+/* THE FOCUS RING ON AN OVERLAY CONTAINER IS CHROME'S, NOT OURS.
+   React Aria moves real DOM focus to the overlay container when a Menu, a
+   Select/ComboBox listbox or a Dialog opens. Measured: document.activeElement
+   is `.react-aria-Menu` / `.react-aria-ListBox` / `.react-aria-Dialog`,
+   `:focus-visible` matches, and no rule in this file sets an outline on any of
+   them — so the browser paints its own default `auto` outline, which in Chrome
+   is a bright blue hairline. That is a blue band around every popover in every
+   brand (unmistakable in MCR2030's purple system), and inside the Dialog it
+   sits within the modal's padding and reads as the second frame the elevation
+   work removed.
+
+   Suppressed rather than restyled, which is what GOV.UK, USWDS and Primer all
+   do with a dialog's container. The reasoning: the container is a wrapper the
+   keyboard passes THROUGH rather than lands on — the very next key press moves
+   focus onto a MenuItem, a ListBoxItem or a button, every one of which carries
+   the ring from the block above. The overlay's own arrival (a popover's edge
+   and shadow, the modal's scrim) is what announces that focus moved, so a ring
+   on the wrapper is a second, larger indicator for a place the user cannot
+   stay. Re-tinting it to --mg-aria-color-focus-ring would have kept the double
+   frame and only changed its colour.
+
+   The STANDALONE ListBox is deliberately excluded: AriaCollectionGallery
+   renders one as a real page control with no Popover around it, and there the
+   container is the control — its ring is the only thing that says the
+   collection has focus before an option is chosen. Hence the child combinator
+   rather than a bare `.react-aria-ListBox`. */
+.react-aria-Menu:focus,
+.react-aria-Menu:focus-visible,
+.react-aria-Popover > .react-aria-ListBox:focus,
+.react-aria-Popover > .react-aria-ListBox:focus-visible,
+.react-aria-Dialog:focus,
+.react-aria-Dialog:focus-visible {
+  outline: none;
+}
+
 /* Filled. A control carrying a value computed identically to an empty one on
    both surfaces, so a long form gave no sign of what had been completed.
    :placeholder-shown is the only hook CSS has, and it needs a placeholder to
@@ -232,6 +267,14 @@
   line-height: var(--mg-aria-line-height);
   min-block-size: var(--mg-aria-control-block-size);
   padding: var(--mg-aria-space-2);
+  /* The segments are inline children of a stretched flex item, so they sat at
+     the TOP of the 44px band while the DateRangePicker's " to " separator was
+     centred beside them — measured 10px apart on the block axis, three pieces
+     of one control on three different baselines. A flex row with centred items
+     is what every DateInput in the ecosystem is, and it makes the control's
+     own alignment independent of the height it happens to be given. */
+  align-items: center;
+  display: flex;
 }
 
 /* Segments need a little breathing room and a radius of their own now that the
@@ -365,7 +408,17 @@
   text-align: center;
 }
 
+/* An empty body closed with nothing at all: a tinted header row floating
+   above a message on the bare page, which reads as a table that failed to
+   render rather than as one with no results. Every populated row closes with
+   this rule on its cells, and legacy Mangrove's `empty-state--in-a-table` does
+   the same, so the empty body simply takes the row rule a populated body would
+   have had. Deliberately only a closing rule and not a full box: an
+   institutional table (GOV.UK, USWDS) is horizontal rules with no side edges,
+   and a table that IS wrapped in a ResizableTableContainer already has that
+   container's frame around it — a second box here would double it. */
 .react-aria-TableBody[data-empty] > tr > td {
+  border-block-end: var(--mg-aria-border-width) solid var(--mg-aria-color-rule);
   padding: var(--mg-aria-space-4) var(--mg-aria-space-2);
 }
 
@@ -394,11 +447,6 @@
    state to assistive technology. */
 .react-aria-Column[data-allows-sorting] {
   cursor: pointer;
-  /* The arrow's lane is reserved in the PADDING box on purpose. A
-     ColumnResizer sits at the inline end of the CONTENT box, so anything
-     positioned inside the content box lands on top of it. */
-  padding-inline-end: calc(var(--mg-aria-space-2) * 2 + 1em);
-  position: relative;
 }
 
 /* Layered rather than replaced: --mg-aria-color-hover-surface is a 6% tint and
@@ -412,22 +460,47 @@
   color: var(--mg-aria-color-accent);
 }
 
-.react-aria-Column[data-sort-direction]::after {
+/* THE GLYPH BELONGS TO THE LABEL, SO IT IS DRAWN BESIDE IT.
+   It used to be absolutely positioned at the inline end of the header cell,
+   with its lane reserved in the PADDING box because a ColumnResizer occupies
+   the inline end of the CONTENT box. That reasoning was sound about the
+   resizer and wrong about the reader: on a 220px column the arrow landed
+   ~130px from the word it qualifies, and in Arabic it sat against the
+   NEIGHBOURING column's label and read as belonging to it. GOV.UK and USWDS
+   both keep the glyph adjacent to the label, and so does every RAC starter.
+
+   It is now an ordinary in-flow pseudo-element, so it follows the label
+   wherever the label is, and the resizer is kept out of its way by flex order
+   rather than by reserved padding — which also means the resizer keeps its
+   full 31px hit area at the true inline end of the cell.
+
+   Two selectors because there are two shapes of header cell in the wild, and
+   NEITHER is addressed by an author class:
+   - a Column whose label is its own text (`<Column>Onset</Column>`): the
+     pseudo-element is the cell's own ::after, in flow right after the label;
+   - a Column whose contents are wrapped in ONE author element, which is what
+     both spike stories and Adobe's own resizable-table example render
+     (`<div><span>label</span><ColumnResizer /></div>`): the cell's ::after
+     would land after that wrapper, i.e. back at the inline end, so the glyph
+     is drawn on the WRAPPER instead. `> *:only-child` identifies it without
+     knowing its class and covers a bare `<span>` label just as well.
+   The two are mutually exclusive by construction, so exactly one matches. */
+.react-aria-Column[data-sort-direction]:not(:has(> *:only-child))::after,
+.react-aria-Column[data-sort-direction] > *:only-child::after {
   color: var(--mg-aria-color-accent);
   font-size: var(--mg-aria-font-size-small);
-  inset-block-start: 50%;
-  inset-inline-end: var(--mg-aria-space-2);
-  position: absolute;
-  translate: 0 -50%;
+  margin-inline-start: var(--mg-aria-space-1);
 }
 
 /* The empty alt text keeps the glyph out of the accessible name; aria-sort
    already says which way the column is sorted. */
-.react-aria-Column[data-sort-direction=ascending]::after {
+.react-aria-Column[data-sort-direction=ascending]:not(:has(> *:only-child))::after,
+.react-aria-Column[data-sort-direction=ascending] > *:only-child::after {
   content: "▲"/"";
 }
 
-.react-aria-Column[data-sort-direction=descending]::after {
+.react-aria-Column[data-sort-direction=descending]:not(:has(> *:only-child))::after,
+.react-aria-Column[data-sort-direction=descending] > *:only-child::after {
   content: "▼"/"";
 }
 
@@ -443,6 +516,14 @@
   box-sizing: content-box;
   cursor: col-resize;
   display: inline-block;
+  /* Keeps the handle at the cell's inline end while the sort glyph sits next
+     to the label, in the flex row a header cell's contents form. `order`
+     alone would let `justify-content: space-between` strand the glyph in the
+     middle of the cell, so the auto margin collects the free space in one
+     place; both are inert outside a flex container, and both are logical, so
+     the handle stays on the inline end in Arabic. */
+  margin-inline-start: auto;
+  order: 1;
   /* The visible rule stays 1px, but the hit area must clear the 24px
      WCAG 2.5.8 minimum, so the target comes from height plus inline padding. */
   height: calc(var(--mg-aria-space-4) * 2);
@@ -475,6 +556,55 @@
   padding: var(--mg-aria-space-2);
 }
 
+/* A BUTTON IN A TABLE ROW IS NOT A PAGE BUTTON.
+   This is the --mg-padding-button trap, in the one place it still reached: a
+   theme's button padding is drawn for a standalone call to action, and MCR2030
+   sets it to 15px/30px with a 30px pill radius. Applied to a row's icon-only
+   controls that made the favourite ToggleButton 82px wide and 52px tall inside
+   a 41px-wide cell — its edge ran straight through the hazard column's icons —
+   and clipped the row-actions button against the table's edge. It does not
+   happen in UNDRR/IRP/DELTA only because their button padding happens to be
+   small; the defect is structural, not MCR-specific, so the fix is too.
+
+   `min-block-size` cannot compensate, because padding drives the content box
+   and a floor only ever raises — the same trap the Select trigger records. So
+   the padding itself has to be stated, and the row is the right place to state
+   it: a table row is a dense context whose height is set by its text, and
+   every institutional table puts row controls on row metrics.
+
+   The bare element selector is deliberate: a consumer composing a React Aria
+   row with their own button class — which Mangrove's own demos do — is exactly
+   the case that breaks, and an element selector reaches it at (0,1,1), one
+   hair above a single class and no more than that, so a consumer's own
+   deliberate button styling still wins. The 40px floor keeps WCAG 2.5.8 in a
+   cell that has shrunk to its icon. Toolbar buttons are untouched: they are
+   outside any Cell. */
+.react-aria-Cell .react-aria-Button,
+.react-aria-Cell .react-aria-ToggleButton,
+.react-aria-Cell button {
+  border-radius: var(--mg-aria-radius-control);
+  /* 40px both ways: the WCAG 2.5.8 target this file already uses as its
+     control floor, restated because the padding above no longer produces it.
+     A floor cannot pull a control down, which is why the padding is stated
+     first and the floor second. */
+  min-block-size: calc(var(--mg-aria-space-4) * 2);
+  min-inline-size: calc(var(--mg-aria-space-4) * 2);
+  padding-block: var(--mg-aria-space-1);
+  padding-inline: var(--mg-aria-space-1);
+}
+
+/* A cell whose ENTIRE content is one control hands it the whole cell. An
+   icon column is sized to its icon — 40px in both spike stories — so 10px of
+   cell padding either side leaves a 20px content box for a 40px target, and
+   the control has nowhere to go but across the neighbouring column. The
+   `:only-child` guard keeps this off every cell that has text beside its
+   button. */
+.react-aria-Cell:has(> .react-aria-Button:only-child),
+.react-aria-Cell:has(> .react-aria-ToggleButton:only-child),
+.react-aria-Cell:has(> button:only-child) {
+  padding-inline: 0;
+}
+
 .react-aria-Row[data-hovered] .react-aria-Cell {
   background: var(--mg-aria-color-hover-surface);
 }
@@ -500,6 +630,22 @@
 .react-aria-Row[data-disabled] {
   cursor: not-allowed;
   opacity: var(--mg-aria-opacity-disabled);
+}
+
+/* The row and header-cell rings are INSET, for the same class of reason the
+   calendar cell's is. A row's outline is painted OUTSIDE the row box and the
+   scroll port that frames the table clips it, so a focused row rendered as a
+   gold rule above the row and another below it with nothing joining them at
+   the ends — two stray horizontal lines rather than a ring. A negative offset
+   draws the ring inside the row, where all four sides survive the clip.
+   A negative offset and not an inset box-shadow: box-shadow is suppressed
+   entirely in forced colours (measured — see the block at the end of this
+   file), so a shadow ring is no ring at all for the users who most need one.
+   The same applies to a sticky Column, whose ring is clipped on the
+   block-start edge by the same container. */
+.react-aria-Row[data-focus-visible],
+.react-aria-Column[data-focus-visible] {
+  outline-offset: calc(-1 * var(--mg-aria-focus-width));
 }
 
 .react-aria-Menu {
@@ -2256,10 +2402,22 @@
   border-start-end-radius: var(--mg-aria-radius-control);
 }
 
-/* The two endpoints stay the accent fill: they are the values the user chose
-   and can drag, the wash between them is a consequence. Placed after the band
-   rule so it wins the background, and after the radius rules so it does not
-   reset them. */
+/* The two endpoints are the SOLID fill: they are the values the user chose and
+   can drag, the wash between them is a consequence. Without them a band that
+   wraps to the next row is ambiguous — nothing on the second row distinguishes
+   the final day from a continuation — and every surveyed system (Spectrum 2,
+   Primer, GOV.UK's date range) fills the endpoints. The single Calendar's
+   selected cell is already exactly this treatment.
+   The RangeCalendar-scoped copies of the selectors are load-bearing, and their
+   absence is why the endpoints rendered as plain band: source order does not
+   beat specificity. The band rule above is
+   `.react-aria-RangeCalendar .react-aria-CalendarCell[data-selected]` at
+   (0,3,0); a bare `.react-aria-CalendarCell[data-selection-start]` is (0,2,0)
+   and lost the background to it no matter where it sat in the file. The
+   unscoped pair is kept for a consumer who marks endpoints outside a
+   RangeCalendar. */
+.react-aria-RangeCalendar .react-aria-CalendarCell[data-selection-start],
+.react-aria-RangeCalendar .react-aria-CalendarCell[data-selection-end],
 .react-aria-CalendarCell[data-selection-start],
 .react-aria-CalendarCell[data-selection-end] {
   background: var(--mg-aria-color-accent);
@@ -2335,6 +2493,29 @@
   padding-inline: var(--mg-aria-space-2);
 }
 
+/* A STEPPER HAS TO LOOK PRESSABLE. Quiet is the brief — Spectrum 2's steppers
+   are neutral and inset and explicitly never accent — but a 40px cell holding a
+   hairline "-" on exactly the field's own fill offers nothing to aim at, and
+   the "+" only read heavier because it has a crossbar. Two restrained changes,
+   no accent: the cell takes a ~3% neutral wash so it is a cell rather than a
+   continuation of the input, and the glyph goes up a step and takes the full
+   text colour so it has the weight of a control.
+   --mg-aria-color-inset-surface is translucent by design: --mg-aria-color-
+   subtle-surface computes to the SAME value as --mg-aria-color-field-surface
+   in every theme (measured — both resolve to the identical neutral), so an
+   opaque neutral would have painted nothing here, while a wash composites
+   correctly over both the resting field fill and the white the group lifts to
+   on focus.
+   Declared BEFORE the hover, open and disabled rules below: those are (0,3,0),
+   this is (0,3,0), and a stepper that kept its resting fill on hover would be
+   a stepper with no hover. The seam that separates it from the input is the
+   `:first-child`/`:last-child` rule at the end of this file. */
+.react-aria-NumberField .react-aria-Group > .react-aria-Button {
+  background: var(--mg-aria-color-inset-surface);
+  color: var(--mg-aria-color-text);
+  font-size: calc(var(--mg-aria-font-size) * 1.25);
+}
+
 .react-aria-Group > .react-aria-Button[data-hovered],
 .react-aria-Group > .react-aria-Button[data-pressed],
 .react-aria-Group > .react-aria-Button[data-open] {
@@ -2365,6 +2546,41 @@
 
 .react-aria-Group > .react-aria-Button:last-child {
   border-inline-start: var(--mg-aria-border-width) solid var(--mg-aria-color-rule);
+}
+
+/* ...and the seam is for a SECOND ACTION inside the field, not for the caret
+   that opens the field's own popover. Side by side, a seamed ComboBox trigger
+   cell and a Select's bare floating caret read as two generations of one
+   control, and they cannot be reconciled by seaming the Select: a Select
+   CANNOT use a Group (Select.mjs imports no GroupContext), its trigger Button
+   IS the field, and there is no element between the value and the caret to
+   draw a seam on. So the reconciliation goes the other way — NEITHER is
+   seamed. The three pickers below open a popover for the field they sit in,
+   which is the same act as clicking the field, so they take the same bare
+   caret Select has; the divider stays where two genuinely separate controls
+   share one band, which is the NumberField's steppers and the SearchField's
+   clear button.
+   Written after the rule above rather than merged into it because both are
+   (0,3,0) and this has to win; scoped by component because "opens my own
+   popover" has no data attribute at rest. */
+.react-aria-ComboBox .react-aria-Group > .react-aria-Button,
+.react-aria-DatePicker .react-aria-Group > .react-aria-Button,
+.react-aria-DateRangePicker .react-aria-Group > .react-aria-Button {
+  border-inline-start-width: 0;
+}
+
+/* The DateRangePicker's two DateInputs each flexed to half the group, so the
+   start date sat at the far inline start, "to" floated ~450px away and the end
+   date after that: three widely separated pieces reading as three controls
+   rather than one range. Content-sized inputs put the three together at the
+   start of the band and let the GROUP take the slack, with the calendar button
+   pushed to the far end exactly as a single DatePicker's is. */
+.react-aria-DateRangePicker .react-aria-Group > .react-aria-DateInput:not([hidden]) {
+  flex: 0 0 auto;
+}
+
+.react-aria-DateRangePicker .react-aria-Group > .react-aria-Button {
+  margin-inline-start: auto;
 }
 
 /* Concentric corners. Without these the square-cornered hover fill of a
