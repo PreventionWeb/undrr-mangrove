@@ -232,7 +232,7 @@ the rollup. `_components.scss` still imports `aria/react-aria`, so the React Ari
 surface itself is compiled into `style.css` for every Drupal and CDN consumer
 (28 `react-aria-Button` matches in the current build). Whether that belongs in
 the theme bundle is a product decision, not a defect, but it should be a
-decision rather than an accident.
+decision rather than an accident. Still true, and now larger: see §12.
 
 Two general lessons worth keeping:
 
@@ -405,6 +405,12 @@ reflows on its own because it is written in logical properties. The error red is
 - Portalled overlays render under `<body>`. Any site scoping `.mg-theme-*` to a
   wrapper gets unbranded popovers and menus.
 - Forced-colours rendering has never been verified in Windows High Contrast.
+  Everything in §10e was measured in Chrome under
+  `Emulation.setEmulatedMedia`, which is the same media query and not the
+  same renderer.
+- Further open items opened by the refinement wave — bundling, distribution,
+  tab identity and the component stylesheets that bypass the focus-ring token
+  — are in §12, with owners.
 
 ---
 
@@ -431,3 +437,351 @@ landing page a programme has been asking for over a year is not blocked on any
 of this. `_theme-delta.scss` and `style-delta.scss` already exist and the theme
 switch already works. It is blocked because nobody owns keeping the DELTA brand
 file faithful to DELTA's design. That is governance.
+
+---
+
+## 9. The refinement wave: what the token contract learned
+
+Four waves of aesthetic work — `80b71493`, `7e2432c7`, `16a832a9` and the
+commits around them — took the React Aria surface from "coloured correctly" to
+"shaped correctly". The diff shows what moved. This section records the
+reasoning that the diff does not.
+
+### 9a. The contract gained a quiet register
+
+`--mg-aria-color-border` was doing nine unrelated jobs: form-field edge,
+popover and modal edge, table rule, tab rail, disclosure dividers, separator,
+tag edge and the slider rail outline. Those are two jobs wearing one name.
+Modern Mangrove draws them with two values, and the adapter now does too:
+
+- **opaque `neutral-400`** where SC 1.4.11 applies to a *control* boundary — a
+  field, a check, a Select trigger. That stays `--mg-aria-color-border`.
+- **`rgb(neutral-600 / 0.24)`** for *structure* — table rules, tab rails,
+  section dividers, card and overlay edges. That is the new
+  `--mg-aria-color-rule`. It is the same value as the `.mg-tabs__list` rule
+  (`tab.scss:211`) and as `--mg-shadow-raised`'s inset, so the two surfaces
+  agree by construction rather than by coincidence.
+
+Fourteen declarations in `_react-aria.scss` read the new token.
+
+**The constraint worth stating plainly:** `--mg-aria-color-rule` is
+translucent, and it is deliberately **not** graded by the contract test's
+contrast pairs. It appears in `RUNTIME_ARIA_ALIASES` (existence) and is absent
+from `ARIA_PAIRS` (contrast) on purpose — a translucent value composited over
+an unknown backdrop has no single ratio to assert. So it **must never be the
+only boundary of a control**. If a future change points a field, a check or a
+trigger at it, the contract test will stay green and the control will fail
+1.4.11. That review has to be done by a person.
+
+The same reasoning produced the pairing in the elevation ladder: a popover now
+draws a *quiet* edge and a soft shadow, rather than an opaque form-field border
+*and* a long shadow, which was two mechanisms doing one job.
+
+### 9b. The other new seams, and why each one exists
+
+None of these changed a rendered value for its own sake; each names a decision
+that was previously a repeated literal or an unreachable one.
+
+| Token | Why it exists |
+| --- | --- |
+| `--mg-aria-color-hover-surface` | Mangrove hovers with 6% of the interactive colour (pager, details, scroll-container, and the v2 tab). Grey hover was the last brand-blind surface in the adapter. Never the sole state signal — it is ~4% luminance and is always paired with colour or weight. |
+| `--mg-aria-color-invalid-surface` | A scannable wash for an invalid field, deliberately far below any contrast threshold. `--mg-aria-color-invalid` on the border and in the message stays the contrast carrier. |
+| `--mg-aria-control-block-size` | Reads `--mg-form-input-block-size`, which has existed since #1086 and which the adapter never read. Steppers, ComboBox and DatePicker triggers were 41px against a 46px field. |
+| `--mg-aria-radius-item` | `min(control, surface)`. Nothing guarantees a theme's control radius is smaller than its surface radius; MCR2030 was a live counter-example, a 10px MenuItem inside a 5px Popover. |
+| `--mg-aria-radius-check` | `min(control, 4px)`. At MCR2030's 10px a 24px check reads as a radio button, which is a meaning change rather than a style one. |
+| `--mg-aria-radius-control-inner` | `max(0, control − border)`. Concentric corners share a centre, so a child inside a 1px border needs the outer radius minus that border or its corner cuts across the parent's. `max()` keeps it legal for a square-field theme. |
+| `--mg-aria-check-size` | 24px, the WCAG 2.5.8 minimum, matching the thumb. |
+| `--mg-aria-color-fill` | See §9c. |
+| `--mg-aria-modal-shadow` | The modal has to out-elevate the popover rather than match it, so the ladder is card rule → popover → modal rather than two rungs. |
+| `--mg-aria-button-outline-color{,-hover}` | The contract could previously only express "primary", so the outline variant every brand defines reached nothing. Both source tokens are channel triplets and are wrapped in `rgb()` here — see the value-type trap in §3. |
+| `--mg-aria-opacity-disabled`, `--mg-aria-press-scale`, `--mg-aria-font-weight-strong` | Nineteen repeated literals (0.55 twelve times, the press scale twice, the strong weight five times) became three decisions. No rendered value changed. |
+
+### 9c. The rail contrast requirement is unsatisfiable as it was stated
+
+The brief was "raise the track until the rail clears 3:1 against the page".
+Measured across the neutral ramp, no value does, and the reason is algebraic
+rather than a matter of picking a better grey.
+
+Take IRP, whose interactive colour is `#0f78bf` — relative luminance 0.173,
+which is **4.71:1 on white**. On a white page:
+
+- rail vs page at 3:1 requires rail luminance ≤ **0.300**
+- fill vs rail at 3:1 requires rail luminance ≥ **0.619**
+
+The two constraints do not intersect. Satisfying both would require a rail
+*lighter than the page it sits on*. Every surveyed system reaches the same
+place: Adobe neutral-300, Spectrum 2 gray-300, Jolly zinc-200 — all around
+1.2:1 on white, all unbordered.
+
+So the guarantee moved rather than being abandoned. The rail stays light, and
+the **fill** carries the contract: `--mg-aria-color-fill` is graded against
+`--mg-aria-color-track` *and* against `--mg-aria-color-surface`, so a part-full
+bar is readable by its own edge against the page. The fill is a separate seam
+from `--mg-aria-color-accent` precisely so a theme whose accent is too light
+can repoint one property instead of restyling four components — Spectrum 2's
+answer to the same problem.
+
+Record this because someone will propose bordering the rails again. In forced
+colours the rails *do* carry a border, because there the fill is `Highlight`
+and the rail forces to `Canvas`; that is a different problem with a different
+answer, and it is not evidence that the normal-mode border was wrong.
+
+### 9d. The focus ring is no longer the brand colour
+
+`--mg-color-focus-ring` is `#866200` in all five themes: the amber this system
+already ships (`accent-500`, `#fec124`) held at its Oklch hue and taken down to
+L 52%. It is not a brand hue, on purpose — the focus ring is the one colour in
+Mangrove that must never be mistaken for anything else, and a ring that changes
+per property is a ring people have to relearn per property.
+
+The obvious question is why we did not use one of the loud public-sector
+yellows. The answer is structural rather than aesthetic. Our perceptual measure
+is **lightness-only** on Oklab and grades non-text against a floor of 50.
+Measured with `scripts/lib/perceptual-contrast.cjs`:
+
+| Colour | Oklab measure vs white | WCAG 2 vs white |
+| --- | --- | --- |
+| `#ffdd00` (GOV.UK yellow) | 5.3 | 1.35:1 |
+| `#ffeb3b` (a common material yellow) | −3.2 | 1.22:1 |
+| `#866200` (ours) | 68.7 | 5.58:1 |
+
+No light colour can pass as a *single band*, under either measure. That is
+exactly why GOV.UK and NHS both ship **two**: a bright ring plus a dark anchor
+bar underneath it, where the dark half carries the contrast. A two-part
+indicator is a legitimate design we have not adopted; a single bright band is
+not.
+
+`--mg-color-form-focus` deliberately stays brand-coloured and continues to
+resolve to `{color.interactive}` in every brand. The two are saying different
+things: the field border says "this field is active", the ring says "the
+keyboard is here". Collapsing them would lose one of the two facts.
+
+---
+
+## 10. Traps found while doing the work
+
+Each of these cost real time to establish and none of them is visible in the
+resulting diff.
+
+### 10a. `border: 0` on the base Button made every later `border-color` a no-op
+
+`.react-aria-Button { border: 0 }` set the border *width* to zero, so every
+later rule in the stylesheet that set only `border-color` on a Button — the
+Select trigger, the Disclosure trigger, the dialog's close button — painted
+nothing at all. The Select trigger shipping with a tint and no boundary (which
+"never rely on tint alone to identify a control" rules out, and which fails SC
+1.4.11 outright) was the visible symptom of a file-wide defect.
+
+It is now `border: var(--mg-aria-button-border-width) solid transparent` — a
+real border, transparent on the filled variant so nothing changes visually
+there, and an edge for the quiet variants to colour in. The general lesson: a
+`border: 0` in a base rule is not a neutral reset, it is a silent veto over
+every state rule that follows.
+
+### 10b. `min-block-size` is a floor and cannot pull a control down
+
+Setting `--mg-aria-control-block-size` on the MCR2030 Select trigger achieved
+nothing until the field's *padding* was applied as well. MCR2030's button
+padding is 15px/30px, which makes the trigger's content box 52px — past the
+46px field it is meant to match. A floor only ever raises. This bit an
+implementer once and will bite the next one, so the Select trigger explicitly
+takes the **Input's** padding, not `--mg-aria-button-padding`.
+
+The same applies to radius: the trigger takes `--mg-aria-radius-control`, never
+`--mg-aria-radius-button`, because MCR2030's button radius is a 30px pill
+beside 10px inputs.
+
+### 10c. A control that never states its type metrics inherits the page's
+
+`.react-aria-DateInput` declared no `font-family`, `font-size` or
+`line-height`, so it took the page's. Under the default theme that happened to
+match; under DELTA, whose base type is larger, it rendered 49px beside a 46px
+Input and a 46px calendar trigger. Invisible in the theme everyone reviews in,
+which is why three review passes missed it. Any control that sets its own
+height must also state its own type metrics, or the height is only true in one
+theme.
+
+### 10d. The calendar cell is a `<div>` inside an unclassed `<td>`
+
+`CalendarGrid` renders a real `<table>`; `CalendarCell` renders an **unclassed**
+`<td>` wrapping an inner `<div class="react-aria-CalendarCell">` which carries
+every `data-*` attribute — `data-today`, `data-selection-start` and
+`data-selection-end` included. So the old
+`.react-aria-CalendarHeaderCell, .react-aria-CalendarCell { padding: 5px }`
+put padding on a `<th>` in one case and on an inner `<div>` in the other, and
+the `<td>` in between — reachable by no class at all — kept the UA default
+`padding: 1px`.
+
+That 1px was a gutter around every date that no token could reach, and it is
+why range selection rendered as broken-up segments: the band painted the 30px
+div and left an unpainted moat on all four sides. `CalendarGrid td, th
+{ padding: 0 }` plus all sizing on the inner div is what makes adjacent
+selected days actually touch.
+
+### 10e. Forced colours: three facts that were measured, not assumed
+
+The `@media (forced-colors: active)` block used to sit mid-file with ~450 lines
+after it. A media query adds no specificity, so later equal-specificity rules
+were silently overriding their own repaints. **It now lives at the end of
+`_react-aria.scss` and must stay there.** Anything appended after it is
+appended after the repaints too.
+
+Three behaviours, all verified in Chrome under `Emulation.setEmulatedMedia`
+rather than reasoned about:
+
+- **`border-color` is forced to `CanvasText` even when the author value is
+  `transparent`.** Both collections reserve their 3px selection marker as
+  `solid transparent` so selecting does not shift the layout. In forced colours
+  that reservation painted an opaque black bar on every row, every GridList
+  item and the table header's first column — inverting the exact state the bar
+  exists to carry. `Canvas` restores the reservation; `Highlight` marks the
+  selection.
+- **`background: Highlight; color: HighlightText` computes correctly and still
+  paints blank.** Chrome draws a Canvas text backplate behind the text of any
+  element left on `forced-color-adjust: auto`, so `HighlightText` renders
+  white-on-white. `forced-color-adjust: none` is therefore **mandatory** on a
+  Highlight fill with text over it — and **unnecessary** on a Highlight border
+  or a text-free fill. Confirmed by screenshot: two identical divs, one opted
+  out and one not, only the opted-out one readable.
+- **`box-shadow` is suppressed entirely**, even when written inside the media
+  query. An `inset 0 0 0 2px CanvasText` shadow declared in the block computes
+  to `none`. So anything whose only boundary is a shadow has no boundary here,
+  and anything opted out of forcing keeps its *brand* shadow, which is worse.
+
+A fourth, less obvious: `forced-color-adjust: none` disables forcing for
+**every** declaration reaching that element, including more specific state
+rules written elsewhere. The slider thumb's disabled and hover colours were
+painting brand values no forced-colours rule had authorised, purely because the
+base element was opted out.
+
+Windows High Contrast itself remains unverified — see §7.
+
+### 10f. React Aria replaces its default class when you pass `className`
+
+This is a trap for every consumer, not a detail of our stories.
+
+`<Foo className="x">` renders `class="x"` — `react-aria-Foo` is **gone**, and
+every rule in the distributed stylesheet with it. The CRUD demo carried
+`className="mg-search__input-wrapper aria-crud-search"` on its SearchField, so
+`react-aria-SearchField` was never on the element and no distributed styling
+ever reached it; the same on the editor Dialog, which would have silently
+broken the `slot="close"` outline button. Both now re-add the default class by
+hand (`className="react-aria-SearchField aria-crud-search"`).
+
+React Aria does offer a composition path — a function-valued `className`
+receiving `defaultClassName` — so this is avoidable. It is simply not what
+anyone writes by default, which is the same reason the reciprocity argument in
+§4 does not survive contact with a second team. Anyone consuming
+`aria/react-aria.css` needs to know this before their first `className`.
+
+### 10g. React Aria derives reading direction from `navigator.language`
+
+Not from the `dir` attribute, and not from `lang`. Without an `I18nProvider`
+the page was visually RTL while the library believed it was LTR, which inverts
+arrow-key mapping in Tabs, Slider, DateField and Table columns — the layout
+mirrors and the keyboard does not follow it.
+
+`.storybook/preview.js` now wraps every story in
+`<I18nProvider locale={…}>`. **Consumers need the same.** A Drupal page served
+in Arabic that mounts React Aria components without an `I18nProvider` has
+working RTL layout and backwards arrow keys, and nothing in the DOM says so.
+
+### 10h. A `font-family` set at `:root` cannot be overridden by `:root:lang(ar)` alone
+
+This is the §3 mixin trap in a second costume, and worth cross-referencing
+because the two look unrelated until you have hit both.
+
+A custom property's value is resolved on the element it is declared on, and
+descendants inherit it **already resolved**. Arabic React Aria controls were
+falling through to the system sans while `mg-status-label` beside them
+correctly rendered Dubai, because every `.react-aria-*` rule sets
+`font-family: var(--mg-aria-font-family)` explicitly — which beats the
+inherited value the legacy `:lang(ar)` blocks rely on.
+
+The fix is in `mg-aria-token-constants` and needs **two** selectors, for two
+different reasons:
+
+- `&:lang(ar)` — the document case (`<html lang="ar">`). It compiles to
+  `:root:lang(ar)` inside Mangrove's bundle and `:where(:root):lang(ar)` in the
+  standalone token files; in both it is strictly more specific than the block
+  it overrides, so it wins on specificity rather than on source order.
+- `@at-root :lang(ar)` — the subtree case, an Arabic pull-quote inside an
+  English page. `:root` does not match that element at all, so there is no
+  contest: the declaration simply replaces the inherited value.
+
+`_runtime-theme-aliases.scss` documents the same mechanism for theme values.
+The rule generalises: **any custom property whose value depends on a condition
+that can vary below the root cannot be declared only at the root.**
+
+---
+
+## 11. Corrections to claims made earlier in this document
+
+- **`CalendarHeading` does not remove the `:has()` header hack.** React Aria
+  1.20 does ship a `CalendarHeading` with the default class
+  `react-aria-CalendarHeading`, verified in the installed build, and it is
+  styled now. But the `:has(> .react-aria-Button[slot="previous"])` selector
+  targets the previous/heading/next **row wrapper**, which is author markup
+  under a class we cannot know. The hack stays. Only the heading itself gained
+  a real class.
+- **`--disclosure-panel-height` does not exist in RAC 1.20.** The only custom
+  property the library emits that this surface could read is `--trigger-width`
+  (plus `--tab-panel-width/height`, `--table-row-level`, `--tree-item-level`
+  and the visual-viewport pair). Any animation of a disclosure panel's height
+  has to measure it, not read it.
+- **§6b's form-state findings predate the joined-field work.** The Group is now
+  the field: it carries the border, radius, height, background and focus ring,
+  and the controls inside are borderless and flush, which is what every RAC
+  starter in the ecosystem does. Several disagreements §6b records are
+  therefore closed — the Select trigger now expresses invalid and disabled, the
+  DateInput states its own metrics, hover and filled are expressed on the
+  Input, and the disabled treatments were unified on
+  `--mg-aria-opacity-disabled`. §6b is kept as written because it is the record
+  of a measurement pass, not a live status board. Re-measure before citing it.
+- **The `~4.2:1` figure in the rail comment in `_runtime-theme-aliases.scss` is
+  wrong.** IRP's interactive colour is 4.71:1 on white. The conclusion the
+  comment draws is unaffected — see §9c for the arithmetic — but the number
+  should be corrected next time that file is touched.
+
+---
+
+## 12. Open, and who owns it
+
+Deliberately unresolved. Recorded so that "nobody decided" does not later read
+as "somebody decided".
+
+- **Should the React Aria surface be opt-in rather than compiled into every
+  theme stylesheet?** `_components.scss` still imports `aria/react-aria`, so
+  every Drupal and CDN consumer downloads it whether or not they run React.
+  It is ~56KB comment-stripped (110KB as authored) inside a ~320KB `style.css`,
+  and it roughly doubled during this wave, so the cost is growing rather than
+  static. This is a product decision, not a defect — but it should be a
+  decision. **Owner: whoever signs off the 2.0 bundle.**
+- **`aria/` is still not wired into `dist/`, the npm package or the CDN.**
+  `package.json` exports only `./src/index.js` and declares no `files` array;
+  `aria/react-aria.css`, `aria/react-aria.layered.css` and the five per-brand
+  token files are generated, committed, documented and unreachable by any
+  consumer who has not cloned the repository. Everything §2 and §3 promise a
+  consumer depends on closing this. **Owner: release.**
+- **The sub-brand tab identity question**, recorded at length in
+  `_runtime-theme-aliases.scss` and in §6's caveat. MCR2030, PreventionWeb and
+  DELTA designed a *filled* tab; alpha.2 shipped an underline. Piping the brand
+  tab tokens into the underline mechanically puts white text on a white page
+  (measured 1.00:1). Either the brands re-express their tab identity in the
+  underline vocabulary, or the v2 tab regains a filled variant. **Owner: design
+  plus the brand owners** — it cannot be resolved by wiring.
+- **Component stylesheets that draw their own focus outline and bypass
+  `--mg-color-focus-ring`.** A survey of `stories/Components` finds focus
+  outlines hardcoded in at least ten stylesheets — Gallery (4), Syndication
+  search widget (6), Hero (2), Pager, Tab, MegaMenu, Snackbar, TextCta,
+  Boilerplate and Forms — mostly `2px solid rgb(var(--mg-color-interactive))`,
+  which is the brand colour the ring was deliberately moved *away* from in
+  §9d. Two more (`PreviewAccess`) read `--mg-color-form-focus`, the field
+  border token, which is a near-miss rather than a hit.
+
+  The one to fix first is **`stories/Components/Forms/_form-base.scss:264`**,
+  which hardcodes `rgb(var(--mg-color-blue-800))` — a UNDRR blue *primitive*,
+  not a semantic token — inside `.mg-form-error-summary`, a **shared** form
+  rule. No sub-brand overrides `blue-800`, so that rule leaks UNDRR blue into
+  PreventionWeb, IRP, MCR2030 and DELTA. **Owner: forms.** Out of scope for
+  this wave and reported rather than fixed.
