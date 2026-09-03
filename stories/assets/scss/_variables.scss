@@ -1,7 +1,7 @@
 /**
  * This is from the UNDRR Mangrove component library
  * https://github.com/unisdr/undrr-mangrove?tab=readme-ov-file
- * Version: 2.0.0-alpha.2
+ * Version: 2.0.0-alpha.3
  *
  *   ██╗   ██╗███╗   ██╗██████╗ ██████╗ ██████╗
  *   ██║   ██║████╗  ██║██╔══██╗██╔══██╗██╔══██╗
@@ -128,16 +128,27 @@ $mg-font-family-icons: "fontawesome";
 // Arabic fonts
 // One Arabic family across headings and body. Mangrove previously paired Noto
 // Kufi Arabic headings with Dubai body text, which is two typefaces doing one
-// job and two font downloads for Arabic readers. Kufi is a display style, so
-// dropping it costs readers nothing they were using.
+// job and two font downloads for Arabic readers. Kufi is conventionally a
+// display style and Dubai reads better at body size, so dropping it costs
+// readers nothing -- though note the UAE federal design system and OCHA's own
+// base theme both set Noto Kufi for body, so the principle is not absolute.
 
-// Dubai came from OCHA's brand guidance, as archived September 2024:
-// https://web.archive.org/web/20240910173629/https://brand.unocha.org/document/281801#/fonts/fonts
-// OCHA has since updated that guidance, so this inheritance is dated and worth
-// re-checking against whatever they moved to before 2.1.
+// Dubai came from OCHA, but the inheritance is weaker than it looks and is now
+// out of date on both halves. Dubai was OCHA's ALTERNATIVE subtheme pairing
+// (body only, never headings, Regular only), not their base theme, which used
+// Noto Kufi Arabic. And on 2026-05-28 OCHA's brand guidance moved to Almarai
+// for display and Noto Sans Arabic for body. No published reason.
 
-// Only 400 and 700 are loaded, while the Latin side uses 500 and 600, so
-// medium-weight Arabic synthesises or jumps to bold. Dubai ships a Medium.
+// There is also an unresolved licensing question: the Dubai EULA requires the
+// font be embedded so an end user cannot extract it, and forbids further
+// distribution. We serve it as a plain woff2 from an open CDN, referenced by an
+// Apache-2.0 component library that points other organisations at that copy.
+// Needs a legal read, not a design one. See issue #1089.
+
+// Only Regular and Bold exist upstream -- Light and Medium 404 on the CDN --
+// so Arabic has a 400/700 binary where Latin has a ladder. Nothing is faux
+// bolded: the 600 used in _foundational.scss resolves UP to the real Bold. The
+// cost is a lost tier of emphasis, not a rendering defect.
 $mg-font-family-arabic-headings: "Dubai", sans-serif;
 $mg-font-family-arabic-body: "Dubai", sans-serif;
 
