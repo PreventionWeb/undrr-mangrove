@@ -15,11 +15,11 @@ _Notable cross-cutting changes between releases land here. Per-component changes
 
 ## 2.0.0 — unreleased
 
-Development releases began with `2.0.0-alpha.1` under the npm `next` dist-tag. See [PR #1061](https://github.com/unisdr/undrr-mangrove/pull/1061) for the first alpha, [PR #1086](https://github.com/unisdr/undrr-mangrove/pull/1086) for alpha.2 and [PR #1080](https://github.com/unisdr/undrr-mangrove/pull/1080) for alpha.3. The [Storybook release notes](https://unisdr.github.io/undrr-mangrove/?path=/docs/getting-started-release-notes-v2-0--docs) cover the complete 2.0 line; the tagged stable GitHub Release link lands with 2.0.0.
+Development releases began with `2.0.0-alpha.1` under the npm `next` dist-tag. See [PR #1061](https://github.com/unisdr/undrr-mangrove/pull/1061) for the first alpha, [PR #1086](https://github.com/unisdr/undrr-mangrove/pull/1086) for alpha.2 and [PR #1087](https://github.com/unisdr/undrr-mangrove/pull/1087) for alpha.3. The [Storybook release notes](https://unisdr.github.io/undrr-mangrove/?path=/docs/getting-started-release-notes-v2-0--docs) cover the complete 2.0 line; the tagged stable GitHub Release link lands with 2.0.0.
 
 ### `2.0.0-alpha.3` — unreleased
 
-Proposed in [PR #1080](https://github.com/unisdr/undrr-mangrove/pull/1080). A foundation release: no required integration change, but **two system-wide defaults change deliberately and are visible to every consumer in every theme** — the [neutral ramp's surface half is cool-tinted](#changed-default-the-neutral-ramps-surface-half-is-cool-tinted) and the [keyboard focus ring is no longer the brand colour](#changed-default-the-focus-ring-is-no-longer-the-brand-colour). The token-pipeline rewrite that carries them is itself value-identical: apart from those two changes, compiled output for all five themes is byte-unchanged.
+Proposed in [PR #1087](https://github.com/unisdr/undrr-mangrove/pull/1087). A foundation release: no required integration change, but **two system-wide defaults change deliberately and are visible to every consumer in every theme** — the [neutral ramp's surface half is cool-tinted](#changed-default-the-neutral-ramps-surface-half-is-cool-tinted) and the [keyboard focus ring is no longer the brand colour](#changed-default-the-focus-ring-is-no-longer-the-brand-colour). The token-pipeline rewrite that carries them is itself value-identical: apart from those two changes, compiled output for all five themes is byte-unchanged.
 
 #### Design token pipeline
 

@@ -1,6 +1,6 @@
 # Mangrove 2.0 release notes
 
-Mangrove 2.0 combines three related workstreams: the runtime theming foundation published in `2.0.0-alpha.1`, the experience and interaction baseline in `2.0.0-alpha.2`, and the design token pipeline proposed for `2.0.0-alpha.3`. See [PR #1061](https://github.com/unisdr/undrr-mangrove/pull/1061) for the first alpha, [PR #1086](https://github.com/unisdr/undrr-mangrove/pull/1086) for alpha.2 and [PR #1080](https://github.com/unisdr/undrr-mangrove/pull/1080) for alpha.3. The tagged `v1.8.2...v2.0.0` comparison lands with the stable release.
+Mangrove 2.0 combines three related workstreams: the runtime theming foundation published in `2.0.0-alpha.1`, the experience and interaction baseline in `2.0.0-alpha.2`, and the design token pipeline proposed for `2.0.0-alpha.3`. See [PR #1061](https://github.com/unisdr/undrr-mangrove/pull/1061) for the first alpha, [PR #1086](https://github.com/unisdr/undrr-mangrove/pull/1086) for alpha.2 and [PR #1087](https://github.com/unisdr/undrr-mangrove/pull/1087) for alpha.3. The tagged `v1.8.2...v2.0.0` comparison lands with the stable release.
 
 > **If you consume the base UNDRR compiled CSS (CDN or prebuilt), no sub-brand theming:** the alpha.1 theming migration requires no integration change. Alpha.2 intentionally refreshes component presentation and interaction while retaining existing Drupal hydration and BEM contracts, apart from the deprecated Pagination removal.
 >
@@ -35,7 +35,7 @@ For a compiled-CSS consumer the entire trial is two lines: swap the stylesheet h
 |---|---|---|
 | `2.0.0-alpha.1` | Published under `next` | CSS custom-property theming, 16px root and sub-brand runtime selectors |
 | `2.0.0-alpha.2` | Prepared for manual release in [PR #1086](https://github.com/unisdr/undrr-mangrove/pull/1086) | Experience principles, component surfaces, interaction states, responsive behaviour and multilingual resilience |
-| `2.0.0-alpha.3` | Proposed in [PR #1080](https://github.com/unisdr/undrr-mangrove/pull/1080), not yet published | Design token pipeline, status and empty-state components, data-visualisation palette and a perceptual colour-contrast methodology |
+| `2.0.0-alpha.3` | Proposed in [PR #1087](https://github.com/unisdr/undrr-mangrove/pull/1087), not yet published | Design token pipeline, status and empty-state components, data-visualisation palette and a perceptual colour-contrast methodology |
 
 ### Alpha.2 experience and interaction baseline
 
