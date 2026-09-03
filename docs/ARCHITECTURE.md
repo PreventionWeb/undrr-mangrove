@@ -257,7 +257,7 @@ Mangrove uses two distinct token mechanisms:
 
 **CSS custom properties** (`--mg-color-*`, `--mg-spacing-*`): color and spacing tokens defined in the compiled output. Themes override these at runtime via a `.mg-theme-{name} { }` selector block in `_theme-{name}.scss`. Applying the class to `<body>` or a wrapping element activates the theme without any CSS rebuild.
 
-**Build-time SCSS `!default` variables**: used for tokens that must be resolved at compile time and cannot be overridden at runtime. This includes breakpoints (`$mg-breakpoint-*`), font sizes (`$mg-font-size-*`), font families (`$mg-font-family-*`), and `$mg-tabs-border-bottom`. When adding new build-time-only variables, include `!default` so consuming projects can override them before importing Mangrove. (`$mg-html-font-size` is the exception — it is fixed at `16`, see below.)
+**Build-time SCSS `!default` variables**: used for tokens that must be resolved at compile time and cannot be overridden at runtime. This includes breakpoints (`$mg-breakpoint-*`), font sizes (`$mg-font-size-*`), font families (`$mg-font-family-*`), and `$mg-tabs-border-bottom`. These carry `!default` so a consuming project can override them before importing Mangrove; include it on any new build-time variable for the same reason. (`$mg-html-font-size` is the exception — it is fixed at `16`, see below.)
 
 ### Root font-size and the mg-rem() function
 
@@ -282,8 +282,8 @@ When writing component SCSS, use `mg-rem()` or an existing token. Never hard-cod
 
 ```scss
 // Correct
-padding: mg-rem(15);       // 15px at any root
-padding: $mg-spacing-150;  // same thing, via the token
+padding: mg-rem(15);                  // 15px at any root
+padding: var(--mg-spacing-150);       // same thing, via the token
 
 // Wrong — breaks when root changes
 padding: 1.5rem;

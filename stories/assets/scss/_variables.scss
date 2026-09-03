@@ -52,7 +52,8 @@
   "mg-color-button-background", "mg-color-button-background--hover",
   "mg-border-color-button", "mg-color-tag", "mg-color-form-check",
   "mg-color-form-focus",
-  "mg-color-hero--secondary", "mg-spacing-150", "mg-spacing-300"
+  "mg-color-hero", "mg-color-hero--secondary", "mg-spacing-150",
+  "mg-spacing-300"
 {
   @if meta.variable-exists($_legacy) {
     @warn "Mangrove 2.0: `$#{$_legacy}` no longer has any effect — color and spacing tokens are CSS custom properties now. Move the override into a `.mg-theme-* { --#{$_legacy}: ...; }` block (or `:root`). See docs/RELEASE-2.0.md.";
@@ -121,10 +122,10 @@ $mg-font-line-height-700: 1.5em;
   }
 }
 
-$mg-font-family: "Roboto", sans-serif;
-$mg-font-family-condensed: "Roboto Condensed", sans-serif;
+$mg-font-family: "Roboto", sans-serif !default;
+$mg-font-family-condensed: "Roboto Condensed", sans-serif !default;
 $mg-font-family-headings: $mg-font-family-condensed !default;
-$mg-font-family-icons: "fontawesome";
+$mg-font-family-icons: "fontawesome" !default;
 
 // Arabic fonts
 // One Arabic family across headings and body. Mangrove previously paired Noto
@@ -150,8 +151,8 @@ $mg-font-family-icons: "fontawesome";
 // so Arabic has a 400/700 binary where Latin has a ladder. Nothing is faux
 // bolded: the 600 used in _foundational.scss resolves UP to the real Bold. The
 // cost is a lost tier of emphasis, not a rendering defect.
-$mg-font-family-arabic-headings: "Dubai", sans-serif;
-$mg-font-family-arabic-body: "Dubai", sans-serif;
+$mg-font-family-arabic-headings: "Dubai", sans-serif !default;
+$mg-font-family-arabic-body: "Dubai", sans-serif !default;
 
 // $mg-font-family-icons: "mangrove-icon-set";
 // Not yet activated as we are using the FontAwesome namespace
