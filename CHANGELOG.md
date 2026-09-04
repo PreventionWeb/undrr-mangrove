@@ -24,9 +24,8 @@ Proposed in [PR #1088](https://github.com/unisdr/undrr-mangrove/pull/1088), stac
 #### React Aria Components surface
 
 - Stock `.react-aria-*` classes from React Aria Components 1.20 are styled from Mangrove tokens, so React Aria components adopt the active `mg-theme-*` brand with no `className`, wrapper or configuration.
-- `aria/react-aria.css` and per-brand `aria/tokens/{brand}.css` are built standalone for consumers who do not load Mangrove's full stylesheet. Token files are wrapped in `:where(:root)` so Mangrove's own palette wins when both are present, regardless of load order. **Not distributed yet:** `aria/` is not copied into `dist/` or the published package, and the published `package.json` is regenerated without an `exports` field.
-- The surface ships **unlayered**, and no `@layer`-wrapped flavour is built. Because the same rules are also compiled unlayered into every theme stylesheet, a layered copy could not outrank them — see `docs/CASCADE-LAYERS.md` for why, and for what would have to change first.
-- **Known:** the surface also compiles into `style.css`, so it currently reaches every consumer — roughly 59 KB of a 355 KB stylesheet, comment-stripped. Making it opt-in is unresolved.
+- `aria/react-aria.css` and per-brand `aria/tokens/{brand}.css` are distributed as an opt-in surface for consumers who do not load Mangrove's full stylesheet. Token files are wrapped in `:where(:root)` so Mangrove's own palette wins when both are present, regardless of load order.
+- The surface ships **unlayered**, and no `@layer`-wrapped flavour is built. See `docs/CASCADE-LAYERS.md` for the integration trade-offs and the route to a future layered build.
 
 #### The `--mg-aria-*` token contract
 
@@ -86,8 +85,6 @@ Adding the surface to the graded set raises the recorded contrast exceptions fro
 
 #### Not yet resolved
 
-- The surface compiles into `style.css` for every consumer, including those who will never use React Aria. Making it opt-in is the main open packaging question, and it is the change that has to land before a layered variant could help anyone.
-- The standalone `aria/*.css` files are not wired into any distribution channel: `yarn build` does not copy `aria/` into `dist/`, the release workflow does not copy it into the published package, and the published `package.json` is regenerated without an `exports` field.
 - The two-band focus indicator is used on exactly one rule here, and the other twenty-four stay single-band. That is a measurement rather than a shortfall — see the focus indicator section above — but it does mean a `.mg-button` and a `.react-aria-Button` do not paint an identical indicator. If a theme ever retints `--mg-color-neutral-0` away from white, the two surfaces would need re-measuring together.
 
 ### `2.0.0-alpha.3` — unreleased

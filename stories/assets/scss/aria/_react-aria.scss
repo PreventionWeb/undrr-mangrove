@@ -1586,9 +1586,7 @@
   display: inline-flex;
   font-size: var(--mg-aria-font-size-small);
   gap: var(--mg-aria-space-1);
-  min-block-size: calc(
-    var(--mg-aria-check-size) + var(--mg-aria-space-1) * 2
-  );
+  min-block-size: calc(var(--mg-aria-check-size) + var(--mg-aria-space-1) * 2);
   padding-block: var(--mg-aria-space-1);
   padding-inline: var(--mg-aria-space-2);
 }
@@ -2102,8 +2100,6 @@
   }
 }
 
-
-
 // A 135deg repeating gradient repeats horizontally every stop-period * sqrt(2),
 // so the animation must travel exactly that far to loop without a seam. Sizing
 // the background to any other value tiles the image and bands the stripes.
@@ -2501,8 +2497,7 @@
 // chosen by position, so a NumberField (Button, Input, Button) gets a rule on
 // the inner side of each stepper without either of them being named.
 .react-aria-Group > .react-aria-Button:first-child {
-  border-inline-end: var(--mg-aria-border-width) solid
-    var(--mg-aria-color-rule);
+  border-inline-end: var(--mg-aria-border-width) solid var(--mg-aria-color-rule);
 }
 .react-aria-Group > .react-aria-Button:last-child {
   border-inline-start: var(--mg-aria-border-width) solid

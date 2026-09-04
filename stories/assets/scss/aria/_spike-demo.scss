@@ -8,6 +8,9 @@
  * This file is compiled through Mangrove's normal theme rollup, not by
  * `yarn build:aria`.
  */
+@import "tokens-inline";
+@import "react-aria";
+
 .aria-spike-table-scroll {
   border-radius: var(--mg-aria-radius-surface);
   box-shadow: var(--mg-aria-surface-shadow);

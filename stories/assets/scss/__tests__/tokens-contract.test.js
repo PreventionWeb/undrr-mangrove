@@ -219,9 +219,8 @@ describe('Mangrove 2.0 token contract (compiled CSS)', () => {
 });
 
 /**
- * The React Aria surface is built as a standalone artifact
- * (`aria/react-aria.css`) and is compiled into every theme stylesheet.
- * Storybook's spike demos live in the same
+ * The React Aria surface is built as an opt-in standalone artifact
+ * (`aria/react-aria.css`). Storybook's spike demos live in the same
  * Sass tree and are trivially easy to re-add to the shipped entry point by
  * accident, which would leak `.aria-crud-*` fixture styling into every
  * consumer's bundle. These assertions pin the boundary.
@@ -267,6 +266,10 @@ describe('distributed React Aria surface', () => {
       .map(line => line.trim());
 
     expect(leaked).toEqual([]);
+  });
+
+  test('the shipped theme bundle does not include the opt-in surface', () => {
+    expect(compile('style')).not.toContain('.react-aria-Button');
   });
 
   test('carries no spike-demo composition selectors', () => {
@@ -510,7 +513,13 @@ const THEME_BLOCK = /\.mg-theme-[a-z0-9-]+\s*\{[^}]*\}/g;
  */
 const themeVars = theme => {
   const css = compile('style-all');
-  const vars = declarations(css.replace(THEME_BLOCK, ''), null);
+  const ariaTokens = compile(
+    theme === 'base' ? 'aria/_tokens-mangrove' : `aria/_tokens-${theme}`
+  );
+  const vars = declarations(
+    `${css.replace(THEME_BLOCK, '')}\n${ariaTokens}`,
+    null
+  );
   if (theme === 'base') return vars;
   const block =
     css.match(new RegExp(`\\.mg-theme-${theme}\\s*\\{([^}]*)\\}`))?.[1] ?? '';
@@ -638,9 +647,13 @@ const measurements = () => {
   };
 
   // Suite one: resting-state --mg-aria-* pairs, read out of each brand's own
-  // bundle exactly as the WCAG assertions below do.
+  // theme and opt-in token bundle exactly as the WCAG assertions below do.
   for (const [theme, selector] of ARIA_THEMES) {
-    const css = theme === 'base' ? compile('style') : compile(`style-${theme}`);
+    const css = `${
+      theme === 'base' ? compile('style') : compile(`style-${theme}`)
+    }\n${compile(
+      theme === 'base' ? 'aria/_tokens-mangrove' : `aria/_tokens-${theme}`
+    )}`;
     const vars = declarations(css, selector);
     const read = token => parseColor(deref(vars, vars[`--mg-aria-${token}`]));
     for (const [fg, bg, min] of ARIA_PAIRS) {
@@ -751,9 +764,11 @@ describe('React Aria token contrast (WCAG 2.2 AA)', () => {
 
   const themeCss = {};
   beforeAll(() => {
-    themeCss.base = compile('style');
+    themeCss.base = `${compile('style')}\n${compile('aria/_tokens-mangrove')}`;
     BRANDS.forEach(brand => {
-      themeCss[brand] = compile(`style-${brand}`);
+      themeCss[brand] = `${compile(`style-${brand}`)}\n${compile(
+        `aria/_tokens-${brand}`
+      )}`;
     });
   });
 
@@ -2023,7 +2038,10 @@ const PERCEPTUAL_EXCEPTIONS = {
       // are recorded so neither measure gets to hide it.
       [
         `${theme}|dataviz label on categorical fill 2`,
-        [54.6, 'black on orange: passes WCAG 2 at 6.66, short of the Oklab floor'],
+        [
+          54.6,
+          'black on orange: passes WCAG 2 at 6.66, short of the Oklab floor',
+        ],
       ],
       [
         `${theme}|dataviz label on Sendai target C`,

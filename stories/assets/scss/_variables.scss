@@ -52,9 +52,8 @@
 @each $_legacy in "mg-color-interactive", "mg-color-interactive-active",
   "mg-color-button-background", "mg-color-button-background--hover",
   "mg-border-color-button", "mg-color-tag", "mg-color-form-check",
-  "mg-color-form-focus",
-  "mg-color-hero", "mg-color-hero--secondary", "mg-spacing-150",
-  "mg-spacing-300"
+  "mg-color-form-focus", "mg-color-hero", "mg-color-hero--secondary",
+  "mg-spacing-150", "mg-spacing-300"
 {
   @if meta.variable-exists($_legacy) {
     @warn "Mangrove 2.0: `$#{$_legacy}` no longer has any effect — color and spacing tokens are CSS custom properties now. Move the override into a `.mg-theme-* { --#{$_legacy}: ...; }` block (or `:root`). See docs/RELEASE-2.0.md.";

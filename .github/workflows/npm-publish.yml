@@ -3,7 +3,7 @@ name: Publish to NPM Registry
 on:
   push:
     tags:
-      - 'v*'  # Trigger on version tags (v1.0.0, v2.1.3, etc.)
+      - 'v*' # Trigger on version tags (v1.0.0, v2.1.3, etc.)
   workflow_dispatch:
     inputs:
       tag:
@@ -23,7 +23,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v7
         with:
-          fetch-depth: 0  # Fetch all history for tags
+          fetch-depth: 0 # Fetch all history for tags
 
       - name: Determine tag to use
         id: determine-tag
@@ -91,6 +91,11 @@ jobs:
             cp -r dist/fonts/* npm-package/fonts/
           fi
 
+          if [ -d "dist/aria" ]; then
+            mkdir -p npm-package/aria
+            cp -r dist/aria/* npm-package/aria/
+          fi
+
           # Copy components to top-level directory
           if [ -d "dist/components" ]; then
             mkdir -p npm-package/components
@@ -117,7 +122,7 @@ jobs:
               version: pkg.version,
               description: pkg.description,
               main: "dist/index.js",
-              files: ["components/**/*", "css/**/*", "js/**/*", "scss/**/*.scss", "error-pages/**/*", "fonts/**/*"],
+              files: ["components/**/*", "css/**/*", "js/**/*", "scss/**/*.scss", "aria/**/*", "error-pages/**/*", "fonts/**/*"],
               repository: pkg.repository,
               keywords: pkg.keywords,
               author: pkg.author,

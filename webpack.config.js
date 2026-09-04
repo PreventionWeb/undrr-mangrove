@@ -72,6 +72,10 @@ export default [
             from: 'stories/assets/fonts/mangrove-icon-set',
             to: 'fonts/mangrove-icon-set',
           },
+          {
+            from: 'aria',
+            to: 'aria',
+          },
         ],
       }),
     ],

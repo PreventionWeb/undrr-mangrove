@@ -86,15 +86,13 @@ every Tailwind utility they write.** That is precisely the chokehold they are
 worried about, delivered by the cascade rather than by policy — and the PR
 comment told them the opposite, that their Tailwind would win by source order.
 
-C is reachable in principle, which is why the decision was reopened — but it is
-not reachable while the aria surface is also compiled unlayered into every theme
-stylesheet, because that unlayered copy outranks any layered one. A pre-wrapped
+C is reachable now that the aria surface is no longer compiled unlayered into
+every theme stylesheet. A pre-wrapped
 `aria/react-aria.layered.css` was built for one wave and then removed: it was a
 byte-copy of the unlayered file that could only have helped a consumer loading
 no Mangrove stylesheet at all, and it carried a build script, a wrapper library
-and a sync test to stay honest. Making the surface opt-in (§12) is the
-prerequisite; a layered build is cheap to reinstate afterwards (postcss is
-already a dependency).
+and a sync test to stay honest. A layered build is cheap to reinstate if an
+adopter needs it (postcss is already a dependency).
 **`docs/CASCADE-LAYERS.md` is the consumer-facing guidance** — why Mangrove is
 unlayered, where a layer order statement has to go, why `@import … layer()` is
 the wrong tool (webpack hoists the inlined block above the order statement and
@@ -760,19 +758,6 @@ that can vary below the root cannot be declared only at the root.**
 Deliberately unresolved. Recorded so that "nobody decided" does not later read
 as "somebody decided".
 
-- **Should the React Aria surface be opt-in rather than compiled into every
-  theme stylesheet?** `_components.scss` still imports `aria/react-aria`, so
-  every Drupal and CDN consumer downloads it whether or not they run React.
-  It is ~59KB comment-stripped inside a ~355KB `style.css`,
-  and it roughly doubled during this wave, so the cost is growing rather than
-  static. This is a product decision, not a defect — but it should be a
-  decision. **Owner: whoever signs off the 2.0 bundle.**
-- **`aria/` is still not wired into `dist/`, the npm package or the CDN.**
-  `package.json` exports only `./src/index.js` and declares no `files` array;
-  `aria/react-aria.css` and the five per-brand
-  token files are generated, committed, documented and unreachable by any
-  consumer who has not cloned the repository. Everything §2 and §3 promise a
-  consumer depends on closing this. **Owner: release.**
 - **The sub-brand tab identity question**, recorded at length in
   `_runtime-theme-aliases.scss` and in §6's caveat. MCR2030, PreventionWeb and
   DELTA designed a *filled* tab; alpha.2 shipped an underline. Piping the brand

@@ -43,12 +43,12 @@ barely a Mangrove consumer. That is why one is not built or shipped.
 <!-- computed display: inline-flex — Mangrove wins, the utility loses -->
 ```
 
-## What would have to change first
+## Why a layered build is now possible
 
-**Making the React Aria surface opt-in rather than compiling it into every theme
-stylesheet.** Once the surface is no longer baked unlayered into `style.css`, a
-layered build of it becomes meaningful and Mangrove can ship one. Until then it
-would be a file that cannot win. That packaging question is open work — see
+The React Aria surface is opt-in rather than compiled into every theme
+stylesheet. Because `style.css` no longer carries an unlayered copy of the same
+rules, a future layered build can now provide a genuinely lower-priority entry
+point. Mangrove does not build that additional flavour yet; see
 [React Aria architecture notes](ARIA-ARCHITECTURE-NOTES.md).
 
 ## If you need a layered build today
