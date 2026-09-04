@@ -17,9 +17,11 @@ _Notable cross-cutting changes between releases land here. Per-component changes
 
 Development releases began with `2.0.0-alpha.1` under the npm `next` dist-tag. See [PR #1061](https://github.com/unisdr/undrr-mangrove/pull/1061) for the first alpha, [PR #1086](https://github.com/unisdr/undrr-mangrove/pull/1086) for alpha.2 and [PR #1087](https://github.com/unisdr/undrr-mangrove/pull/1087) for alpha.3. The [Storybook release notes](https://unisdr.github.io/undrr-mangrove/?path=/docs/getting-started-release-notes-v2-0--docs) cover the complete 2.0 line; the tagged stable GitHub Release link lands with 2.0.0.
 
-### `2.0.0-alpha.3` — unreleased
+### `2.0.0-alpha.3` — 2026-09-04
 
-Proposed in [PR #1087](https://github.com/unisdr/undrr-mangrove/pull/1087). A foundation release: no required integration change, but **three system-wide defaults change deliberately and are visible to every consumer in every theme** — the [neutral ramp's surface half is cool-tinted](#changed-default-the-neutral-ramps-surface-half-is-cool-tinted), the [keyboard focus ring is no longer the brand colour](#changed-default-the-focus-ring-is-no-longer-the-brand-colour), and the [ring is drawn as two bands](#changed-default-the-focus-ring-is-two-bands).
+See the [GitHub Release](https://github.com/unisdr/undrr-mangrove/releases/tag/v2.0.0-alpha.3) for the curated release summary once the manual release is published.
+
+Landed in [PR #1087](https://github.com/unisdr/undrr-mangrove/pull/1087). A foundation release: no required integration change, but **three system-wide defaults change deliberately and are visible to every consumer in every theme** — the [neutral ramp's surface half is cool-tinted](#changed-default-the-neutral-ramps-surface-half-is-cool-tinted), the [keyboard focus ring is no longer the brand colour](#changed-default-the-focus-ring-is-no-longer-the-brand-colour), and the [ring is drawn as two bands](#changed-default-the-focus-ring-is-two-bands).
 
 **One theme changes further: [DELTA's palette is corrected](#corrected-deltas-palette).** Earlier drafts of these notes said the token rewrite was byte-identical apart from the shared defaults. That was not true, and the claim has been removed. For the base, PreventionWeb, IRP and MCR themes the values are unchanged and only [three tokens change shape](#breaking-three-button-tokens-changed-shape). DELTA's are deliberately re-sourced.
 
@@ -247,7 +249,7 @@ Only Regular and Bold exist upstream — Light and Medium 404 on the CDN — so 
 
 ### `2.0.0-alpha.2` — 2026-09-01
 
-See the [GitHub Release](https://github.com/unisdr/undrr-mangrove/releases/tag/v2.0.0-alpha.2) for the curated release summary once the manual release is published.
+See the [GitHub Release](https://github.com/unisdr/undrr-mangrove/releases/tag/v2.0.0-alpha.2) for the curated release summary.
 
 [PR #1086](https://github.com/unisdr/undrr-mangrove/pull/1086) establishes the second 2.0 alpha baseline across Mangrove's component surfaces and interactions while preserving Drupal hydration contracts, theme ownership and existing BEM APIs except for the intentionally retired Pagination component.
 

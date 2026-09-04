@@ -39,6 +39,7 @@ const urlPatterns = [
 const ignoredDirectories = new Set([
   'node_modules',
   '.git',
+  '.worktrees',
   'dist',
   'build',
   '.next',
