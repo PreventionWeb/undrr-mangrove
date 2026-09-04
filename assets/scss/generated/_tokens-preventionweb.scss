@@ -1,0 +1,101 @@
+// GENERATED FILE — DO NOT EDIT.
+// Brand: PreventionWeb
+// Selector: .mg-theme-preventionweb
+// Source: tokens/mangrove.yaml + tokens/undrr.yaml + tokens/preventionweb.yaml
+// Regenerate: yarn build:tokens
+// Edit the YAML source, never this file.
+// `npx jest tokens-source` fails if the two disagree.
+
+// The .mg-theme-preventionweb token block.
+@mixin mg-tokens-preventionweb {
+  // theme.loaded
+  // Runtime marker: lets JS and tooling detect that this brand theme is
+  // active, guarding the sub-brand body-class trap. See docs/RELEASE-2.0.md.
+  --mg-theme-loaded: preventionweb;
+
+  // color.interactive
+  // PreventionWeb teal. The one primitive this brand states.
+  --mg-color-interactive: 10 105 105;
+
+  // color.interactive-active
+  // PreventionWeb teal. The one primitive this brand states.
+  --mg-color-interactive-active: 10 105 105;
+
+  // color.tag
+  --mg-color-tag: var(--mg-color-interactive);
+
+  // color.tag--hover
+  --mg-color-tag--hover: var(--mg-color-interactive-active);
+
+  // color.button-background
+  --mg-color-button-background: rgb(10 105 105);
+
+  // color.button-background--hover
+  --mg-color-button-background--hover: rgb(var(--mg-color-orange-900));
+
+  // color.button-outline-primary
+  --mg-color-button-outline-primary: 10 105 105;
+
+  // color.button-outline-primary--hover
+  --mg-color-button-outline-primary--hover: var(--mg-color-orange-900);
+
+  // color.button-outline-secondary
+  --mg-color-button-outline-secondary: var(--mg-color-button-secondary-background);
+
+  // color.button-outline-secondary--hover
+  --mg-color-button-outline-secondary--hover: var(--mg-color-button-secondary-background--hover);
+
+  // color.form-check
+  --mg-color-form-check: var(--mg-color-interactive);
+
+  // color.form-check--hover
+  --mg-color-form-check--hover: var(--mg-color-interactive-active);
+
+  // color.form-check--checked
+  --mg-color-form-check--checked: var(--mg-color-interactive);
+
+  // color.form-focus
+  --mg-color-form-focus: var(--mg-color-interactive);
+
+  // color.hero
+  --mg-color-hero: var(--mg-color-interactive);
+
+  // color.tabbar-background
+  --mg-color-tabbar-background: rgb(10 105 105 / 0.1);
+
+  // color.tab-background
+  --mg-color-tab-background: rgb(10 105 105 / 0.1);
+
+  // color.tab-background--inactive
+  --mg-color-tab-background--inactive: var(--mg-color-tabbar-background);
+
+  // color.tab-background--hover
+  --mg-color-tab-background--hover: rgb(10 105 105 / 0.2);
+
+  // color.tab-border
+  --mg-color-tab-border: rgb(var(--mg-color-interactive));
+
+  // color.tab-border--hover
+  --mg-color-tab-border--hover: rgb(var(--mg-color-interactive));
+
+  // color.tab-border--active
+  --mg-color-tab-border--active: var(--mg-color-tab-background);
+
+  // color.text-tab
+  --mg-color-text-tab: rgb(var(--mg-color-neutral-700));
+
+  // color.text-tab--hover
+  --mg-color-text-tab--hover: rgb(var(--mg-color-neutral-700));
+
+  // color.text-tab-active
+  --mg-color-text-tab-active: rgb(var(--mg-color-neutral-900));
+
+  // radius.button
+  --mg-radius-button: var(--mg-spacing-50);
+
+  // radius.tab
+  --mg-radius-tab: var(--mg-spacing-50) var(--mg-spacing-50) 0 0;
+
+  // spacing.hero-overlay
+  --mg-spacing-hero-overlay: 1.25rem 0;
+}

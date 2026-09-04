@@ -1,0 +1,114 @@
+// GENERATED FILE — DO NOT EDIT.
+// Brand: IRP
+// Selector: .mg-theme-irp
+// Source: tokens/mangrove.yaml + tokens/undrr.yaml + tokens/irp.yaml
+// Regenerate: yarn build:tokens
+// Edit the YAML source, never this file.
+// `npx jest tokens-source` fails if the two disagree.
+
+// The .mg-theme-irp token block.
+@mixin mg-tokens-irp {
+  // theme.loaded
+  // Runtime marker: lets JS and tooling detect that this brand theme is
+  // active, guarding the sub-brand body-class trap. See docs/RELEASE-2.0.md.
+  --mg-theme-loaded: irp;
+
+  // color.interactive
+  // IRP blue. The interactive colour.
+  --mg-color-interactive: 15 120 191;
+
+  // color.interactive-active
+  // IRP blue. The interactive colour.
+  --mg-color-interactive-active: 15 120 191;
+
+  // color.tag
+  --mg-color-tag: var(--mg-color-interactive);
+
+  // color.tag--hover
+  --mg-color-tag--hover: var(--mg-color-interactive-active);
+
+  // color.button-background
+  --mg-color-button-background: rgb(15 120 191);
+
+  // color.button-background--hover
+  --mg-color-button-background--hover: rgb(var(--mg-color-orange-900));
+
+  // color.button-outline-primary
+  --mg-color-button-outline-primary: 15 120 191;
+
+  // color.button-outline-primary--hover
+  --mg-color-button-outline-primary--hover: var(--mg-color-orange-900);
+
+  // color.button-outline-secondary
+  --mg-color-button-outline-secondary: var(--mg-color-button-secondary-background);
+
+  // color.button-outline-secondary--hover
+  --mg-color-button-outline-secondary--hover: var(--mg-color-button-secondary-background--hover);
+
+  // color.form-check
+  --mg-color-form-check: var(--mg-color-interactive);
+
+  // color.form-check--hover
+  --mg-color-form-check--hover: var(--mg-color-interactive-active);
+
+  // color.form-check--checked
+  --mg-color-form-check--checked: var(--mg-color-interactive);
+
+  // color.form-focus
+  --mg-color-form-focus: var(--mg-color-interactive);
+
+  // color.hero
+  --mg-color-hero: var(--mg-color-interactive);
+
+  // color.tabbar-background
+  // IRP green, used only by the tab surface — the tabbar rail, the active tab
+  // fill and its borders.
+  --mg-color-tabbar-background: rgb(140 198 63 / 0.1);
+
+  // color.tab-background
+  // IRP green, used only by the tab surface — the tabbar rail, the active tab
+  // fill and its borders.
+  --mg-color-tab-background: rgb(140 198 63 / 0.3);
+
+  // color.tab-background--inactive
+  --mg-color-tab-background--inactive: var(--mg-color-tabbar-background);
+
+  // color.tab-background--hover
+  // IRP green, used only by the tab surface — the tabbar rail, the active tab
+  // fill and its borders.
+  --mg-color-tab-background--hover: rgb(140 198 63);
+
+  // color.tab-border
+  --mg-color-tab-border: rgb(var(--mg-color-neutral-300));
+
+  // color.tab-border--hover
+  // IRP green, used only by the tab surface — the tabbar rail, the active tab
+  // fill and its borders.
+  --mg-color-tab-border--hover: rgb(140 198 63 / 0.1);
+
+  // color.tab-border--active
+  // IRP green, used only by the tab surface — the tabbar rail, the active tab
+  // fill and its borders.
+  --mg-color-tab-border--active: rgb(140 198 63 / 0.1);
+
+  // color.text-tab
+  --mg-color-text-tab: rgb(var(--mg-color-neutral-500));
+
+  // color.text-tab-active
+  --mg-color-text-tab-active: rgb(var(--mg-color-neutral-700));
+
+  // radius.tag
+  --mg-radius-tag: var(--mg-spacing-50);
+
+  // radius.button
+  --mg-radius-button: var(--mg-spacing-50);
+
+  // radius.form-input
+  --mg-radius-form-input: var(--mg-spacing-50);
+
+  // radius.tab
+  --mg-radius-tab: var(--mg-spacing-0) var(--mg-spacing-0) 0 0;
+
+  // spacing.hero-overlay
+  --mg-spacing-hero-overlay: 1.25rem 0;
+}

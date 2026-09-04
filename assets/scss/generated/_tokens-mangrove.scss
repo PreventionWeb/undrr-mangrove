@@ -1,0 +1,607 @@
+// GENERATED FILE — DO NOT EDIT.
+// Brand: UNDRR
+// Selector: :root
+// Source: tokens/mangrove.yaml + tokens/undrr.yaml
+// Regenerate: yarn build:tokens
+// Edit the YAML source, never this file.
+// `npx jest tokens-source` fails if the two disagree.
+
+// font-size.100 (rem)
+$mg-font-size-100: 0.625rem;
+
+// font-size.150 (rem)
+// stylelint-disable-next-line number-max-precision
+$mg-font-size-150: 0.703125rem;
+
+// font-size.200 (rem)
+$mg-font-size-200: 0.78125rem;
+
+// font-size.250 (rem)
+$mg-font-size-250: 0.875rem;
+
+// font-size.300 (rem)
+// Regular body text.
+$mg-font-size-300: 1rem;
+
+// font-size.400 (rem)
+$mg-font-size-400: 1.125rem;
+
+// font-size.500 (rem)
+$mg-font-size-500: 1.4375rem;
+
+// font-size.600 (rem)
+$mg-font-size-600: 2rem;
+
+// font-size.800 (rem)
+$mg-font-size-800: 2.25rem;
+
+// font-size.900 (rem)
+$mg-font-size-900: 2.5rem;
+
+// font-size.1000 (rem)
+$mg-font-size-1000: 3rem;
+
+// font-size.1100 (rem)
+$mg-font-size-1100: 4rem;
+
+// The :root token block.
+@mixin mg-tokens-mangrove {
+  // color.neutral-0
+  --mg-color-neutral-0: 255 255 255;
+
+  // color.neutral-25
+  --mg-color-neutral-25: 240 243 246;
+
+  // color.neutral-50
+  --mg-color-neutral-50: 228 231 234;
+
+  // color.neutral-100
+  --mg-color-neutral-100: 202 205 208;
+
+  // color.neutral-200
+  --mg-color-neutral-200: 177 180 183;
+
+  // color.neutral-300
+  --mg-color-neutral-300: 150 153 156;
+
+  // color.neutral-400
+  --mg-color-neutral-400: 126 128 130;
+
+  // color.neutral-500
+  --mg-color-neutral-500: 102 102 102;
+
+  // color.neutral-600
+  --mg-color-neutral-600: 77 77 77;
+
+  // color.neutral-700
+  --mg-color-neutral-700: 51 51 51;
+
+  // color.neutral-800
+  --mg-color-neutral-800: 26 26 26;
+
+  // color.neutral-900
+  --mg-color-neutral-900: 0 0 0;
+
+  // color.red-50
+  --mg-color-red-50: 249 230 233;
+
+  // color.red-100
+  --mg-color-red-100: 243 206 210;
+
+  // color.red-200
+  --mg-color-red-200: 236 181 188;
+
+  // color.red-300
+  --mg-color-red-300: 230 157 166;
+
+  // color.red-400
+  --mg-color-red-400: 224 132 144;
+
+  // color.red-500
+  --mg-color-red-500: 218 107 121;
+
+  // color.red-600
+  --mg-color-red-600: 212 83 99;
+
+  // color.red-700
+  --mg-color-red-700: 205 58 77;
+
+  // color.red-800
+  --mg-color-red-800: 199 34 54;
+
+  // color.red-900
+  --mg-color-red-900: 193 9 32;
+
+  // color.gold-800
+  --mg-color-gold-800: 134 98 0;
+
+  // color.accent-100
+  --mg-color-accent-100: 244 228 150;
+
+  // color.accent-200
+  --mg-color-accent-200: 211 206 169;
+
+  // color.accent-300
+  --mg-color-accent-300: 253 246 217;
+
+  // color.accent-400
+  --mg-color-accent-400: 10 105 105;
+
+  // color.accent-500
+  --mg-color-accent-500: 254 193 36;
+
+  // color.accent-600
+  --mg-color-accent-600: 188 174 103;
+
+  // color.interactive
+  --mg-color-interactive: var(--mg-color-blue-900);
+
+  // color.interactive-active
+  --mg-color-interactive-active: var(--mg-color-blue-700);
+
+  // color.text
+  --mg-color-text: var(--mg-color-neutral-800);
+
+  // color.black
+  --mg-color-black: var(--mg-color-neutral-800);
+
+  // color.white
+  --mg-color-white: var(--mg-color-neutral-0);
+
+  // color.secondary
+  --mg-color-secondary: var(--mg-color-orange-800);
+
+  // color.tertiary
+  --mg-color-tertiary: var(--mg-color-neutral-900);
+
+  // color.quaternary
+  --mg-color-quaternary: var(--mg-color-red-800);
+
+  // color.tag
+  --mg-color-tag: var(--mg-color-interactive);
+
+  // color.tag--hover
+  --mg-color-tag--hover: var(--mg-color-interactive-active);
+
+  // color.tag-secondary
+  --mg-color-tag-secondary: var(--mg-color-neutral-500);
+
+  // color.tag-secondary--hover
+  --mg-color-tag-secondary--hover: var(--mg-color-neutral-600);
+
+  // color.tag-accent
+  --mg-color-tag-accent: var(--mg-color-orange-900);
+
+  // color.tag-accent--hover
+  --mg-color-tag-accent--hover: var(--mg-color-orange-800);
+
+  // color.button
+  --mg-color-button: var(--mg-color-neutral-0);
+
+  // color.button--hover
+  --mg-color-button--hover: var(--mg-color-neutral-0);
+
+  // color.button-background
+  // Colour-valued, not a channel triplet: DELTA needs `transparent` here and
+  // a triplet cannot express it. Consumers must not wrap this in rgb().
+  --mg-color-button-background: rgb(var(--mg-color-interactive));
+
+  // color.button-background--hover
+  --mg-color-button-background--hover: rgb(var(--mg-color-interactive-active));
+
+  // color.button-secondary-background
+  --mg-color-button-secondary-background: var(--mg-color-blue-800);
+
+  // color.button-secondary-background--hover
+  --mg-color-button-secondary-background--hover: var(--mg-color-blue-700);
+
+  // color.button-outline-primary
+  --mg-color-button-outline-primary: var(--mg-color-interactive);
+
+  // color.button-outline-primary--hover
+  --mg-color-button-outline-primary--hover: var(--mg-color-interactive-active);
+
+  // color.button-outline-secondary
+  --mg-color-button-outline-secondary: var(--mg-color-button-secondary-background);
+
+  // color.button-outline-secondary--hover
+  --mg-color-button-outline-secondary--hover: var(--mg-color-button-secondary-background--hover);
+
+  // color.text-button
+  --mg-color-text-button: var(--mg-color-neutral-0);
+
+  // color.form-check
+  --mg-color-form-check: var(--mg-color-interactive);
+
+  // color.form-check--hover
+  --mg-color-form-check--hover: var(--mg-color-interactive-active);
+
+  // color.form-check--checked
+  --mg-color-form-check--checked: var(--mg-color-interactive);
+
+  // color.form-focus
+  --mg-color-form-focus: var(--mg-color-interactive);
+
+  // color.focus-ring
+  --mg-color-focus-ring: var(--mg-color-gold-800);
+
+  // color.focus-ring-inverse
+  --mg-color-focus-ring-inverse: var(--mg-color-neutral-0);
+
+  // color.hero
+  --mg-color-hero: var(--mg-color-interactive);
+
+  // color.hero--secondary
+  --mg-color-hero--secondary: var(--mg-color-secondary);
+
+  // color.hero--tertiary
+  --mg-color-hero--tertiary: var(--mg-color-tertiary);
+
+  // color.hero--quaternary
+  --mg-color-hero--quaternary: var(--mg-color-quaternary);
+
+  // color.hero-title
+  --mg-color-hero-title: var(--mg-color-neutral-0);
+
+  // color.hero-button-secondary-background
+  --mg-color-hero-button-secondary-background: rgb(var(--mg-color-neutral-0) / 0.9);
+
+  // color.hero-button-secondary-color
+  --mg-color-hero-button-secondary-color: var(--mg-color-hero);
+
+  // color.mega-content-bg
+  --mg-color-mega-content-bg: var(--mg-color-button);
+
+  // color.modal-scrim
+  --mg-color-modal-scrim: rgb(var(--mg-color-neutral-900) / 0.85);
+
+  // color.tabbar-background
+  --mg-color-tabbar-background: rgb(var(--mg-color-blue-50));
+
+  // color.tab-background
+  --mg-color-tab-background: rgb(var(--mg-color-blue-200));
+
+  // color.tab-background--inactive
+  --mg-color-tab-background--inactive: rgb(var(--mg-color-blue-50));
+
+  // color.tab-background--hover
+  --mg-color-tab-background--hover: rgb(var(--mg-color-blue-800));
+
+  // color.tab-border
+  --mg-color-tab-border: rgb(var(--mg-color-neutral-700));
+
+  // color.tab-border--hover
+  --mg-color-tab-border--hover: rgb(var(--mg-color-neutral-900));
+
+  // color.tab-border--active
+  --mg-color-tab-border--active: rgb(var(--mg-color-blue-800));
+
+  // color.text-tab
+  --mg-color-text-tab: rgb(var(--mg-color-neutral-700));
+
+  // color.text-tab--hover
+  --mg-color-text-tab--hover: rgb(var(--mg-color-neutral-0));
+
+  // color.text-tab-active
+  --mg-color-text-tab-active: rgb(var(--mg-color-neutral-700));
+
+  // color.text-tab-no-results
+  --mg-color-text-tab-no-results: rgb(var(--mg-color-neutral-500));
+
+  // color.tab-section-background
+  --mg-color-tab-section-background: rgb(var(--mg-color-neutral-0));
+
+  // border-color.button
+  // Must be a colour, not a channel triplet: it is consumed inside a
+  // `border:` shorthand, and a bare triplet makes the whole declaration
+  // invalid, which silently drops border-style to none. .mg-button-outline
+  // rendered as bare text for the entire time this was a triplet.
+  --mg-border-color-button: rgb(var(--mg-color-text-button));
+
+  // border-color.hero-button-secondary
+  --mg-border-color-hero-button-secondary: var(--mg-color-neutral-0);
+
+  // spacing.0
+  --mg-spacing-0: 0;
+
+  // spacing.25
+  --mg-spacing-25: 0.15625rem;
+
+  // spacing.50
+  --mg-spacing-50: 0.3125rem;
+
+  // spacing.75
+  --mg-spacing-75: 0.46875rem;
+
+  // spacing.100
+  --mg-spacing-100: 0.625rem;
+
+  // spacing.150
+  --mg-spacing-150: 0.9375rem;
+
+  // spacing.175
+  --mg-spacing-175: 1.125rem;
+
+  // spacing.200
+  --mg-spacing-200: 1.25rem;
+
+  // spacing.250
+  --mg-spacing-250: 1.5rem;
+
+  // spacing.300
+  --mg-spacing-300: 1.875rem;
+
+  // spacing.350
+  --mg-spacing-350: 2.1875rem;
+
+  // spacing.400
+  --mg-spacing-400: 3.125rem;
+
+  // spacing.500
+  --mg-spacing-500: 3.75rem;
+
+  // spacing.600
+  --mg-spacing-600: 5rem;
+
+  // spacing.800
+  --mg-spacing-800: 6.25rem;
+
+  // spacing.1000
+  --mg-spacing-1000: 25rem;
+
+  // spacing.hero-overlay
+  --mg-spacing-hero-overlay: 0;
+
+  // width.150
+  --mg-width-150: 9.375rem;
+
+  // width.300
+  --mg-width-300: 18.75rem;
+
+  // width.400
+  --mg-width-400: 25rem;
+
+  // width.600
+  --mg-width-600: 37.5rem;
+
+  // font-size.button
+  --mg-font-size-button: 0.875rem;
+
+  // font-size.tab
+  --mg-font-size-tab: 1.125rem;
+
+  // font-size.form-input
+  // Regular body text.
+  --mg-font-size-form-input: 1rem;
+
+  // radius.tag
+  --mg-radius-tag: var(--mg-spacing-0);
+
+  // radius.button
+  --mg-radius-button: var(--mg-spacing-50);
+
+  // radius.form-input
+  --mg-radius-form-input: var(--mg-spacing-50);
+
+  // radius.tab
+  --mg-radius-tab: 0;
+
+  // radius.tab-section
+  --mg-radius-tab-section: 0;
+
+  // padding.button
+  --mg-padding-button: var(--mg-spacing-100) var(--mg-spacing-150);
+
+  // padding.tab
+  --mg-padding-tab: var(--mg-spacing-75) var(--mg-spacing-150);
+
+  // padding.tab-section
+  --mg-padding-tab-section: var(--mg-spacing-100) var(--mg-spacing-0);
+
+  // border-width.button
+  --mg-border-width-button: 1px;
+
+  // box-shadow.tab-section
+  --mg-box-shadow-tab-section: none;
+
+  // container.spacer
+  --mg-container-spacer: var(--mg-spacing-150);
+
+  // cta.padding
+  --mg-cta-padding: var(--mg-spacing-400);
+
+  // author-image.radius
+  --mg-author-image-radius: 50%;
+
+  // opacity.hero
+  --mg-opacity-hero: 0.85;
+
+  // tab.padding
+  --mg-tab-padding: var(--mg-spacing-150) var(--mg-spacing-200);
+
+  // tab.min-block-size
+  --mg-tab-min-block-size: 2.75rem;
+
+  // tab.indicator-size
+  --mg-tab-indicator-size: 3px;
+
+  // form-input.background
+  --mg-form-input-background: rgb(var(--mg-color-neutral-25));
+
+  // form-input.background--focus
+  --mg-form-input-background--focus: rgb(var(--mg-color-neutral-0));
+
+  // form-input.border-color
+  // The border was rgb(neutral-600 / 0.22), which is 1.43:1 against the page
+  // and 1.39:1 against the field's own fill, so every input, textarea and
+  // select in the system failed WCAG 1.4.11. neutral-400 is 3.96:1.
+  --mg-form-input-border-color: rgb(var(--mg-color-neutral-400));
+
+  // form-input.border-width
+  --mg-form-input-border-width: 1px;
+
+  // form-input.block-size
+  --mg-form-input-block-size: 46px;
+
+  // form-input.padding
+  // stylelint-disable-next-line number-max-precision
+  --mg-form-input-padding: 0.390625rem;
+
+  // focus-ring.width
+  --mg-focus-ring-width: 2px;
+
+  // focus-ring.offset
+  --mg-focus-ring-offset: 2px;
+
+  // focus-ring.radius
+  --mg-focus-ring-radius: 2px;
+
+  // surface.raised
+  --mg-surface-raised: rgb(var(--mg-color-neutral-0));
+
+  // shadow.raised
+  --mg-shadow-raised: inset 0 0 0 1px rgb(var(--mg-color-neutral-600) / 0.24);
+
+  // shadow.raised-hover
+  --mg-shadow-raised-hover: inset 0 0 0 2px rgb(var(--mg-color-interactive));
+
+  // motion.duration-fast
+  --mg-motion-duration-fast: 160ms;
+
+  // motion.duration-medium
+  --mg-motion-duration-medium: 300ms;
+
+  // motion.easing-standard
+  --mg-motion-easing-standard: cubic-bezier(0.2, 0, 0, 1);
+
+  // card.background
+  --mg-card-background: var(--mg-surface-raised);
+
+  // card.padding
+  --mg-card-padding: var(--mg-spacing-150);
+
+  // card.border-radius
+  --mg-card-border-radius: var(--mg-spacing-50);
+
+  // card.shadow
+  --mg-card-shadow: var(--mg-shadow-raised);
+
+  // card.shadow-hover
+  --mg-card-shadow-hover: var(--mg-shadow-raised-hover);
+
+  // card.icon-badge-radius
+  --mg-card-icon-badge-radius: 20%;
+
+  // hero-overlay.max-width
+  --mg-hero-overlay-max-width: 37.5rem;
+
+  // hero-overlay.padding
+  --mg-hero-overlay-padding: var(--mg-spacing-300);
+
+  // hero-overlay.radius
+  --mg-hero-overlay-radius: var(--mg-spacing-50);
+
+  // hero-overlay.shadow
+  --mg-hero-overlay-shadow: 0 18px 55px rgb(var(--mg-color-neutral-900) / 0.22);
+
+  // hero-gradient.start-opacity
+  --mg-hero-gradient-start-opacity: 0.98;
+
+  // hero-gradient.middle-opacity
+  --mg-hero-gradient-middle-opacity: 0.82;
+
+  // hero-gradient.end-opacity
+  --mg-hero-gradient-end-opacity: 0.08;
+
+  // z-index.behind
+  --mg-z-index-behind: -1;
+
+  // z-index.nav
+  --mg-z-index-nav: 10;
+
+  // z-index.sticky
+  --mg-z-index-sticky: 11;
+
+  // z-index.nav-toggle
+  --mg-z-index-nav-toggle: 14;
+
+  // z-index.header
+  --mg-z-index-header: 22;
+
+  // z-index.drawer
+  --mg-z-index-drawer: 2000;
+
+  // z-index.dropdown
+  --mg-z-index-dropdown: 2500;
+
+  // z-index.modal
+  --mg-z-index-modal: 5000;
+
+  // z-index.toast
+  --mg-z-index-toast: 5500;
+
+  // color.blue-50
+  --mg-color-blue-50: 230 237 244;
+
+  // color.blue-100
+  --mg-color-blue-100: 204 220 233;
+
+  // color.blue-200
+  --mg-color-blue-200: 179 202 222;
+
+  // color.blue-300
+  --mg-color-blue-300: 153 185 211;
+
+  // color.blue-400
+  --mg-color-blue-400: 128 167 200;
+
+  // color.blue-500
+  --mg-color-blue-500: 102 149 189;
+
+  // color.blue-600
+  --mg-color-blue-600: 77 132 178;
+
+  // color.blue-700
+  --mg-color-blue-700: 51 114 167;
+
+  // color.blue-800
+  --mg-color-blue-800: 26 97 156;
+
+  // color.blue-900
+  // UNDRR corporate blue. Also DELTA's brand blue: DELTA's own design file
+  // labels this swatch "UNDRR Blue - Corporate blue" and marks it Brand.
+  --mg-color-blue-900: 0 79 145;
+
+  // color.orange-50
+  --mg-color-orange-50: 253 241 234;
+
+  // color.orange-100
+  --mg-color-orange-100: 251 227 212;
+
+  // color.orange-200
+  --mg-color-orange-200: 249 214 191;
+
+  // color.orange-300
+  --mg-color-orange-300: 247 200 170;
+
+  // color.orange-400
+  --mg-color-orange-400: 245 186 149;
+
+  // color.orange-500
+  --mg-color-orange-500: 243 172 127;
+
+  // color.orange-600
+  --mg-color-orange-600: 241 158 106;
+
+  // color.orange-700
+  --mg-color-orange-700: 239 145 85;
+
+  // color.orange-800
+  --mg-color-orange-800: 237 131 63;
+
+  // color.orange-900
+  --mg-color-orange-900: 235 117 42;
+
+  // undrr.corporate-blue
+  --undrr-color-corporate-blue: var(--mg-color-blue-900);
+}

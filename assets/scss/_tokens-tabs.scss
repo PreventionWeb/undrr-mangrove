@@ -1,0 +1,33 @@
+// Mangrove's v2 tab colours.
+
+// A mixin rather than a plain :root block, and included inside EACH runtime
+// theme block as well as at :root, because these tokens are var() chains onto
+// theme-owned values. A custom property declared at :root resolves its inner
+// var() against :root and then inherits the already-resolved value, so a
+// theme override never reaches it: `.mg-theme-mcr` repointing
+// --mg-color-interactive would leave --mg-tab-color--active still holding the
+// UNDRR blue it resolved to at :root. Re-emitting the declarations inside the
+// theme block is what makes them re-resolve against that theme's values.
+
+// Deliberately NOT wired to each brand's --mg-color-*-tab* tokens, though
+// those exist and currently reach nothing in the default variant.
+
+// They cannot be transferred mechanically. MCR2030, PreventionWeb and DELTA
+// designed a FILLED tab: white text on a solid brand background. alpha.2
+// replaced that with an underline treatment on a transparent tab. Piping the
+// brand text colour into it puts white text on a white page — measured 1.00:1,
+// the active tab literally invisible — and MCR's tab border, designed as a
+// pale edge on purple, is 1.49:1 as an underline on white. The same tokens
+// score 9.52:1 in the design they were drawn for.
+
+// Resolving this is a design decision, not a wiring change: either the brands
+// re-express their tab identity in the underline vocabulary, or the v2 tab
+// regains a filled variant.
+@mixin mg-tokens-tabs {
+  --mg-tab-color: rgb(var(--mg-color-text));
+  --mg-tab-color--hover: rgb(var(--mg-color-interactive-active));
+  --mg-tab-color--active: rgb(var(--mg-color-interactive));
+  --mg-tab-background--hover: rgb(var(--mg-color-interactive) / 0.06);
+  --mg-tab-indicator--hover: rgb(var(--mg-color-interactive) / 0.45);
+  --mg-tab-indicator--active: rgb(var(--mg-color-interactive));
+}
