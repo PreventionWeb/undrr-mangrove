@@ -29,6 +29,9 @@
 // ---------------------------------------------------------------------------
 
 export const REQUIRES_REACT = {
+  'design-decisions-language-boundaries':
+    'Storybook integration demo measuring rendered font families across nested Arabic and Latin language boundaries. Requires React and browser layout APIs for live measurements; this is a documentation specimen, not a reusable production component.',
+
   'components-syndicated-search':
     'SyndicationSearchWidget is a complex search interface querying an Elasticsearch API. Requires React 19. Can be hydrated on a vanilla HTML page using the createHydrator pattern with data-mg-search-widget attributes. Supports full UI string translation via the labels prop (or data-labels JSON attribute in Drupal). Ships with label sets for ES, FR, JA, ZH (Simplified), AR, and RU. See the hydration documentation.',
   'components-syndicated-search-translations':
@@ -654,8 +657,24 @@ export default {
 
   // --- Tabs (auto-rendered) ---
   'components-tabs': {
+    cssClasses: [
+      'mg-tabs',
+      'mg-tabs--horizontal',
+      'mg-tabs--stacked',
+      'mg-tabs__rail',
+      'mg-tabs__scroll',
+      'mg-tabs__list',
+      'mg-tabs__item',
+      'mg-tabs__link',
+      'mg-tabs__panels',
+      'mg-tabs--responsive-stacked',
+      'mg-tabs__mobile-item',
+      'mg-tabs__mobile-link',
+      'mg-tabs-content',
+      'mg-tabs__section',
+    ],
     description:
-      'Tabbed content with stacked or horizontal variants. Requires tabs.js vanilla JS for interactivity. The script adds ARIA roles (tablist, tab, tabpanel) and keyboard navigation at runtime — do not omit the script or tabs will be inaccessible.',
+      'Tabbed content with centred, softly filled horizontal tabs that scroll at every viewport width, or explicit stacked disclosures. Opt into disclosures below 480px with stackOnMobile (React) or the presence-based data-mg-js-tabs-stack-on-mobile attribute (HTML); horizontal scrolling remains the default. Only the horizontal rail scrolls; panels sit outside the tablist. Requires tabs.js as an ES module for ARIA semantics, keyboard navigation, selection and overflow indicators. Without JavaScript, panel content remains visible. Set labels.tabListLabel (React) or data-mg-js-tabs-label (HTML) to name the tablist. Existing interleaved HTML is enhanced at runtime. Use mgTabsDestroy(scope) before removing dynamically initialised markup.',
   },
 
   // --- Highlight box (auto-rendered) ---
