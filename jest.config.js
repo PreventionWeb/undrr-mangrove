@@ -34,6 +34,8 @@ const config = {
     '/node_modules/',
     '/dist/',
     '/docs-build-temp/',
+    // The Pages workflow renames docs-build-temp to _site before running tests.
+    '/_site/',
     '/storybook-static/',
   ],
 
