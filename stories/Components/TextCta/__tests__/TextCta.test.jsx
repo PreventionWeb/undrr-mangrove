@@ -253,3 +253,45 @@ describe('TextCta', () => {
     expect(await axe(container)).toHaveNoViolations();
   });
 });
+
+describe('composed CTA content', () => {
+  it('keeps caller-owned form controls and existing actions independently accessible', async () => {
+    const { container } = render(
+      <TextCta headline="Stay informed" centered={false} buttons={[{ label: 'More information', url: '/about' }]}>
+        <form aria-label="Subscribe">
+          <label htmlFor="cta-email">Email address</label>
+          <input id="cta-email" name="email" type="email" required />
+          <button type="submit">Subscribe</button>
+        </form>
+      </TextCta>
+    );
+    expect(screen.getByRole('form', { name: 'Subscribe' })).toBeInTheDocument();
+    expect(screen.getByRole('textbox', { name: 'Email address' })).toHaveAttribute('name', 'email');
+    expect(screen.getByRole('link', { name: 'More information' })).toHaveAttribute('href', '/about');
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it('adds no content wrapper for existing button-only usage', () => {
+    const { container } = render(<TextCta headline="Read more" buttons={[{ label: 'Read', url: '/read' }]} />);
+    expect(container.querySelector('.mg-cta__custom-content')).not.toBeInTheDocument();
+  });
+});
+
+test('soft tone composes with accent variant without changing the default', () => {
+  const { container, rerender } = render(<TextCta headline="Updates" tone="soft" variant="secondary" />);
+  expect(container.querySelector('section')).toHaveClass('mg-cta--soft', 'mg-cta--secondary');
+  rerender(<TextCta headline="Updates" />);
+  expect(container.querySelector('section')).not.toHaveClass('mg-cta--soft');
+});
+
+test('composed content uses stacked layout even when inline actions are requested', () => {
+  const { container, rerender } = render(
+    <TextCta headline="Updates" layout="inline" buttons={[{ label: 'Details', url: '/details' }]}>
+      <p>Composed content</p>
+    </TextCta>
+  );
+  expect(container.querySelector('section')).not.toHaveClass('mg-cta--inline');
+  expect(screen.getByText('Composed content')).toBeInTheDocument();
+  rerender(<TextCta headline="Updates" layout="inline" buttons={[{ label: 'Details', url: '/details' }]} />);
+  expect(container.querySelector('section')).toHaveClass('mg-cta--inline');
+});

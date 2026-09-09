@@ -37,6 +37,7 @@ export function TextCta({
   text,
   buttons = EMPTY_BUTTONS,
   variant = 'primary',
+  tone = 'strong',
   backgroundColor,
   padding,
   image,
@@ -44,8 +45,10 @@ export function TextCta({
   centered = true,
   layout = 'stacked',
   className,
+  children,
 }) {
   const hasImage = !!image;
+  const inlineActions = layout === 'inline' && children == null;
   const headlineId = useId();
   const HeadingTag = `h${headlineLevel}`;
 
@@ -54,7 +57,8 @@ export function TextCta({
       className={cls(
         'mg-cta',
         variant && `mg-cta--${variant}`,
-        layout === 'inline' && 'mg-cta--inline',
+        tone === 'soft' && 'mg-cta--soft',
+        inlineActions && 'mg-cta--inline',
         hasImage && 'mg-cta--with-image',
         !hasImage && centered && layout !== 'inline' && 'mg-cta--centered',
         className
@@ -93,6 +97,10 @@ export function TextCta({
             )}
           </div>
 
+          {children != null && (
+            <div className="mg-cta__custom-content">{children}</div>
+          )}
+
           {buttons.length > 0 && (
             <div className="mg-cta__actions">
               {buttons.map((btn, i) => (
@@ -122,6 +130,10 @@ export function TextCta({
 }
 
 TextCta.propTypes = {
+  /** Composed content, such as a form. Rendered after copy and before buttons. */
+  children: PropTypes.node,
+  /** Strong colour surface or pale accent surface with dark text. */
+  tone: PropTypes.oneOf(['strong', 'soft']),
   /** Optional short label above the headline */
   eyebrow: PropTypes.string,
   /** Banner heading text */
