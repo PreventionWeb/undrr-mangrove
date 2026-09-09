@@ -42,6 +42,28 @@
       inline-size: 100%;
     }
 
+    // Let the parent grid/flex row determine height; keep media intrinsic and
+    // give any remaining space to the content. Book covers keep their grid.
+    &:not(.mg-card__book) {
+      display: flex;
+      flex-direction: column;
+
+      > .mg-card__visual {
+        flex-shrink: 0;
+      }
+
+      > .mg-card__content {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+
+        > .mg-button:last-child {
+          margin-block-start: auto;
+          align-self: flex-start;
+        }
+      }
+    }
+
     @include mg-card-image-zoom;
   }
 
@@ -84,6 +106,10 @@
   // Horizontal card image zoom on hover (book covers excluded — they sit in a
   // bordered frame where a zoom reads oddly).
   &__hc:not(.mg-card-book__hc) {
+    .mg-card__image {
+      block-size: 100%;
+    }
+
     .mg-card__visual {
       border-radius: calc(var(--mg-card-border-radius) / 2);
       overflow: hidden;
@@ -108,7 +134,6 @@
       @media (min-width: $mg-breakpoint-mobile) {
         max-width: unset;
       }
-
     }
 
     &:has(.mg-card__visual) {
@@ -363,6 +388,11 @@ $card-variant-colours: (
     &:has(.mg-card__image--full),
     &:has(.mg-card__icon-wrap--full) {
       aspect-ratio: 1/1;
+    }
+
+    // Fixed-size badges do not need the full illustration frame.
+    &:has(.mg-card__icon-wrap--colored) {
+      aspect-ratio: auto;
     }
   }
 

@@ -29,7 +29,10 @@ const getLangCode = (Story, context) => {
 
   React.useEffect(() => {
     const langCode = langArr[activeLang] || 'en';
-    const direction = rtlLanguages.includes(activeLang) ? 'rtl' : 'ltr';
+    const direction =
+      rtlLanguages.includes(activeLang) || context.globals.addonRtl === 'rtl'
+        ? 'rtl'
+        : 'ltr';
 
     // Set lang on html element
     const htmlElem = document.documentElement;
@@ -52,7 +55,23 @@ const getLangCode = (Story, context) => {
     }, 10);
 
     return () => clearTimeout(loadEventTimer);
-  }, [activeLang]);
+  }, [activeLang, context.globals.addonRtl]);
+
+  // The RTL addon writes canvas.dir during every render, including theme/args
+  // changes. Apply locale attributes after each render so it cannot reset an
+  // Arabic canvas to LTR. Keep the manual RTL toggle for other languages.
+  React.useLayoutEffect(() => {
+    const canvas = context.canvasElement;
+    if (canvas) {
+      canvas.setAttribute('lang', langArr[activeLang] || 'en');
+      canvas.setAttribute(
+        'dir',
+        rtlLanguages.includes(activeLang) || context.globals.addonRtl === 'rtl'
+          ? 'rtl'
+          : 'ltr'
+      );
+    }
+  });
 
   return <Story {...context} />;
 };
