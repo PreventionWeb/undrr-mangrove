@@ -8,6 +8,8 @@ on:
       - 'stories/**'
       - 'src/components/**'
       - 'scripts/ai-manifest/**'
+      - 'tokens/**'
+      - 'scripts/build-tokens.cjs'
       - '.storybook/**'
       - '.github/workflows/storybook.yml'
       - 'package.json'
