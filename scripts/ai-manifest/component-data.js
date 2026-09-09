@@ -452,7 +452,7 @@ export default {
   // --- Tags ---
   'components-tag': {
     description:
-      'Small label for categorization. Variants: default, secondary, outline, accent. Can be span or link.',
+      'Compact taxonomy label with theme-owned colours and radius. Variants: default, secondary, outline, accent. Use spans for static metadata and anchors with href for destinations. Container children receive the same styling; static and linked tags share compact geometry (28px minimum height, 24px minimum width); links have visible keyboard focus.',
     cssClasses: [
       'mg-tag',
       'mg-tag--secondary',
@@ -525,7 +525,7 @@ export default {
   // --- Table ---
   'components-table': {
     description:
-      'Styled HTML table with size (small), variant (striped/border), and responsive (stacked/scroll) options.',
+      'Styled HTML table with compact size, striped/border variants and stacked/scroll options. For wide plain HTML tables, wrap the native table in .mg-table-scroll-region with role=region, a translated aria-label and tabindex=0. React responsive=scroll generates this wrapper; scrollLabel supplies its accessible name.',
     cssClasses: [
       'mg-table',
       'mg-table--small',
@@ -533,6 +533,7 @@ export default {
       'mg-table--border',
       'mg-table--stacked',
       'mg-table--scroll',
+      'mg-table-scroll-region',
       'mg-table__cell--start',
       'mg-table__cell--center',
       'mg-table__cell--end',
