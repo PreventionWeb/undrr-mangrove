@@ -1,9 +1,9 @@
-/* Noto Kufi Arabic - Arabic headings.
-   OFL-1.1. Repackaged from @fontsource/noto-kufi-arabic v5.3.0 by the UNDRR asset library;
-   see https://assets.undrr.org/fonts/noto-kufi-arabic/v1.1.0/.
+/* Noto Sans Arabic - Arabic body text.
+   OFL-1.1. Repackaged from @fontsource/noto-sans-arabic v5.3.0 by the UNDRR asset library;
+   see https://assets.undrr.org/fonts/noto-sans-arabic/v1.0.0/.
 
-   A kufi-style face: angular, high contrast, architectural. It is a display
-   style, which is why it is used for headings and not at body size.
+   The Arabic companion to Noto Sans, sharing its proportions and weight
+   structure. Paired with Noto Kufi Arabic for headings.
 
    Regular (400) and Bold (700) are the only weights published in the UNDRR
    asset library. The upstream family spans 100-900, so adding a weight is an
@@ -24,17 +24,17 @@
 
 /* Regular (400) */
 @font-face {
-  font-family: 'Noto Kufi Arabic';
-  src: url('#{$font-path-noto-kufi-arabic}/Regular/noto-kufi-arabic-arabic-400-normal.woff2') format('woff2');
+  font-family: 'Noto Sans Arabic';
+  src: url('#{$font-path-noto-sans-arabic}/Regular/noto-sans-arabic-arabic-400-normal.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
-  unicode-range: U+0020, U+00A0, U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0898-08E1, U+08E3-08FF, U+200C-200E, U+204F, U+2E41, U+FB50-FBC2, U+FBD3-FD8F, U+FD92-FDC7, U+FDCF, U+FDF0-FDFF, U+FE70-FE74, U+FE76-FEFC, U+FEFF, U+10EFD-10EFF;
+  unicode-range: U+0020, U+00A0, U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0898-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FBC2, U+FBD3-FD8F, U+FD92-FDC7, U+FDCF, U+FDF0-FDFF, U+FE70-FE74, U+FE76-FEFC, U+FEFF, U+10EFD-10EFF;
 }
 
 @font-face {
-  font-family: 'Noto Kufi Arabic';
-  src: url('#{$font-path-noto-kufi-arabic}/Regular/noto-kufi-arabic-latin-400-normal.woff2') format('woff2');
+  font-family: 'Noto Sans Arabic';
+  src: url('#{$font-path-noto-sans-arabic}/Regular/noto-sans-arabic-latin-400-normal.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -42,8 +42,8 @@
 }
 
 @font-face {
-  font-family: 'Noto Kufi Arabic';
-  src: url('#{$font-path-noto-kufi-arabic}/Regular/noto-kufi-arabic-latin-ext-400-normal.woff2') format('woff2');
+  font-family: 'Noto Sans Arabic';
+  src: url('#{$font-path-noto-sans-arabic}/Regular/noto-sans-arabic-latin-ext-400-normal.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -52,17 +52,17 @@
 
 /* Bold (700) */
 @font-face {
-  font-family: 'Noto Kufi Arabic';
-  src: url('#{$font-path-noto-kufi-arabic}/Bold/noto-kufi-arabic-arabic-700-normal.woff2') format('woff2');
+  font-family: 'Noto Sans Arabic';
+  src: url('#{$font-path-noto-sans-arabic}/Bold/noto-sans-arabic-arabic-700-normal.woff2') format('woff2');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
-  unicode-range: U+0020, U+00A0, U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0898-08E1, U+08E3-08FF, U+200C-200E, U+204F, U+2E41, U+FB50-FBC2, U+FBD3-FD8F, U+FD92-FDC7, U+FDCF, U+FDF0-FDFF, U+FE70-FE74, U+FE76-FEFC, U+FEFF, U+10EFD-10EFF;
+  unicode-range: U+0020, U+00A0, U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0898-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FBC2, U+FBD3-FD8F, U+FD92-FDC7, U+FDCF, U+FDF0-FDFF, U+FE70-FE74, U+FE76-FEFC, U+FEFF, U+10EFD-10EFF;
 }
 
 @font-face {
-  font-family: 'Noto Kufi Arabic';
-  src: url('#{$font-path-noto-kufi-arabic}/Bold/noto-kufi-arabic-latin-700-normal.woff2') format('woff2');
+  font-family: 'Noto Sans Arabic';
+  src: url('#{$font-path-noto-sans-arabic}/Bold/noto-sans-arabic-latin-700-normal.woff2') format('woff2');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -70,8 +70,8 @@
 }
 
 @font-face {
-  font-family: 'Noto Kufi Arabic';
-  src: url('#{$font-path-noto-kufi-arabic}/Bold/noto-kufi-arabic-latin-ext-700-normal.woff2') format('woff2');
+  font-family: 'Noto Sans Arabic';
+  src: url('#{$font-path-noto-sans-arabic}/Bold/noto-sans-arabic-latin-ext-700-normal.woff2') format('woff2');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
