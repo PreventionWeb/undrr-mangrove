@@ -3,6 +3,9 @@ import { TopBarItem } from './TopBarItem';
 import { TopBarMobileIconButton } from './TopBarMobileIconButton.jsx';
 
 export function TopBar({
+  isMobile,
+  sidebarId,
+  labels,
   handleItemHover,
   toggleShowSidebar,
   showSidebar,
@@ -37,6 +40,7 @@ export function TopBar({
 
   const menuItems = sections.map((section, index) => (
     <TopBarItem
+      inert={isMobile}
       key={index}
       index={index}
       ref={element => (itemListRef.current[index] = element)}
@@ -77,14 +81,16 @@ export function TopBar({
 
         {/* Mobile/Tablet hamburger button - hidden on desktop via CSS */}
         <TopBarMobileIconButton
+          sidebarId={sidebarId}
+          labels={labels}
           isOpen={showSidebar}
           onClick={() => toggleShowSidebar()}
         />
 
         <ul
           className="mg-mega-topbar__nav"
-          role="menubar"
-          aria-label="Main navigation menu"
+          role={isMobile ? undefined : 'menubar'}
+          aria-label={isMobile ? undefined : 'Main navigation menu'}
         >
           {/* Desktop menu items - hidden on mobile/tablet via CSS */}
           {menuItems}
@@ -97,14 +103,21 @@ export function TopBar({
   return (
     <ul
       className="mg-mega-topbar | mg-container-full-width"
-      role="menubar"
-      aria-label="Main navigation menu"
+      role={isMobile ? undefined : 'menubar'}
+      aria-label={isMobile ? undefined : 'Main navigation menu'}
     >
       {/* Mobile/Tablet hamburger button - hidden on desktop via CSS */}
-      <TopBarMobileIconButton
-        isOpen={showSidebar}
-        onClick={() => toggleShowSidebar()}
-      />
+      <li
+        className="mg-mega-topbar__mobile-trigger"
+        role={isMobile ? undefined : 'none'}
+      >
+        <TopBarMobileIconButton
+          sidebarId={sidebarId}
+          labels={labels}
+          isOpen={showSidebar}
+          onClick={() => toggleShowSidebar()}
+        />
+      </li>
 
       {/* Desktop menu items - hidden on mobile/tablet via CSS */}
       {menuItems}

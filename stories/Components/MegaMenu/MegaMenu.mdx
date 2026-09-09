@@ -96,16 +96,15 @@ Pass the language-prefixed root path to `logoHref` (for example, `"/ar/"` for Ar
 ### Keyboard navigation
 
 - **Arrow Left / Arrow Right**: Moves focus between top-level menu items in the menu bar
-- **Arrow Down**: From a top-level item, moves focus into the open submenu section; within the sidebar, moves focus to the next menu item (or into the expanded section)
-- **Arrow Up**: Within the sidebar, moves focus to the previous menu item
+- **Arrow Down**: On desktop, moves focus from a top-level item into its open submenu section
 - **Tab / Shift+Tab**: Moves focus through focusable elements within an open submenu section
-- **Escape**: Closes any open submenu panel and returns to the top-level menu bar
+- **Escape**: Closes the mobile dialog and returns focus to the opener; on desktop, closes the open submenu panel
 - Focus on a top-level item also triggers its submenu to open (via `onFocus`)
 
 ### ARIA attributes
 
 - The root `<nav>` element has `aria-label="Main Navigation"`
-- The top bar uses `role="menubar"` with `aria-label="Main navigation menu"`
+- On desktop, the top bar uses `role="menubar"` with `aria-label="Main navigation menu"`
 - Top-level menu items use `role="menuitem"` with `aria-haspopup="true"` when they have submenus, and `aria-expanded` to indicate open/closed state
 - Parent `<li>` elements use `role="none"` to remove implicit list semantics from the menu pattern
 - Submenu panels use `role="region"` with `aria-label="Menu section"` and `aria-live="polite"` to announce content changes
@@ -115,10 +114,11 @@ Pass the language-prefixed root path to `logoHref` (for example, `"/ar/"` for Ar
 
 ### Mobile menu
 
-- The hamburger button has `aria-label="Toggle navigation menu"` and `aria-haspopup="true"`; its icon is marked `aria-hidden="true"`
-- The mobile sidebar uses `role="dialog"` with `aria-label="Mobile navigation menu"`
-- Sidebar section buttons have `aria-expanded` and `aria-pressed` to indicate open/closed state
-- The backdrop overlay is a `<button>` element with `aria-label="Close mobile navigation"`
+- The opening button exposes `aria-expanded`, `aria-controls` and `aria-haspopup="dialog"`, with translated open/close labels.
+- The bounded mobile menu uses `role="dialog"` and `aria-modal="true"`, labelled by the current level heading.
+- Links and drill-in buttons use native navigation semantics. Tab and Shift+Tab stay within the open dialog, including controls in banner content; arrow keys retain native browser behaviour.
+- Entering a level focuses its heading. Back restores the previous row and scroll position. Close and Escape restore the opener; resizing to desktop moves focus to a desktop navigation item.
+- The closed dialog is hidden. Decorative desktop strip items become inert on mobile after hydration, keeping the full-strip opening target available.
 
 ### Branded variant
 
@@ -126,9 +126,7 @@ Pass the language-prefixed root path to `logoHref` (for example, `"/ar/"` for Ar
 
 ### Known limitations
 
-- Focus is not explicitly trapped within the mobile sidebar dialog; users can Tab to elements behind the overlay
-- The hamburger button does not reflect the sidebar's open state via `aria-expanded`
-- When a submenu closes (via Escape or mouse leave), focus is not programmatically returned to the triggering menu item
+- On desktop, when a submenu closes via Escape or mouse leave, focus is not programmatically returned to the triggering menu item
 
 ## Server-rendered / CDN usage
 
@@ -163,7 +161,33 @@ createHydrator({ selector: "[data-mg-mega-menu]", component: MegaMenu, fromEleme
 
 See the [hydration guide](https://github.com/unisdr/undrr-mangrove/blob/main/docs/HYDRATION.md) for the full API and integration details.
 
+## Mobile progressive navigation
+
+Below 900px, the existing navigation strip opens a bounded overlay menu. Each group
+opens a new level on the same surface, with a labelled back button and a separate
+Close action. Section headings link directly to their landing pages; there is no separate Overview link. Introductory
+banner content appears directly beneath the links without an extra disclosure; desktop banners
+remain unchanged. Returning restores the previous row focus and scroll position.
+Escape and tapping the exposed page close the menu and return focus to the opener.
+Back appears directly above the section title. The panel has a 400px minimum where
+space permits, capped at the smaller of 700px or 90% of the dynamic viewport.
+It uses a lightly translucent, blurred surface with an opaque fallback when blur
+is unsupported. Reduced motion, reduced transparency, increased contrast and
+forced colours use an opaque, unblurred surface without transitions. Normal
+entry and exit use a short fade and sideways motion, mirrored in RTL. An exiting
+panel becomes inert immediately and releases focus and page scrolling.
+
+This is a drop-in update: existing `sections`, logo and timing props, Drupal
+attributes and hydration entry points require no changes. The existing `labels`
+object also accepts `backLabel`, `allSectionsLabel`, `closeLabel`, `overviewLabel`
+and `toggleMobileNavLabel`; omitted keys use English defaults. The legacy `menuLabel` key remains accepted but is no longer displayed. Rich banner HTML
+retains the existing caller-sanitised contract.
+
+<Canvas of={MegaMenuStories.ProgressiveMobile} />
+
 ## Changelog
+
+- **1.3.0** — 2026-09-08 ([#1099](https://github.com/unisdr/undrr-mangrove/issues/1099)): Added mobile progressive navigation with a consistent surface, explicit back and close actions, nested levels, linked section headings and preserved banner content, focus and scroll restoration, reduced motion and translated controls. Existing data and integration contracts remain supported. Authored content appears immediately, without a duplicate disclosure heading. The mobile hamburger is vertically centred without icon baseline spacing. Top-level sections use the shared semibold heading family; inner destinations use smaller regular body text and tighter spacing with 44px minimum targets. Forward chevrons distinguish entering a group from the Back arrow. Section headings remain compact and bold, with aligned text edges. Plain HTML Simple Nav removes the unused hamburger gutter and allows horizontal scrolling on mobile without markup changes. The redundant toolbar Menu label is omitted, leaving Close at the top right. Back sits above the title; the bounded translucent surface leaves an outside-dismiss area and uses RTL-aware fades with opaque accessibility-preference fallbacks.
 
 - **1.2.6** — 2026-09-09 ([#1098](https://github.com/unisdr/undrr-mangrove/issues/1098)): **Fixed:** Arabic top-bar links were rendering in Roboto Condensed, which has no Arabic glyph coverage, because the component's `:lang(ar)` override named a class that does not exist ([#1095](https://github.com/unisdr/undrr-mangrove/issues/1095)). `.mg-mega-topbar__item-link` now reads the `ui` font role and resolves to Noto Sans Arabic. Latin rendering is unchanged.
 - **1.2.5** — 2026-09-08 ([#1092](https://github.com/unisdr/undrr-mangrove/issues/1092)): Arabic typography no longer applies to a menu link whose own language is not Arabic.

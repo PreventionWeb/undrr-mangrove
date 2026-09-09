@@ -700,6 +700,26 @@ describe('every component names the role it is meant to', () => {
     ['.mg-hero__label', 'ui'],
     ['.mg-hero__title', 'display'],
     ['.mg-mega-content__banner header', 'ui'],
+    [
+      '.mg-mega-mobile-sidebar--progressive .mg-mega-mobile-sidebar__back',
+      'text',
+    ],
+    [
+      '.mg-mega-mobile-sidebar--progressive .mg-mega-mobile-sidebar__close',
+      'text',
+    ],
+    [
+      '.mg-mega-mobile-sidebar--progressive .mg-mega-mobile-sidebar__page--section .mg-mega-sidebar-section__item',
+      'text',
+    ],
+    [
+      '.mg-mega-mobile-sidebar--progressive .mg-mega-mobile-sidebar__title',
+      'ui',
+    ],
+    [
+      '.mg-mega-mobile-sidebar--progressive .mg-mega-sidebar-section__item',
+      'ui',
+    ],
     ['.mg-mega-topbar__item-link', 'ui'],
     ['.mg-on-this-page-nav__cta', 'ui'],
     ['.mg-on-this-page-nav__link', 'ui'],

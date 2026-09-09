@@ -576,7 +576,7 @@ export const WithIcons = {
 };
 
 // Simple nav — no sidebar/hamburger, links clickable on all screen sizes.
-// Uses the mg-mega-wrapper--simple modifier class on the root element.
+// CSS detects the absent hamburger, removes its gutter and allows mobile overflow scrolling.
 const simpleNavLinks = [
   { title: 'Home', url: '/' },
   { title: 'About', url: '/about' },
@@ -611,7 +611,42 @@ export const SimpleNav = {
     docs: {
       description: {
         story:
-          'A plain HTML nav bar using Mangrove classes without the React mega menu component or mobile sidebar. Because `mg-mega-wrapper--js-active` is absent, links remain clickable on all screen sizes — the same graceful fallback that applies when JS fails to hydrate.',
+          'A plain HTML nav bar using Mangrove classes without the React mega menu component or mobile sidebar. On mobile, links start at the rail edge and scroll horizontally when they overflow; no additional markup or JavaScript is needed. Because `mg-mega-wrapper--js-active` is absent, links remain clickable on all screen sizes — the same graceful fallback that applies when JS fails to hydrate.',
+      },
+    },
+  },
+};
+
+export const ProgressiveMobile = {
+  name: 'Progressive mobile navigation',
+  render: args => (
+    <>
+      <MegaMenu {...args} />
+      <main
+        style={{
+          minHeight: '100vh',
+          padding: 'var(--mg-spacing-300)',
+          background: 'rgb(var(--mg-color-interactive) / 0.08)',
+        }}
+      >
+        <h1>Knowledge for a resilient future</h1>
+        <p>
+          Explore resources, research and practical guidance for reducing
+          disaster risk.
+        </p>
+        <h2>Latest publications</h2>
+        <p>Discover evidence and insights from communities around the world.</p>
+        <a href="#resources">Explore resources</a>
+      </main>
+    </>
+  ),
+  globals: { viewport: { value: 'iphone12', isRotated: false } },
+  args: { sections },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'At widths below 900px, tap anywhere on the navigation strip. Open a section, continue into a nested group, then use the labelled back control or Close. Existing section data is used unchanged.',
       },
     },
   },
