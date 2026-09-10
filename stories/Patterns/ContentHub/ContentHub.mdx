@@ -1,0 +1,164 @@
+import { Meta, Canvas, Controls } from '@storybook/addon-docs/blocks';
+import * as Stories from './ContentHub.stories';
+
+<Meta of={Stories} />
+
+# Content hubs
+
+> **Note:** Tracked on [#1112](https://github.com/unisdr/undrr-mangrove/issues/1112). Review against the [component checklist](https://github.com/unisdr/undrr-mangrove/blob/main/docs/REVIEW-CHECKLIST.md).
+
+A content hub is a named group of pages people move between: the Sendai Framework
+Monitor, a programme, a guidance collection. Every page carries the same name and
+the same section links, so a reader can go sideways without returning to the
+landing page first.
+
+Use one when people come back repeatedly and move between sections. If they
+arrive, read and leave, a [landing page](?path=/docs/patterns-landing-pages--docs)
+is enough.
+
+|                | Landing page                       | Content hub                            | Microsite                                |
+| -------------- | ---------------------------------- | -------------------------------------- | ---------------------------------------- |
+| **Job**        | Introduce a subject, point onward  | Support repeated movement across pages | A distinct experience or sub-brand       |
+| **Navigation** | Parent site's, plus grouped routes | Hub name and sections on every page    | Its own, with a route back to the parent |
+
+## Hub home
+
+<Canvas of={Stories.HubHome} />
+
+The most expressive page: a banner with the title, lede and a call to action,
+then route cards and a supporting band. The identity row above the banner is the
+same height and treatment as on every other page — that is what lets the banner
+be expressive without costing the reader their bearings.
+
+## A detail page with a hero
+
+<Canvas of={Stories.HubDetailWithHero} />
+
+The same identity row, byte for byte, with an entirely different page below it.
+
+## Hub detail
+
+<Canvas of={Stories.HubDetail} />
+
+<Controls of={Stories.HubDetail} />
+
+Move from Reporting to How to report, then to another section. Reporting stays
+marked while you are on its descendants; the heading and breadcrumb say which
+page you are actually on. These are page links, not tab controls.
+
+Use the locale toolbar for Arabic, the theme toolbar for the other brands, and
+resize the canvas for mobile — the section strip scrolls, keeps ordinary keyboard
+link behaviour, and bleeds to the screen edges once it wraps.
+
+## A deeper page
+
+<Canvas of={Stories.DeeperPage} />
+
+Two levels down, and Reporting is still the marked section. No tab set can do
+that, which is the clearest evidence this is navigation rather than tabs. A dense
+reference section may eventually want a sibling rail; avoid adding both that and
+a full in-page rail without a reason.
+
+## Variations
+
+### A detached header
+
+<Canvas of={Stories.HubDetailDetachedHeader} />
+
+By default the navigation bar shares the banner's colour, so the header reads as
+one block. `headerSurface: "detached"` returns the bar to the page background and
+leaves the banner its own colour. Either way they stay separate containers, which
+keeps the navigation's contrast predictable rather than dependent on a photograph.
+
+`heroSource` is the other half of the comparison. `header` makes the hub header's
+banner the hero, so it is chrome. `page` keeps the header compact and puts a
+`Hero` block below it, the way body content would. The visible difference is
+small; the real one is capability — `Hero` takes a video or author-supplied HTML,
+a chrome-owned banner takes an image. Set `pageHeroMedia` to `video` to see it.
+
+## Building one
+
+`HubHeader` carries the identity row and section links, and ships in the
+stylesheet:
+
+```jsx
+<HubHeader
+  name="Sendai Framework Monitor"
+  nameHref="/monitor"
+  navLabel="Sendai Framework Monitor sections"
+  variant="expressive"
+  title="Tracking progress towards a more resilient world"
+  summary="Understand disaster risk and find guidance for reporting."
+  media={{ src: '/hero.jpg', alt: '' }}
+  actions={[
+    { label: 'Open the Monitor', url: 'https://sendaimonitor.undrr.org/' },
+  ]}
+  sections={[
+    { label: 'About', href: '/monitor/about' },
+    { label: 'Reporting', href: '/monitor/reporting', ancestor: true },
+    { label: 'Data', href: '/monitor/data' },
+  ]}
+/>
+```
+
+| Prop                   | Notes                                                              |
+| ---------------------- | ------------------------------------------------------------------ |
+| `variant`              | `expressive` adds the banner; `compact` is identity and links only |
+| `surface`              | `primary` (default), `secondary`, `tertiary`, or `detached`        |
+| `media`, `actions`     | Both optional — a banner works as text alone                       |
+| `current` / `ancestor` | The exact page, or a section containing it                         |
+
+Pass `current` for the page the reader is on and `ancestor` for a section that
+merely contains it. Both look the same; only `current` is announced, as
+`aria-current="page"`. Announcing an ancestor would tell a screen reader the
+reader is on a page they are not. Five sections is comfortable and seven is the
+limit; past that the strip scrolls on a laptop once labels are translated.
+
+The rest of these pages compose shipped components and utilities — `Hero`,
+`IconCard`, `VerticalCard`, `TableOfContents`, `TextCta`, `CtaButton`,
+`mg-grid`, `mg-container-full-width` and `mg-reading`. What
+is left is demonstration scaffolding: `mg-demo-` classes that load only with
+these stories, the hash routing, and the Monitor copy.
+
+## Design decisions
+
+**The section strip is not styled as tabs.** A 3px bottom border is how `Tab`,
+the MegaMenu topbar and `OnThisPageNav` all mark their active item, so it says
+nothing about what kind of navigation this is. Here the current item stops
+looking like a link instead: near-black, bold, and underlined against the word
+rather than under the item's padding box.
+
+**Identity is chrome, not a title.** The hub name is a fixed size and its row is
+the same height on every page. Something that never moves stops being read as a
+heading, so it does not compete with the page's `h1`. It is never merged into the
+hero — `mg-hero` forces white text over an editor's photograph and is absent from
+most pages, so identity would move around — and never suppressed, or a reader
+arriving from search would get neither identity nor navigation.
+
+**Breadcrumbs appear only where they add something.** On three of the four pages
+here the trail just repeats the hub name, the marked section or the heading. They
+show on a page deep enough to have an intermediate parent the strip cannot.
+
+**The parent chrome is untouched.** A compact brand header is out of scope: the
+masthead comes from Drupal templating that has to hold for PreventionWeb and the
+other sub-brands too.
+
+> **Implementation note (for contributors):** the rejected alternatives, and how
+> Germany's Dachmarke and France's DSFR handle the same layering, are on
+> [#1112](https://github.com/unisdr/undrr-mangrove/issues/1112).
+
+## Still to test
+
+- Can someone landing on a detail page identify the hub and reach a sibling section?
+- With the UNDRR header and mega menu above it, does the hub still read as its own place?
+- When does a section need a sibling rail rather than a scrolling strip?
+- Can shared content belong to several hubs without duplicating its canonical page?
+
+## Changelog
+
+- **1.0** — 2026-09-10: Content hub pattern — hub home, detail and deeper pages in English and Arabic, under the standard UNDRR header and global navigation. ([#1112](https://github.com/unisdr/undrr-mangrove/issues/1112))
+  - `HubHeader` owns hub identity and section navigation, with compact and expressive variants and four surface options, and ships in the stylesheet.
+  - Adds `mg-reading` as a distributed layout utility.
+  - Section links are marked as links rather than tabs, and only the exact current page is announced.
+  - Breadcrumbs appear only where they add ancestry the strip cannot show.
+  - Variations for a detached header and vertical route cards.

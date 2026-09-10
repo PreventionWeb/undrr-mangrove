@@ -641,3 +641,41 @@ export const MixedIconTypes = {
     centered: true,
   },
 };
+
+const horizontalRoutes = [
+  {
+    icon: 'mg-icon mg-icon-tags',
+    title: 'Understand the indicators',
+    summaryText:
+      'What the 38 indicators measure, and how the framework connects to the SDGs.',
+    link: '#',
+  },
+  {
+    icon: 'mg-icon mg-icon-chart-bar',
+    title: 'Explore the data',
+    summaryText:
+      'Global, regional and country progress against the seven global targets.',
+    link: '#',
+  },
+  {
+    // No summary: shows how the row behaves when the title is all there is.
+    icon: 'mg-icon mg-icon-file-alt',
+    title: 'Report on the Sendai Framework',
+    link: '#',
+  },
+];
+
+export const Horizontal = {
+  args: { orientation: 'horizontal', data: horizontalRoutes },
+};
+
+export const HorizontalGrid = {
+  name: 'Horizontal in a grid',
+  render: () => (
+    <div className="mg-grid mg-grid__col-3">
+      {horizontalRoutes.map(route => (
+        <IconCard key={route.title} orientation="horizontal" data={[route]} />
+      ))}
+    </div>
+  ),
+};

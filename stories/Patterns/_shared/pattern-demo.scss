@@ -1,0 +1,44 @@
+// Demo scaffolding for the pattern stories. Not distributed, and prefixed
+// mg-demo- so nothing here reads as public API.
+// Four declarations, each of which the library has no way to express:
+//   - a measure, because there is no max-width utility for running text
+//   - the skip link's focus reveal, because there is no skip link (#1117)
+//   - a mobile gutter, because mg-container's is 10px at every width
+//   - band padding, because there is no spacing utility
+// Inter-element spacing and typography are the library's: mg-container--spacer
+// handles the rhythm between sections, and the base scale plus mg-u-font-size
+// handle the type. Nothing here overrides either.
+
+.mg-demo-lede,
+.mg-demo-intro {
+  max-inline-size: 49rem;
+}
+
+.mg-demo-skip-link {
+  position: absolute;
+  clip-path: inset(50%);
+
+  &:focus {
+    position: static;
+    clip-path: none;
+    display: block;
+    padding: var(--mg-spacing-100);
+  }
+}
+
+.mg-demo-shell {
+  @media (width < 48rem) {
+    padding-inline: var(--mg-spacing-200);
+  }
+}
+
+// Vertical padding for a full-width band. mg-container-full-width supplies the
+// bleed and a background utility the colour; Mangrove has no spacing utility,
+// so the padding is the one thing left to declare.
+.mg-demo-band {
+  padding-block: var(--mg-spacing-300);
+}
+
+.mg-demo-band--feature {
+  padding-block: var(--mg-spacing-400);
+}

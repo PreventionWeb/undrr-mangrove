@@ -330,7 +330,7 @@ export default {
 
   'components-cards-icon-card': {
     description:
-      'Card with icon or image, title, summary, and optional CTA. Variants: default, centered, negative (dark background). Image scale options: small, medium, large, full. Supports custom icon background/foreground colors (iconColor, iconFgColor), border color, and label position (top or content area).',
+      'Card with icon or image, title, summary, and optional CTA. Variants: default, centered, negative (dark background). Orientation: vertical (icon above the content) or horizontal (icon beside it, for route rows); horizontal sizes the visual itself, so imageScale does not apply. Image scale options: small, medium, large, full. Supports custom icon background/foreground colors (iconColor, iconFgColor), border color, and label position (top or content area).',
   },
   'components-cards-book-card': {
     description: 'Minimal card for publications: cover image and title only.',
@@ -1080,6 +1080,16 @@ npm run build</code></pre>
   },
 
   // --- Page templates ---
+  'patterns-content-hub': {
+    description:
+      'A named group of pages inside the parent site — a programme, a monitor, a guidance collection — carrying the same identity and section links on every page so readers move sideways without returning to a landing page. Composes HubHeader with shipped cards, hero and contents components.',
+  },
+
+  'patterns-landing-pages': {
+    description:
+      'Three UNDRR landing page shapes: topic or initiative (hero, route cards, supporting band), report or publication (feature band and a reading column with contents), and collection index (grouped rows of covers).',
+  },
+
   'example-page-template-example': {
     description:
       'Complete page templates showing how to compose Mangrove components into working UNDRR-branded pages with all required scripts and assets.',

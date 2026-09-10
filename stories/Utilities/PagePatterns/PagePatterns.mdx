@@ -1,0 +1,37 @@
+import { Meta, Canvas } from '@storybook/addon-docs/blocks';
+import * as Stories from './PagePatterns.stories';
+
+<Meta of={Stories} />
+
+> If you are creating or modifying this component, see [docs/REVIEW-CHECKLIST.md](../../../docs/REVIEW-CHECKLIST.md) for Mangrove's component standards.
+
+# Reading column
+
+A reading column with an optional sticky contents sidebar, for a long page whose
+sections readers arrive wanting. For a full-width tinted band, combine
+`mg-container-full-width` with a background utility; for a row of icons and
+labels, use `IconCard` with `orientation="horizontal"` inside an `mg-grid`.
+Used by the [content hub](?path=/docs/patterns-content-hub--docs) and
+[landing page](?path=/docs/patterns-landing-pages--docs) patterns.
+
+This is a class, not a component. The React wrapper in this story exists only so
+it can be seen; use the markup directly.
+
+## Reading column
+
+<Canvas of={Stories.ReadingColumn} />
+
+```html
+<div class="mg-reading mg-reading--with-contents">
+  <div><!-- contents --></div>
+  <div class="mg-reading__article">…</div>
+</div>
+```
+
+Constrains the article to a readable measure. With `--with-contents` the first
+child becomes a sticky right sidebar from 48rem up and stacks above the article
+below that.
+
+## Changelog
+
+- **1.0** — 2026-09-10: Added `mg-reading` as a distributed layout utility. ([#1112](https://github.com/unisdr/undrr-mangrove/issues/1112))

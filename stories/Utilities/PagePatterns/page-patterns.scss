@@ -1,0 +1,50 @@
+// Page composition: the reading column.
+// Distributed, because a consumer building one of these pages needs them and
+// none is obvious enough to expect them to rewrite. Anything thinner than this
+// — a margin, a font size — stays in the demo stylesheet rather than becoming
+// public API nobody can rename later.
+// Everything here is a custom property rather than a SCSS variable, so the file
+// also compiles standalone if it is ever imported directly from a story.
+// mg-container's gutter is 10px at every width. That is fine for content
+// inside a card, but these patterns put text and navigation directly against
+// it, and on a phone the result sits almost on the screen edge. Widen it
+// where the viewport is narrow; above that the container's own max-widths
+// take over and the gutter stops being what limits the line.
+
+.mg-reading {
+  display: grid;
+  gap: var(--mg-spacing-250);
+}
+
+.mg-reading__article {
+  min-inline-size: 0;
+  max-inline-size: 46rem;
+}
+
+.mg-reading__article section {
+  margin-block-end: var(--mg-spacing-300);
+  scroll-margin-block-start: var(--mg-spacing-200);
+}
+
+// On this page belongs in a right-hand sidebar wherever there is room for one;
+// it only stacks above the article on narrow viewports.
+@media (width >= 48rem) {
+  .mg-reading--with-contents {
+    grid-template-columns: minmax(0, 1fr) 16rem;
+    column-gap: var(--mg-spacing-300);
+    align-items: start;
+  }
+
+  // TableOfContents renders its own wrapper div around the section.
+  .mg-reading--with-contents > div:has(.mg-table-of-contents) {
+    grid-column: 2;
+    grid-row: 1;
+    position: sticky;
+    inset-block-start: var(--mg-spacing-200);
+  }
+
+  .mg-reading--with-contents .mg-reading__article {
+    grid-column: 1;
+    grid-row: 1;
+  }
+}
