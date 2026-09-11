@@ -28,11 +28,24 @@
       color: rgb(var(--mg-color-neutral-0));
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       min-block-size: mg-rem(40);
       min-inline-size: mg-rem(40);
 
+      // Ring the icon, not the full 40x40 tap target — now that the
+      // account link is icon-only (no visible text filling that box), a
+      // ring on the <a> itself reads as oversized against the icon. Same
+      // pattern as .mg-page-header__block--language:focus-within below.
+      // The base `a:focus-visible` rule in _foundational.scss still rings
+      // the anchor itself (that rule applies to every link site-wide) —
+      // cancel it here or the two rings stack.
       &:focus-visible {
-        @include mg-focus-ring;
+        outline: none;
+        box-shadow: none;
+
+        .mg-page-header__toolbar-icon {
+          @include mg-focus-ring;
+        }
       }
     }
 
@@ -51,18 +64,157 @@
     padding-block: var(--mg-spacing-50);
   }
 
+  // Shared by the account and language icons so they scale together —
+  // ~20% larger than plain inherited text size, since they're now the
+  // toolbar's only visible affordance for each control (no adjacent label).
+  &__toolbar-icon {
+    font-size: 1.2em;
+  }
+
+  // Icon-only trigger at every width — language is a settings action, not
+  // primary content, so the current selection doesn't need to stay visibly
+  // spelled out (compare the account link, which is icon-only below tablet
+  // for the same reason). The native <select> stays in the DOM at full
+  // size, just visually hidden and overlaid on top of the icon, so it's
+  // still a real, keyboard- and screen-reader-operable control: clicking
+  // or tapping the icon opens the actual native dropdown, not a
+  // custom-built menu/panel.
+  &__block--language {
+    position: relative;
+    display: flex;
+    align-items: center;
+    inline-size: mg-rem(40); // matches the account link's tap target
+    block-size: mg-rem(40);
+
+    // Extra breathing room from the account link, on top of the toolbar's
+    // shared gap (--mg-spacing-50) — this boundary separates two distinct
+    // controls and reads as cramped at the same gap used for icon-to-label
+    // spacing within a single control.
+    margin-inline-start: var(--mg-spacing-75);
+
+    > form {
+      position: absolute;
+      inset: 0;
+    }
+
+    &:focus-within .mg-page-header__language-icon {
+      @include mg-focus-ring;
+    }
+  }
+
+  &__language-icon {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 50%;
+    transform: translate(-50%, -50%);
+    color: rgb(var(--mg-color-neutral-0));
+
+    // The invisible <select> sits on top and handles the actual click —
+    // let pointer events pass through the icon to it.
+    pointer-events: none;
+  }
+
+  // languageDisplay="links" — an inline list of language buttons instead of
+  // the icon-only dropdown, for sites with few enough languages that
+  // spelling them out directly is worth the toolbar space (see
+  // .mg-page-header__language-links below). The <select>/<form> pair stays
+  // in the DOM (the buttons drive it via JS) but is fully hidden here,
+  // unlike the dropdown variant's sr-only-but-focusable treatment — it's a
+  // redundant implementation detail in this mode, not a second way to
+  // reach the same control, so it should be reachable by neither pointer
+  // nor keyboard nor screen reader.
+  &__block--language-links {
+    display: flex;
+    align-items: center;
+    margin-inline-start: var(--mg-spacing-75);
+
+    .mg-page-header__lang-form {
+      display: none;
+    }
+  }
+
+  &__language-links {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--mg-spacing-100);
+  }
+
+  &__language-link {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: mg-rem(40);
+    padding-inline: var(--mg-spacing-75);
+    border: none;
+    border-radius: var(--mg-radius-button);
+    background: none;
+    color: rgb(var(--mg-color-neutral-0));
+    font-family: inherit;
+    font-size: $mg-font-tag;
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
+    }
+
+    &:focus-visible {
+      @include mg-focus-ring;
+    }
+
+    // Bold, matching how the account link's text used to read before it
+    // went icon-only — the current language is the one piece of state this
+    // control needs to communicate at a glance.
+    &[aria-current='true'] {
+      font-weight: bold;
+    }
+  }
+
+  &__language-link-code {
+    display: none;
+  }
+
+  // Below tablet, swap the full language name for its 2-letter code — the
+  // same value already used as the <option>'s value (and, by convention in
+  // this component's examples, an ISO 639-1 code), so no separate prop is
+  // needed. Both spans carry aria-hidden="true": the button's own
+  // aria-label (the full name) is what a screen reader announces either
+  // way, so this swap is purely visual.
+  @media (max-width: $mg-breakpoint-tablet) {
+    &__language-link-full {
+      display: none;
+    }
+
+    &__language-link-code {
+      display: inline;
+    }
+  }
+
   &__logo-img {
     display: block;
     max-inline-size: 100%;
     block-size: auto;
     object-fit: contain;
 
+    // Pre-2.0 behavior: crop to a fixed box on mobile/tablet instead of
+    // letterboxing, so the logo stays legible at small sizes. The box
+    // aspect ratio (~3.75:1) is tuned to the current logo asset
+    // (assets.undrr.org/logos/undrr/undrr-logo-horizontal.svg, natural
+    // aspect ~6.92:1): it crops right after the "UNDRR" wordmark, before
+    // the "United Nations Office for..." subtitle starts. The pre-2.0
+    // dimensions (190x48 / 110x30, ~3.96:1) were tuned for a different,
+    // differently-proportioned logo asset and sliced mid-glyph into the
+    // subtitle on this one — if the logo asset changes again, re-check
+    // this crop rather than assuming the ratio still holds.
     @media (max-width: $mg-breakpoint-desktop) {
-      inline-size: mg-rem(190);
+      inline-size: mg-rem(180);
+      block-size: mg-rem(48);
+      object-fit: cover;
+      object-position: 0% 50%;
     }
 
     @media (max-width: $mg-breakpoint-tablet) {
-      inline-size: mg-rem(110);
+      inline-size: mg-rem(112);
+      block-size: mg-rem(30);
     }
   }
 
@@ -86,23 +238,30 @@
     }
   }
 
+  // Always an invisible tap target exactly the size of the icon above it
+  // (see .mg-page-header__block--language) — a real, focusable,
+  // screen-reader- and keyboard-operable native <select>, just not
+  // visually rendered. opacity (not display/visibility) is what keeps it
+  // operable; the focus ring shows on the icon instead
+  // (.mg-page-header__block--language:focus-within), since a ring on an
+  // invisible element wouldn't be visible. direction: inherit and a
+  // readable font-size still matter here even though the closed box is
+  // invisible: browsers render the open dropdown's option list using
+  // these, so RTL languages and legible option text still depend on them.
   &__select {
-    width: auto !important;
-    min-width: auto;
-    min-height: mg-rem(40);
-    height: auto;
-    padding-inline: var(--mg-spacing-50) var(--mg-spacing-250);
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    min-width: 0;
+    padding: 0;
     border: none;
-    border-radius: var(--mg-radius-button);
-    font-size: $mg-font-size-300;
     background-color: transparent;
-    color: rgb(var(--mg-color-neutral-0));
     direction: inherit;
-    line-height: mg-rem(20);
-
-    &:focus-visible {
-      @include mg-focus-ring;
-    }
+    font-size: $mg-font-size-300;
+    opacity: 0;
+    cursor: pointer;
+    outline: none;
 
     option {
       color: rgb(var(--mg-color-text));
@@ -142,23 +301,3 @@
   }
 }
 
-.mg-page-header__label {
-  display: inline-block;
-  font-size: $mg-font-tag;
-  font-weight: bold;
-  margin-inline-start: var(--mg-spacing-25);
-  padding: var(--mg-spacing-25) 0;
-
-  @media (max-width: $mg-breakpoint-tablet) {
-    display: none;
-  }
-}
-
-// Label for mobile
-.mg-page-header__label-mobile {
-  display: none;
-
-  @media (max-width: $mg-breakpoint-tablet) {
-    display: unset;
-  }
-}

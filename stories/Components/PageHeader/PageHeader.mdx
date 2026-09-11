@@ -47,6 +47,12 @@ The language switcher can be configured with different language options.
 
 <Canvas of={PageHeaderStories.WithCustomLanguages} meta={PageHeaderStories} />
 
+#### With Language Links
+
+`languageDisplay="links"` shows each language inline in the toolbar instead of behind the icon-only dropdown. Use it for short lists (roughly 2-4 languages); for longer lists, keep `languageDisplay="dropdown"` (default). The active language is bold, and on smaller screens labels collapse to 2-letter codes. This mode requires JavaScript because the buttons drive the same underlying native `<select>` rather than linking to per-language URLs.
+
+<Canvas of={PageHeaderStories.WithLanguageLinks} meta={PageHeaderStories} />
+
 #### With Custom Class
 
 The component supports additional CSS classes for custom styling.
@@ -65,7 +71,7 @@ The PageHeader component includes several content areas:
 
 **Language Switcher:**
 
-- Dropdown with available languages (English, Spanish, Arabic by default)
+- Icon-only trigger (a `languages` icon, no visible current-selection text) — a real native `<select>` is invisibly overlaid on the icon, so clicking or tapping it opens the actual browser dropdown with available languages (English, Spanish, Arabic by default)
 - Maintains Drupal form structure for backend integration
 - Includes all necessary data attributes for form processing
 
@@ -82,8 +88,8 @@ The PageHeader component includes several content areas:
 The PageHeader component maintains static display with interactive elements:
 
 1. **Logo**: Clickable link to homepage (default variant only)
-2. **Language Switcher**: Interactive dropdown for language selection (default variant only)
-3. **Responsive**: Adapts logo size on mobile devices (≤500px)
+2. **Language Switcher**: Icon-only trigger that opens a native language dropdown (default variant only)
+3. **Responsive**: Logo crops to a smaller fixed box at ≤1164px and again at ≤900px, instead of shrinking; account and language controls are icon-only at every width
 4. **Decoration Only**: Renders only the colored stripe when variant is set to 'decoration-only'
 
 #### Google Analytics integration
@@ -174,11 +180,21 @@ For non-React applications, use these HTML structures:
           </a>
         </section>
 
-        <!-- Language Dropdown Section -->
+        <!-- Account link — icon-only, with a visually hidden (not display:
+             none) text node for its accessible name -->
+        <a title="My account" href="/user">
+          <span class="mg-icon mg-icon-user mg-page-header__toolbar-icon" aria-hidden="true"></span>
+          <span class="mg-u-sr-only">My account</span>
+        </a>
+
+        <!-- Language Dropdown Section — also icon-only; the <select> is a
+             real, full-size native control, just invisibly overlaid on the
+             icon so it still opens the actual browser dropdown -->
         <section
           id="block-languagedropdownswitcher"
           class="mg-page-header__block mg-page-header__block--language "
         >
+          <span class="mg-icon mg-icon-languages mg-page-header__toolbar-icon mg-page-header__language-icon" aria-hidden="true"></span>
           <form
             class="mg-page-header__lang-form lang-dropdown-form"
             action="/"
@@ -190,7 +206,6 @@ For non-React applications, use these HTML structures:
               </label>
               <div class="mg-page-header__select-wrapper">
                 <select
-                  style="width:165px"
                   class="mg-page-header__select"
                   id="edit-lang-dropdown-select"
                 >
@@ -243,6 +258,8 @@ The PageHeader component follows accessibility best practices:
 - Uses `<div>` element for decoration-only variant as it's purely decorative
 - Includes proper `<section>` elements for each functional area
 - Language switcher has proper form labeling with `sr-only` class for screen readers
+- Account and language controls are icon-only visually, but keep accessible names via `mg-u-sr-only` text (not `title` attributes alone)
+- The language control's visible focus ring is applied on the icon via `:focus-within` while the native `<select>` remains visually hidden
 - Logo image includes proper alt text and title attributes
 - Maintains keyboard navigation for all interactive elements
 - Color contrast meets WCAG AA standards
@@ -260,7 +277,8 @@ The PageHeader component follows accessibility best practices:
 | homeUrl      | String  | '/'                                                              | URL for the logo link (ignored in decoration-only variant)                                                                                                                                                          |
 | showLogo     | Boolean | true                                                             | Show or hide the UNDRR logo section                                                                                                                                                                                 |
 | showAccount  | Boolean | true                                                             | Show or hide the "My account" link                                                                                                                                                                                  |
-| showLanguage | Boolean | true                                                             | Show or hide the language switcher dropdown                                                                                                                                                                         |
+| showLanguage | Boolean | true                                                             | Show or hide the language switcher                                                                                                                                                                                  |
+| languageDisplay | String | 'dropdown'                                                    | 'dropdown' (icon-only, opens a native `<select>`) or 'links' (each language inline as its own button — best for 2-4 languages, requires JavaScript)                                                                |
 | languages    | Array   | [English, Spanish, Arabic]                                       | Array of language objects (ignored in decoration-only variant)                                                                                                                                                      |
 | ...args      | Object  | {}                                                               | Additional props passed to the root element                                                                                                                                                                         |
 
@@ -284,6 +302,12 @@ The PageHeader component follows accessibility best practices:
 - Useful for footers, section dividers, or other decorative contexts
 
 ## Changelog
+
+- **1.6.1** — 2026-09-11 ([PR #1134](https://github.com/unisdr/undrr-mangrove/pull/1134)):
+  - Restored pre-2.0 logo crop behavior on tablet/mobile breakpoints (instead of shrinking with `object-fit: contain`), retuned for the current logo asset.
+  - Updated toolbar controls to icon-only at all widths, enlarged and aligned icon sizing, and moved account-language accessible names to `mg-u-sr-only` text.
+  - Added `languageDisplay="links"` for short language lists (2-4), while keeping `dropdown` as the progressive-enhancement default.
+  - Removed the `Narrow header` story and set the stories to `layout: 'fullscreen'` so docs previews match full-bleed header usage.
 
 - **1.6.0** — 2026-09-10 ([#1114](https://github.com/unisdr/undrr-mangrove/issues/1114)): Fixed duplicate hard-coded IDs by adding `idPrefix` namespacing for header/language elements. Default output remains unchanged when `idPrefix` is omitted, preserving existing Drupal selectors.
 
