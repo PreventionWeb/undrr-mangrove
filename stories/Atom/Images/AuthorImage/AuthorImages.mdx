@@ -1,22 +1,5 @@
-import { Meta, Story, Canvas } from '@storybook/addon-docs/blocks';
-import { Authorimg } from './AuthorImages';
+import { Meta, Canvas } from '@storybook/addon-docs/blocks';
 import * as AuthorImagesStories from './AuthorImages.stories';
-
-export const getCaptionForLocale = locale => {
-  switch (locale) {
-    case 'english':
-      const engText = {};
-      return engText;
-    case 'arabic':
-      const arabicText = {};
-      return arabicText;
-    case 'japanese':
-      const japaneseText = {};
-      return japaneseText;
-    default:
-      return {};
-  }
-};
 
 <Meta of={AuthorImagesStories} />
 
@@ -24,37 +7,65 @@ export const getCaptionForLocale = locale => {
 
 # Author image
 
-The Author Image component reveals the photo of the author.
+The Author image component now acts as a compact author block: portrait, name, job title, and organisation in one composable unit.
 
 ### Overview
 
-The Author Image component displays the author's image but does not contain any information.
-
-#### When to use:
-
-- When the image of the author is to be displayed.
+Use it for author bylines, speaker cards, and profile callouts where the photo and the identity text need to stay together.
+The Storybook examples use seeded Random User portraits so the images stay deterministic.
+Pass `href` to make the whole block behave like a link.
+Use `tone="inverse"` when the block sits on a dark background.
+Leave `image` empty when you want a text-only author variant.
+The default example grid also includes a text-only byline so the no-image state is visible without scrolling.
 
 ### Formatting
 
 #### Default
 
-It's circular shaped with an image inside it.
+The block supports horizontal and vertical stacked layouts. The portrait stays paired with a prominent name line and a secondary line for title/org. The accent can be primary, secondary, or tertiary.
 
 ### Behaviors
 
 #### States
 
-There are two states in the Author Image component: Small and Large.
+The component supports Small and Large sizes, horizontal and vertical layouts, plus three highlight colours:
 
-- Small
-- Large
+- horizontal
+- vertical
+- linked
+- inverse
+- no image
+- primary
+- secondary
+- tertiary
 
 <Canvas
   of={AuthorImagesStories.DefaultAuthorImage}
   meta={AuthorImagesStories}
 />
 
+<Canvas
+  of={AuthorImagesStories.NoImageAuthorImage}
+  meta={AuthorImagesStories}
+/>
+
+<Canvas
+  of={AuthorImagesStories.HorizontalAuthorImage}
+  meta={AuthorImagesStories}
+/>
+
+<Canvas
+  of={AuthorImagesStories.VerticalAuthorImage}
+  meta={AuthorImagesStories}
+/>
+
+<Canvas
+  of={AuthorImagesStories.InverseAuthorImage}
+  meta={AuthorImagesStories}
+/>
+
 ## Changelog
 
+- **1.2** — 2026-09-14 ([#1147](https://github.com/unisdr/undrr-mangrove/pull/1147)): Reworked the component into a compact author block with horizontal and vertical stacked layouts, optional linking, inverse dark-surface treatment, avatar-only hover tint, and a no-image text-only variant.
 - **1.1** — 2026-03-21: Renamed CSS classes to `mg-` prefix (`author__img` → `mg-author-image`). Added BEM modifiers for size (`mg-author-image--large`) and hover color (`mg-author-image--yellow`, etc.). Replaced `defaultProps` with destructured defaults.
 - **1.0** — 2022-12-12: Released component
