@@ -83,6 +83,87 @@ describe('PageHeader', () => {
   });
 
   // --------------------------------------------------
+  // Locale-driven logo (translated logos)
+  // --------------------------------------------------
+
+  it('keeps the default English logo when no locale is given', () => {
+    render(<PageHeader />);
+
+    const img = screen.getByAltText('UNDRR Logo');
+    expect(img).toHaveAttribute(
+      'src',
+      'https://assets.undrr.org/logos/undrr/undrr-logo-horizontal.svg'
+    );
+    expect(img).not.toHaveAttribute('lang');
+    expect(img).toHaveClass('mg-logo--autocrop');
+  });
+
+  it('resolves the Spanish translated logo, without autocrop', () => {
+    render(<PageHeader locale="spanish" />);
+
+    const img = screen.getByAltText('UNDRR Logo');
+    expect(img).toHaveAttribute(
+      'src',
+      'https://assets.undrr.org/logos/undrr/undrr-logo-es-white.svg'
+    );
+    expect(img).toHaveAttribute('lang', 'es');
+    // Scaled to the header's fixed display height (47, matching the English
+    // default) using the asset's real aspect ratio (971x387) — NOT its raw
+    // pixel dimensions, which would render far larger than the header slot.
+    expect(img).toHaveAttribute('height', '47');
+    expect(img).toHaveAttribute('width', '118');
+    expect(img).not.toHaveClass('mg-logo--autocrop');
+  });
+
+  it('resolves the Arabic translated logo', () => {
+    render(<PageHeader locale="arabic" />);
+
+    const img = screen.getByAltText('UNDRR Logo');
+    expect(img).toHaveAttribute(
+      'src',
+      'https://assets.undrr.org/logos/undrr/undrr-logo-ar-white.svg'
+    );
+    expect(img).toHaveAttribute('lang', 'ar');
+    expect(img).not.toHaveClass('mg-logo--autocrop');
+  });
+
+  it('falls back to the default English logo for a locale with no white asset at all', () => {
+    render(<PageHeader locale="japanese" />);
+
+    const img = screen.getByAltText('UNDRR Logo');
+    expect(img).toHaveAttribute(
+      'src',
+      'https://assets.undrr.org/logos/undrr/undrr-logo-horizontal.svg'
+    );
+    expect(img).not.toHaveAttribute('lang');
+  });
+
+  it('an explicit logoUrl always wins over locale', () => {
+    render(<PageHeader locale="spanish" logoUrl="/custom-logo.svg" />);
+
+    const img = screen.getByAltText('UNDRR Logo');
+    expect(img).toHaveAttribute('src', '/custom-logo.svg');
+    expect(img).not.toHaveAttribute('lang');
+  });
+
+  it('lets logoCrop, logoLang, logoWidth, and logoHeight override the locale-resolved values', () => {
+    render(
+      <PageHeader
+        locale="spanish"
+        logoCrop={null}
+        logoLang="es-MX"
+        logoWidth="500"
+        logoHeight="200"
+      />
+    );
+
+    const img = screen.getByAltText('UNDRR Logo');
+    expect(img).toHaveAttribute('lang', 'es-MX');
+    expect(img).toHaveAttribute('width', '500');
+    expect(img).toHaveAttribute('height', '200');
+  });
+
+  // --------------------------------------------------
   // Language options
   // --------------------------------------------------
 
@@ -140,9 +221,10 @@ describe('PageHeader', () => {
     it('marks the selected language with aria-current', () => {
       render(<PageHeader languageDisplay="links" languages={languages} />);
 
-      expect(
-        screen.getByRole('button', { name: 'English' })
-      ).toHaveAttribute('aria-current', 'true');
+      expect(screen.getByRole('button', { name: 'English' })).toHaveAttribute(
+        'aria-current',
+        'true'
+      );
       expect(
         screen.getByRole('button', { name: 'العربية' })
       ).not.toHaveAttribute('aria-current');
@@ -159,9 +241,10 @@ describe('PageHeader', () => {
         />
       );
 
-      expect(
-        screen.getByRole('button', { name: 'Français' })
-      ).toHaveAttribute('aria-current', 'true');
+      expect(screen.getByRole('button', { name: 'Français' })).toHaveAttribute(
+        'aria-current',
+        'true'
+      );
       expect(
         screen.getByRole('button', { name: 'Deutsch' })
       ).not.toHaveAttribute('aria-current');

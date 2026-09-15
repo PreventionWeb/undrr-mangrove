@@ -101,41 +101,48 @@ The toolbar wrapper sets `data-vf-google-analytics-region="undrr-black-bar"` for
 
 React usage:
 
-   ```jsx
-   import { PageHeader } from './path/to/PageHeader';
-   ```
+```jsx
+import { PageHeader } from './path/to/PageHeader';
+```
 
 Basic:
 
-   ```jsx
-   <PageHeader />
-   ```
+```jsx
+<PageHeader />
+```
 
 Decoration-only:
 
-   ```jsx
-   <PageHeader variant="decoration-only" />
-   ```
+```jsx
+<PageHeader variant="decoration-only" />
+```
 
 Custom configuration:
 
-   ```jsx
-   <PageHeader
-     logoUrl="https://assets.undrr.org/logos/undrr/undrr-logo-horizontal.svg"
-     logoAlt="UNDRR Logo"
-     homeUrl="https://www.undrr.org"
-     languages={[
-       { value: 'en', label: 'English', selected: true },
-       { value: 'es', label: 'Español' },
-       { value: 'fr', label: 'Français' },
-     ]}
-   />
-   ```
+```jsx
+<PageHeader
+  logoUrl="https://assets.undrr.org/logos/undrr/undrr-logo-horizontal.svg"
+  logoAlt="UNDRR Logo"
+  homeUrl="https://www.undrr.org"
+  languages={[
+    { value: 'en', label: 'English', selected: true },
+    { value: 'es', label: 'Español' },
+    { value: 'fr', label: 'Français' },
+  ]}
+/>
+```
 
 Stripe-only toolbar context (no logo/account/language):
-   ```jsx
-   <PageHeader showLogo={false} showAccount={false} showLanguage={false} />
-   ```
+
+```jsx
+<PageHeader showLogo={false} showAccount={false} showLanguage={false} />
+```
+
+Locale-driven logo (no `logoUrl` needed — resolves the Spanish translated logo automatically):
+
+```jsx
+<PageHeader locale="spanish" homeUrl="https://www.undrr.org/es" />
+```
 
 #### Vanilla HTML/CSS
 
@@ -178,7 +185,10 @@ For non-React usage, use these HTML structures:
         <!-- Account link — icon-only, with a visually hidden (not display:
              none) text node for its accessible name -->
         <a title="My account" href="/user">
-          <span class="mg-icon mg-icon-user mg-page-header__toolbar-icon" aria-hidden="true"></span>
+          <span
+            class="mg-icon mg-icon-user mg-page-header__toolbar-icon"
+            aria-hidden="true"
+          ></span>
           <span class="mg-u-sr-only">My account</span>
         </a>
 
@@ -189,7 +199,10 @@ For non-React usage, use these HTML structures:
           id="block-languagedropdownswitcher"
           class="mg-page-header__block mg-page-header__block--language "
         >
-          <span class="mg-icon mg-icon-languages mg-page-header__toolbar-icon mg-page-header__language-icon" aria-hidden="true"></span>
+          <span
+            class="mg-icon mg-icon-languages mg-page-header__toolbar-icon mg-page-header__language-icon"
+            aria-hidden="true"
+          ></span>
           <form
             class="mg-page-header__lang-form lang-dropdown-form"
             action="/"
@@ -256,21 +269,26 @@ The PageHeader component follows accessibility best practices:
 
 ### Props
 
-| Prop         | Type    | Default                                                          | Description                                                                                                                                                                                                         |
-| ------------ | ------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| variant      | String  | 'default'                                                        | Component variant ('default' for full header, 'decoration-only' for stripe only)                                                                                                                                    |
-| className    | String  | undefined                                                        | Additional CSS classes to apply                                                                                                                                                                                     |
-| idPrefix     | String  | ''                                                               | Namespace for the header's element ids (`header`, `block-undrrlogo`, `edit-lang-dropdown-select`, ...). Ids are emitted verbatim by default; set a distinct prefix on each header when a page renders more than one |
-| logoUrl      | String  | 'https://assets.undrr.org/logos/undrr/undrr-logo-horizontal.svg' | URL for the UNDRR logo image (ignored in decoration-only variant)                                                                                                                                                   |
-| logoAlt      | String  | 'UNDRR Logo'                                                     | Alt text for the logo image (ignored in decoration-only variant)                                                                                                                                                    |
-| logoTitle    | String  | 'UNDRR Logo'                                                     | Title attribute for the logo image (ignored in decoration-only variant)                                                                                                                                             |
-| homeUrl      | String  | '/'                                                              | URL for the logo link (ignored in decoration-only variant)                                                                                                                                                          |
-| showLogo     | Boolean | true                                                             | Show or hide the UNDRR logo section                                                                                                                                                                                 |
-| showAccount  | Boolean | true                                                             | Show or hide the "My account" link                                                                                                                                                                                  |
-| showLanguage | Boolean | true                                                             | Show or hide the language switcher                                                                                                                                                                                  |
-| languageDisplay | String | 'dropdown'                                                    | 'dropdown' (icon-only, opens a native `<select>`) or 'links' (each language inline as its own button — best for 2-4 languages, requires JavaScript)                                                                |
-| languages    | Array   | [English, Spanish, Arabic]                                       | Array of language objects (ignored in decoration-only variant)                                                                                                                                                      |
-| ...args      | Object  | {}                                                               | Additional props passed to the root element                                                                                                                                                                         |
+| Prop            | Type               | Default                                                                                            | Description                                                                                                                                                                                                                                                         |
+| --------------- | ------------------ | -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| variant         | String             | 'default'                                                                                          | Component variant ('default' for full header, 'decoration-only' for stripe only)                                                                                                                                                                                    |
+| className       | String             | undefined                                                                                          | Additional CSS classes to apply                                                                                                                                                                                                                                     |
+| idPrefix        | String             | ''                                                                                                 | Namespace for the header's element ids (`header`, `block-undrrlogo`, `edit-lang-dropdown-select`, ...). Ids are emitted verbatim by default; set a distinct prefix on each header when a page renders more than one                                                 |
+| logoUrl         | String             | 'https://assets.undrr.org/logos/undrr/undrr-logo-horizontal.svg'                                   | URL for the UNDRR logo image (ignored in decoration-only variant)                                                                                                                                                                                                   |
+| logoAlt         | String             | 'UNDRR Logo'                                                                                       | Alt text for the logo image (ignored in decoration-only variant)                                                                                                                                                                                                    |
+| logoTitle       | String             | 'UNDRR Logo'                                                                                       | Title attribute for the logo image (ignored in decoration-only variant)                                                                                                                                                                                             |
+| logoWidth       | String/Number      | '324' (English), or scaled from `logoHeight` and the resolved translated asset's real aspect ratio | Display width of the logo image — not necessarily the source file's raw pixel width. Set explicitly alongside `logoHeight` if `logoUrl` points to a custom, differently-proportioned asset                                                                          |
+| logoHeight      | String/Number      | '47'                                                                                               | Display height of the logo image. `logoWidth` is derived from this and the resolved asset's aspect ratio when not set explicitly — the header always renders the logo at this fixed height rather than the source file's raw pixel size                             |
+| logoLang        | String             | undefined                                                                                          | BCP 47 language tag for the logo image, when `logoUrl` points to a translated wordmark                                                                                                                                                                              |
+| logoCrop        | 'autocrop' \| null | undefined (resolves to 'autocrop', or to `null` when `locale` resolves a translated logo)          | Crop variant passed to the underlying [Logo](?path=/docs/components-logos--docs) component. Set explicitly to override either resolution — e.g. `null` alongside a custom, differently-proportioned `logoUrl`                                                       |
+| locale          | String             | 'english'                                                                                          | Storybook locale key (`'english'`, `'arabic'`, `'french'`, `'japanese'`, `'russian'`, `'spanish'`, `'chinese'`) used to resolve a translated `logoUrl`/`logoLang`/`logoCrop` automatically when `logoUrl` is not set. Unrecognized values keep the English default. |
+| homeUrl         | String             | '/'                                                                                                | URL for the logo link (ignored in decoration-only variant)                                                                                                                                                                                                          |
+| showLogo        | Boolean            | true                                                                                               | Show or hide the UNDRR logo section                                                                                                                                                                                                                                 |
+| showAccount     | Boolean            | true                                                                                               | Show or hide the "My account" link                                                                                                                                                                                                                                  |
+| showLanguage    | Boolean            | true                                                                                               | Show or hide the language switcher                                                                                                                                                                                                                                  |
+| languageDisplay | String             | 'dropdown'                                                                                         | 'dropdown' (icon-only, opens a native `<select>`) or 'links' (each language inline as its own button — best for 2-4 languages, requires JavaScript)                                                                                                                 |
+| languages       | Array              | [English, Spanish, Arabic]                                                                         | Array of language objects (ignored in decoration-only variant)                                                                                                                                                                                                      |
+| ...args         | Object             | {}                                                                                                 | Additional props passed to the root element                                                                                                                                                                                                                         |
 
 ### Integration Notes
 
@@ -283,6 +301,8 @@ structure.
 **Decoration-only variant:** lightweight stripe-only branding block.
 
 ## Changelog
+
+- **1.7** — 2026-09-14: The logo now renders via the [Logo](?path=/docs/components-logos--docs) atom (`crop="autocrop"`) instead of a raw `<img>`. Added `logoWidth`, `logoHeight`, `logoLang`, `logoCrop`, and `locale` props so translated or differently proportioned logos fit the header correctly.
 
 - **1.6.1** — 2026-09-11 ([PR #1134](https://github.com/unisdr/undrr-mangrove/pull/1134)):
   - Restored pre-2.0 logo crop behavior on tablet/mobile breakpoints (instead of shrinking with `object-fit: contain`), retuned for the current logo asset.

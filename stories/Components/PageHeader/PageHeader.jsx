@@ -1,10 +1,15 @@
 import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 import { Icon } from '../../Atom/Icons/Icon';
+import { Logo } from '../../Atom/Logo/Logo';
+import { getUndrrLogoAsset } from '../../Atom/Logo/undrr-logo-assets';
 import { SkipLink } from '../../Utilities/SkipLink/SkipLink';
 
 const cls = (...classes) =>
   classes.filter(Boolean).length > 0 ? classes.filter(Boolean).join(' ') : null;
+
+const DEFAULT_LOGO_URL =
+  'https://assets.undrr.org/logos/undrr/undrr-logo-horizontal.svg';
 
 /**
  * UNDRR page header with logo, user account link, and language selector.
@@ -16,9 +21,14 @@ export function PageHeader({
   idPrefix = '',
   skipLinkTarget,
   skipLinkLabel = 'Skip to main content',
-  logoUrl = 'https://assets.undrr.org/logos/undrr/undrr-logo-horizontal.svg',
+  logoUrl,
   logoAlt = 'UNDRR Logo',
   logoTitle = 'UNDRR Logo',
+  logoWidth,
+  logoHeight,
+  logoLang,
+  logoCrop,
+  locale = 'english',
   homeUrl = '/',
   showAccount = true,
   showLanguage = true,
@@ -43,6 +53,28 @@ export function PageHeader({
     variant && `mg-page-header--${variant}`,
     className
   );
+
+  // Explicit logoUrl wins. Otherwise resolve the locale-specific white asset
+  // or fall back to the bundled English SVG.
+  const asset = !logoUrl ? getUndrrLogoAsset(locale, 'white') : null;
+  const translatedLogo = asset?.translated ? asset : null;
+  const resolvedLogoUrl = logoUrl || translatedLogo?.src || DEFAULT_LOGO_URL;
+  const resolvedLogoLang =
+    logoLang !== undefined ? logoLang : translatedLogo?.lang;
+  // Keep the fixed header height and derive width from the asset ratio.
+  const resolvedLogoHeight = logoHeight || '47';
+  const resolvedLogoWidth =
+    logoWidth ||
+    (translatedLogo
+      ? String(
+          Math.round(
+            (translatedLogo.width / translatedLogo.height) *
+              Number(resolvedLogoHeight)
+          )
+        )
+      : '324');
+  const resolvedLogoCrop =
+    logoCrop !== undefined ? logoCrop : translatedLogo ? null : 'autocrop';
 
   // If decoration-only variant, render only the decoration stripe
   if (variant === 'decoration-only') {
@@ -82,12 +114,14 @@ export function PageHeader({
                   className="mg-page-header__block mg-page-header__block--logo"
                 >
                   <a href={homeUrl}>
-                    <img
+                    <Logo
                       alt={logoAlt}
-                      src={logoUrl}
-                      width="324"
-                      height="47"
+                      src={resolvedLogoUrl}
+                      width={resolvedLogoWidth}
+                      height={resolvedLogoHeight}
                       title={logoTitle}
+                      lang={resolvedLogoLang}
+                      crop={resolvedLogoCrop}
                       className="mg-page-header__logo-img"
                     />
                   </a>
@@ -97,10 +131,7 @@ export function PageHeader({
               {/* User icon */}
               {showAccount && (
                 <a title="My account" href="/user">
-                  <Icon
-                    name="user"
-                    className="mg-page-header__toolbar-icon"
-                  />{' '}
+                  <Icon name="user" className="mg-page-header__toolbar-icon" />{' '}
                   <span className="mg-u-sr-only">My account</span>
                 </a>
               )}
@@ -192,7 +223,9 @@ export function PageHeader({
                           data-lang-dropdown-id="lang-dropdown-form"
                           id={id('edit-lang-dropdown-select')}
                           name="lang_dropdown_select"
-                          tabIndex={languageDisplay === 'links' ? -1 : undefined}
+                          tabIndex={
+                            languageDisplay === 'links' ? -1 : undefined
+                          }
                           aria-hidden={languageDisplay === 'links' || undefined}
                           defaultValue={
                             languages.find(lang => lang.selected)?.value ||
@@ -248,12 +281,53 @@ PageHeader.propTypes = {
   skipLinkTarget: PropTypes.string,
   /** Label for that skip link. */
   skipLinkLabel: PropTypes.string,
-  /** URL for the UNDRR logo image */
+  /**
+   * URL for the UNDRR logo image. Explicit `logoUrl` always wins over
+   * `locale` — set it directly to fully control the logo, or leave it unset
+   * and use `locale` to pick up a translated asset automatically.
+   */
   logoUrl: PropTypes.string,
   /** Alt text for the logo image */
   logoAlt: PropTypes.string,
   /** Title attribute for the logo image */
   logoTitle: PropTypes.string,
+  /**
+   * Native width of the logo image. Defaults to '324' (the English
+   * wordmark's proportions) unless `locale` resolves a translated asset,
+   * whose real dimensions are used instead. Update alongside `logoHeight`
+   * if also setting a custom `logoUrl` with different proportions.
+   */
+  logoWidth: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  /** Native height of the logo image. See `logoWidth`. */
+  logoHeight: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  /**
+   * BCP 47 language tag for the logo image. Resolved automatically from
+   * `locale` when a translated asset is used; set explicitly alongside a
+   * custom `logoUrl`.
+   */
+  logoLang: PropTypes.string,
+  /**
+   * Crop variant passed to the underlying Logo component. Resolves to
+   * `'autocrop'` for the default English wordmark (tuned for its ~6.6:1
+   * proportions) and to `null` when `locale` resolves a translated asset
+   * (~2.3-2.9:1 — `'autocrop'` would crop their subtitle line off
+   * vertically). Set explicitly to override either resolution, e.g. `null`
+   * when providing a custom, differently-proportioned `logoUrl`.
+   */
+  logoCrop: PropTypes.oneOf(['autocrop', null]),
+  /**
+   * Storybook locale key (matches Mangrove's other locale-aware components,
+   * e.g. ArticleStory), used to resolve a translated logo asset when
+   * `logoUrl` is not set (see `undrr-logo-assets.js`) — 'english' (default),
+   * 'arabic', 'french', 'japanese', 'russian', 'spanish', 'chinese'. Only
+   * resolves to a translated asset when one is listed there in white (the
+   * toolbar background is dark) — 'japanese' and any unrecognized value are
+   * an intentional no-op that keeps the English default rather than risk a
+   * low-contrast logo. The arabic/french/russian/chinese white assets are
+   * committed pending a CDN publish (undrr/web-backlog#3061) — until then
+   * those locales resolve to a URL that 404s rather than falling back.
+   */
+  locale: PropTypes.string,
   /** URL for the logo link */
   homeUrl: PropTypes.string,
   /** Show or hide the UNDRR logo section */
