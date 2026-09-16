@@ -13,6 +13,8 @@ This file collects only cross-cutting library-wide notes that don't fit either l
 
 _Notable cross-cutting changes between releases land here. Per-component changes belong in the component's MDX changelog._
 
+- **Line heights are now public custom properties:** `--mg-font-line-height-500` (`1.25em`) and `--mg-font-line-height-700` (`1.5em`) are emitted in every theme, and base body text, the font-size utilities and Card read them with `var()`. Compiled line heights are unchanged. `$mg-font-line-height-500` and `$mg-font-line-height-700` remain as deprecated Sass aliases until 3.0. With this, every runtime-themeable typography token (sizes, line heights and family roles) is a custom property; `$mg-font-face-*`, `$mg-html-font-size` and breakpoints stay Sass by design. ([#1085](https://github.com/unisdr/undrr-mangrove/issues/1085))
+
 ## 2.0.0-rc.1 — 2026-09-16
 
 See the [GitHub Release](https://github.com/unisdr/undrr-mangrove/releases/tag/v2.0.0-rc.1) for the release when published. This prerelease is prepared for the npm `next` tag; `latest` stays on 1.x.
