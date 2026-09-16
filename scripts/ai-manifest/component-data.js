@@ -84,19 +84,11 @@ export const REQUIRES_REACT = {
     'FormErrorSummary translation label sets for ES, FR, JA, ZH, AR, RU. Pass title prop.',
   'components-tab-translations':
     'Tab translation label sets for ES, FR, JA, ZH, AR, RU. Pass filterPlaceholder prop.',
-  'components-buttons-copybutton':
-    'CopyButton provides a one-click copy button with micro-feedback tooltip and aria-live announcements. Requires React for clipboard interaction and feedback state.',
-  'components-navigation-drawer':
-    'Drawer provides an off-canvas drawer and floating panel with backdrop overlay and keyboard navigation. Requires React for open/close state and keyboard events.',
-  'components-navigation-tree':
-    'Tree provides an accessible hierarchical tree navigation with expand/collapse toggles and optional links. Requires React for expand/collapse state.',
 };
 
 // ---------------------------------------------------------------------------
 // Curated component data (descriptions, HTML examples, flags)
-// ---------------------------------------------------------------------------
-
-export default {
+export const COMPONENT_DATA = {
   // --- Layout ---
   'design-decisions-container': {
     description:
@@ -211,12 +203,22 @@ export default {
   },
   'components-buttons-copybutton': {
     description:
-      'One-click copy button with micro-feedback tooltip and aria-live announcements.',
+      'One-click copy button with micro-feedback tooltip and aria-live announcements. Supports zero-dependency vanilla JS (dist/js/copy-button.min.js), Layer 2 React hydration via createHydrator, and React JSX.',
     cssClasses: [
       'mg-copy-button',
       'mg-copy-button--copied',
       'mg-copy-button__feedback',
       'mg-copy-button__feedback--visible',
+    ],
+    examples: [
+      {
+        name: 'Default copy button',
+        html: `<button type="button" class="mg-button mg-button-primary mg-button-outline mg-button--icon mg-copy-button" data-mg-copy-button data-text-to-copy="https://preventionweb.net" aria-label="Copy link to clipboard">
+  <span class="mg-icon mg-icon-copy mg-button__icon" aria-hidden="true"></span>
+  <span class="mg-copy-button__feedback" role="status" aria-hidden="true">Copied!</span>
+  <span class="mg-u-sr-only" aria-live="polite"></span>
+</button>`,
+      },
     ],
   },
 
@@ -1154,7 +1156,7 @@ npm run build</code></pre>
   // --- Page templates ---
   'components-reading-column': {
     description:
-      'Reading column for a long page: constrains the article to a readable measure, and with mg-reading--with-contents places a table of contents in a sticky sidebar from 48rem up, stacking it above the article below that. The sidebar split itself is mg-grid\'s --article variant (see design-decisions-grid-layout) — pair mg-reading--with-contents with mg-grid mg-grid--article in markup.',
+      "Reading column for a long page: constrains the article to a readable measure, and with mg-reading--with-contents places a table of contents in a sticky sidebar from 48rem up, stacking it above the article below that. The sidebar split itself is mg-grid's --article variant (see design-decisions-grid-layout) — pair mg-reading--with-contents with mg-grid mg-grid--article in markup.",
     cssClasses: [
       'mg-reading',
       'mg-reading--with-contents',
@@ -1544,10 +1546,10 @@ npm run build</code></pre>
     ],
   },
 
-  // --- Navigation (v1 prototypes) ---
+  // --- Navigation ---
   'components-navigation-drawer': {
     description:
-      'Off-canvas drawer and floating panel component. Supports start/end/bottom positioning, backdrop overlay, and Escape key to close.',
+      'Slide-over off-canvas drawer and floating panel for secondary navigation, filters, or details. Supports backdrop dismissal, escape key closure, and server-rendered HTML hydration via createHydrator with data-mg-drawer.',
     cssClasses: [
       'mg-drawer',
       'mg-drawer--start',
@@ -1569,7 +1571,7 @@ npm run build</code></pre>
   },
   'components-navigation-tree': {
     description:
-      'Accessible tree and nested hierarchy view. Parent items can be links with separate toggle behavior. Supports expand/collapse with arrow icon and optional selection state.',
+      'Accessible tree and nested hierarchy view conforming to the ARIA Treeview pattern. Supports roving tabindex, full keyboard navigation (arrows, Home, End, Enter, Space), guides, controlled/uncontrolled state, and separate toggle buttons for linked parent sections.',
     cssClasses: [
       'mg-tree',
       'mg-tree__group',
@@ -1584,3 +1586,5 @@ npm run build</code></pre>
     ],
   },
 };
+
+export default COMPONENT_DATA;

@@ -1,16 +1,39 @@
 import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
+import { DEFAULT_COPY_BUTTON_LABELS } from './_labels';
+
+export { DEFAULT_COPY_BUTTON_LABELS };
+
+const EMPTY_LABELS = {};
+
+const VARIANT_CLASSES = {
+  outline: 'mg-button-primary mg-button-outline',
+  primary: 'mg-button-primary',
+  secondary: 'mg-button-secondary mg-button-outline',
+};
 
 export const CopyButton = ({
-  textToCopy,
+  textToCopy = '',
   className,
-  ariaLabel = 'Copy to clipboard',
-  copiedLabel = 'Copied to clipboard.',
-  tooltipLabel = 'Copied!',
+  labels = EMPTY_LABELS,
+  ariaLabel: customAriaLabel,
+  copiedLabel: customCopiedLabel,
+  tooltipLabel: customTooltipLabel,
   variant = 'outline',
   size,
 }) => {
+  const ariaLabel =
+    customAriaLabel || labels.ariaLabel || DEFAULT_COPY_BUTTON_LABELS.ariaLabel;
+  const copiedLabel =
+    customCopiedLabel ||
+    labels.copiedLabel ||
+    DEFAULT_COPY_BUTTON_LABELS.copiedLabel;
+  const tooltipLabel =
+    customTooltipLabel ||
+    labels.tooltipLabel ||
+    DEFAULT_COPY_BUTTON_LABELS.tooltipLabel;
+
   const [copied, setCopied] = useState(false);
   const timeoutRef = useRef(null);
 
@@ -39,21 +62,16 @@ export const CopyButton = ({
     }
   };
 
-  const variantClasses = {
-    outline: 'mg-button-primary mg-button-outline',
-    primary: 'mg-button-primary',
-    secondary: 'mg-button-secondary mg-button-outline',
-  };
-
   return (
     <button
       type="button"
       className={classNames(
         'mg-button',
-        variantClasses[variant] || variantClasses.outline,
+        VARIANT_CLASSES[variant] || VARIANT_CLASSES.outline,
         'mg-button--icon',
         {
-          [`mg-button--icon--${size}`]: size,
+          'mg-button--small': size === 'small',
+          'mg-button--large': size === 'large',
           'mg-copy-button--copied': copied,
         },
         'mg-copy-button',
@@ -93,11 +111,18 @@ export const CopyButton = ({
 };
 
 CopyButton.propTypes = {
-  textToCopy: PropTypes.string.isRequired,
+  textToCopy: PropTypes.string,
   className: PropTypes.string,
+  labels: PropTypes.shape({
+    ariaLabel: PropTypes.string,
+    copiedLabel: PropTypes.string,
+    tooltipLabel: PropTypes.string,
+  }),
   ariaLabel: PropTypes.string,
   copiedLabel: PropTypes.string,
   tooltipLabel: PropTypes.string,
   variant: PropTypes.oneOf(['outline', 'primary', 'secondary']),
   size: PropTypes.oneOf(['small', 'large']),
 };
+
+export default CopyButton;
