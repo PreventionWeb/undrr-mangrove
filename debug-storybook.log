@@ -1,117 +1,73 @@
-[13:19:05.793] [INFO] storybook v10.3.5
-[13:19:06.471] [DEBUG] Getting package.json info for /Users/khawkins/Documents/git/drupal-base/docroot/libraries/undrr-mangrove/package.json...
-[13:19:08.443] [DEBUG] Serving static files from node_modules/@chromatic-com/storybook/assets at /addon-visual-tests-assets
-[13:19:08.444] [DEBUG] Serving static files from stories/assets at /
-[13:19:08.958] [INFO] Addon-docs: using MDX3
-[13:19:09.764] [INFO] Using implicit CSS loaders
-[13:19:09.843] [INFO] Using default Webpack5 setup
-[13:19:09.848] [INFO] Starting...
-[13:19:09.860] [WARN] unable to find package.json for react-leaflet
-[13:19:10.062] [DEBUG] Starting preview..
-[13:19:10.074] [INFO] Addon-docs: using MDX3
-[13:19:10.076] [INFO] Using implicit CSS loaders
-[13:19:10.080] [INFO] Using default Webpack5 setup
-[13:19:10.706] [DEBUG] Using tsconfig paths for react-docgen
-[13:19:25.805] [WARN] Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
-_form-legacy.scss is deprecated. Migrate to BEM classes from _form-base.scss. Removal: August 2026.
+[09:29:10.929] [INFO] storybook v10.6.0
+[09:29:11.051] [DEBUG] Getting package.json info for /Users/khawkins/Documents/git/drupal-base/.ddev/related-repos/undrr-mangrove/package.json...
+[09:29:11.649] [DEBUG] Serving static files from node_modules/@chromatic-com/storybook/assets at /addon-visual-tests-assets
+[09:29:11.649] [DEBUG] Serving static files from stories/assets at /
+[09:29:11.649] [INFO] Starting...
+[09:29:11.693] [DEBUG] readDependencyManifest: could not resolve "stylelint-config-recommended-scss"
+[09:29:11.694] [DEBUG] readDependencyManifest: could not resolve "stylelint-config-standard-scss"
+[09:29:12.539] [DEBUG] Starting preview..
+[09:29:12.553] [INFO] Addon-docs: using MDX3
+[09:29:12.556] [INFO] Using implicit CSS loaders
+[09:29:12.609] [INFO] Using default Webpack5 setup
+[09:29:12.876] [DEBUG] Using tsconfig paths for react-docgen
+[09:29:20.859] [WARN] export 'Meta' (imported as 'Meta') was not found in '@storybook/addon-docs' (possible exports: DocsRenderer, default)
+[09:29:20.859] [WARN] export 'Meta' (imported as 'Meta') was not found in '@storybook/addon-docs' (possible exports: DocsRenderer, default)
+[09:29:20.859] [WARN] Module Warning (from ./node_modules/sass-loader/dist/cjs/index.js):
+The .mg-search--hide-* CSS classes in syndication-search-widget.scss are deprecated and scheduled for removal in November 2026 (see https://github.com/unisdr/undrr-mangrove/pull/1077). Use React's visibleTeaserFields prop for programmatic DOM stripping instead.
 
-stories/Components/Forms/_form-legacy.scss 5:1  @import
-stories/assets/scss/_components.scss 38:9       @import
-stories/assets/scss/style-delta.scss 8:9        root stylesheet
+stories/Components/SyndicationSearchWidget/_deprecated-teaser-hide.scss 19:1   @import
+stories/Components/SyndicationSearchWidget/syndication-search-widget.scss 9:9  @import
+stories/assets/scss/_components.scss 78:9                                      @import
+stories/assets/scss/style-delta.scss 8:9                                       root stylesheet
 
-[13:19:25.809] [WARN] Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
-You are compiling the legacy 10px root theme (style-irp-legacy). This variant will be removed after 2026. See docs/RELEASE-1.4.md for migration options.
+[09:29:20.861] [WARN] Module Warning (from ./node_modules/sass-loader/dist/cjs/index.js):
+The .mg-search--hide-* CSS classes in syndication-search-widget.scss are deprecated and scheduled for removal in November 2026 (see https://github.com/unisdr/undrr-mangrove/pull/1077). Use React's visibleTeaserFields prop for programmatic DOM stripping instead.
 
-stories/assets/scss/style-irp-legacy.scss 16:1  root stylesheet
+stories/Components/SyndicationSearchWidget/_deprecated-teaser-hide.scss 19:1   @import
+stories/Components/SyndicationSearchWidget/syndication-search-widget.scss 9:9  @import
+stories/assets/scss/_components.scss 78:9                                      @import
+stories/assets/scss/style-irp.scss 8:9                                         root stylesheet
 
-[13:19:25.811] [WARN] Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
-_form-legacy.scss is deprecated. Migrate to BEM classes from _form-base.scss. Removal: August 2026.
+[09:29:20.861] [WARN] Module Warning (from ./node_modules/sass-loader/dist/cjs/index.js):
+The .mg-search--hide-* CSS classes in syndication-search-widget.scss are deprecated and scheduled for removal in November 2026 (see https://github.com/unisdr/undrr-mangrove/pull/1077). Use React's visibleTeaserFields prop for programmatic DOM stripping instead.
 
-stories/Components/Forms/_form-legacy.scss 5:1  @import
-stories/assets/scss/_components.scss 38:9       @import
-stories/assets/scss/style-irp.scss 8:9          @import
-stories/assets/scss/style-irp-legacy.scss 20:9  root stylesheet
+stories/Components/SyndicationSearchWidget/_deprecated-teaser-hide.scss 19:1   @import
+stories/Components/SyndicationSearchWidget/syndication-search-widget.scss 9:9  @import
+stories/assets/scss/_components.scss 78:9                                      @import
+stories/assets/scss/style-mcr.scss 8:9                                         root stylesheet
 
-[13:19:25.816] [WARN] Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
-_form-legacy.scss is deprecated. Migrate to BEM classes from _form-base.scss. Removal: August 2026.
+[09:29:20.862] [WARN] Module Warning (from ./node_modules/sass-loader/dist/cjs/index.js):
+The .mg-search--hide-* CSS classes in syndication-search-widget.scss are deprecated and scheduled for removal in November 2026 (see https://github.com/unisdr/undrr-mangrove/pull/1077). Use React's visibleTeaserFields prop for programmatic DOM stripping instead.
 
-stories/Components/Forms/_form-legacy.scss 5:1  @import
-stories/assets/scss/_components.scss 38:9       @import
-stories/assets/scss/style-irp.scss 8:9          root stylesheet
+stories/Components/SyndicationSearchWidget/_deprecated-teaser-hide.scss 19:1   @import
+stories/Components/SyndicationSearchWidget/syndication-search-widget.scss 9:9  @import
+stories/assets/scss/_components.scss 78:9                                      @import
+stories/assets/scss/style-preventionweb.scss 8:9                               root stylesheet
 
-[13:19:25.817] [WARN] Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
-You are compiling the legacy 10px root theme (style-legacy). This variant will be removed after 2026. See docs/RELEASE-1.4.md for migration options.
+[09:29:20.863] [WARN] Module Warning (from ./node_modules/sass-loader/dist/cjs/index.js):
+The .mg-search--hide-* CSS classes in syndication-search-widget.scss are deprecated and scheduled for removal in November 2026 (see https://github.com/unisdr/undrr-mangrove/pull/1077). Use React's visibleTeaserFields prop for programmatic DOM stripping instead.
 
-stories/assets/scss/style-legacy.scss 16:1  root stylesheet
+stories/Components/SyndicationSearchWidget/_deprecated-teaser-hide.scss 19:1   @import
+stories/Components/SyndicationSearchWidget/syndication-search-widget.scss 9:9  @import
+stories/assets/scss/_components.scss 78:9                                      @import
+stories/assets/scss/style.scss 7:9                                             root stylesheet
 
-[13:19:25.818] [WARN] Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
-_form-legacy.scss is deprecated. Migrate to BEM classes from _form-base.scss. Removal: August 2026.
-
-stories/Components/Forms/_form-legacy.scss 5:1  @import
-stories/assets/scss/_components.scss 38:9       @import
-stories/assets/scss/style.scss 7:9              @import
-stories/assets/scss/style-legacy.scss 20:9      root stylesheet
-
-[13:19:25.820] [WARN] Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
-You are compiling the legacy 10px root theme (style-mcr-legacy). This variant will be removed after 2026. See docs/RELEASE-1.4.md for migration options.
-
-stories/assets/scss/style-mcr-legacy.scss 16:1  root stylesheet
-
-[13:19:25.822] [WARN] Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
-_form-legacy.scss is deprecated. Migrate to BEM classes from _form-base.scss. Removal: August 2026.
-
-stories/Components/Forms/_form-legacy.scss 5:1  @import
-stories/assets/scss/_components.scss 38:9       @import
-stories/assets/scss/style-mcr.scss 8:9          @import
-stories/assets/scss/style-mcr-legacy.scss 20:9  root stylesheet
-
-[13:19:25.828] [WARN] Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
-_form-legacy.scss is deprecated. Migrate to BEM classes from _form-base.scss. Removal: August 2026.
-
-stories/Components/Forms/_form-legacy.scss 5:1  @import
-stories/assets/scss/_components.scss 38:9       @import
-stories/assets/scss/style-mcr.scss 8:9          root stylesheet
-
-[13:19:25.829] [WARN] Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
-You are compiling the legacy 10px root theme (style-preventionweb-legacy). This variant will be removed after 2026. See docs/RELEASE-1.4.md for migration options.
-
-stories/assets/scss/style-preventionweb-legacy.scss 16:1  root stylesheet
-
-[13:19:25.831] [WARN] Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
-_form-legacy.scss is deprecated. Migrate to BEM classes from _form-base.scss. Removal: August 2026.
-
-stories/Components/Forms/_form-legacy.scss 5:1            @import
-stories/assets/scss/_components.scss 38:9                 @import
-stories/assets/scss/style-preventionweb.scss 8:9          @import
-stories/assets/scss/style-preventionweb-legacy.scss 20:9  root stylesheet
-
-[13:19:25.834] [WARN] Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
-_form-legacy.scss is deprecated. Migrate to BEM classes from _form-base.scss. Removal: August 2026.
-
-stories/Components/Forms/_form-legacy.scss 5:1    @import
-stories/assets/scss/_components.scss 38:9         @import
-stories/assets/scss/style-preventionweb.scss 8:9  root stylesheet
-
-[13:19:25.845] [WARN] Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
-_form-legacy.scss is deprecated. Migrate to BEM classes from _form-base.scss. Removal: August 2026.
-
-stories/Components/Forms/_form-legacy.scss 5:1  @import
-stories/assets/scss/_components.scss 38:9       @import
-stories/assets/scss/style.scss 7:9              root stylesheet
-
-[13:19:25.847] [ERROR] Failed to build the preview
-[13:19:25.863] [WARN] Force closed preview build
-[13:19:25.865] [ERROR] [38;2;241;97;97mSB_BUILDER-WEBPACK5_0003 (WebpackCompilationError): There were problems when compiling your code with Webpack.
-Run Storybook with --debug-webpack for more information.[39m
-    at starter (file://./node_modules/@storybook/builder-webpack5/dist/index.js:799:11)
-    at starter.next (<anonymous>)
-    at Module.start (file://./node_modules/@storybook/builder-webpack5/dist/index.js:857:34)
-    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at async storybookDevServer (file://./node_modules/storybook/dist/core-server/index.js:7503:83)
-    at async buildOrThrow (file://./node_modules/storybook/dist/core-server/index.js:4508:12)
-    at async buildDevStandalone (file://./node_modules/storybook/dist/core-server/index.js:8033:41)
-    at async withTelemetry (file://./node_modules/storybook/dist/_node-chunks/chunk-FIR43JGQ.js:225:12)
-    at async dev (file://./node_modules/storybook/dist/bin/core.js:2736:3)
-    at async _Command.<anonymous> (file://./node_modules/storybook/dist/bin/core.js:2806:92)
-[13:19:25.868] [WARN] Broken build, fix the error above.
+[09:29:20.864] [DEBUG] Change detection enabled.
+[09:29:20.869] [WARN] Force closed preview build
+[09:29:20.870] [ERROR] [38;2;241;97;97mError: listen EADDRINUSE: address already in use :::6006[39m
+    at Server.setupListenHandle [as _listen2] (node:net:2009:16)
+    at listenInCluster (node:net:2066:12)
+    at Server.listen (node:net:2171:7)
+    at _Polka.listen (file://./node_modules/storybook/dist/core-server/index.js:7804:110)
+    at file://./node_modules/storybook/dist/core-server/index.js:8515:39
+    at new Promise (<anonymous>)
+    at storybookDevServer (file://./node_modules/storybook/dist/core-server/index.js:8514:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async buildOrThrow (file://./node_modules/storybook/dist/core-server/index.js:7270:12)
+    at async buildDevStandalone (file://./node_modules/storybook/dist/core-server/index.js:9320:41)
+    at async withTelemetry (file://./node_modules/storybook/dist/_node-chunks/chunk-FTP3QZ7O.js:142:12)
+    at async dev (file://./node_modules/storybook/dist/bin/core.js:4906:3)
+    at async _Command.<anonymous> (file://./node_modules/storybook/dist/bin/core.js:5014:3)
+[09:29:20.871] [WARN] Broken build, fix the error above.
 You may need to refresh the browser.
+[09:29:20.989] [DEBUG] Change detection graph built: 80 stories, 229 deps tracked, 102ms

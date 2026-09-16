@@ -4676,6 +4676,7 @@ __metadata:
     babel-loader: "npm:10.1.1"
     babel-plugin-macros: "npm:3.1.0"
     babel-plugin-polyfill-corejs3: "npm:1.0.0"
+    classnames: "npm:^2.5.1"
     copy-webpack-plugin: "npm:14.0.0"
     core-js: "npm:3.50.0"
     css-loader: "npm:7.1.5"
@@ -6149,6 +6150,13 @@ __metadata:
   version: 2.2.1
   resolution: "cjs-module-lexer@npm:2.2.1"
   checksum: 10/16601d6fc3a9bb6a5aba4fcc1fd4c194317f94c2bc869a0dfb0f64d01b6ff0c9011b3ba6c89805b3d4de246be371a102d95d0dad5e944a4a23ca87f5381fbd03
+  languageName: node
+  linkType: hard
+
+"classnames@npm:^2.5.1":
+  version: 2.5.1
+  resolution: "classnames@npm:2.5.1"
+  checksum: 10/58eb394e8817021b153bb6e7d782cfb667e4ab390cb2e9dac2fc7c6b979d1cc2b2a733093955fc5c94aa79ef5c8c89f11ab77780894509be6afbb91dddd79d15
   languageName: node
   linkType: hard
 
