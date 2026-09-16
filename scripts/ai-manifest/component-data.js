@@ -46,15 +46,15 @@ export const REQUIRES_REACT = {
     'SyndicationSearchWidget layout variants — facets sidebar, horizontal facet strip, and external-region portals (facetsTarget, searchTarget). Requires React 19. Same hydration pattern as the main widget.',
   'components-syndicated-search-toggles':
     'SyndicationSearchWidget UI visibility toggles (showPager, showSearchMetrics). Requires React 19. Same hydration pattern as the main widget.',
-  'components-megamenu':
+  'components-navigation-megamenu':
     'MegaMenu manages complex open/close state and keyboard navigation. Below 900px it provides bounded progressive navigation (minimum 400px where space permits, maximum min(700px, 90dvh)) with Back above the title, a separate Close control and outside-click dismissal, nested groups, section headings linked to their landing pages and immediately visible authored banner content. Existing sections and hydration attributes remain supported; additional optional labels are menuLabel, backLabel, allSectionsLabel, closeLabel, overviewLabel and toggleMobileNavLabel. Requires React. Can be hydrated via createHydrator. Adds mg-mega-wrapper--js-active on mount so pointer-events restrictions only apply when the sidebar is available; plain HTML nav markup and failed-hydration states remain fully clickable on mobile.',
   'components-gallery':
     'Gallery provides a lightbox image viewer. Requires React for modal state and keyboard navigation. Can be hydrated via createHydrator.',
-  'components-pager':
+  'components-navigation-pager':
     'Pager manages pagination state. Requires React. Import via npm. Supports translated labels via props: prevLabel, nextLabel, goPrevLabel, goNextLabel, pageLabel, currentPageLabel, pageOfLabel (all string or function). Can be hydrated via createHydrator using data-prev-label, data-next-label, etc. attributes.',
-  'components-cookieconsentbanner':
+  'components-notice-cookieconsentbanner':
     'CookieConsentBanner manages consent state and cookie storage. Requires React.',
-  'components-snackbar':
+  'components-notice-snackbar':
     'Snackbar manages auto-dismiss timing and state. Requires React.',
   'components-scrollcontainer':
     'ScrollContainer manages horizontal scroll state with navigation buttons. Requires React. Can be hydrated via createHydrator.',
@@ -62,15 +62,15 @@ export const REQUIRES_REACT = {
     'UserFeedback manages a binary page response, confirmation state and focus. Requires React for button behavior and can be hydrated via createHydrator with data-mg-user-feedback. Place it as a separate sibling immediately before Footer when the pattern is used.',
   'components-buttons-sharebuttons':
     'ShareButtons manages share URLs and clipboard state. Requires React. Can be hydrated via createHydrator with data-mg-share-buttons.',
-  'components-table-of-contents':
+  'components-navigation-table-of-contents':
     'TableOfContents inspects the DOM for heading elements and manages scroll-spy state. React component available, or use the vanilla JS at js/table-of-contents.js with data-mg-table-of-contents.',
   'components-buttons-sharebuttons-translations':
     'ShareButtons translation label sets for ES, FR, JA, ZH, AR, RU. Pass via the labels prop.',
   'components-gallery-translations':
     'Gallery translation label sets for ES, FR, JA, ZH, AR, RU. Pass galleryAriaLabel, prevLabel, nextLabel, loadingLabel props.',
-  'components-megamenu-translations':
+  'components-navigation-megamenu-translations':
     'MegaMenu translation label sets for ES, FR, JA, ZH, AR, RU. Pass navLabel, closeMobileNavLabel props.',
-  'components-snackbar-translations':
+  'components-notice-snackbar-translations':
     'Snackbar translation label sets for ES, FR, JA, ZH, AR, RU. Pass closeLabel, closeAriaLabel props.',
   'components-scrollcontainer-translations':
     'ScrollContainer translation label sets for ES, FR, JA, ZH, AR, RU. Pass scrollLeftLabel, scrollRightLabel props.',
@@ -658,7 +658,7 @@ export const COMPONENT_DATA = {
   },
 
   // --- On this page nav ---
-  'components-on-this-page-nav': {
+  'components-navigation-on-this-page-nav': {
     description:
       'Sticky horizontal "On this page" navigation bar with IntersectionObserver scroll-spy. Two modes: auto-detect (scans h2/h3/h4 headings) or explicit (author-provided links). Optional CTA button. Vanilla JS — requires on-this-page-nav.js.',
     cssClasses: [
@@ -851,6 +851,51 @@ npm run build</code></pre>
       'mg-user-feedback__actions',
       'mg-user-feedback__issue',
       'mg-user-feedback__confirmation',
+    ],
+  },
+
+  // --- Service notice (auto-rendered + hydration) ---
+  'components-notice-service-notice': {
+    description:
+      'In-page degraded state or partial outage notice for live feeds, interactive maps, or remote APIs with status link, optional retry action, and capped automatic retries with backoff.',
+    cssClasses: [
+      'mg-notice__meta',
+      'mg-notice',
+      'mg-notice--warning',
+      'mg-notice--negative',
+      'mg-notice--compact',
+      'mg-notice--overlay',
+      'mg-notice__header',
+      'mg-notice__icon',
+      'mg-notice__title',
+      'mg-notice__description',
+      'mg-notice__actions',
+      'mg-status-label',
+      'mg-status-label--warning',
+      'mg-status-label--negative',
+    ],
+  },
+
+  // --- Notice / Alert Banner (auto-rendered + hydration) ---
+  'components-notice-notice': {
+    description:
+      'Universal in-page notice and alert banner container for informational callouts, contextual warnings, and error alerts. Combine negative with the prominent modifier for emergency banners.',
+    cssClasses: [
+      'mg-notice',
+      'mg-notice--info',
+      'mg-notice--warning',
+      'mg-notice--negative',
+      'mg-notice--positive',
+      'mg-notice--compact',
+      'mg-notice--prominent',
+      'mg-notice--overlay',
+      'mg-notice__header',
+      'mg-notice__icon',
+      'mg-notice__title',
+      'mg-notice__description',
+      'mg-notice__actions',
+      'mg-notice__meta',
+      'mg-notice__dismiss',
     ],
   },
 
@@ -1090,7 +1135,7 @@ npm run build</code></pre>
 
   // Added here rather than in unisdr/undrr-mangrove#1113, which shipped the
   // pattern without a manifest entry and left `validate-manifest` failing.
-  'components-skip-link': {
+  'components-navigation-skip-link': {
     description:
       'Bypass block: an anchor that stays visually hidden until it receives keyboard focus, then appears in normal flow above the header. Points at the page\'s <main>, which must carry both an id and tabindex="-1" so focus lands there rather than only the scroll position. The label is a prop, and the stylesheet uses logical properties, so it works translated and in right-to-left. Place it as the first focusable element in the page wrapper, before the brand bar. Not built on mg-u-sr-only, which has no focus reveal.',
     cssClasses: ['mg-skip-link'],

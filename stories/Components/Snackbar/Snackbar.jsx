@@ -1,6 +1,6 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import { ErrorIcon, WarningIcon, InfoIcon, SuccessIcon } from './SnackbarIcons';
+import { Notice } from '../Notice/Notice';
 
 /**
  * snackbar component, should be used with react state to control the opened prop and the onClose callback
@@ -17,8 +17,61 @@ export const DEFAULT_SNACKBAR_LABELS = {
   closeAriaLabel: 'Close notification',
 };
 
-const Snackbar = ({
+// Longer than the wrapper's slide transition; unmounts the body when no
+// transitionend fires (reduced motion, or the element never painted).
+const EXIT_FALLBACK_MS = 400;
+
+const SEVERITY_TO_VARIANT = {
+  error: 'negative',
+  warning: 'warning',
+  info: 'info',
+  success: 'positive',
+};
+
+const SnackbarBody = ({
   severity,
+  message,
+  onClose,
+  closeLabel,
+  closeAriaLabel,
+  closeButtonRef,
+  role,
+}) => (
+  <Notice
+    role={
+      role === undefined
+        ? severity === 'error' || severity === 'warning'
+          ? 'alert'
+          : 'status'
+        : role
+    }
+    variant={SEVERITY_TO_VARIANT[severity] || 'info'}
+    icon={Boolean(SEVERITY_TO_VARIANT[severity])}
+    className={`mg-snackbar mg-snackbar__${severity}`}
+    headerContent={
+      <>
+        <span className="mg-snackbar__message">
+          {severity && (
+            <span className="mg-u-sr-only">{`${severity} notification: `}</span>
+          )}
+          {message}
+        </span>
+        <button
+          type="button"
+          ref={closeButtonRef}
+          className="mg-button mg-button-secondary mg-button-outline"
+          onClick={onClose}
+          aria-label={closeAriaLabel}
+        >
+          {closeLabel}
+        </button>
+      </>
+    }
+  />
+);
+
+const Snackbar = ({
+  severity = 'info',
   opened,
   message,
   onClose,
@@ -29,11 +82,19 @@ const Snackbar = ({
     ...DEFAULT_SNACKBAR_LABELS,
     ...labels,
   };
-  let icon;
   const closeButtonRef = useRef(null);
+  const wrapperRef = useRef(null);
+  const returnFocusRef = useRef(null);
   const onCloseRef = useRef(onClose);
   const prevOpenedRef = useRef(false);
   onCloseRef.current = onClose;
+
+  // Keep the body mounted while the toast slides out, so it does not vanish
+  // before the animation finishes.
+  // Set during render (not in an effect) so the closing render still has it.
+  const [isRendered, setIsRendered] = useState(opened);
+  if (opened && !isRendered) setIsRendered(true);
+  const showBody = opened || isRendered;
 
   // close the snackbar after the openedMiliseconds if it is set
   useEffect(() => {
@@ -48,7 +109,6 @@ const Snackbar = ({
     }
   }, [opened, openedMiliseconds]);
 
-  // Add keyboard support and focus management
   useEffect(() => {
     const handleKeyDown = event => {
       if (opened && event.key === 'Escape') {
@@ -58,69 +118,69 @@ const Snackbar = ({
 
     document.addEventListener('keydown', handleKeyDown);
 
-    // Focus the close button only when transitioning to open
-    if (opened && !prevOpenedRef.current && closeButtonRef.current) {
-      closeButtonRef.current.focus();
+    if (opened && !prevOpenedRef.current) {
+      returnFocusRef.current = document.activeElement;
+      // An auto-dismissing toast must not take focus: it would vanish from
+      // under the reader. Only a persistent toast moves focus to its action.
+      if (!openedMiliseconds && closeButtonRef.current) {
+        closeButtonRef.current.focus();
+      }
+    }
+
+    if (!opened && prevOpenedRef.current) {
+      const wrapper = wrapperRef.current;
+      const target = returnFocusRef.current;
+      if (wrapper && wrapper.contains(document.activeElement)) {
+        if (target && target.isConnected && target.focus) {
+          target.focus();
+        } else {
+          document.activeElement.blur();
+        }
+      }
+      returnFocusRef.current = null;
     }
     prevOpenedRef.current = opened;
 
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [opened]);
+  }, [opened, openedMiliseconds]);
 
-  switch (severity) {
-    case 'error':
-      icon = <ErrorIcon />;
-      break;
-    case 'warning':
-      icon = <WarningIcon />;
-      break;
-    case 'info':
-      icon = <InfoIcon />;
-      break;
-    case 'success':
-      icon = <SuccessIcon />;
-      break;
-    default:
-      icon = <></>;
-  }
+  useEffect(() => {
+    if (opened || !isRendered) return undefined;
+    const timerId = setTimeout(() => setIsRendered(false), EXIT_FALLBACK_MS);
+    return () => clearTimeout(timerId);
+  }, [opened, isRendered]);
 
-  // Prepare screen reader announcement
-  const getAriaLabel = () => {
-    if (!severity) return '';
-    return `${severity} notification: `;
-  };
+  // A closing toast stays visible for its exit animation but must not be
+  // read or focused. React 18 has no inert prop, so set the DOM property.
+  useEffect(() => {
+    if (wrapperRef.current) wrapperRef.current.inert = !opened;
+  }, [opened, showBody]);
 
   return (
     <aside
+      ref={wrapperRef}
       className={`mg-snackbar-wrapper ${
         opened ? 'mg-snackbar-wrapper__open' : ''
       }`}
-      aria-live="assertive"
-      aria-atomic="true"
+      aria-hidden={opened ? undefined : 'true'}
+      onTransitionEnd={event => {
+        if (!opened && event.target === event.currentTarget) {
+          setIsRendered(false);
+        }
+      }}
     >
-      <div className={`mg-snackbar mg-snackbar__${severity}`} role="alert">
-        <div className="mg-snackbar__content">
-          {severity && (
-            <span className={`mg-snackbar__icon`} aria-hidden="true">
-              {icon}
-            </span>
-          )}
-          <span className={`mg-snackbar__message`}>
-            <span className="mg-u-sr-only">{getAriaLabel()}</span>
-            {message}
-          </span>
-          <button
-            ref={closeButtonRef}
-            className="mg-button"
-            onClick={() => onClose()}
-            aria-label={closeAriaLabel}
-          >
-            {closeLabel}
-          </button>
-        </div>
-      </div>
+      {showBody && (
+        <SnackbarBody
+          severity={severity}
+          message={message}
+          onClose={() => onClose()}
+          closeLabel={closeLabel}
+          closeAriaLabel={closeAriaLabel}
+          closeButtonRef={closeButtonRef}
+        />
+      )}
     </aside>
   );
 };
@@ -161,7 +221,7 @@ export const ShowOffSnackbar = ({
 // Static display component for documentation purposes only
 export const SnackbarPreview = ({ severity, message }) => {
   return (
-    <div style={{ position: 'relative', height: '80px', marginBottom: '20px' }}>
+    <div style={{ position: 'relative', marginBottom: '20px' }}>
       <div
         className="mg-snackbar-wrapper mg-snackbar-wrapper__open"
         style={{
@@ -172,25 +232,14 @@ export const SnackbarPreview = ({ severity, message }) => {
           maxWidth: '100%',
         }}
       >
-        <div className={`mg-snackbar mg-snackbar__${severity}`} role="alert">
-          <div className="mg-snackbar__content">
-            {severity && (
-              <span className={`mg-snackbar__icon`} aria-hidden="true">
-                {severity === 'error' && <ErrorIcon />}
-                {severity === 'warning' && <WarningIcon />}
-                {severity === 'info' && <InfoIcon />}
-                {severity === 'success' && <SuccessIcon />}
-              </span>
-            )}
-            <span className={`mg-snackbar__message`}>
-              <span className="mg-u-sr-only">{`${severity} notification: `}</span>
-              {message}
-            </span>
-            <button className="mg-button" aria-label="Close notification">
-              Close
-            </button>
-          </div>
-        </div>
+        <SnackbarBody
+          severity={severity}
+          message={message}
+          onClose={() => {}}
+          closeLabel={DEFAULT_SNACKBAR_LABELS.closeLabel}
+          closeAriaLabel={DEFAULT_SNACKBAR_LABELS.closeAriaLabel}
+          role={null}
+        />
       </div>
     </div>
   );
