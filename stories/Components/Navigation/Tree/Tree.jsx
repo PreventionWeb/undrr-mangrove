@@ -10,6 +10,8 @@ export const TreeItem = ({
   isSelected = false,
   onToggle,
   onSelect,
+  href,
+  asLink = false,
 }) => {
   const [expanded, setExpanded] = useState(isExpanded);
 
@@ -19,12 +21,17 @@ export const TreeItem = ({
     if (onToggle) onToggle(id, !expanded);
   };
 
-  const handleSelect = e => {
-    e.stopPropagation();
-    if (onSelect) onSelect(id);
+  const handleLabelClick = e => {
+    if (asLink && href) {
+      if (hasChildren) {
+        handleToggle(e);
+      } else {
+        if (onSelect) onSelect(id);
+      }
+    } else if (hasChildren) {
+      handleToggle(e);
+    }
   };
-
-  const hasChildren = React.Children.count(children) > 0;
 
   return (
     <li
@@ -35,13 +42,14 @@ export const TreeItem = ({
       aria-expanded={hasChildren ? expanded : undefined}
       aria-selected={isSelected}
     >
-      <div className="mg-tree__label-container" onClick={handleSelect}>
+      <div className="mg-tree__label-container" onClick={handleLabelClick}>
         {hasChildren && (
           <button
             type="button"
             className="mg-tree__toggle"
             onClick={handleToggle}
             aria-label={expanded ? 'Collapse' : 'Expand'}
+            aria-expanded={expanded}
           >
             <span
               className={classNames('mg-tree__icon', {
@@ -52,7 +60,13 @@ export const TreeItem = ({
             </span>
           </button>
         )}
-        <span className="mg-tree__label">{label}</span>
+        {asLink && href ? (
+          <a href={href} className="mg-tree__label" onClick={handleLabelClick}>
+            {label}
+          </a>
+        ) : (
+          <span className="mg-tree__label">{label}</span>
+        )}
       </div>
       {hasChildren && expanded && (
         <ul className="mg-tree__group" role="group">
@@ -71,6 +85,8 @@ TreeItem.propTypes = {
   isSelected: PropTypes.bool,
   onToggle: PropTypes.func,
   onSelect: PropTypes.func,
+  href: PropTypes.string,
+  asLink: PropTypes.bool,
 };
 
 export const Tree = ({ children, guides = true, className, ...props }) => {
