@@ -1,0 +1,51 @@
+import { Meta, Story, Canvas, Controls } from '@storybook/blocks';
+import * as LegendStories from './Legend.stories';
+
+<Meta of={LegendStories} />
+
+> If you are creating or modifying this component, see [docs/REVIEW-CHECKLIST.md](../../../../docs/REVIEW-CHECKLIST.md) for Mangrove's component standards.
+
+# Legend
+
+The `Legend` component provides primitives for building map and chart legends, including continuous, stepped, and categorical variants.
+
+## Overview
+
+Legends help users interpret the colors or symbols used in data visualizations like maps, charts, and graphs.
+
+<Canvas of={LegendStories.Continuous} />
+
+## Properties
+
+<Controls />
+
+## Usage
+
+### Continuous ramp
+
+Use for continuous numerical data.
+
+<Canvas of={LegendStories.Continuous} />
+
+### Categorical
+
+Use for discrete categorical data.
+
+<Canvas of={LegendStories.Categorical} />
+<Canvas of={LegendStories.CategoricalGrid} />
+
+### Stepped
+
+Use for binned or segmented data intervals.
+
+<Canvas of={LegendStories.Stepped} />
+
+### Vertical orientation
+
+Continuous and stepped legends can be displayed vertically.
+
+<Canvas of={LegendStories.VerticalContinuous} />
+
+## Changelog
+
+- **1.0** — 2026-09-16 ([#1159](https://github.com/unisdr/undrr-mangrove/pull/1159)): Added map and chart legend primitives (`continuous`, `categorical`, `stepped`).
