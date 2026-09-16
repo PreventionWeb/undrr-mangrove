@@ -22,8 +22,14 @@ A compact label used to categorise content by type, country, theme, or other tax
 
 <!-- Variants -->
 <span class="mg-tag mg-tag--secondary">Metadata</span>
-<span class="mg-tag mg-tag--outline">Subtle</span>
+<span class="mg-tag mg-tag--outline">Outline</span>
 <span class="mg-tag mg-tag--accent">Featured</span>
+
+<!-- Non-interactive subtle badges & format tags -->
+<span class="mg-tag mg-tag--subtle">Reference</span>
+<span class="mg-badge">Verified</span>
+<span class="mg-badge mg-badge--code">JSON</span>
+<span class="mg-badge mg-badge--code">PDF</span>
 
 <!-- Container (auto-styles children) -->
 <div class="mg-tag-container">
@@ -89,6 +95,18 @@ Theme-coloured tags for featured content; the base theme uses a dark neutral. Th
 
 <Canvas of={TagStories.Accent} />
 
+### Subtle
+
+Neutral subtle variant (`.mg-tag--subtle`) for secondary, non-interactive taxonomy notes and metadata.
+
+<Canvas of={TagStories.Subtle} />
+
+### Badges and format tags
+
+Compact non-interactive pills (`.mg-badge`) for verified states and monospace format tags (`.mg-badge--code`, `.mg-tag--code`) for file extensions and technical identifiers.
+
+<Canvas of={TagStories.Badges} />
+
 ### All variants
 
 <Canvas of={TagStories.AllVariants} />
@@ -111,6 +129,9 @@ The `.mg-tag-container` class auto-styles direct child elements (`span`, `div`, 
 | `.mg-tag--secondary` | Neutral gray variant for de-emphasised tags      |
 | `.mg-tag--outline`   | Border-only variant with transparent background  |
 | `.mg-tag--accent`    | Theme-owned accent variant for featured content  |
+| `.mg-tag--subtle`    | Neutral subtle variant for non-interactive data  |
+| `.mg-badge`          | Compact non-interactive metadata badge pill      |
+| `.mg-badge--code`    | Monospace uppercase format badge (PDF, JSON)     |
 | `.mg-tag-container`  | Wrapper that auto-styles direct children as tags |
 
 ## Design tokens
@@ -132,6 +153,7 @@ Container children and individually classed tags share the same styling. Explici
 
 ## Changelog
 
+- **1.3.0** — 2026-09-16 ([#1157](https://github.com/unisdr/undrr-mangrove/pull/1157)): Added `.mg-tag--subtle` and `.mg-badge` for non-interactive secondary metadata, along with monospace uppercase format badge variants (`.mg-badge--code`, `.mg-tag--code`) for technical extensions (PDF, JSON, SVG).
 - **1.2.0** — 2026-09-09 ([#1105](https://github.com/unisdr/undrr-mangrove/issues/1105)): Refreshed v2 spacing/geometry and aligned auto-styled tags with UI font/modifier rules. Added stronger focus/forced-colour handling for links, disabled hover treatment on static tags, and improved RTL/long-label wrapping behavior.
 
 - **1.1.2** — 2026-09-09 ([#1098](https://github.com/unisdr/undrr-mangrove/issues/1098)): Arabic tag typography now follows the `ui` font role (`Noto Sans Arabic`), and the component-level `:lang(ar)` override was removed. Latin rendering is unchanged.

@@ -307,6 +307,44 @@ Bare `<details>` with Mangrove's baseline styling — native disclosure marker, 
   meta={BaseTypographyStories}
 />
 
+### Accordion pattern (`.mg-accordion`)
+
+Wrap multiple `<details>` elements inside a `.mg-accordion` container for grouped disclosures with flush borders, animated rotating chevrons, and consistent spacing (e.g. FAQ lists, layer toggles, secondary metadata panels).
+
+<Canvas
+  of={BaseTypographyStories.TypographyAccordion}
+  meta={BaseTypographyStories}
+/>
+
+```html
+<div class="mg-accordion">
+  <details open>
+    <summary>First section</summary>
+    <div>
+      <p>Panel content goes here.</p>
+    </div>
+  </details>
+  <details>
+    <summary>Second section</summary>
+    <div>
+      <p>Panel content goes here.</p>
+    </div>
+  </details>
+</div>
+```
+
+Use `.mg-accordion--flush` to remove lateral borders when nesting inside sidebars, cards, or narrow panels:
+
+<Canvas
+  of={BaseTypographyStories.TypographyAccordionFlush}
+  meta={BaseTypographyStories}
+/>
+
+> **Accordion vs. Stacked Tabs:**
+>
+> - Use `.mg-accordion` for lightweight, zero-JavaScript content disclosures using native HTML `<details>` and `<summary>` where multiple sections can be opened simultaneously (e.g. FAQs, nested filter panels, progressive metadata).
+> - For mutually exclusive panels requiring strict single-tab visibility and full WAI-ARIA keyboard navigation (arrow keys, `role="tablist"`, `role="tab"`, `role="tabpanel"`), see the **[Tabs component (Stacked tabs)](?path=/docs/components-tab--docs#stacked-tabs)**.
+
 <Anchor storyId="foundation-typography-basetypography--figcaption" />
 
 ## Figcaption
@@ -671,6 +709,7 @@ export const getCaptionForLocaleList = locale => {
 
 ## Changelog
 
+- **2.4.0** — 2026-09-16 ([#1157](https://github.com/unisdr/undrr-mangrove/pull/1157)): Added the `.mg-accordion` and `.mg-accordion--flush` patterns for grouped `<details>` disclosures with flush border dividers, animated rotating chevrons, and nested layer support.
 - **2.3.1** — 2026-09-08 ([#1092](https://github.com/unisdr/undrr-mangrove/issues/1092)): Arabic typography now follows the computed language of each element rather than the page root, so a `lang="en"` island inside an Arabic page renders in the Latin families.
 - **2.3** — 2026-09-01 ([#1086](https://github.com/unisdr/undrr-mangrove/pull/1086)): Aligned the enhanced `.mg-details` disclosure marker with stacked tabs by replacing directional triangles with tokenised circular plus/minus controls, logical RTL positioning, a 48px summary target, and tactile hover/press states. Bare `<details>` retains its native marker.
   - Refined inline code as a compact theme-aware technical surface with interactive-colour tinting, shared radius semantics, a modern system-monospace stack, disabled ligatures, and coherent decoration when snippets wrap.
