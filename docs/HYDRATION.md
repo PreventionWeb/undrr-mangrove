@@ -29,8 +29,8 @@ Related: [GitHub issue #803](https://github.com/unisdr/undrr-mangrove/issues/803
 <section data-mg-share-buttons data-main-label="Share this"></section>
 
 <script type="module">
-  import createHydrator from 'https://assets.undrr.org/mangrove/2.0.0-beta.3/components/hydrate.js';
-  import ShareButtons, { fromElement } from 'https://assets.undrr.org/mangrove/2.0.0-beta.3/components/ShareButtons.js';
+  import createHydrator from 'https://assets.undrr.org/mangrove/2.0.0-rc.1/components/hydrate.js';
+  import ShareButtons, { fromElement } from 'https://assets.undrr.org/mangrove/2.0.0-rc.1/components/ShareButtons.js';
   createHydrator({ selector: '[data-mg-share-buttons]', component: ShareButtons, fromElement });
 </script>
 ```
@@ -122,7 +122,7 @@ Returns: `{ roots, update, unmountAll }`
 | SyndicationSearchWidget | Complex | `[data-mg-search-widget]` | `data-search-endpoint`, `data-results-per-page`, `data-default-filters` (JSON) |
 | Pager | Medium | `[data-mg-pager]` | `data-page`, `data-total-pages`, `data-show-jump-to`, `data-aria-label` |
 
-> **Note on Micro-Interactions**: For lightweight interactions like `CopyButton`, Mangrove also provides a **zero-dependency vanilla JS script** (`dist/js/copy-button.min.js` or CDN `/js/copy-button.js`) with 0 kB React runtime requirement. Use React hydration when your architecture standardizes on `createHydrator`, or use the standalone script for pure HTML/PHP/Twig sites.
+> **Note on Micro-Interactions**: For lightweight interactions like `CopyButton`, Mangrove also provides a **zero-dependency vanilla JS script** (`js/copy-button.js` in the npm package, or `/js/copy-button.js` on the CDN) with 0 kB React runtime requirement. Use React hydration when your architecture standardizes on `createHydrator`, or use the standalone script for pure HTML/PHP/Twig sites.
 
 Tier definitions:
 - **Simple**: scalar attributes
