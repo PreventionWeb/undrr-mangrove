@@ -1,8 +1,8 @@
 /*!
  * UNDRR Mangrove component library
- * Storybook:    https://preventionweb.github.io/undrr-mangrove/
- * LLMs context: https://preventionweb.github.io/undrr-mangrove/llms.txt
+ * Storybook:    https://mangrove.undrr.org/
+ * LLMs context: https://mangrove.undrr.org/llms.txt
  * Repository:   https://github.com/unisdr/undrr-mangrove
- * Compiled on:  2026-09-17T14:43:04.548Z
+ * Compiled on:  2026-09-17T17:02:14.042Z
  */
 import{default as r}from"react";import{createRoot as e}from"react-dom/client";const o=Symbol.for("undrr.mangrove.hydrate.rootCounter");function t(){const r=globalThis[o],e=Number.isSafeInteger(r)&&r>=0?r:0;return globalThis[o]=e+1,e}function n({selector:o,component:n,fromElement:a,options:c={}}){const{clearContainer:l=!0,debugLabel:i=o,onError:u,identifierPrefix:s}=c,d=n?.default??n,m=s??o.replace(/[[\]\.#=>"' ]/g,"").replace(/^data-mg-?/,"mg-"),f=[];function g(n=document){const c=n.querySelectorAll(o),s=[];return c.forEach((o,n)=>{if("true"===o.dataset.mgHydrated)return;const c=l?o.innerHTML:null;try{const c=a(o);l&&(o.innerHTML="");const g=e(o,{identifierPrefix:`${m}-${t()}-`,onCaughtError(r,e){console.error(`[${i}] Caught error in container #${n}:`,r,e),u&&u(r,o)},onUncaughtError(r,e){console.error(`[${i}] Uncaught error in container #${n}:`,r,e),u&&u(r,o)},onRecoverableError(r){console.warn(`[${i}] Recoverable error in container #${n}:`,r)}});g.render(r.createElement(d,c)),o.dataset.mgHydrated="true",f.push({root:g,container:o}),s.push(g)}catch(r){console.error(`[${i}] Container #${n}:`,r),null!==c&&(o.innerHTML=c),u&&u(r,o)}}),s}return g(),{get roots(){return f.map(r=>r.root)},update:g,unmountAll(){f.forEach(({root:r,container:e})=>{r.unmount(),delete e.dataset.mgHydrated}),f.length=0}}}export{n as default};
