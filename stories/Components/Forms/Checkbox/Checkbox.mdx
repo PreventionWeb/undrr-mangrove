@@ -78,6 +78,89 @@ Disabled state (use the HTML `disabled` attribute, not CSS-only styling):
 
 > **Note:** The native `<input type="checkbox">` manages the checked/unchecked state for assistive technologies automatically. When toggling the switch via JavaScript, update the `checked` property on the input element rather than managing `aria-checked` separately.
 
+### Error state
+
+The switch shows an error the same way every other control in Mangrove does: `aria-invalid="true"` on the input, a red boundary on the control, and a `.mg-form-error` message joined to it with `aria-describedby`. A consumer who has used the error state on a text input has nothing new to learn here, and `FormErrorSummary` links to the switch by `id` exactly as it links to any other field.
+
+The story below shows a switch and a text input in error side by side.
+
+<Canvas of={CheckboxStories.SwitchError} />
+
+```html
+<label class="mg-switch">
+  <input
+    type="checkbox"
+    role="switch"
+    class="mg-switch__input"
+    id="hazard-layer"
+    aria-invalid="true"
+    aria-describedby="hazard-layer-error"
+    checked
+  />
+  <span class="mg-switch__track" aria-hidden="true">
+    <span class="mg-switch__thumb"></span>
+  </span>
+  <span class="mg-switch__label">Seismic hazard layer</span>
+</label>
+<p class="mg-form-error" id="hazard-layer-error" role="alert">
+  This layer could not load. Try again.
+</p>
+```
+
+Three markups are styled, in that order of preference:
+
+| Markup                                 | Use it when                                                                                               |
+| -------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `aria-invalid="true"` on the input     | Always, if you can. It is the only one assistive technology can see, so the other two are cosmetic alone. |
+| `mg-switch__input--error` on the input | The `--error` element modifier the other controls carry. Add `aria-invalid` as well.                      |
+| `mg-switch--error` on the label        | Your template can only reach the label, as with `.mg-switch--pending`. Add `aria-invalid` as well.        |
+
+Notes on using it:
+
+- **Keep the message outside the `<label>`.** Anything inside the label becomes part of the switch's accessible name.
+- **The switch stays where the user put it.** Unlike the pending state, the error state does not move the thumb. For "the thing this switch controls failed", that is usually what you want: a controller whose latest intent wins would contradict the user by reverting. If the change itself failed to save and you are reverting, use the pending helper, which moves the switch back and announces the failure — see below.
+- **The boundary is the track's inset, coloured.** The track carries its inset as a transparent border, so the error is a `border-color` change and nothing else. It cannot displace the focus ring, which is an outline plus a separator band. Do not paint an error with `box-shadow` on the track: that band is a `box-shadow`, and a consumer rule at the same specificity replaces it.
+- **Forced colours.** The track sets `forced-color-adjust: none`, so an author red would be painted unchanged while every state around it adapts. Mangrove's own error state goes back to `CanvasText` and shows a dashed edge instead, which survives a palette with no red in it.
+- Set `--mg-switch-track-border-color--error` to change the colour.
+
+### Size
+
+Every length in the switch derives from one custom property, so a smaller or larger switch means setting a number, never re-declaring the thumb's `transform`. Overriding the transform is the trap this replaced: Mangrove pairs its own travel with a `[dir="rtl"]` counterpart, and a consumer rule of equal specificity wins in both directions, so the thumb slid the wrong way by the wrong distance in Arabic.
+
+<Canvas of={CheckboxStories.SwitchSizes} />
+
+There is a shared small size for a toolbar, a table row or a panel header. Prefer it to a size of your own:
+
+```html
+<label class="mg-switch mg-switch--small">
+  <input type="checkbox" role="switch" class="mg-switch__input" />
+  <span class="mg-switch__track" aria-hidden="true">
+    <span class="mg-switch__thumb"></span>
+  </span>
+  <span class="mg-switch__label">Show disabled layers</span>
+</label>
+```
+
+For any other size, set `--mg-switch-size` on the switch or on any ancestor:
+
+```css
+.panel-header .mg-switch {
+  --mg-switch-size: 1.125rem;
+}
+```
+
+| Custom property                 | Default                            | What it sets                                                          |
+| ------------------------------- | ---------------------------------- | --------------------------------------------------------------------- |
+| `--mg-switch-size`              | `1.5rem` (24px)                    | The whole switch. Set this one unless you need a part on its own.     |
+| `--mg-switch-track-block-size`  | `--mg-switch-size`                 | The track's height                                                    |
+| `--mg-switch-track-inline-size` | `1.75 ×` the track's block size    | The track's width                                                     |
+| `--mg-switch-track-inset`       | `1/12` of the track's block size   | The space around the thumb, drawn as a border the error state colours |
+| `--mg-switch-thumb-size`        | The block size less its two insets | The thumb                                                             |
+
+The thumb's travel is the track's inline size less the thumb and its two insets, in both directions, and the pending ring is a fraction of the thumb, so all of it follows whatever you set. `.mg-switch--small` sets `--mg-switch-size: 1.125rem` and tightens the row gap to match; it re-declares no length inside the switch.
+
+Two things do not scale, deliberately: the row keeps its `36px` minimum height, so a small switch still has a large enough target (WCAG 2.5.8), and the focus ring keeps its standard width.
+
 ### Pending state
 
 Use the pending state when flipping a switch starts something that takes a moment to confirm, such as saving a setting to a server. It works in both directions: off to on, and on to off.
@@ -317,7 +400,7 @@ Some apps are latest-intent-wins: the control shows what the user last asked for
 
 The switch then keeps the requested position when a save fails, and the helper sets `aria-invalid="true"` on the input, because the position no longer matches what is saved. It is undone when the next save starts, and by `destroy()`: whatever the input had there before, including nothing, is put back, so an `aria-invalid` the page set itself survives the failure.
 
-`aria-invalid` alone is not enough. It tells assistive technology that the value is not accepted and gives you a CSS hook (`.mg-switch__input[aria-invalid='true']`), but it is not a visible state, and it does not say what went wrong or how to try again. Handle `mg-switch:failed` and put a message next to the switch, in the row or region the switch controls. Its `detail.reverted` says which of the two happened.
+`aria-invalid` alone is not enough. It tells assistive technology that the value is not accepted and gives you a CSS hook (`.mg-switch__input[aria-invalid='true']`), and it now also turns on the switch's error state, so the track takes its red boundary. What it does not do is say what went wrong or how to try again — and a boundary on its own is colour alone, so the message is not optional. Handle `mg-switch:failed` and put a message next to the switch, in the row or region the switch controls. Its `detail.reverted` says which of the two happened.
 
 ```js
 mgSwitchPending(input, {
@@ -434,11 +517,12 @@ An announcer takes no `save`, `timeout`, `revert` or `signal`: there is no save 
 
 **Theming**
 
-The switch reads these custom properties, each with the default shown. Set them on the switch or on any ancestor, such as a region of the page or a theme wrapper.
+The switch reads these custom properties, each with the default shown. Set them on the switch or on any ancestor, such as a region of the page or a theme wrapper. The size hooks are listed under [Size](#size).
 
 | Custom property                         | Default                                  |
 | --------------------------------------- | ---------------------------------------- |
 | `--mg-switch-track-background`          | `rgb(var(--mg-color-neutral-400))`       |
+| `--mg-switch-track-border-color--error` | `rgb(var(--mg-color-red-900))`           |
 | `--mg-switch-track-background--checked` | `rgb(var(--mg-color-interactive))`       |
 | `--mg-switch-thumb-background`          | `rgb(var(--mg-color-neutral-0))`         |
 | `--mg-switch-track-overlay--pending`    | `rgb(var(--mg-color-neutral-500) / 0.4)` |
@@ -460,6 +544,13 @@ Keep the ring at 3:1 or more against the thumb, and the thumb at 3:1 or more aga
 
 ## Changelog
 
+- **2.4** — 2026-09-18 ([#1214](https://github.com/unisdr/undrr-mangrove/pull/1214)): Gave `.mg-switch` an error state and size hooks. A default switch renders exactly as before.
+  - Error state ([#1187](https://github.com/unisdr/undrr-mangrove/issues/1187)): `aria-invalid="true"` on the input, `.mg-switch__input--error`, or `.mg-switch--error` on the label, each giving the track a red boundary, with a `.mg-form-error` message joined by `aria-describedby` — the same pattern, class naming and error summary relationship as the text input, select, radio and checkbox. Unlike the pending state it does not move the thumb, so a controller whose latest intent wins does not contradict the user. `--mg-switch-track-border-color--error` sets the colour.
+  - The track's inset around the thumb is now a transparent border rather than padding. The box, the thumb and the travel are unchanged; the error state has a `border-color` to set, so it cannot displace the focus ring's outline and separator band the way a consumer `box-shadow` did. In forced colours, where the track opts out of colour forcing, the error is `CanvasText` and a dashed edge instead of an author red.
+  - Size hooks ([#1199](https://github.com/unisdr/undrr-mangrove/issues/1199)): `--mg-switch-size` sizes the whole switch, with `--mg-switch-track-inline-size`, `--mg-switch-track-block-size`, `--mg-switch-track-inset` and `--mg-switch-thumb-size` for a single part. The thumb's travel, its RTL counterpart and the pending ring all derive from them, so resizing a switch no longer means re-declaring the `transform` — an override that also beat Mangrove's `[dir="rtl"]` rule and sent the thumb the wrong way in Arabic.
+  - Added `.mg-switch--small` (a 1.125rem switch) for a toolbar, table row or panel header, so a shared size exists instead of each consumer inventing one. The row keeps its 36px minimum height for the touch target.
+  - Forced colours no longer takes 1px off the track's padding to make room for its border; it colours the border the track already has, so the travel holds at any size. The visible boundary is the track's inset rather than a fixed 1px, so at the default size it is 2px rather than 1px.
+  - Added "Switch error" and "Switch sizes" stories. The error story shows a text input in error beside the switch.
 - **2.3** — 2026-09-18 ([#1213](https://github.com/unisdr/undrr-mangrove/pull/1213)): Made revert-on-failure and the timeout optional in `js/switch-pending.js`, and released the announcements on their own ([#1189](https://github.com/unisdr/undrr-mangrove/issues/1189)). Defaults are unchanged. One caveat for existing callers: `timeout: 0` was a silent no-op in rc.2 — it failed a `> 0` check and fell back to the ten-second deadline — so anyone already passing `0`, or a `parseInt` that produced it, loses that safety net and a hung save now leaves the switch busy until `destroy()`.
   - `revert: false` (or `data-mg-switch-revert="false"`) keeps the position the user asked for when a save fails, for apps that report a failure in the row rather than by moving the control. The helper sets `aria-invalid="true"` on the input instead, and puts back whatever was there when the next save starts or on `destroy()`, so an `aria-invalid` the page set itself survives.
   - `timeout: 0` or `Infinity` (or `data-mg-switch-timeout`) switches the deadline off for a save that legitimately runs long. `aria-busy` then stays true until the save settles, so the helper announces "Still saving…" once at ten seconds, where the deadline would have been.
