@@ -94,6 +94,18 @@ export const CommaSeparator = () => (
 CommaSeparator.storyName = 'Comma separator (.mg-u-comma-between)';
 
 /**
+ * These pages inventory every value a colour utility can take. They are not a
+ * list of approved pairings: some swatches below sit below the WCAG AA
+ * contrast threshold at the pairing shown.
+ */
+const ContrastCaveat = () => (
+  <p style={{ fontSize: '0.875rem', margin: '0 0 1rem' }}>
+    <strong>Note:</strong> swatches are shown at their default pairing so the
+    full set of values is visible. Check contrast before using a combination.
+  </p>
+);
+
+/**
  * The orange accent is a non-text colour. No text colour meets WCAG AA on
  * `orange-800` or `orange-900`: white is 2.65 and 2.95 against a 4.5 minimum,
  * and black — which passes WCAG — still misses Mangrove's perceptual body-text
@@ -119,6 +131,8 @@ const OrangeAccentNote = () => (
 export const BackgroundColors = () => (
   <div>
     <h4>Background color utilities</h4>
+
+    <ContrastCaveat />
 
     <h5>Basic colors</h5>
     <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
@@ -342,6 +356,8 @@ export const TextColors = () => (
   <div>
     <h4>Text color utilities</h4>
 
+    <ContrastCaveat />
+
     <h5>Basic colors</h5>
     <div style={{ marginBottom: '1rem' }}>
       <p className="mg-u-color--black">This text is black</p>
@@ -487,6 +503,8 @@ LayoutUtilities.storyName = 'Layout utilities';
 export const CombinedExample = () => (
   <div>
     <h4>Combined utility classes example</h4>
+
+    <ContrastCaveat />
 
     <div
       className="mg-u-background-color--blue-100"

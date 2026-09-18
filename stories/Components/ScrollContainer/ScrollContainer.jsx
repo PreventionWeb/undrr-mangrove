@@ -321,6 +321,7 @@ const ScrollContainer = ({
 ScrollContainer.propTypes = {
   children: PropTypes.node.isRequired,
   height: PropTypes.string,
+  /** Minimum width of the scroll container, e.g. `'320px'`. A value wider than the parent makes the container overflow it; to widen the scrollable track instead, use `itemWidth`. */
   minWidth: PropTypes.string,
   itemWidth: PropTypes.string,
   padding: PropTypes.string,

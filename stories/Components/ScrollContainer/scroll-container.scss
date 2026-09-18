@@ -161,6 +161,13 @@
     }
 
     &--custom-width {
+      // A floor on the scroll box itself, which is what minWidth means. Note
+      // that min-width wins over the max-width: 100% above, so a value larger
+      // than the parent makes this box overflow its parent by design — that
+      // is the point of a minimum. Containing that overflow is the caller's
+      // job; pick a value the layout can afford, or give the parent its own
+      // overflow. To widen the scrollable track instead, size the items with
+      // itemWidth.
       min-width: var(--scroll-min-width, auto);
     }
 

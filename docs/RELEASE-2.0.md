@@ -648,6 +648,41 @@ Two authoring rules changed, and both are in the [review checklist](https://mang
 
 Full reference: [Fonts](https://mangrove.undrr.org/?path=/docs/design-decisions-fonts--docs).
 
+### 9. The four CamelCase SCSS aliases removed
+
+The npm package no longer ships any of the four CamelCase stylesheet aliases. Each existed only to forward to its kebab-case file and `@warn` that it was deprecated; none of them was imported anywhere in the library, because `stories/assets/scss/_components.scss` already imports the kebab-case file directly. They shipped only because `scripts/assemble-npm-package.mjs` copies every `stories/**/*.scss` into the package.
+
+Switch the import path. Nothing else changes: the kebab-case file is the same stylesheet the alias was forwarding to, so the compiled CSS is identical.
+
+| Removed | Import instead |
+|---|---|
+| `scss/Utilities/ShowMore/ShowMore` | `scss/Utilities/ShowMore/show-more` |
+| `scss/Utilities/FullWidth/FullWidth` | `scss/Utilities/FullWidth/full-width` |
+| `scss/Components/TableOfContents/TableOfContents` | `scss/Components/TableOfContents/table-of-contents` |
+| `scss/Components/SyndicationSearchWidget/SyndicationSearchWidget` | `scss/Components/SyndicationSearchWidget/syndication-search-widget` |
+
+```scss
+// Before
+@import "@undrr/undrr-mangrove/scss/Utilities/ShowMore/ShowMore";
+
+// After
+@import "@undrr/undrr-mangrove/scss/Utilities/ShowMore/show-more";
+```
+
+These are per-component partials, so they carry the same prerequisites they always did — importing the alias never avoided them. Import the shared foundation first, as in [Sass integration](https://mangrove.undrr.org/?path=/docs/getting-started-integration-sass-integration--docs):
+
+```scss
+@import "@undrr/undrr-mangrove/scss/assets/scss/variables";
+@import "@undrr/undrr-mangrove/scss/assets/scss/fonts";
+@import "@undrr/undrr-mangrove/scss/assets/scss/breakpoints";
+@import "@undrr/undrr-mangrove/scss/assets/scss/mixins";
+@import "@undrr/undrr-mangrove/scss/assets/scss/foundational";
+```
+
+`syndication-search-widget` needs one more: it `@extend`s `%mg-form-input-base`, so `scss/Components/Forms/form-base` has to be imported before it or Sass fails with "The target selector was not found." That is unchanged from 1.x and applied equally to the alias.
+
+No deprecated CamelCase stylesheet aliases remain in the package.
+
 ## Sub-brand theming migration
 
 **Consuming a compiled sub-brand stylesheet?** You do not touch SCSS at all — just add `class="mg-theme-{brand}"` (e.g. `mg-theme-preventionweb`) to `<body>` or a wrapping element. The compiled CSS already carries the brand block; the class is what activates it. Skip to [Apply the class](#sub-brand-theming-migration) below.

@@ -31,7 +31,7 @@ Sets a custom container height.
 
 ## With minimum width
 
-Sets a minimum container width.
+Sets a minimum width on the container, so it does not collapse below that size in a narrow parent. `min-width` wins over the container's own `max-width: 100%`, so a value wider than the parent makes the container overflow it — the demo below puts it in a parent that contains the overflow. To widen the scrollable track rather than the box, size the items with `itemWidth`.
 
 <Canvas
   of={ScrollContainerStories.WithMinWidth}
@@ -200,6 +200,7 @@ See the [hydration guide](https://github.com/unisdr/undrr-mangrove/blob/main/doc
 
 ## Changelog
 
+- **1.3.3** — 2026-09-17 ([#1193](https://github.com/unisdr/undrr-mangrove/pull/1193)): The "With minimum width" story asked for `minWidth="1500px"` in an unbounded parent, so at 375px the demo pushed the whole page sideways to 1516px. The story now uses a realistic value inside a parent that contains the overflow, and the docs spell out that `min-width` wins over the container's `max-width: 100%` and that `itemWidth` is the lever for widening the scrollable track. Story and documentation only — `minWidth` keeps its documented meaning, a minimum width for the container, and no component behaviour changed.
 - **1.3.2** — 2026-09-15 ([#1153](https://github.com/unisdr/undrr-mangrove/pull/1153)): The desktop scrollbar now has a themed appearance instead of the unstyled browser default — a fixed blue thumb (calm at rest, full colour on hover) and a barely-there translucent track, on `scrollbar-color`/`scrollbar-width` (Firefox) and `::-webkit-scrollbar-*` (Chromium/Safari). Uses fixed literal colours rather than `var(--mg-color-*)` tokens, since at least one WebKit version silently drops the whole declaration if it contains a `var()` value there. Desktop-only in practice; mobile browsers generally hide or ignore scrollbar styling regardless. Known pre-existing limitation noted: macOS Safari below 100% zoom can fail to register clicks on this component's arrow buttons and its native scrollbar, due to a longstanding WebKit viewport-coordinate bug unrelated to this component.
 
 - **1.3.1** — 2026-09-09 ([#1109](https://github.com/unisdr/undrr-mangrove/issues/1109)): Card stories enable the existing `stretchItems` option to demonstrate equal-height rows. The component default remains `false`.
