@@ -258,7 +258,6 @@ function SyndicationSearchWidgetInner() {
       setFacetsTargetEl(el);
     } else {
       setFacetsTargetEl(null);
-      // eslint-disable-next-line no-console
       console.warn(
         `[SyndicationSearchWidget] facetsTarget selector "${facetsTarget}" did not match any element; falling back to in-widget facets layout.`
       );
@@ -281,7 +280,6 @@ function SyndicationSearchWidgetInner() {
       setSearchTargetEl(el);
     } else {
       setSearchTargetEl(null);
-      // eslint-disable-next-line no-console
       console.warn(
         `[SyndicationSearchWidget] searchTarget selector "${searchTarget}" did not match any element; falling back to in-widget search input.`
       );

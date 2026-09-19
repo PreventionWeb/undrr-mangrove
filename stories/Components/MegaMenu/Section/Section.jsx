@@ -127,7 +127,9 @@ export default function Section({
           aria-label={sectionTitle}
           aria-live="polite"
           tabIndex={0}
-          ref={element => (sectionListRef.current[index] = element)}
+          ref={element => {
+            sectionListRef.current[index] = element;
+          }}
           onKeyDown={handleArrowFocus}
           role="region"
         >
@@ -321,7 +323,9 @@ export default function Section({
           aria-live="polite"
           aria-label={sectionTitle}
           tabIndex={0}
-          ref={element => (sectionListRef.current[index] = element)}
+          ref={element => {
+            sectionListRef.current[index] = element;
+          }}
           dangerouslySetInnerHTML={{ __html: section.bannerDescription }}
           onKeyDown={handleArrowFocus}
         />
