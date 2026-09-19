@@ -107,6 +107,7 @@ export const MIN_PROPERTIES = {
   'components-dataviz-legend': 1,
   'components-empty-state': 15,
   'components-forms-checkbox': 13,
+  'components-forms-segmented-control': 2,
   'components-hero-hero': 6,
   'components-icons': 1,
   'components-images-author-image': 3,
@@ -142,6 +143,7 @@ export const OWNERS = {
   'components-dataviz-legend': ['--mg-legend-tick-pos'],
   'components-empty-state': ['--mg-empty-state-'],
   'components-forms-checkbox': ['--mg-switch-'],
+  'components-forms-segmented-control': ['--mg-segmented-control-'],
   'components-hero-hero': ['--mg-hero-'],
   'components-icons': ['--mg-icon-svg'],
   'components-navigation-drawer': ['--mg-drawer-'],
@@ -293,6 +295,12 @@ export const PROPERTY_DOCS = {
   // Reading column
   '--mg-reading-with-contents-width':
     'Maximum inline size of the .mg-reading--with-contents layout: the text measure, the gap and the side rail together.',
+
+  // Segmented control
+  '--mg-segmented-control-min-block-size':
+    'Height of a segment, and with it the touch target. Defaults to 2.75rem (44px), the recommended target; .mg-segmented-control--small sets it to 2.25rem (36px) on the fieldset itself, so a small control is resized on that element or by dropping the modifier.',
+  '--mg-segmented-control-radius':
+    'Corner radius of the two ends of the row. Defaults to --mg-radius-button, so a segmented control keeps the button radius of whichever theme wraps it. Only the first and last segment are rounded, with logical corners, so the row mirrors under dir="rtl".',
 
   // ShowMore
   '--mg-show-more-height':
