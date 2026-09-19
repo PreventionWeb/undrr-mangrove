@@ -94,6 +94,157 @@ calibrates the measure on dark backgrounds; treat those scores as indicative.
 - Where the two measures disagree, that pair is worth a human look. That is the
   signal this approach exists to produce.
 
+## The hero scrim
+
+Everything above measures token pairs. A hero does not have one. It composites a
+gradient over an editorial photograph the component never sees, so what the copy
+is actually read against is decided by whoever uploaded the image. No entry in
+the register can express that, which is why the hero was green in the register
+and failing on screen.
+
+### What was measured, and how
+
+`Hero` was rendered in all five themes with a real photograph, screenshotted a
+second time with the copy set to `transparent`, and every painted pixel behind
+each line box of the label, title and summary sampled. The worst pixel behind
+each block is the one the criterion applies to. Do this, not a token
+calculation, whenever a change touches a hero gradient.
+
+The result, for body copy over a bright sky (unisdr/undrr-mangrove#1256):
+
+| Theme | Before | After |
+|---|---|---|
+| IRP | 3.91 fail | 5.14 pass |
+| PreventionWeb | 5.07 | 6.47 |
+| UNDRR | 6.33 | 7.83 |
+| DELTA | 6.32 | 7.82 |
+| MCR2030 | 8.87 | 10.35 |
+
+**Read the "before" column as a property of that photograph, not of those
+themes.** One image is not a test set, and a fixed-opacity veil fails on the
+image, not on the brand. Re-measured against a synthetic near-white background
+(`248 249 250` — a high-key sky, a sand or snow scene, a white studio wall), the
+worst line box behind body copy before the scrim was IRP 2.51, PreventionWeb
+2.91, UNDRR 3.34, MCR2030 4.06, DELTA 4.33: **all five themes fail**, IRP merely
+fails first and on ordinary photographs. The "four themes that already passed"
+is true of the photograph that was sampled and of nothing else, and anyone
+scoping a future fix to IRP on the strength of that row will be scoping it
+wrong.
+
+The point of the scrim is that the "after" column is not photograph-dependent in
+the same way. At the copy's trailing edge the tint is at exactly its middle
+opacity and the scrim at exactly 0.16 whatever the viewport, so the floor can be
+solved rather than sampled: over a **pure white** background the worst
+attainable ratio is IRP 4.71, PreventionWeb 5.82, UNDRR and DELTA 6.96,
+MCR2030 9.05. That is the guarantee — no photograph can do worse.
+
+It also sets the scrim's value. Solving the same equation the other way, the
+minimum scrim that holds 4.5:1 over pure white is **0.137 for IRP**, 0.015 for
+PreventionWeb and 0 for the other three. `0.16` is that floor plus 0.023 of
+headroom; it is the lightest scrim that works, not a round number, and there is
+no room to reduce it for the photograph's sake without giving up the guarantee
+on IRP.
+
+### What the band depends on
+
+The band holds at full strength from the veil's leading edge to
+`--mg-hero-copy-inline-end` and clears beyond it. Two things have to stay true
+for that to keep meaning "across the copy", and both are now enforced rather
+than assumed:
+
+- **The copy must stay inside the copy column.** `.mg-hero__title` and
+  `.mg-hero__label` are `display: inline-block`, and `overflow-wrap: break-word`
+  does not reduce a box's min-content size — so a single unbreakable word sized
+  the title past the overlay. A 48-character German compound put 259px of glyphs
+  outside the band at both 1440px and 1920px, 99px of it past the scrim's fade
+  and over the bare photograph. `max-width: 100%` plus `min-width: 0` on the
+  grid chain cap the box so the inherited `break-word` applies.
+- **The band must not be wider than the element.**
+  `--mg-hero-copy-inline-start` is viewport-derived (`50vw - container/2`), which
+  is only the same thing as an element offset in the full-bleed case.
+  `--mg-hero--contained` sets `padding-inline: 0` and takes its parent's width,
+  so it zeroes the property too, and `--mg-hero-copy-inline-end` is wrapped in
+  `min(100%, …)`. Without both, a contained hero at a wide viewport kept a
+  240px offset the copy no longer had, and any contained hero narrower than the
+  band lost its photograph entirely — the tint's middle stop sat past 100%, so
+  the tint never reached `--mg-hero-gradient-end`.
+
+### Why the tint could not fix it
+
+The obvious repair is to turn the brand tint up until the photograph stops
+showing through. It does not work, and the reason is worth stating because it
+will be proposed again.
+
+IRP's hero surface measures **4.71 against white at full opacity**. That is the
+flat-fill figure the register already records, and it passes — by 0.21. So the
+colour has no headroom to spend: any translucency at all, over any photograph
+brighter than the tint, spends more than 0.21 and the copy fails. Turning the
+tint to fully opaque would buy exactly 4.71, still with no margin, at the cost
+of the photograph the hero exists to show. Repointing `--mg-color-hero` at
+IRP's deeper blue (`13 103 163`, 6.02 flat) was also measured and still lands
+at 4.46 under the same gradient.
+
+The guarantee therefore cannot come from a brand colour. It has to come from a
+neutral darkening layer over the whole composite, whose effect does not depend
+on which blue, teal or purple the theme happens to use.
+
+### What the veil does now
+
+`hero.scss` paints two layers in one pseudo-element, via the `mg-hero-veil`
+mixin:
+
+1. the brand tint, as before; and
+2. a **scrim** above it — `--mg-hero-scrim-color` (neutral-900) at
+   `--mg-hero-scrim-opacity` (0.16).
+
+Both layers hold at full strength across the copy and then clear over
+`--mg-hero-scrim-fade`. "Across the copy" is not a guessed percentage: both read
+`--mg-hero-copy-inline-end`, which is derived from the same
+`--mg-hero-copy-inline-start` the hero's padding uses and from
+`--mg-hero-overlay-max-width`. Change where the copy sits, or how wide it is,
+and the protected band follows. The tint's old fixed 48% midpoint happened to
+land near the copy's trailing edge at 1440px and nowhere else; at 910px the copy
+ran two thirds of the way across the frame, into tint that had already fallen to
+about 0.56.
+
+Brand cost, and it is a real one: the copy band in every theme is about 16%
+deeper than before. On IRP that lands the tinted band almost exactly on the
+brand's own `13 103 163`. The photograph beyond the copy is untouched, and in
+practice is slightly clearer than before because the fade now starts at the
+copy's edge rather than at a fixed 48%.
+
+### Still open: the vertical veil below 900px
+
+Below the tablet breakpoint the veil runs bottom-to-top and the copy fills the
+frame, so the label sits at the top where the tint is down to its end opacity of
+0.08. **All five themes fail there**, between 2.4 and 3.1 against a bright sky,
+and they failed before this work too (1.7 to 2.8). The scrim improves every
+theme but does not rescue any of them: no scrim light enough to leave the
+photograph visible can make up a tint that has effectively cleared.
+
+Note what that costs. Below 900px the scrim is held flat across the whole
+height — there is nowhere it could clear without clearing over copy — so on
+mobile the photograph *is* 16% deeper everywhere, and it buys an improvement
+that still does not reach AA. That is a deliberate trade and not a free one:
+keep it because a 1.7:1 failure moved to 2.4:1 is worth something to a real
+reader, but do not read "the photograph beyond the copy is untouched" as
+applying below the tablet breakpoint. It does not.
+
+This is not a tuning problem. The layout puts copy over the whole frame, so
+either the photograph is veiled across the whole frame or some of the copy is
+unreadable; there is no third option, and picking between them is a design
+decision across five brands. The options, costed:
+
+- **Hold the tint across the full height** (vertical midpoint to 100%). Cheapest
+  to implement, strongest guarantee, and the mobile hero becomes a tinted panel
+  with the photograph barely legible.
+- **Raise the scrim on mobile only**, to roughly 0.44. Keeps the brand tint's
+  shape and keeps the photograph readable as an image, at the cost of a visibly
+  darker mobile hero in every theme.
+- **Move the copy off the top of the frame** so the veil's strong end is under
+  it. A layout change rather than a colour one, and the only option that costs
+  the photograph nothing.
+
 ## How colour-vision separation is measured
 
 Contrast and colour-vision separation are different questions. The measure above
