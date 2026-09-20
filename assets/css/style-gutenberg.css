@@ -15,7 +15,7 @@
  * Storybook:    https://mangrove.undrr.org/
  * LLMs context: https://mangrove.undrr.org/llms.txt
  * Repository:   https://github.com/unisdr/undrr-mangrove
- * Version: 2.0.0-rc.2
+ * Version: 2.0.0-rc.3
  *
  *   ██╗   ██╗███╗   ██╗██████╗ ██████╗ ██████╗
  *   ██║   ██║████╗  ██║██╔══██╗██╔══██╗██╔══██╗
@@ -353,7 +353,7 @@
 
 /* An Arabic sub-root inside an otherwise Latin page. */:where(:not(:lang(ar)))>:where([lang]:not([lang=""]):lang(ar)){--mg-font-family-text:"Noto Sans Arabic",sans-serif;--mg-font-family-heading:"Noto Kufi Arabic",sans-serif;--mg-font-family-display:"Noto Kufi Arabic",sans-serif;--mg-font-family-ui:"Noto Sans Arabic",sans-serif;font-family:var(--mg-font-family-text)}
 
-/* A non-Arabic sub-root inside an Arabic page. */:where(:lang(ar))>:where([lang]:not([lang=""],:lang(ar))){--mg-font-family-text:"Roboto",sans-serif;--mg-font-family-heading:"Roboto",sans-serif;--mg-font-family-display:"Roboto Condensed",sans-serif;--mg-font-family-ui:"Roboto Condensed",sans-serif;font-family:var(--mg-font-family-text)}
+/* A non-Arabic sub-root inside an Arabic page. */:where(:lang(ar))>:where([lang]:not([lang=""],:lang(ar))){--mg-font-family-text:"Roboto",sans-serif;--mg-font-family-heading:"Roboto",sans-serif;--mg-font-family-display:"Roboto Condensed",sans-serif;--mg-font-family-ui:"Roboto Condensed",sans-serif;font-family:var(--mg-font-family-text)}:lang(ar),:lang(ar):after,:lang(ar):before{letter-spacing:normal!important}
 
 /* mixing  end */
 /* placeholder start */
