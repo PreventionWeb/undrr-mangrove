@@ -72,7 +72,14 @@ export const DefaultShowMore = {
           padding: '1rem',
         }}
       >
-        <ShowMore data={caption}></ShowMore>
+        <ShowMore
+          data={caption}
+          {...(locale === 'arabic'
+            ? { labelCollapsed: 'عرض المزيد', labelOpen: 'عرض أقل' }
+            : locale === 'japanese'
+              ? { labelCollapsed: 'もっと見る', labelOpen: '表示を減らす' }
+              : {})}
+        />
       </div>
     );
   },
