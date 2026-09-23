@@ -30,6 +30,7 @@ This guide helps anyone contributing to Mangrove write interface copy, documenta
 - Avoid idioms, colloquialisms, and culturally specific metaphors.
 - Provide alt text and meaningful, descriptive link text.
 - Reference: [Microsoft writing style guide — inclusive communication](https://learn.microsoft.com/style-guide/inclusive-communication/)
+- Reference: [United Nations Editorial Manual](https://www.un.org/dgacm/en/content/editorial-manual) — the canonical UN system source for capitalization, punctuation, numbers/dates, and gender- and disability-inclusive language rules.
 
 ## Say the right thing at the right time
 
@@ -153,6 +154,7 @@ Reference: [UN disability‑inclusive communications guidelines (PDF)](https://d
 - Avoid euphemisms (for example, “special needs,” “differently abled”) and ableist terms or metaphors (for example, “crazy,” “OCD”).
 - Use plain language and logical structure with clear headings.
 - Provide accessible multilingual formats as needed (for example, sign language, Braille, large print, easy‑to‑read versions).
+- For the concrete recommended-vs-avoid terminology table, see [Editorial manual — Disability-inclusive language](EDITORIAL-MANUAL.md#disability-inclusive-language).
 
 #### Visual and audio design
 
@@ -184,6 +186,7 @@ Reference: [UN disability‑inclusive communications guidelines (PDF)](https://d
 ## Related documentation
 
 - [Writing guidelines (short)](WRITING-SHORT.md) — quick-reference version of these rules
+- [Editorial manual](EDITORIAL-MANUAL.md) — mechanical style rules (capitalization, punctuation, numbers, abbreviations, italics, spelling), credited to UN system sources
 - [Review checklist](REVIEW-CHECKLIST.md) — pre-submission component checklist
 - [Component guide](COMPONENT-GUIDE.md) — step-by-step tutorial for building a component
 
