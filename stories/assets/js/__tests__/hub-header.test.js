@@ -256,9 +256,7 @@ describe('mgHubHeader lifecycle', () => {
     const root = render();
     mgHubHeader(root)();
     expect(root.querySelector('[data-hub-current], [aria-current]')).toBeNull();
-    expect(
-      root.querySelector('.mg-hub-header__nav-item--ancestor')
-    ).toBeNull();
+    expect(root.querySelector('.mg-hub-header__nav-item--ancestor')).toBeNull();
     at('/monitor/data');
     cleanup = mgHubHeader(root);
     expect(link('/monitor/data').getAttribute('aria-current')).toBe('page');
