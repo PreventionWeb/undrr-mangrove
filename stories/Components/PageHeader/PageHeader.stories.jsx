@@ -69,10 +69,10 @@ export const WithCustomLanguages = {
   args: {
     variant: 'default',
     languages: [
-      { value: 'ch', label: 'Cheese speak', selected: true },
-      { value: 'es', label: 'Español' },
-      { value: 'fr', label: 'Français' },
       { value: 'ar', label: 'العربية' },
+      { value: 'fr', label: 'Français' },
+      { value: 'pt', label: 'Português', selected: true },
+      { value: 'es', label: 'Español' },
     ],
   },
 };
