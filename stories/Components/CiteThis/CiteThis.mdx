@@ -1,0 +1,133 @@
+import { Meta, Canvas } from '@storybook/addon-docs/blocks';
+import * as CiteThisStories from './CiteThis.stories';
+
+<Meta of={CiteThisStories} />
+
+> If you are creating or modifying this component, see the [review checklist](https://mangrove.undrr.org/?path=/docs/contributing-build-a-component-review-checklist--docs) for Mangrove's component standards.
+
+# Cite this
+
+A Cite this button opens a citation dialog on article, terminology, HIP and publication detail pages. The publishing site decides where to show it; Mangrove formats available data and provides copying.
+
+## Vanilla HTML page fallback
+
+Drop the single HTML element shown below into a page and load `js/cite-this.js`. With no citation fields, the script uses the page's title, site name and canonical URL. It includes the access date because no publication year is known. In Storybook, the result cites Storybook's preview iframe; on a site, it cites that page.
+
+<Canvas of={CiteThisStories.BarePageFallback} sourceState="shown" />
+
+This shortest form needs JavaScript to display anything. For a citation that stays readable without JavaScript, render the full HTML with citation text as shown under **Vanilla HTML** below.
+
+## Page title and site overrides
+
+The site can supply a cleaner title and site name while leaving the URL and access date to the page fallback.
+
+<Canvas of={CiteThisStories.PageWithOverrides} />
+
+## Configured publication metadata
+
+The site supplies the title, author, publisher, year and publication URL. These fields override matching structured data.
+
+<Canvas of={CiteThisStories.Metadata} />
+
+## Matching Schema.org work
+
+When the page has a matching JSON-LD work, the citation can use its publication details without a separate configuration.
+
+<Canvas of={CiteThisStories.SchemaMetadata} />
+
+## Publisher citation
+
+Use an approved citation supplied by the publisher or editor when one exists. Mangrove displays and copies that text unchanged.
+
+<Canvas of={CiteThisStories.PublisherCitation} />
+
+## Long citation
+
+Long titles, multiple creators and URLs wrap within the dialog, including on narrow screens.
+
+<Canvas of={CiteThisStories.LongCitation} />
+
+## Citation source
+
+The component uses the first available source:
+
+1. An editorially supplied citation (`data-mg-cite-this-citation`). Mangrove displays and copies it unchanged.
+2. Configured fields on the element (`data-mg-cite-this-title`, `-author`, `-publisher`, `-year`, `-url`, `-site`). These take precedence over matching structured data.
+3. A `CreativeWork`, `Article`, `ScholarlyArticle`, `Book`, `Chapter`, `Report`, `NewsArticle`, `TechArticle` or `WebPage` JSON-LD entity whose URL, ID or `mainEntityOfPage` matches the page's canonical URL. A work nested as that `WebPage`'s `mainEntity` also qualifies.
+4. Page title, site name and canonical URL. If no publication year is known, the citation states the access date rather than inventing a publication date.
+
+Generated citations follow a simple UN website-materials form: creator and year where known, quoted title, publisher, and URL. The page fallback includes an access date. **The consuming site's editors should review this template before presenting generated text as an approved publication citation.** Published works with an official suggested citation should supply that text explicitly.
+
+The page's URL is a locator. A publication citation describes the publication, and a HIP citation should identify its profile and edition. Schema.org's `citation` field lists works referenced _by_ a work; it is not read as that work's recommended citation.
+
+An authored canonical link or configured citation URL keeps its query string, because it may identify the work. When no canonical link exists, the browser URL's query string is omitted from the page fallback. Analytics events omit query strings even when the citation itself includes one.
+
+## Vanilla HTML
+
+The shortest integration is `<div class="mg-cite-this" data-mg-cite-this></div>` plus the module script. If JavaScript is unavailable, that empty marker has no visible citation. To keep a citation readable without JavaScript, render the full HTML on the server, including citation text when it is known. JavaScript replaces the disclosure with a button and native dialog, resolves the citation, adds copy behavior, and emits events. The copy button is hidden until the script starts.
+
+```html
+<div
+  class="mg-cite-this"
+  data-mg-cite-this
+  data-mg-cite-this-title="Response"
+  data-mg-cite-this-author="United Nations Office for Disaster Risk Reduction"
+  data-mg-cite-this-year="2017"
+  data-mg-cite-this-publisher="UNDRR"
+>
+  <details class="mg-cite-this__fallback">
+    <summary class="mg-cite-this__summary">Cite this</summary>
+    <div class="mg-cite-this__content">
+      <p class="mg-cite-this__text mg-code" data-mg-cite-this-text>
+        United Nations Office for Disaster Risk Reduction (2017), “Response”,
+        UNDRR, https://www.undrr.org/terminology/response.
+      </p>
+      <div class="mg-cite-this__actions">
+        <button
+          type="button"
+          class="mg-cite-this__copy"
+          data-mg-cite-this-copy
+          hidden
+        >
+          Copy citation
+        </button>
+        <span
+          class="mg-cite-this__status"
+          data-mg-cite-this-status
+          role="status"
+          aria-live="polite"
+        ></span>
+      </div>
+    </div>
+  </details>
+</div>
+<script
+  type="module"
+  src="https://assets.undrr.org/mangrove/2.0.0/js/cite-this.js"
+></script>
+```
+
+For Drupal behaviors or client-side navigation, call `mgCiteThis(context)` after insertion and `mgCiteThisDestroy(context)` before removal. Initialisation is idempotent and also runs on page load. The published module is `@undrr/undrr-mangrove/js/cite-this.js`.
+
+All strings can be translated in the server markup. For the empty-marker version, set `data-mg-cite-this-label` and `data-mg-cite-this-copy-label` for its generated button labels. Set `data-mg-cite-this-close-label` for the icon button's accessible name, plus `data-mg-cite-this-copied-label` and `data-mg-cite-this-failed-label` for feedback. If using an automatic citation, set the document's `lang` attribute to format the access date. The citation text uses Mangrove's `mg-code` style and remains selectable.
+
+## Analytics
+
+The element dispatches bubbling `mg-cite-this:open`, `mg-cite-this:copy` (after successful clipboard write) and `mg-cite-this:copy-error` events. Each event has `detail.source` (`provided`, `metadata`, `schema`, or `page`) and a query-free `detail.url`. The consuming site maps these to GA4 through its consent-aware analytics setup. Mangrove itself sends nothing to Google.
+
+```js
+document.addEventListener('mg-cite-this:copy', event => {
+  analytics.track('citation_copy', {
+    citation_source: event.detail.source,
+    page_url: event.detail.url,
+  });
+});
+```
+
+## Accessibility
+
+The enhanced button opens a native modal dialog. Focus moves to its title, stays in the dialog while it is open, and returns to the button when closed with Escape or the named close icon button. The close control uses Mangrove's shared `mg-icon-button` and `mg-icon-close` styles. Without JavaScript, native `details` and `summary` provide disclosure keyboard behavior. The copy button appears only when the JavaScript enhancement is active. Copy success and failure are announced in a polite live region. The citation is always selectable text.
+
+## Changelog
+
+- **1.0.0**, 2026-09-25 ([web-backlog#334](https://gitlab.com/undrr/web-backlog/-/work_items/334)): Initial vanilla citation button and dialog with editorial, metadata, JSON-LD and page fallbacks, copy feedback, analytics events, labelled Storybook examples, and a zero-configuration HTML marker.
