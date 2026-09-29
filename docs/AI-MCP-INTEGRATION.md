@@ -161,6 +161,13 @@ A structured [`llms.json`](https://mangrove.undrr.org/llms.json) provides the sa
 
 A separate, topic-scoped sub-manifest, [`llms-editorial-manual.txt`](https://mangrove.undrr.org/llms-editorial-manual.txt), carries only writing/style rules (capitalization, punctuation, numbers, abbreviations, italics, spelling, UNDRR terminology, disability inclusive and gender-inclusive language) for an agent generating UI copy or docs prose — fetch it instead of the full `llms.txt` when component data isn't needed.
 
+Two more sub-manifests serve editors building pages on UNDRR websites, and the AI tools they use:
+
+- [`llms-page-building.txt`](https://mangrove.undrr.org/llms-page-building.txt) combines [Building landing pages](https://mangrove.undrr.org/?path=/docs/patterns-building-landing-pages--docs) and [Drupal Gutenberg integration](https://mangrove.undrr.org/?path=/docs/getting-started-integration-drupal-gutenberg--docs): page shapes, layout patterns, component choice and the current markup of every UNDRR Gutenberg block. It replaces the Gutenberg content guide formerly published on assets.undrr.org. A prompt such as "Using the UNDRR page building guide at https://mangrove.undrr.org/llms-page-building.txt, draft a landing page about…" works in any tool that can fetch URLs.
+- [`llms-search-widget.txt`](https://mangrove.undrr.org/llms-search-widget.txt) carries [Search widget editor configuration](https://mangrove.undrr.org/?path=/docs/components-syndicated-search-editor-configuration--docs): block settings, search syntax and `field:value` filters with taxonomy term IDs.
+
+All three are built from `docs/*.md` by `scripts/ai-manifest/docs-submanifest.js` and are listed in `llms.txt` and under `urls` in `llms.json` (`editorialManual`, `pageBuilding`, `searchWidget`).
+
 ### Component index (`ai-components/index.json`)
 
 The [component index](https://mangrove.undrr.org/ai-components/index.json) lists every component with:
@@ -242,6 +249,7 @@ The editorial manual and every `llms-*.txt` sub-manifest are also copied into th
 
 - Latest build: `https://assets.undrr.org/mangrove/latest/docs/EDITORIAL-MANUAL.md` and `https://assets.undrr.org/mangrove/latest/docs/llms-editorial-manual.txt`
 - Pinned to a release: `https://assets.undrr.org/mangrove/{version}/docs/EDITORIAL-MANUAL.md` and `https://assets.undrr.org/mangrove/{version}/docs/llms-editorial-manual.txt`, from the release after 2.0.0
+- The page building and search widget sub-manifests sit alongside: `docs/llms-page-building.txt` and `docs/llms-search-widget.txt` under the same latest or versioned folder
 
 Use a pinned URL where the guidance has to stay fixed, for example in a prompt that is reviewed and reused. The Markdown copy starts with a provenance line, and its links to other guides point at their Storybook pages. `llms.txt` and `llms.json` are not copied; they index the Storybook site. `scripts/copy-docs-to-dist.mjs` does the copy at the end of `yarn build`.
 

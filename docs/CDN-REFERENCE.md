@@ -128,6 +128,8 @@ Plain-text copies of guidance, for people and AI tools that need a stable, versi
 |----------|------|----------|
 | Editorial manual | `/docs/EDITORIAL-MANUAL.md` | Copy of `docs/EDITORIAL-MANUAL.md`, with links to other guides pointing at Storybook |
 | Editorial manual sub-manifest | `/docs/llms-editorial-manual.txt` | The same rules in the `llms.txt` format |
+| Page building sub-manifest | `/docs/llms-page-building.txt` | Building landing pages and the Drupal Gutenberg integration guide, in the `llms.txt` format |
+| Search widget sub-manifest | `/docs/llms-search-widget.txt` | Search widget editor configuration, in the `llms.txt` format |
 
 Every other `llms-*.txt` sub-manifest the build generates is published beside them under `/docs/`. The top-level `llms.txt` and `llms.json` are not: they index the Storybook site and stay at <https://mangrove.undrr.org/llms.txt>.
 
