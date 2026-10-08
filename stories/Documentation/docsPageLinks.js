@@ -40,6 +40,8 @@ export const DOC_PAGE_IDS = {
   'docs/DRUPAL-GUTENBERG.md':
     'getting-started-integration-drupal-gutenberg--docs',
   'docs/EDITORIAL-MANUAL.md': 'contributing-editorial-manual--docs',
+  'docs/FIGMA-INTEGRATION.md':
+    'getting-started-integration-figma-and-mangrove--docs',
   'docs/HYDRATION-AUTHORING.md':
     'contributing-build-a-component-hydration--docs',
   'docs/HYDRATION.md': 'getting-started-integration-hydration-guide--docs',

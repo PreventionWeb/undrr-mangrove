@@ -977,6 +977,12 @@ if (require.main === module) {
 }
 
 module.exports = {
+  loadSources,
+  layersFor,
+  mergeLayers,
+  resolve,
+  propertyName,
+  TOKENS_DIR,
   build,
   buildTokensDictionary,
   TokenError,
